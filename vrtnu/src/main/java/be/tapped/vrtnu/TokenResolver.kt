@@ -7,8 +7,14 @@ import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
 
-object DefaultCookieJar : CookieJar {
-    val cookieCache: MutableMap<String, List<Cookie>> = mutableMapOf()
+interface VRTCookieJar : OIDCXSRFCache, CookieJar
+
+interface OIDCXSRFCache {
+    fun getXSRFToken(url: String): String
+}
+
+class DefaultVRTCookieJar : VRTCookieJar {
+    private val cookieCache: MutableMap<String, List<Cookie>> = mutableMapOf()
 
     override fun loadForRequest(url: HttpUrl): List<Cookie> =
         cookieCache[url.toString()] ?: emptyList()
@@ -16,6 +22,9 @@ object DefaultCookieJar : CookieJar {
     override fun saveFromResponse(url: HttpUrl, cookies: List<Cookie>) {
         cookieCache[url.toString()] = cookies
     }
+
+    override fun getXSRFToken(url: String): String =
+        cookieCache[url]!!.first { it.name == "OIDCXSRF" }.value
 }
 
 class TokenValidator {
@@ -36,7 +45,8 @@ class TokenValidator {
 
 class TokenResolver(
     private val listener: Listener,
-    private val tokenValidator: TokenValidator = TokenValidator()
+    private val tokenValidator: TokenValidator = TokenValidator(),
+    private val cookieJar: VRTCookieJar = DefaultVRTCookieJar()
 ) {
 
     interface Listener {
@@ -47,8 +57,8 @@ class TokenResolver(
         private const val API_KEY =
             "3_qhEcPa5JGFROVwu5SWKqJ4mVOIkwlFNMSKwzPDAh8QZOtHqu6L4nD5Q7lk0eXOOG"
         private const val LOGIN_URL = "https://accounts.vrt.be/accounts.login"
+        private const val VRT_LOGIN_URL = "https://login.vrt.be/perform_login"
         private const val TOKEN_GATEWAY_URL = "https://token.vrt.be"
-        private const val VRT_LOGIN_URL = "https://login.vrt.be/perform_login?client_id=vrtnu-site"
         private const val USER_TOKEN_GATEWAY_URL =
             "https://token.vrt.be/vrtnuinitlogin?provider=site&destination=https://www.vrt.be/vrtnu/"
     }
@@ -56,7 +66,7 @@ class TokenResolver(
     private val jsonMediaType = "application/json; charset=utf-8".toMediaType()
 
     private val client = OkHttpClient.Builder()
-        .cookieJar(DefaultCookieJar)
+        .cookieJar(cookieJar)
         .build()
 
     fun login(userName: String, password: String) {
@@ -76,21 +86,22 @@ class TokenResolver(
                 .url(USER_TOKEN_GATEWAY_URL)
                 .build()
         ).execute()
-        val cookies = DefaultCookieJar.cookieCache[response.request.url.toString()]!!
+        val xsrf = cookieJar.getXSRFToken(response.request.url.toString())
+
+        val uid = loginJson["UID"]!!.jsonPrimitive.content
+        val uidSignature = loginJson["UIDSignature"]!!.jsonPrimitive.content
+        val signatureTimestamp = loginJson["signatureTimestamp"]!!.jsonPrimitive.content
 
         val performLoginResponse = client.newCall(
             Request.Builder()
                 .url(VRT_LOGIN_URL)
                 .post(
                     FormBody.Builder()
-                        .add("UID", loginJson["UID"]!!.jsonPrimitive.content)
-                        .add("UIDSignature", loginJson["UIDSignature"]!!.jsonPrimitive.content)
-                        .add(
-                            "signatureTimestamp",
-                            loginJson["signatureTimestamp"]!!.jsonPrimitive.content
-                        )
+                        .add("UID", uid)
+                        .add("UIDSignature", uidSignature)
+                        .add("signatureTimestamp", signatureTimestamp)
                         .add("client_id", "vrtnu-site")
-                        .add("_csrf", cookies.first { it.name == "OIDCXSRF" }.value)
+                        .add("_csrf", xsrf)
                         .build()
                 )
                 .build()
