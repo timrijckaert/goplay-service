@@ -77,18 +77,22 @@ class TokenResolver(
                 .build()
         ).execute()
         val cookies = DefaultCookieJar.cookieCache[response.request.url.toString()]!!
-        val json = buildJsonObject {
-            put("UID", loginJson["UID"]!!.jsonPrimitive.content)
-            put("UIDSignature", loginJson["UIDSignature"]!!.jsonPrimitive.content)
-            put("signatureTimestamp", loginJson["signatureTimestamp"]!!.jsonPrimitive.content)
-            put("client_id", "vrtnu-site")
-            put("_csrf", cookies.first { it.name == "OIDCXSRF" }.value)
-        }.toString()
 
         val performLoginResponse = client.newCall(
             Request.Builder()
-                .post(json.toRequestBody(jsonMediaType))
                 .url(VRT_LOGIN_URL)
+                .post(
+                    FormBody.Builder()
+                        .add("UID", loginJson["UID"]!!.jsonPrimitive.content)
+                        .add("UIDSignature", loginJson["UIDSignature"]!!.jsonPrimitive.content)
+                        .add(
+                            "signatureTimestamp",
+                            loginJson["signatureTimestamp"]!!.jsonPrimitive.content
+                        )
+                        .add("client_id", "vrtnu-site")
+                        .add("_csrf", cookies.first { it.name == "OIDCXSRF" }.value)
+                        .build()
+                )
                 .build()
         ).execute()
     }
