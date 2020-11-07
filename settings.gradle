@@ -1,0 +1,2 @@
+include ':vrtnu'
+rootProject.name = "VRTNUService"
