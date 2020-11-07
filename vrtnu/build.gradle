@@ -1,6 +1,7 @@
 plugins {
     id 'java-library'
     id 'kotlin'
+    id 'kotlin-kapt'
 }
 
 java {
@@ -11,5 +12,17 @@ java {
 dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.0.1"
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+
+    def arrow_version = "0.11.0"
+    implementation "io.arrow-kt:arrow-core:$arrow_version"
+    implementation "io.arrow-kt:arrow-syntax:$arrow_version"
+    kapt "io.arrow-kt:arrow-meta:$arrow_version"
+
     implementation "com.squareup.okhttp3:okhttp:4.9.0"
+}
+
+compileKotlin {
+    kotlinOptions {
+        freeCompilerArgs = ["-Xinline-classes"]
+    }
 }

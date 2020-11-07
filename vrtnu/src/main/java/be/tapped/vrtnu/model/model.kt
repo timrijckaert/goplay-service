@@ -2,7 +2,7 @@ package be.tapped.vrtnu.model
 
 sealed class VRTLogin {
     sealed class Success : VRTLogin() {
-        data class OK(val token: VRTToken) : Success()
+        data class OK(val token: Token) : Success()
     }
 
     sealed class Failure : VRTLogin() {
@@ -14,4 +14,13 @@ sealed class VRTLogin {
     }
 }
 
-data class VRTToken(val cookieName: String, val expirationDate: String)
+inline class VRTNUToken(val token: String)
+inline class VRTProfileToken(val token: String)
+inline class RefreshToken(val token: String)
+
+data class Token(
+    val vrtnuToken: VRTNUToken,
+    val vrtProfileToken: VRTProfileToken,
+    val refreshToken: RefreshToken,
+    val expiry: Long
+)

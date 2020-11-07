@@ -1,7 +1,6 @@
 package be.tapped.vrtnu
 
-import be.tapped.vrtnu.model.VRTToken
-import be.tapped.vrtnu.model.VRTLogin
+import be.tapped.vrtnu.model.*
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.*
 import okhttp3.FormBody
@@ -34,7 +33,14 @@ object TokenResolver {
             } else {
                 val vrtToken = getNewToken("X-VRT-Token", userName, loginJson)
                 if (vrtToken != null) {
-                    VRTLogin.Success.OK(vrtToken)
+                    VRTLogin.Success.OK(
+                        Token(
+                            VRTNUToken("erueru"),
+                            VRTProfileToken("erer"),
+                            RefreshToken("rueurg"),
+                            2354345465
+                        )
+                    )
                 } else {
                     VRTLogin.Failure.Unknown
                 }
@@ -47,13 +53,13 @@ object TokenResolver {
         name: String,
         userName: String,
         loginJson: JsonObject
-    ): VRTToken? =
+    ): Pair<VRTNUToken, String>? =
         when (name) {
             "X-VRT-Token" -> getXVRTToken(userName, loginJson)
             else -> throw IllegalArgumentException("Not handled $name")
         }
 
-    private fun getXVRTToken(userName: String, loginJson: JsonObject): VRTToken? {
+    private fun getXVRTToken(userName: String, loginJson: JsonObject): Pair<VRTNUToken, String>? {
         val loginToken =
             loginJson["sessionInfo"]!!.jsonObject["login_token"]?.jsonPrimitive?.content
                 ?: throw IllegalStateException("No login token found!")
@@ -76,16 +82,13 @@ object TokenResolver {
         return createTokenDictionaryFromHeader(response.headers["Set-Cookie"])
     }
 
-    private fun createTokenDictionaryFromHeader(rawCookieHeader: String?): VRTToken? =
+    private fun createTokenDictionaryFromHeader(rawCookieHeader: String?): Pair<VRTNUToken, String>? =
         rawCookieHeader?.let {
             val cookieDataArr = it.split("X-VRT-Token=")[1].split("; ")
             val expiresRegex =
                 Regex("([A-Za-z]{3}, \\d{2} [A-Za-z]{3} \\d{4} \\d{2}:\\d{2}:\\d{2} [A-Za-z]{3})")
             val expires = expiresRegex.find(cookieDataArr[2])!!.groups.first()!!.value
-            VRTToken(
-                cookieName = cookieDataArr[0],
-                expirationDate = expires
-            )
+            Pair(VRTNUToken(cookieDataArr[0]), expires)
         }
 
     private fun getLoginJson(userName: String, password: String): JsonObject {
