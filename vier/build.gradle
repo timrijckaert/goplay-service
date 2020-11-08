@@ -17,4 +17,5 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     implementation platform('software.amazon.awssdk:bom:2.15.23')
     implementation 'software.amazon.awssdk:cognitoidentityprovider'
+    implementation "com.squareup.okhttp3:okhttp:4.9.0"
 }

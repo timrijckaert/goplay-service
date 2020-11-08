@@ -7,5 +7,8 @@ fun main(args: Array<String>) {
     val tokens = tokenProvider.getAuthenticationResultType(userName, password)
     val userAttributes = tokenProvider.getUserAttributes(tokens.accessToken())
     val newTokens = tokenProvider.refreshToken(tokens.refreshToken())
-    println(userAttributes)
+
+    val vierApi = VierAPI()
+    val contentTree = vierApi.getContentTree(newTokens.accessToken())
+    println(contentTree)
 }

@@ -21,7 +21,7 @@ class VierTokenProvider(private val authenticationHelper: AuthenticationHelper =
             .authenticationResult()
     }
 
-    fun refreshToken(refreshToken: String): AuthenticationResultType? {
+    fun refreshToken(refreshToken: String): AuthenticationResultType {
         val refreshTokenRequest = authenticationHelper.refreshToken(refreshToken)
         return cognitoIdentityProvider.initiateAuth(refreshTokenRequest).authenticationResult()
     }
