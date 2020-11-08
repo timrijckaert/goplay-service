@@ -14,10 +14,12 @@ class VierAPI {
                 Request.Builder()
                     .get()
                     .url(CONTENT_TREE)
-                    .header("cookie", "didomi_token=$accessToken")
+                    .header("cookie", constructDidomiToken(accessToken))
                     .build()
             ).execute().body!!.string()
         )
+
+    private fun constructDidomiToken(accessToken: String) = "didomi_token=$accessToken"
 
     companion object {
         private const val BASE_VIER_API = "https://www.vier.be/api"
