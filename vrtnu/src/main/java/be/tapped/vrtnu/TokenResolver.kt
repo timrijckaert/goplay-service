@@ -73,12 +73,13 @@ class TokenResolver(
         val loginJson = getLoginJson(userName, password)
         if (tokenValidator.isValidToken(loginJson)) {
             fetchXVRTToken(userName, loginJson)
-            fetchRefreshToken(loginJson)
+            //fetchRefreshToken(loginJson)
         } else {
             tokenValidator.handleInvalidToken(listener, loginJson)
         }
     }
 
+    //TODO investigate we get a 403
     private fun fetchRefreshToken(loginJson: JsonObject) {
         val response = client.newCall(
             Request.Builder()
