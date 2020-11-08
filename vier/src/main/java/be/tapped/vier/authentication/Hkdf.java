@@ -1,4 +1,4 @@
-package be.tapped.vier;
+package be.tapped.vier.authentication;
 
 import java.security.GeneralSecurityException;
 import java.security.InvalidKeyException;

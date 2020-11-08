@@ -1,5 +1,8 @@
 package be.tapped.vier
 
+import be.tapped.vier.authentication.VierAPI
+import be.tapped.vier.authentication.VierTokenProvider
+
 fun main(args: Array<String>) {
     val userName = args[0]
     val password = args[1]
@@ -10,5 +13,4 @@ fun main(args: Array<String>) {
 
     val vierApi = VierAPI()
     val contentTree = vierApi.getContentTree(newTokens.accessToken())
-    println(contentTree)
 }

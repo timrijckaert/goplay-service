@@ -1,4 +1,4 @@
-package be.tapped.vier
+package be.tapped.vier.authentication
 
 import software.amazon.awssdk.services.cognitoidentityprovider.model.*
 import java.math.BigInteger

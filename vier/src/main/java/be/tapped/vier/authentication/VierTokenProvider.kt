@@ -1,5 +1,6 @@
-package be.tapped.vier
+package be.tapped.vier.authentication
 
+import be.tapped.vier.authentication.AuthenticationHelper
 import software.amazon.awssdk.auth.credentials.AnonymousCredentialsProvider
 import software.amazon.awssdk.regions.Region
 import software.amazon.awssdk.services.cognitoidentityprovider.CognitoIdentityProviderClient

@@ -1,4 +1,4 @@
-package be.tapped.vier
+package be.tapped.vier.authentication
 
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
@@ -23,6 +23,6 @@ class VierAPI {
 
     companion object {
         private const val BASE_VIER_API = "https://www.vier.be/api"
-        private const val CONTENT_TREE = "${BASE_VIER_API}/content_tree"
+        private const val CONTENT_TREE = "$BASE_VIER_API/content_tree"
     }
 }
