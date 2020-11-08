@@ -117,6 +117,18 @@ class AuthenticationHelper {
                 )
             ).build()
 
+    fun refreshToken(refreshToken: String): InitiateAuthRequest {
+        return InitiateAuthRequest.builder()
+            .authFlow(AuthFlowType.REFRESH_TOKEN_AUTH)
+            .authParameters(
+                mapOf(
+                    "REFRESH_TOKEN" to refreshToken
+                )
+            )
+            .clientId(COGNITO_CLIENT_ID)
+            .build()
+    }
+
     init {
         do {
             a = BigInteger(EPHEMERAL_KEY_LENGTH, SECURE_RANDOM).mod(N)
