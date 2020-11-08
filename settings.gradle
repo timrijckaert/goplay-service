@@ -1,3 +1,4 @@
-include ':vier'
 include ':vrtnu'
+include ':vtmgo'
+include ':vier'
 rootProject.name = "Flemish TV Aggregator"
