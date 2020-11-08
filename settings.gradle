@@ -1,2 +1,3 @@
+include ':vier'
 include ':vrtnu'
 rootProject.name = "VRTNUService"
