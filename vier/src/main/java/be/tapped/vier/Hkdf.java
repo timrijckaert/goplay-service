@@ -30,8 +30,7 @@ final class Hkdf {
         }
     }
 
-    static Hkdf getInstance(String algorithm) throws NoSuchAlgorithmException {
-
+    static Hkdf getInstance(String algorithm) throws IllegalArgumentException {
         return new Hkdf(algorithm);
     }
 
@@ -157,10 +156,8 @@ final class Hkdf {
             final Mac ex = Mac.getInstance(this.algorithm);
             ex.init(this.prk);
             return ex;
-        } catch (final NoSuchAlgorithmException var2) {
+        } catch (final NoSuchAlgorithmException | InvalidKeyException var2) {
             throw new RuntimeException(var2);
-        } catch (final InvalidKeyException var3) {
-            throw new RuntimeException(var3);
         }
     }
 
