@@ -13,9 +13,9 @@ compileKotlin {
 }
 
 dependencies {
-    implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.0.1"
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    implementation platform('software.amazon.awssdk:bom:2.15.23')
-    implementation 'software.amazon.awssdk:cognitoidentityprovider'
-    implementation "com.squareup.okhttp3:okhttp:4.9.0"
+    implementation Dependencies.kotlinXSerialization
+    implementation Dependencies.kotlinStdLib
+    implementation platform(Dependencies.awsBOM)
+    implementation Dependencies.awsCognitoProvider
+    implementation Dependencies.okHttp3
 }

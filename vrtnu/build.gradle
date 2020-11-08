@@ -10,15 +10,14 @@ java {
 }
 
 dependencies {
-    implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.0.1"
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    implementation Dependencies.kotlinXSerialization
+    implementation Dependencies.kotlinStdLib
 
-    def arrow_version = "0.11.0"
-    implementation "io.arrow-kt:arrow-core:$arrow_version"
-    implementation "io.arrow-kt:arrow-syntax:$arrow_version"
-    kapt "io.arrow-kt:arrow-meta:$arrow_version"
+    implementation Dependencies.arrowCore
+    implementation Dependencies.arrowSyntax
+    kapt Dependencies.arrowMeta
 
-    implementation "com.squareup.okhttp3:okhttp:4.9.0"
+    implementation Dependencies.okHttp3
 }
 
 compileKotlin {
