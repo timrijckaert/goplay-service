@@ -3,7 +3,7 @@ package be.tapped.vtmgo.authentication
 import arrow.core.Either
 import arrow.core.left
 import arrow.core.rightIfNotNull
-import com.techvein.okhttp3.logging.CurlHttpLoggingInterceptor
+import com.moczul.ok2curl.CurlInterceptor
 import okhttp3.FormBody
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -29,7 +29,7 @@ class VTMTokenProvider(private val vtmCookieJar: VTMCookieJar = VTMCookieJar()) 
 
     private val client =
         OkHttpClient.Builder()
-            .addNetworkInterceptor(CurlHttpLoggingInterceptor { message -> println("$message\n\r") })
+            .addNetworkInterceptor(CurlInterceptor { message -> println("$message\n\r") })
             .cookieJar(vtmCookieJar)
             .build()
 
