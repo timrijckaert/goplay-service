@@ -2,21 +2,33 @@ package be.tapped.vtmgo.authentication
 
 import com.techvein.okhttp3.logging.CurlHttpLoggingInterceptor
 import okhttp3.*
+import okhttp3.internal.cookieToString
 import java.util.*
 
 class VTMCookieJar : CookieJar {
     private val cookieCache: MutableMap<HttpUrl, List<Cookie>> = mutableMapOf()
 
+    private val defaultAuthIdCookie =
+        Cookie.Builder()
+            .name("authId")
+            .value(UUID.randomUUID().toString())
+            .domain("*")
+            .build()
+
     override fun loadForRequest(url: HttpUrl): List<Cookie> =
         cookieCache.entries
             .filter { it.key.host == url.host }
-            .flatMap(MutableMap.MutableEntry<HttpUrl, List<Cookie>>::value)
+            .flatMap(MutableMap.MutableEntry<HttpUrl, List<Cookie>>::value) + listOf(
+            defaultAuthIdCookie
+        )
 
     override fun saveFromResponse(url: HttpUrl, cookies: List<Cookie>) {
         cookieCache[url] = cookies
     }
 
     fun getKeyByName(name: String) = cookieCache.values.flatten().firstOrNull { it.name == name }
+
+    override fun toString(): String = "$cookieCache"
 }
 
 class VTMTokenProvider(private val vtmCookieJar: VTMCookieJar = VTMCookieJar()) {
@@ -34,11 +46,9 @@ class VTMTokenProvider(private val vtmCookieJar: VTMCookieJar = VTMCookieJar()) 
     )
 
     fun login(userName: String, password: String) {
-        val authId = UUID.randomUUID().toString()
         val aanmeldenResponse = client.newCall(
             Request.Builder()
                 .get()
-                .header("Cookie", "authId=$authId")
                 .url("https://vtm.be/vtmgo/aanmelden?redirectUrl=https://vtm.be/vtmgo")
                 .build()
         ).execute()
@@ -88,6 +98,4 @@ class VTMTokenProvider(private val vtmCookieJar: VTMCookieJar = VTMCookieJar()) 
         val lfvpAuth = vtmCookieJar.getKeyByName("lfvp_auth")
         println("lfvpAuth=$lfvpAuth")
     }
-
-
 }
