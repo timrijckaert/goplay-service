@@ -12,4 +12,12 @@ dependencies {
     implementation Dependencies.kotlinStdLib
     implementation Dependencies.okHttp3
     implementation Dependencies.okHttpCurlInterceptor
+    implementation Dependencies.arrowCore
+}
+
+compileKotlin {
+    kotlinOptions {
+        jvmTarget = "1.8"
+        freeCompilerArgs = ["-Xinline-classes"]
+    }
 }

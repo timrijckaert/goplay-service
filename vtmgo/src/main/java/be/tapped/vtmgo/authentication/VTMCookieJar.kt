@@ -29,7 +29,7 @@ class VTMCookieJar : CookieJar {
         cookieCache[url] = cookies
     }
 
-    fun getKeyByName(name: String) = fullCookieList.firstOrNull { it.name == name }
+    fun getCookieValue(name: String) = fullCookieList.firstOrNull { it.name == name }?.value
 
     override fun toString(): String = fullCookieList.joinToString("\r\n")
 }
