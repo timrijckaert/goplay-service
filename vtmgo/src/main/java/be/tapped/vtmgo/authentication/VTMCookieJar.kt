@@ -15,6 +15,9 @@ class VTMCookieJar : CookieJar {
             .domain("*")
             .build()
 
+    private val fullCookieList: List<Cookie>
+        get() = cookieCache.values.flatten()
+
     override fun loadForRequest(url: HttpUrl): List<Cookie> =
         cookieCache.entries
             .filter { it.key.host == url.host }
@@ -26,7 +29,7 @@ class VTMCookieJar : CookieJar {
         cookieCache[url] = cookies
     }
 
-    fun getKeyByName(name: String) = cookieCache.values.flatten().firstOrNull { it.name == name }
+    fun getKeyByName(name: String) = fullCookieList.firstOrNull { it.name == name }
 
-    override fun toString(): String = "$cookieCache"
+    override fun toString(): String = fullCookieList.joinToString("\r\n")
 }
