@@ -10,4 +10,6 @@ java {
 
 dependencies {
     implementation Dependencies.kotlinStdLib
+    implementation Dependencies.okHttp3
+    implementation Dependencies.okHttpCurlInterceptor
 }
