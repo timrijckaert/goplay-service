@@ -50,7 +50,7 @@ class VTMTokenProvider(private val vtmCookieJar: VTMCookieJar = VTMCookieJar()) 
             // Either bind() ?
             Validated.applicative(NonEmptyList.semigroup<LoginException>())
                 .tupledN(validateAuthState(), validateDebugId(), validateTicket())
-                .mapLeft { it.isEmpty()  }
+                .mapLeft { it.isEmpty() }
                 .toEither()
 
             !logIn(userName, password)
@@ -74,6 +74,9 @@ class VTMTokenProvider(private val vtmCookieJar: VTMCookieJar = VTMCookieJar()) 
         return if (!initLoginResponse.isSuccessful) initLoginResponse.toNetworkException()
         else Unit.right()
     }
+
+    suspend fun isValidToken(jwtToken: JWT): Boolean =
+        Either.catch { com.auth0.jwt.JWT.decode(jwtToken.token) }.map { true }.getOrElse { false }
 
     private fun validateAuthState(): ValidatedNel<LoginException, Unit> =
         validateCookie(COOKIE_LFVP_AUTH_STATE)
