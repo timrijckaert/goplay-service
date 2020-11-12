@@ -6,6 +6,7 @@ import arrow.core.extensions.nonemptylist.semigroup.semigroup
 import arrow.core.extensions.validated.applicative.applicative
 import arrow.core.extensions.validated.bifunctor.mapLeft
 import arrow.product
+import be.tapped.vtmgo.authentication.LoginException.MissingCookieValue
 import com.moczul.ok2curl.CurlInterceptor
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.*
@@ -17,7 +18,7 @@ import kotlin.coroutines.suspendCoroutine
 
 sealed class LoginException {
     data class NetworkException(val networkFailure: NetworkFailure) : LoginException()
-    data class MissingCookieValue(val cookieValue: String) : LoginException()
+    data class MissingCookieValue(val cookieValues: NonEmptyList<String>) : LoginException()
     object NoAuthorizeResponse : LoginException()
     object NoCodeFound : LoginException()
     object NoStateFound : LoginException()
@@ -50,9 +51,9 @@ class VTMTokenProvider(private val vtmCookieJar: VTMCookieJar = VTMCookieJar()) 
             !initLogin()
 
             // Either bind() ?
-            Validated.applicative(NonEmptyList.semigroup<LoginException>())
+            !Validated.applicative(NonEmptyList.semigroup<String>())
                 .tupledN(validateAuthState(), validateDebugId(), validateTicket())
-                .mapLeft { it.isEmpty() }
+                .mapLeft(::MissingCookieValue)
                 .toEither()
 
             !logIn(userName, password)
@@ -122,13 +123,13 @@ class VTMTokenProvider(private val vtmCookieJar: VTMCookieJar = VTMCookieJar()) 
         Either.catch { com.auth0.jwt.JWT.decode(jwtToken.token) }
             .fold({ false }, { true })
 
-    private fun validateAuthState(): ValidatedNel<LoginException, Unit> =
+    private fun validateAuthState() =
         validateCookie(COOKIE_LFVP_AUTH_STATE)
 
-    private fun validateDebugId(): ValidatedNel<LoginException, Unit> =
+    private fun validateDebugId() =
         validateCookie(COOKIE_X_OIDCP_DEBUGID)
 
-    private fun validateTicket(): ValidatedNel<LoginException, Unit> =
+    private fun validateTicket() =
         validateCookie(COOKIE_X_OIDCP_TICKET)
 
     private suspend fun logIn(userName: String, password: String): Either<LoginException, Unit> {
@@ -189,17 +190,17 @@ class VTMTokenProvider(private val vtmCookieJar: VTMCookieJar = VTMCookieJar()) 
 
     private fun getJWT(): Either<LoginException, JWT> =
         vtmCookieJar.getCookieValue(COOKIE_LFVP_AUTH)?.let(::JWT)
-            .rightIfNotNull { LoginException.MissingCookieValue(COOKIE_LFVP_AUTH) }
+            .rightIfNotNull { MissingCookieValue(NonEmptyList(COOKIE_LFVP_AUTH)) }
 
     private fun Response.toNetworkException(): Either<LoginException.NetworkException, Nothing> =
         LoginException.NetworkException(NetworkFailure(request.url.toString(), code)).left()
 
-    private fun validateCookie(cookieName: String): ValidatedNel<LoginException, Unit> =
+    private fun validateCookie(cookieName: String): ValidatedNel<String, Unit> =
         vtmCookieJar.getCookieValue(cookieName)?.let { Unit.validNel() }
             ?: toMissingCookieValue(cookieName)
 
-    private fun toMissingCookieValue(cookieName: String): ValidatedNel<LoginException, Nothing> =
-        LoginException.MissingCookieValue(cookieName).invalidNel()
+    private fun toMissingCookieValue(cookieName: String): ValidatedNel<String, Nothing> =
+        cookieName.invalidNel()
 
     private suspend fun OkHttpClient.executeAsync(request: Request): Response =
         suspendCoroutine { continuation ->
