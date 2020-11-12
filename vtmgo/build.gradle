@@ -13,6 +13,7 @@ dependencies {
     implementation Dependencies.okHttp3
     implementation Dependencies.okHttpCurlInterceptor
     implementation Dependencies.arrowCore
+    implementation Dependencies.coroutinesCore
 }
 
 compileKotlin {

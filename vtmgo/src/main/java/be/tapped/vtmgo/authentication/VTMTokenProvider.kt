@@ -1,15 +1,16 @@
 package be.tapped.vtmgo.authentication
 
-import arrow.core.Either
+import arrow.core.*
 import arrow.core.computations.either
-import arrow.core.left
-import arrow.core.right
-import arrow.core.rightIfNotNull
+import arrow.core.extensions.nonemptylist.semigroup.semigroup
+import arrow.core.extensions.validated.applicative.applicative
+import arrow.core.extensions.validated.bifunctor.mapLeft
 import com.moczul.ok2curl.CurlInterceptor
-import okhttp3.FormBody
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.ResponseBody
+import okhttp3.*
+import java.io.IOException
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
+import kotlin.coroutines.suspendCoroutine
 
 inline class JWT(val token: String)
 
@@ -46,10 +47,11 @@ class VTMTokenProvider(private val vtmCookieJar: VTMCookieJar = VTMCookieJar()) 
         either {
             !signUp()
 
-            // Could rewrite to Validate where MissingCookieValue has a NonEmptyList of all failed validations
-            !validateAuthState()
-            !validateDebugId()
-            !validateTicket()
+            // Either bind() ?
+            Validated.applicative(NonEmptyList.semigroup<LoginException>())
+                .tupledN(validateAuthState(), validateDebugId(), validateTicket())
+                .mapLeft { it.isEmpty()  }
+                .toEither()
 
             !logIn(userName, password)
 
@@ -61,78 +63,57 @@ class VTMTokenProvider(private val vtmCookieJar: VTMCookieJar = VTMCookieJar()) 
             !getJWT()
         }
 
-    private suspend fun signUp(): Either<LoginException, Unit> =
-        client.newCall(
+    private suspend fun signUp(): Either<LoginException, Unit> {
+        val aanmeldenResponse = client.executeAsync(
             Request.Builder()
                 .get()
                 .url("https://vtm.be/vtmgo/aanmelden?redirectUrl=https://vtm.be/vtmgo")
                 .build()
-        ).execute()
-            .use {
-                if (!it.isSuccessful) LoginException.NetworkException(
-                    it.request.url.toString(),
-                    it.code
-                ).left()
-                else Unit.right()
-            }
+        )
 
-    private fun validateAuthState(): Either<LoginException, Unit> =
-        if (vtmCookieJar.getCookieValue(COOKIE_LFVP_AUTH_STATE) == null) LoginException.MissingCookieValue(
-            COOKIE_LFVP_AUTH_STATE
-        ).left()
+        return if (!aanmeldenResponse.isSuccessful) aanmeldenResponse.toNetworkException()
         else Unit.right()
+    }
 
-    private fun validateDebugId(): Either<LoginException, Unit> =
-        if (vtmCookieJar.getCookieValue(COOKIE_X_OIDCP_DEBUGID) == null) LoginException.MissingCookieValue(
-            COOKIE_X_OIDCP_DEBUGID
-        ).left()
+    private fun validateAuthState(): ValidatedNel<LoginException, Unit> =
+        validateCookie(COOKIE_LFVP_AUTH_STATE)
+
+    private fun validateDebugId(): ValidatedNel<LoginException, Unit> =
+        validateCookie(COOKIE_X_OIDCP_DEBUGID)
+
+    private fun validateTicket(): ValidatedNel<LoginException, Unit> =
+        validateCookie(COOKIE_X_OIDCP_TICKET)
+
+    private suspend fun logIn(userName: String, password: String): Either<LoginException, Unit> {
+        val loginResponse = client.executeAsync(
+            Request.Builder()
+                .url("https://login2.vtm.be/login?client_id=vtm-go-web")
+                .post(
+                    FormBody.Builder()
+                        .addEncoded("userName", userName)
+                        .addEncoded("password", password)
+                        .add("jsEnabled", "true")
+                        .build()
+                )
+                .build()
+        )
+
+        return if (!loginResponse.isSuccessful) loginResponse.toNetworkException()
         else Unit.right()
+    }
 
-    private fun validateTicket(): Either<LoginException, Unit> =
-        if (vtmCookieJar.getCookieValue(COOKIE_X_OIDCP_TICKET) == null) LoginException.MissingCookieValue(
-            COOKIE_X_OIDCP_TICKET
-        ).left()
-        else Unit.right()
-
-    // Should rewrite to non-blocking suspend function using `suspendCoroutine`
-    private suspend fun logIn(userName: String, password: String): Either<LoginException, Unit> =
-        client
-            .newCall(
-                Request.Builder()
-                    .url("https://login2.vtm.be/login?client_id=vtm-go-web")
-                    .post(
-                        FormBody.Builder()
-                            .addEncoded("userName", userName)
-                            .addEncoded("password", password)
-                            .add("jsEnabled", "true")
-                            .build()
-                    )
-                    .build()
-            ).execute()
-            .use {
-                if (!it.isSuccessful) LoginException.NetworkException(
-                    it.request.url.toString(),
-                    it.code
-                ).left()
-                else Unit.right()
-            }
-
-    // Should rewrite to non-blocking suspend function using `suspendCoroutine`
-    private suspend fun authorize(): Either<LoginException, String> =
-        client.newCall(
+    private suspend fun authorize(): Either<LoginException, String> {
+        val authorizeResponse = client.executeAsync(
             Request.Builder()
                 .get()
                 .url("https://login2.vtm.be/authorize/continue?client_id=vtm-go-web")
                 .build()
-        ).execute()
-            .use { response ->
-                if (!response.isSuccessful) LoginException.NetworkException(
-                    response.request.url.toString(),
-                    response.code
-                ).left()
-                else response.body?.let(ResponseBody::string)?.right()
-                    ?: LoginException.NoAuthorizeResponse.left()
-            }
+        )
+
+        return if (!authorizeResponse.isSuccessful) authorizeResponse.toNetworkException()
+        else authorizeResponse.body?.let(ResponseBody::string)?.right()
+            ?: LoginException.NoAuthorizeResponse.left()
+    }
 
     private fun findCode(authorizeHtmlResponse: String): Either<LoginException, String> =
         codeRegex.find(authorizeHtmlResponse)?.let { it.groups[1]?.value }?.right()
@@ -142,9 +123,8 @@ class VTMTokenProvider(private val vtmCookieJar: VTMCookieJar = VTMCookieJar()) 
         stateRegex.find(authorizeHtmlResponse)?.let { it.groups[1]?.value }?.right()
             ?: LoginException.NoStateFound.left()
 
-    // Should rewrite to non-blocking suspend function using `suspendCoroutine`
-    private fun logInCallback(state: String, code: String): Either<LoginException, Unit> =
-        client.newCall(
+    private suspend fun logInCallback(state: String, code: String): Either<LoginException, Unit> {
+        val loginCallbackResponse = client.executeAsync(
             Request.Builder()
                 .url("https://vtm.be/vtmgo/login-callback")
                 .post(
@@ -154,16 +134,36 @@ class VTMTokenProvider(private val vtmCookieJar: VTMCookieJar = VTMCookieJar()) 
                         .build()
                 )
                 .build()
-        ).execute()
-            .use {
-                if (!it.isSuccessful) LoginException.NetworkException(
-                    it.request.url.toString(),
-                    it.code
-                ).left()
-                else Unit.right()
-            }
+        )
+
+        return if (!loginCallbackResponse.isSuccessful) loginCallbackResponse.toNetworkException()
+        else Unit.right()
+    }
 
     private fun getJWT(): Either<LoginException, JWT> =
         vtmCookieJar.getCookieValue(COOKIE_LFVP_AUTH)?.let(::JWT)
             .rightIfNotNull { LoginException.MissingCookieValue(COOKIE_LFVP_AUTH) }
+
+    private fun Response.toNetworkException(): Either<LoginException.NetworkException, Nothing> =
+        LoginException.NetworkException(request.url.toString(), code).left()
+
+    private fun validateCookie(cookieName: String): ValidatedNel<LoginException, Unit> =
+        vtmCookieJar.getCookieValue(cookieName)?.let { Unit.validNel() }
+            ?: toMissingCookieValue(cookieName)
+
+    private fun toMissingCookieValue(cookieName: String): ValidatedNel<LoginException, Nothing> =
+        LoginException.MissingCookieValue(cookieName).invalidNel()
+
+    private suspend fun OkHttpClient.executeAsync(request: Request): Response =
+        suspendCoroutine { continuation ->
+            newCall(request).enqueue(object : Callback {
+                override fun onFailure(call: Call, e: IOException) {
+                    continuation.resumeWithException(e)
+                }
+
+                override fun onResponse(call: Call, response: Response) {
+                    continuation.resume(response)
+                }
+            })
+        }
 }
