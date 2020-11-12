@@ -7,8 +7,10 @@ suspend fun main(args: Array<String>) {
     val password = args[1]
     val tokenProvider = VTMAuthenticationProvider()
 
-    val jwtToken = tokenProvider.login(userName, password).orNull()
-    jwtToken?.let { token ->
+    val jwtToken = tokenProvider.login(userName, password)
+    println(jwtToken)
+
+    jwtToken.orNull()?.let { token ->
         val profiles = tokenProvider.getProfiles(token)
         println("Fetched profiles=$profiles")
     }

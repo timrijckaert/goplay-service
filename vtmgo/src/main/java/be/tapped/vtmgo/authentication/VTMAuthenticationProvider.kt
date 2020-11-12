@@ -213,7 +213,7 @@ class VTMAuthenticationProvider(private val vtmCookieJar: VTMCookieJar = VTMCook
                 }
 
                 override fun onResponse(call: Call, response: Response) {
-                    continuation.resume(response)
+                    response.use { continuation.resume(it) }
                 }
             })
         }
