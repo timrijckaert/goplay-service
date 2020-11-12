@@ -45,7 +45,7 @@ class VTMTokenProvider(private val vtmCookieJar: VTMCookieJar = VTMCookieJar()) 
      */
     suspend fun login(userName: String, password: String): Either<LoginException, JWT> =
         either {
-            !signUp()
+            !initLogin()
 
             // Either bind() ?
             Validated.applicative(NonEmptyList.semigroup<LoginException>())
@@ -63,15 +63,15 @@ class VTMTokenProvider(private val vtmCookieJar: VTMCookieJar = VTMCookieJar()) 
             !getJWT()
         }
 
-    private suspend fun signUp(): Either<LoginException, Unit> {
-        val aanmeldenResponse = client.executeAsync(
+    private suspend fun initLogin(): Either<LoginException, Unit> {
+        val initLoginResponse = client.executeAsync(
             Request.Builder()
                 .get()
                 .url("https://vtm.be/vtmgo/aanmelden?redirectUrl=https://vtm.be/vtmgo")
                 .build()
         )
 
-        return if (!aanmeldenResponse.isSuccessful) aanmeldenResponse.toNetworkException()
+        return if (!initLoginResponse.isSuccessful) initLoginResponse.toNetworkException()
         else Unit.right()
     }
 
