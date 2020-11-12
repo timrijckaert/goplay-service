@@ -16,6 +16,8 @@ dependencies {
     implementation Dependencies.arrowCore
     implementation Dependencies.coroutinesCore
     implementation Dependencies.jwt
+
+    api project(':common')
 }
 
 compileKotlin {
