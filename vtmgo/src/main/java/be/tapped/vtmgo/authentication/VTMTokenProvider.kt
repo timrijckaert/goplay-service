@@ -5,17 +5,18 @@ import arrow.core.computations.either
 import arrow.core.extensions.nonemptylist.semigroup.semigroup
 import arrow.core.extensions.validated.applicative.applicative
 import arrow.core.extensions.validated.bifunctor.mapLeft
+import arrow.product
 import com.moczul.ok2curl.CurlInterceptor
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.json.*
 import okhttp3.*
 import java.io.IOException
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 
-inline class JWT(val token: String)
-
 sealed class LoginException {
-    data class NetworkException(val url: String, val code: Int) : LoginException()
+    data class NetworkException(val networkFailure: NetworkFailure) : LoginException()
     data class MissingCookieValue(val cookieValue: String) : LoginException()
     object NoAuthorizeResponse : LoginException()
     object NoCodeFound : LoginException()
@@ -29,6 +30,7 @@ class VTMTokenProvider(private val vtmCookieJar: VTMCookieJar = VTMCookieJar()) 
         private const val COOKIE_LFVP_AUTH_STATE = "lfvp_auth.state"
         private const val COOKIE_X_OIDCP_DEBUGID = "x-oidcp-debugid"
         private const val COOKIE_X_OIDCP_TICKET = "x-oidcp-ticket"
+        private const val API_ENDPOINT = "https://lfvp-api.dpgmedia.net"
     }
 
     private val client =
@@ -75,7 +77,48 @@ class VTMTokenProvider(private val vtmCookieJar: VTMCookieJar = VTMCookieJar()) 
         else Unit.right()
     }
 
-    suspend fun isValidToken(jwtToken: JWT): Boolean =
+    private val defaultHeaders =
+        Headers.headersOf(
+            "x-app-version",
+            "8",
+            "x-persgroep-mobile-app",
+            "true",
+            "x-persgroep-os",
+            "android",
+            "x-persgroep-os-version",
+            "23",
+        )
+
+    suspend fun getProfiles(jwtToken: JWT): List<Profile> {
+        val profiles = client.executeAsync(
+            Request.Builder()
+                .get()
+                .headers(
+                    Headers.Builder()
+                        .addAll(defaultHeaders)
+                        .add("x-dpp-jwt", jwtToken.token)
+                        .build()
+                )
+                .url("$API_ENDPOINT/profiles?products=VTM_GO,VTM_GO_KIDS")
+                .build()
+        )
+
+        return Json.decodeFromString<JsonArray>(profiles.body!!.string()).map {
+            val profile = it.jsonObject
+            val color = profile["color"]!!.jsonObject
+            Profile(
+                id = profile["id"]!!.jsonPrimitive.content,
+                product = Product.valueOf(profile["product"]!!.jsonPrimitive.content),
+                name = profile["name"]!!.jsonPrimitive.content,
+                gender = profile["gender"]!!.jsonPrimitive.content,
+                birthDate = profile["birthDate"]!!.jsonPrimitive.content,
+                color = color["start"]!!.jsonPrimitive.content,
+                color2 = color["end"]!!.jsonPrimitive.content,
+            )
+        }
+    }
+
+    private suspend fun isValidToken(jwtToken: JWT): Boolean =
         Either.catch { com.auth0.jwt.JWT.decode(jwtToken.token) }
             .fold({ false }, { true })
 
@@ -149,7 +192,7 @@ class VTMTokenProvider(private val vtmCookieJar: VTMCookieJar = VTMCookieJar()) 
             .rightIfNotNull { LoginException.MissingCookieValue(COOKIE_LFVP_AUTH) }
 
     private fun Response.toNetworkException(): Either<LoginException.NetworkException, Nothing> =
-        LoginException.NetworkException(request.url.toString(), code).left()
+        LoginException.NetworkException(NetworkFailure(request.url.toString(), code)).left()
 
     private fun validateCookie(cookieName: String): ValidatedNel<LoginException, Unit> =
         vtmCookieJar.getCookieValue(cookieName)?.let { Unit.validNel() }
