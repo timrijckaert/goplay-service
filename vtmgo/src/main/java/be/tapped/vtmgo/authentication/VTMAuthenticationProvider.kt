@@ -5,11 +5,13 @@ import arrow.core.computations.either
 import arrow.core.extensions.nonemptylist.semigroup.semigroup
 import arrow.core.extensions.validated.applicative.applicative
 import arrow.core.extensions.validated.bifunctor.mapLeft
-import arrow.product
 import be.tapped.vtmgo.authentication.LoginException.MissingCookieValue
 import com.moczul.ok2curl.CurlInterceptor
 import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.json.*
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonArray
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 import okhttp3.*
 import java.io.IOException
 import kotlin.coroutines.resume
@@ -24,7 +26,7 @@ sealed class LoginException {
     object NoStateFound : LoginException()
 }
 
-class VTMTokenProvider(private val vtmCookieJar: VTMCookieJar = VTMCookieJar()) {
+class VTMAuthenticationProvider(private val vtmCookieJar: VTMCookieJar = VTMCookieJar()) {
 
     companion object {
         private const val COOKIE_LFVP_AUTH = "lfvp_auth"
