@@ -1,0 +1,22 @@
+plugins {
+    id 'java-library'
+    id 'kotlin'
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
+
+dependencies {
+    implementation Dependencies.kotlinStdLib
+    implementation Dependencies.kotlinXSerialization
+    implementation Dependencies.arrowCore
+    implementation platform(Dependencies.awsBOM)
+    implementation Dependencies.awsCognitoProvider
+    implementation Dependencies.okHttp3
+
+    implementation project(':vier')
+    implementation project(':vrtnu')
+    implementation project(':vtmgo')
+}

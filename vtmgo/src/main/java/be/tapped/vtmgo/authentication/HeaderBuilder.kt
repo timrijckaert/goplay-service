@@ -2,7 +2,7 @@ package be.tapped.vtmgo.authentication
 
 import okhttp3.Headers
 
-class HeaderBuilder {
+internal class HeaderBuilder {
     companion object {
         private const val HEADER_X_DPP_JWT = "x-dpp-jwt"
     }

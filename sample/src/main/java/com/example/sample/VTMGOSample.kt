@@ -1,4 +1,4 @@
-package be.tapped.vtmgo
+package com.example.sample
 
 import be.tapped.vtmgo.authentication.AuthenticationProvider
 

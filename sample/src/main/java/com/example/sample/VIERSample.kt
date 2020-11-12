@@ -1,5 +1,6 @@
-package be.tapped.vier
+package com.example.sample
 
+import be.tapped.vier.VierAPI
 import be.tapped.vier.authentication.VierTokenProvider
 
 fun main(args: Array<String>) {

@@ -1,5 +1,6 @@
-package be.tapped.vrtnu
+package com.example.sample
 
+import be.tapped.vrtnu.TokenResolver
 import be.tapped.vrtnu.model.VRTLogin
 
 fun main(args: Array<String>) {

@@ -6,7 +6,7 @@ import okhttp3.Cookie
 import okhttp3.HttpUrl
 import java.util.*
 
-class CookieJar(private val delegatingCookieJar: ReadOnlyCookieJar = DefaultCookieJar) : ReadOnlyCookieJar by delegatingCookieJar {
+internal class CookieJar(private val delegatingCookieJar: ReadOnlyCookieJar = DefaultCookieJar) : ReadOnlyCookieJar by delegatingCookieJar {
 
     private val defaultAuthIdCookie =
         Cookie.Builder()
