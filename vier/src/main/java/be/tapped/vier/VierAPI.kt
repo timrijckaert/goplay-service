@@ -1,4 +1,4 @@
-package be.tapped.vier.authentication
+package be.tapped.vier
 
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
