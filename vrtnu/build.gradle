@@ -18,6 +18,7 @@ dependencies {
     kapt Dependencies.arrowMeta
 
     implementation Dependencies.okHttp3
+    implementation Dependencies.okHttpCurlInterceptor
 }
 
 compileKotlin {
