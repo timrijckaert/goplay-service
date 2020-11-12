@@ -1,11 +1,11 @@
 package be.tapped.vtmgo
 
-import be.tapped.vtmgo.authentication.VTMAuthenticationProvider
+import be.tapped.vtmgo.authentication.AuthenticationProvider
 
 suspend fun main(args: Array<String>) {
     val userName = args[0]
     val password = args[1]
-    val tokenProvider = VTMAuthenticationProvider()
+    val tokenProvider = AuthenticationProvider()
 
     val jwtToken = tokenProvider.login(userName, password)
     println(jwtToken)
