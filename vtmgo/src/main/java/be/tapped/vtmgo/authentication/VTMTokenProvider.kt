@@ -76,7 +76,8 @@ class VTMTokenProvider(private val vtmCookieJar: VTMCookieJar = VTMCookieJar()) 
     }
 
     suspend fun isValidToken(jwtToken: JWT): Boolean =
-        Either.catch { com.auth0.jwt.JWT.decode(jwtToken.token) }.map { true }.getOrElse { false }
+        Either.catch { com.auth0.jwt.JWT.decode(jwtToken.token) }
+            .fold({ false }, { true })
 
     private fun validateAuthState(): ValidatedNel<LoginException, Unit> =
         validateCookie(COOKIE_LFVP_AUTH_STATE)
