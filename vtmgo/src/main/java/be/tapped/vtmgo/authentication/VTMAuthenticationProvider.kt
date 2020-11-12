@@ -24,6 +24,7 @@ sealed class LoginException {
     object NoAuthorizeResponse : LoginException()
     object NoCodeFound : LoginException()
     object NoStateFound : LoginException()
+    object JWTTokenNotValid : LoginException()
 }
 
 class VTMAuthenticationProvider(private val vtmCookieJar: VTMCookieJar = VTMCookieJar()) {
@@ -65,7 +66,7 @@ class VTMAuthenticationProvider(private val vtmCookieJar: VTMCookieJar = VTMCook
             val state = !findState(authorizeHtmlResponse)
 
             !logInCallback(state, code)
-            !getJWT()
+            !getJWT().filterOrElse({ isValidToken(it) }, { LoginException.JWTTokenNotValid })
         }
 
     private suspend fun initLogin(): Either<LoginException, Unit> {
