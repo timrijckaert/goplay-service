@@ -33,7 +33,7 @@ interface TokenProvider {
         }
     }
 
-    suspend fun getTokenWrapper(userName: String, password: String): Either<TokenResponse.Failure, TokenResponse.Success>
+    suspend fun fetchTokenWrapper(userName: String, password: String): Either<TokenResponse.Failure, TokenResponse.Success>
 }
 
 internal class HttpTokenProvider(
@@ -57,19 +57,19 @@ internal class HttpTokenProvider(
         private const val COOKIE_VRT_LOGIN_EXPIRY = "vrtlogin-expiry"
     }
 
-    override suspend fun getTokenWrapper(
+    override suspend fun fetchTokenWrapper(
         userName: String,
         password: String,
     ): Either<TokenProvider.TokenResponse.Failure, TokenProvider.TokenResponse.Success> =
         either {
-            val loginResponse = !getLoginResponse(userName, password)
+            val loginResponse = !fetchLoginResponse(userName, password)
             val xVRTToken = !fetchXVRTToken(userName, loginResponse)
             val oidcXSRFToken = !fetchXSRFToken()
             val token = !fetchToken(xVRTToken, oidcXSRFToken, loginResponse)
             TokenProvider.TokenResponse.Success(token)
         }
 
-    private suspend fun getLoginResponse(userName: String, password: String): Either<TokenProvider.TokenResponse.Failure, LoginResponse> {
+    private suspend fun fetchLoginResponse(userName: String, password: String): Either<TokenProvider.TokenResponse.Failure, LoginResponse> {
         val loginJson = client.executeAsync(
             Request.Builder()
                 .url(LOGIN_URL)
