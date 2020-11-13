@@ -24,7 +24,7 @@ import okhttp3.ResponseBody
 
 sealed class LoginException {
     data class NetworkException(val networkFailure: NetworkFailure) : LoginException()
-    data class MissingCookieValue(val cookieValues: NonEmptyList<String>) : LoginException()
+    data class MissingCookieValues(val cookieValues: NonEmptyList<String>) : LoginException()
     object NoAuthorizeResponse : LoginException()
     object NoCodeFound : LoginException()
     object NoStateFound : LoginException()
@@ -34,13 +34,13 @@ sealed class LoginException {
 interface JWTTokenFactory {
     suspend fun login(
         userName: String,
-        password: String
+        password: String,
     ): Either<LoginException, JWT>
 }
 
 internal class VTMGOJWTTokenFactory(
     private val client: OkHttpClient,
-    private val vtmCookieJar: ReadOnlyCookieJar
+    private val vtmCookieJar: ReadOnlyCookieJar,
 ) : JWTTokenFactory {
 
     companion object {
@@ -58,19 +58,18 @@ internal class VTMGOJWTTokenFactory(
      */
     override suspend fun login(
         userName: String,
-        password: String
+        password: String,
     ): Either<LoginException, JWT> =
         either {
             !initLogin()
 
-            // Either bind() ?
             !Validated.applicative(NonEmptyList.semigroup<String>())
                 .tupledN(
                     validateAuthState(),
                     validateDebugId(),
                     validateTicket()
                 )
-                .mapLeft(LoginException::MissingCookieValue)
+                .mapLeft(LoginException::MissingCookieValues)
                 .toEither()
 
             !logIn(userName, password)
@@ -105,7 +104,7 @@ internal class VTMGOJWTTokenFactory(
 
     private suspend fun logIn(
         userName: String,
-        password: String
+        password: String,
     ): Either<LoginException, Unit> {
         val loginResponse = client.executeAsync(
             Request.Builder()
@@ -147,7 +146,7 @@ internal class VTMGOJWTTokenFactory(
 
     private suspend fun logInCallback(
         state: String,
-        code: String
+        code: String,
     ): Either<LoginException, Unit> {
         val loginCallbackResponse = client.executeAsync(
             Request.Builder()
@@ -168,7 +167,7 @@ internal class VTMGOJWTTokenFactory(
     private fun getJWT(): Either<LoginException, JWT> =
         vtmCookieJar[COOKIE_LFVP_AUTH]?.let(::JWT)
             .rightIfNotNull {
-                LoginException.MissingCookieValue(
+                LoginException.MissingCookieValues(
                     NonEmptyList(
                         COOKIE_LFVP_AUTH
                     )
@@ -180,14 +179,8 @@ internal class VTMGOJWTTokenFactory(
         Either.catch { com.auth0.jwt.JWT.decode(jwtToken.token) }
             .fold({ false }, { true })
 
-    private fun validateCookie(
-        cookieName: String
-    ): ValidatedNel<String, Unit> =
-        vtmCookieJar[cookieName]?.let { Unit.validNel() }
-            ?: toMissingCookieValue(cookieName)
-
-    private fun toMissingCookieValue(cookieName: String): ValidatedNel<String, Nothing> =
-        cookieName.invalidNel()
+    private fun validateCookie(cookieName: String): ValidatedNel<String, String> =
+        vtmCookieJar[cookieName]?.let { it.validNel() } ?: cookieName.invalidNel()
 
     private fun Response.toNetworkException(): Either<LoginException.NetworkException, Nothing> =
         LoginException.NetworkException(NetworkFailure(request.url.toString(), code)).left()
