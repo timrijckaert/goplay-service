@@ -4,10 +4,13 @@ import arrow.core.Either
 import arrow.core.NonEmptyList
 import arrow.core.Validated
 import arrow.core.computations.either
+import arrow.core.extensions.nonemptylist.semigroup.semigroup
+import arrow.core.extensions.validated.applicative.applicative
 import arrow.core.filterOrOther
+import arrow.core.fix
 import arrow.core.invalidNel
-import arrow.core.right
 import arrow.core.validNel
+import be.tapped.vrtnu.authentication.TokenProvider.TokenResponse.Failure.MissingCookieValues
 import be.tapped.vtmgo.common.ReadOnlyCookieJar
 import be.tapped.vtmgo.common.executeAsync
 import be.tapped.vtmgo.common.jsonMediaType
@@ -112,17 +115,23 @@ internal class HttpTokenProvider(
                 .build()
         )
 
-        //TODO Report back all missing cookies
-        val accessToken = validateCookie(COOKIE_VRT_LOGIN_AT).map(::AccessToken)
-        val refreshToken = validateCookie(COOKIE_VRT_LOGIN_RT).map(::RefreshToken)
-        val expiry = validateCookie(COOKIE_VRT_LOGIN_EXPIRY).map { Expiry(it.toLong()) }
+        val accessTokenValidated = validateCookie(COOKIE_VRT_LOGIN_AT).map(::AccessToken)
+        val refreshTokenValidated = validateCookie(COOKIE_VRT_LOGIN_RT).map(::RefreshToken)
+        val expiryValidated = validateCookie(COOKIE_VRT_LOGIN_EXPIRY).map { Expiry(it.toLong()) }
 
-        return TokenWrapper(
-            xVRTToken = xVRTToken,
-            accessToken = AccessToken(cookieJar[COOKIE_VRT_LOGIN_AT]!!),
-            refreshToken = RefreshToken(cookieJar[COOKIE_VRT_LOGIN_RT]!!),
-            expiry = Expiry(cookieJar[COOKIE_VRT_LOGIN_EXPIRY]!!.toLong()),
-        ).right()
+        return either {
+            val (accessToken, refreshToken, expiry) = !Validated.applicative(NonEmptyList.semigroup<MissingCookieValues>())
+                .tupledN(accessTokenValidated, refreshTokenValidated, expiryValidated)
+                .fix()
+                .toEither()
+
+            TokenWrapper(
+                xVRTToken = xVRTToken,
+                accessToken = accessToken,
+                refreshToken = refreshToken,
+                expiry = expiry,
+            )
+        }
     }
 
     private suspend fun fetchXVRTToken(userName: String, loginResponse: LoginResponse): Either<TokenProvider.TokenResponse.Failure, XVRTToken> {
@@ -142,9 +151,9 @@ internal class HttpTokenProvider(
                 .build()
         )
         return validateCookie(COOKIE_X_VRT_TOKEN)
-            .map(::XVRTToken).toEither().mapLeft { TokenProvider.TokenResponse.Failure.MissingCookieValues(NonEmptyList(COOKIE_X_VRT_TOKEN)) }
+            .map(::XVRTToken).toEither().mapLeft { MissingCookieValues(NonEmptyList(COOKIE_X_VRT_TOKEN)) }
     }
 
-    private fun validateCookie(cookieName: String): Validated<NonEmptyList<TokenProvider.TokenResponse.Failure.MissingCookieValues>, String> =
-        cookieJar[cookieName]?.let { it.validNel() } ?: TokenProvider.TokenResponse.Failure.MissingCookieValues(NonEmptyList(cookieName)).invalidNel()
+    private fun validateCookie(cookieName: String): Validated<NonEmptyList<MissingCookieValues>, String> =
+        cookieJar[cookieName]?.let { it.validNel() } ?: MissingCookieValues(NonEmptyList(cookieName)).invalidNel()
 }
