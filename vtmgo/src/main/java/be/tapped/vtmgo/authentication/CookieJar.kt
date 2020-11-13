@@ -1,12 +1,11 @@
 package be.tapped.vtmgo.authentication
 
-import be.tapped.vtmgo.common.DefaultCookieJar
 import be.tapped.vtmgo.common.ReadOnlyCookieJar
 import okhttp3.Cookie
 import okhttp3.HttpUrl
 import java.util.*
 
-internal class CookieJar(private val delegatingCookieJar: ReadOnlyCookieJar = DefaultCookieJar) : ReadOnlyCookieJar by delegatingCookieJar {
+internal class CookieJar(private val delegatingCookieJar: ReadOnlyCookieJar) : ReadOnlyCookieJar by delegatingCookieJar {
 
     private val defaultAuthIdCookie =
         Cookie.Builder()

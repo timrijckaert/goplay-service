@@ -30,9 +30,11 @@ internal class JsonProfileParser {
     }
 }
 
-internal class HttpProfileRepo(private val client: OkHttpClient,
-                               private val jsonProfileParser: JsonProfileParser = JsonProfileParser(),
-                               private val headerBuilder: HeaderBuilder = HeaderBuilder()) : ProfileRepo {
+internal class HttpProfileRepo(
+    private val client: OkHttpClient,
+    private val jsonProfileParser: JsonProfileParser,
+    private val headerBuilder: HeaderBuilder,
+) : ProfileRepo {
     companion object {
         private const val API_ENDPOINT = "https://lfvp-api.dpgmedia.net"
     }
