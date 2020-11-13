@@ -11,5 +11,5 @@ class AuthenticationProvider(
         .addNetworkInterceptor(CurlInterceptor { message -> println("$message\n\r") })
         .cookieJar(cookieJar)
         .build(),
-    tokenProvider: TokenProvider = HttpTokenProvider(client, JsonLoginResponseMapper(), cookieJar),
+    tokenProvider: TokenProvider = HttpTokenProvider(client, cookieJar),
 ) : TokenProvider by tokenProvider
