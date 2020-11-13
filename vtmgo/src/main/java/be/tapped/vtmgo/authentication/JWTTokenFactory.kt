@@ -53,6 +53,10 @@ internal class VTMGOJWTTokenFactory(
     private val codeRegex = Regex("name=\"code\" value=\"([^\"]+)")
     private val stateRegex = Regex("name=\"state\" value=\"([^\"]+)")
 
+    private val authState get() = validateCookie(COOKIE_LFVP_AUTH_STATE)
+    private val debugId get() = validateCookie(COOKIE_X_OIDCP_DEBUGID)
+    private val ticket get() = validateCookie(COOKIE_X_OIDCP_TICKET)
+
     /**
      * https://github.com/add-ons/plugin.video.vtm.go/wiki/Authentication-API
      */
@@ -64,11 +68,7 @@ internal class VTMGOJWTTokenFactory(
             !initLogin()
 
             !Validated.applicative(NonEmptyList.semigroup<String>())
-                .tupledN(
-                    validateAuthState(),
-                    validateDebugId(),
-                    validateTicket()
-                )
+                .tupledN(authState, debugId, ticket)
                 .mapLeft(LoginException::MissingCookieValues)
                 .toEither()
 
@@ -95,12 +95,6 @@ internal class VTMGOJWTTokenFactory(
         return if (!initLoginResponse.isSuccessful) initLoginResponse.toNetworkException()
         else Unit.right()
     }
-
-    private fun validateAuthState() = validateCookie(COOKIE_LFVP_AUTH_STATE)
-
-    private fun validateDebugId() = validateCookie(COOKIE_X_OIDCP_DEBUGID)
-
-    private fun validateTicket() = validateCookie(COOKIE_X_OIDCP_TICKET)
 
     private suspend fun logIn(
         userName: String,

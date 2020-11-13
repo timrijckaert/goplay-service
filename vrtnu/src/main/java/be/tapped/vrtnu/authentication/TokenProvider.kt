@@ -6,8 +6,8 @@ import arrow.core.Validated
 import arrow.core.computations.either
 import arrow.core.extensions.nonemptylist.semigroup.semigroup
 import arrow.core.extensions.validated.applicative.applicative
+import arrow.core.extensions.validated.bifunctor.mapLeft
 import arrow.core.filterOrOther
-import arrow.core.fix
 import arrow.core.invalidNel
 import arrow.core.validNel
 import be.tapped.vrtnu.authentication.TokenProvider.TokenResponse.Failure.MissingCookieValues
@@ -115,14 +115,14 @@ internal class HttpTokenProvider(
                 .build()
         )
 
-        val accessTokenValidated = validateCookie(COOKIE_VRT_LOGIN_AT).map(::AccessToken)
-        val refreshTokenValidated = validateCookie(COOKIE_VRT_LOGIN_RT).map(::RefreshToken)
-        val expiryValidated = validateCookie(COOKIE_VRT_LOGIN_EXPIRY).map { Expiry(it.toLong()) }
-
         return either {
-            val (accessToken, refreshToken, expiry) = !Validated.applicative(NonEmptyList.semigroup<MissingCookieValues>())
-                .tupledN(accessTokenValidated, refreshTokenValidated, expiryValidated)
-                .fix()
+            val (accessToken, refreshToken, expiry) = !Validated.applicative(NonEmptyList.semigroup<String>())
+                .tupledN(
+                    validateCookie(COOKIE_VRT_LOGIN_AT).map(::AccessToken),
+                    validateCookie(COOKIE_VRT_LOGIN_RT).map(::RefreshToken),
+                    validateCookie(COOKIE_VRT_LOGIN_EXPIRY).map { Expiry(it.toLong()) }
+                )
+                .mapLeft(::MissingCookieValues)
                 .toEither()
 
             TokenWrapper(
@@ -154,6 +154,6 @@ internal class HttpTokenProvider(
             .map(::XVRTToken).toEither().mapLeft { MissingCookieValues(NonEmptyList(COOKIE_X_VRT_TOKEN)) }
     }
 
-    private fun validateCookie(cookieName: String): Validated<NonEmptyList<MissingCookieValues>, String> =
-        cookieJar[cookieName]?.let { it.validNel() } ?: MissingCookieValues(NonEmptyList(cookieName)).invalidNel()
+    private fun validateCookie(cookieName: String): Validated<NonEmptyList<String>, String> =
+        cookieJar[cookieName]?.validNel() ?: cookieName.invalidNel()
 }
