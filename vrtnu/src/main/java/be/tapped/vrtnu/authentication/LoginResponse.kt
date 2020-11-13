@@ -30,7 +30,7 @@ data class LoginResponse(
     }
 }
 
-internal class JsonLoginResponseMapper {
+internal object JsonLoginResponseMapper {
     suspend fun parse(loginJson: JsonObject): Either<Throwable, LoginResponse> =
         Either.catch {
             LoginResponse(
