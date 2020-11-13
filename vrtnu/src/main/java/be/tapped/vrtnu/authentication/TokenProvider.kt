@@ -126,10 +126,10 @@ internal class HttpTokenProvider(
                 .toEither()
 
             TokenWrapper(
-                xVRTToken = xVRTToken,
-                accessToken = accessToken,
-                refreshToken = refreshToken,
-                expiry = expiry,
+                xVRTToken,
+                accessToken,
+                refreshToken,
+                expiry,
             )
         }
     }
