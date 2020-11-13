@@ -64,7 +64,8 @@ internal class HttpTokenProvider(
         either {
             val loginResponse = !getLoginResponse(userName, password)
             val xVRTToken = !fetchXVRTToken(userName, loginResponse)
-            val token = !fetchToken(xVRTToken, loginResponse)
+            val oidcXSRFToken = !fetchXSRFToken()
+            val token = !fetchToken(xVRTToken, oidcXSRFToken, loginResponse)
             TokenProvider.TokenResponse.Success(token)
         }
 
@@ -89,17 +90,11 @@ internal class HttpTokenProvider(
             .filterOrOther({ it.isValid }, { TokenProvider.TokenResponse.Failure.IncorrectJsonLoginResponse(it.loginFailure) })
     }
 
-    private suspend fun fetchToken(xVRTToken: XVRTToken, login: LoginResponse): Either<TokenProvider.TokenResponse.Failure, TokenWrapper> {
-        client.executeAsync(
-            Request.Builder()
-                .get()
-                .url(USER_TOKEN_GATEWAY_URL)
-                .build()
-        )
-
-        //TODO catch if not found in CookieJar
-        val xsrf = OIDCXSRF(cookieJar[COOKIE_XSRF]!!)
-
+    private suspend fun fetchToken(
+        xVRTToken: XVRTToken,
+        oidcXSRF: OIDCXSRF,
+        login: LoginResponse,
+    ): Either<TokenProvider.TokenResponse.Failure, TokenWrapper> {
         client.executeAsync(
             Request.Builder()
                 .url(VRT_LOGIN_URL)
@@ -109,7 +104,7 @@ internal class HttpTokenProvider(
                         .add("UIDSignature", login.uidSignature)
                         .add("signatureTimestamp", login.signatureTimestamp)
                         .add("client_id", "vrtnu-site")
-                        .add("_csrf", xsrf.token)
+                        .add("_csrf", oidcXSRF.token)
                         .build()
                 )
                 .build()
@@ -134,6 +129,17 @@ internal class HttpTokenProvider(
         }
     }
 
+    private suspend fun fetchXSRFToken(): Either<MissingCookieValues, OIDCXSRF> {
+        client.executeAsync(
+            Request.Builder()
+                .get()
+                .url(USER_TOKEN_GATEWAY_URL)
+                .build()
+        )
+
+        return validateCookie(COOKIE_XSRF).map(::OIDCXSRF).mapLeft(::MissingCookieValues).toEither()
+    }
+
     private suspend fun fetchXVRTToken(userName: String, loginResponse: LoginResponse): Either<TokenProvider.TokenResponse.Failure, XVRTToken> {
         val loginCookie = "glt_${API_KEY}=${loginResponse.loginToken}"
         val json = buildJsonObject {
@@ -151,7 +157,9 @@ internal class HttpTokenProvider(
                 .build()
         )
         return validateCookie(COOKIE_X_VRT_TOKEN)
-            .map(::XVRTToken).toEither().mapLeft { MissingCookieValues(NonEmptyList(COOKIE_X_VRT_TOKEN)) }
+            .map(::XVRTToken)
+            .toEither()
+            .mapLeft { MissingCookieValues(NonEmptyList(COOKIE_X_VRT_TOKEN)) }
     }
 
     private fun validateCookie(cookieName: String): Validated<NonEmptyList<String>, String> =
