@@ -30,7 +30,11 @@ interface TokenProvider {
     suspend fun fetchTokenWrapper(userName: String, password: String): Either<TokenResponse.Failure, TokenResponse.Success>
 }
 
-internal class HttpTokenProvider(
+interface LoginRepo {
+    suspend fun fetchLoginResponse(userName: String, password: String): Either<TokenProvider.TokenResponse.Failure, LoginResponse>
+}
+
+internal class HttpLoginRepo(
     private val client: OkHttpClient,
     private val cookieJar: ReadOnlyCookieJar,
     private val loginRepo: LoginRepo = HttpLoginRepo(client, JsonLoginResponseMapper),
