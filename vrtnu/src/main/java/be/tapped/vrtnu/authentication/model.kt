@@ -8,7 +8,6 @@ inline class RefreshToken(val token: String)
 inline class Expiry(val date: Long)
 
 data class TokenWrapper(
-    val xVRTToken: XVRTToken,
     val accessToken: AccessToken,
     val refreshToken: RefreshToken,
     val expiry: Expiry,

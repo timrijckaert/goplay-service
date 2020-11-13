@@ -2,7 +2,6 @@ package be.tapped.vrtnu.authentication
 
 import arrow.core.Either
 import arrow.core.computations.either
-import arrow.core.filterOrOther
 import be.tapped.vtmgo.common.executeAsync
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
@@ -43,8 +42,7 @@ internal class HttpLoginRepo(
             val rawLoginJson = !Either.fromNullable(loginJson.body?.string()).mapLeft { TokenRepo.TokenResponse.Failure.EmptyJson }
             val loginResponse = jsonLoginResponseMapper.parse(Json.decodeFromString(rawLoginJson))
 
-            !loginResponse.mapLeft(TokenRepo.TokenResponse.Failure::JsonLoginParsingException)
-                .filterOrOther(LoginResponse::isValid) { TokenRepo.TokenResponse.Failure.IncorrectJsonLoginResponse(it.loginFailure) }
+            !loginResponse.mapLeft { TokenRepo.TokenResponse.Failure.FailedToLoginException(it) }
         }
     }
 }

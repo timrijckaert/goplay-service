@@ -6,13 +6,9 @@ import kotlinx.serialization.json.int
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 
-data class LoginResponse(
+data class LoginFailure(
     val errorCode: Int,
     val errorDetails: String?,
-    val loginToken: String?,
-    val uid: String,
-    val uidSignature: String,
-    val signatureTimestamp: String,
 ) {
     enum class LoginFailure {
         INVALID_CREDENTIALS,
@@ -30,16 +26,26 @@ data class LoginResponse(
     }
 }
 
+data class LoginResponse(
+    val loginToken: String?,
+    val uid: String,
+    val uidSignature: String,
+    val signatureTimestamp: String,
+)
+
 internal object JsonLoginResponseMapper {
-    suspend fun parse(loginJson: JsonObject): Either<Throwable, LoginResponse> =
+    suspend fun parse(loginJson: JsonObject): Either<LoginFailure, LoginResponse> =
         Either.catch {
             LoginResponse(
-                loginJson["errorCode"]!!.jsonPrimitive.int,
-                loginJson["errorDetails"]?.jsonPrimitive?.content,
                 loginJson["sessionInfo"]!!.jsonObject["login_token"]?.jsonPrimitive?.content,
                 loginJson["UID"]!!.jsonPrimitive.content,
                 loginJson["UIDSignature"]!!.jsonPrimitive.content,
                 loginJson["signatureTimestamp"]!!.jsonPrimitive.content,
+            )
+        }.mapLeft {
+            LoginFailure(
+                loginJson["errorCode"]!!.jsonPrimitive.int,
+                loginJson["errorDetails"]?.jsonPrimitive?.content
             )
         }
 }
