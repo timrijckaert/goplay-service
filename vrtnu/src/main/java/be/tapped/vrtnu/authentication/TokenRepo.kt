@@ -21,7 +21,7 @@ interface TokenRepo {
     sealed class TokenResponse {
         data class Success(val tokenWrapper: TokenWrapper) : TokenResponse()
         sealed class Failure : TokenResponse() {
-            data class FailedToLoginException(val loginResponseFailure: LoginFailure) : Failure()
+            data class FailedToLogin(val loginResponseFailure: LoginFailure) : Failure()
             data class MissingCookieValues(val cookieValues: NonEmptyList<String>) : Failure()
             object EmptyJson : Failure()
         }
