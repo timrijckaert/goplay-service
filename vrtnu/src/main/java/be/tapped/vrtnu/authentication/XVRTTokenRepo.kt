@@ -12,7 +12,7 @@ import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 
 interface XVRTTokenRepo {
-    suspend fun fetchXVRTToken(userName: String, loginResponse: LoginResponse): Either<TokenProvider.TokenResponse.Failure, XVRTToken>
+    suspend fun fetchXVRTToken(userName: String, loginResponse: LoginResponse): Either<TokenRepo.TokenResponse.Failure, XVRTToken>
 }
 
 internal class HttpXVRTTokenRepo(
@@ -26,7 +26,7 @@ internal class HttpXVRTTokenRepo(
         private const val COOKIE_X_VRT_TOKEN = "X-VRT-Token"
     }
 
-    override suspend fun fetchXVRTToken(userName: String, loginResponse: LoginResponse): Either<TokenProvider.TokenResponse.Failure, XVRTToken> {
+    override suspend fun fetchXVRTToken(userName: String, loginResponse: LoginResponse): Either<TokenRepo.TokenResponse.Failure, XVRTToken> {
         val loginCookie = "glt_${API_KEY}=${loginResponse.loginToken}"
         val json = buildJsonObject {
             put("uid", loginResponse.uid)
@@ -45,6 +45,6 @@ internal class HttpXVRTTokenRepo(
         return cookieJar.validateCookie(COOKIE_X_VRT_TOKEN)
             .map(::XVRTToken)
             .toEither()
-            .mapLeft { TokenProvider.TokenResponse.Failure.MissingCookieValues(NonEmptyList(COOKIE_X_VRT_TOKEN)) }
+            .mapLeft { TokenRepo.TokenResponse.Failure.MissingCookieValues(NonEmptyList(COOKIE_X_VRT_TOKEN)) }
     }
 }

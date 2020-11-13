@@ -11,7 +11,7 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 
 interface LoginRepo {
-    suspend fun fetchLoginResponse(userName: String, password: String): Either<TokenProvider.TokenResponse.Failure, LoginResponse>
+    suspend fun fetchLoginResponse(userName: String, password: String): Either<TokenRepo.TokenResponse.Failure, LoginResponse>
 }
 
 internal class HttpLoginRepo(
@@ -23,7 +23,7 @@ internal class HttpLoginRepo(
         private const val LOGIN_URL = "https://accounts.vrt.be/accounts.login"
     }
 
-    override suspend fun fetchLoginResponse(userName: String, password: String): Either<TokenProvider.TokenResponse.Failure, LoginResponse> {
+    override suspend fun fetchLoginResponse(userName: String, password: String): Either<TokenRepo.TokenResponse.Failure, LoginResponse> {
         val loginJson = client.executeAsync(
             Request.Builder()
                 .url(LOGIN_URL)
@@ -40,11 +40,11 @@ internal class HttpLoginRepo(
         )
 
         return either {
-            val rawLoginJson = !Either.fromNullable(loginJson.body?.string()).mapLeft { TokenProvider.TokenResponse.Failure.EmptyJson }
+            val rawLoginJson = !Either.fromNullable(loginJson.body?.string()).mapLeft { TokenRepo.TokenResponse.Failure.EmptyJson }
             val loginResponse = jsonLoginResponseMapper.parse(Json.decodeFromString(rawLoginJson))
 
-            !loginResponse.mapLeft(TokenProvider.TokenResponse.Failure::JsonLoginParsingException)
-                .filterOrOther(LoginResponse::isValid) { TokenProvider.TokenResponse.Failure.IncorrectJsonLoginResponse(it.loginFailure) }
+            !loginResponse.mapLeft(TokenRepo.TokenResponse.Failure::JsonLoginParsingException)
+                .filterOrOther(LoginResponse::isValid) { TokenRepo.TokenResponse.Failure.IncorrectJsonLoginResponse(it.loginFailure) }
         }
     }
 }

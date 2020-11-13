@@ -1,14 +1,14 @@
 package be.tapped.vrtnu.authentication
 
 import arrow.core.Either
-import be.tapped.vrtnu.authentication.TokenProvider.TokenResponse.Failure.MissingCookieValues
+import be.tapped.vrtnu.authentication.TokenRepo.TokenResponse.Failure.MissingCookieValues
 import be.tapped.vtmgo.common.ReadOnlyCookieJar
 import be.tapped.vtmgo.common.executeAsync
 import okhttp3.OkHttpClient
 import okhttp3.Request
 
 interface OIDCXSRFRepo {
-    suspend fun fetchXSRFToken(): Either<TokenProvider.TokenResponse.Failure.MissingCookieValues, OIDCXSRF>
+    suspend fun fetchXSRFToken(): Either<MissingCookieValues, OIDCXSRF>
 }
 
 internal class HttpOIDCXSRFRepo(
@@ -21,7 +21,7 @@ internal class HttpOIDCXSRFRepo(
         private const val COOKIE_XSRF = "OIDCXSRF"
     }
 
-    override suspend fun fetchXSRFToken(): Either<TokenProvider.TokenResponse.Failure.MissingCookieValues, OIDCXSRF> {
+    override suspend fun fetchXSRFToken(): Either<MissingCookieValues, OIDCXSRF> {
         client.executeAsync(
             Request.Builder()
                 .get()

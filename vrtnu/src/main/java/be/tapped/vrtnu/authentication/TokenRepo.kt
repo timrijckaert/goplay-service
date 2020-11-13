@@ -9,14 +9,14 @@ import arrow.core.extensions.validated.applicative.applicative
 import arrow.core.extensions.validated.bifunctor.mapLeft
 import arrow.core.invalidNel
 import arrow.core.validNel
-import be.tapped.vrtnu.authentication.TokenProvider.TokenResponse.Failure.MissingCookieValues
+import be.tapped.vrtnu.authentication.TokenRepo.TokenResponse.Failure.MissingCookieValues
 import be.tapped.vtmgo.common.ReadOnlyCookieJar
 import be.tapped.vtmgo.common.executeAsync
 import okhttp3.FormBody
 import okhttp3.OkHttpClient
 import okhttp3.Request
 
-interface TokenProvider {
+interface TokenRepo {
     sealed class TokenResponse {
         data class Success(val tokenWrapper: TokenWrapper) : TokenResponse()
         sealed class Failure : TokenResponse() {
@@ -30,17 +30,13 @@ interface TokenProvider {
     suspend fun fetchTokenWrapper(userName: String, password: String): Either<TokenResponse.Failure, TokenResponse.Success>
 }
 
-interface LoginRepo {
-    suspend fun fetchLoginResponse(userName: String, password: String): Either<TokenProvider.TokenResponse.Failure, LoginResponse>
-}
-
-internal class HttpLoginRepo(
+class HttpTokenRepo(
     private val client: OkHttpClient,
     private val cookieJar: ReadOnlyCookieJar,
     private val loginRepo: LoginRepo = HttpLoginRepo(client, JsonLoginResponseMapper),
     private val xVRTTokenRepo: XVRTTokenRepo = HttpXVRTTokenRepo(client, cookieJar),
     oIDCXSRFRepo: OIDCXSRFRepo = HttpOIDCXSRFRepo(client, cookieJar),
-) : TokenProvider,
+) : TokenRepo,
     LoginRepo by loginRepo,
     XVRTTokenRepo by xVRTTokenRepo,
     OIDCXSRFRepo by oIDCXSRFRepo {
@@ -55,20 +51,20 @@ internal class HttpLoginRepo(
     override suspend fun fetchTokenWrapper(
         userName: String,
         password: String,
-    ): Either<TokenProvider.TokenResponse.Failure, TokenProvider.TokenResponse.Success> =
+    ): Either<TokenRepo.TokenResponse.Failure, TokenRepo.TokenResponse.Success> =
         either {
             val loginResponse = !fetchLoginResponse(userName, password)
             val xVRTToken = !fetchXVRTToken(userName, loginResponse)
             val oidcXSRFToken = !fetchXSRFToken()
             val token = !fetchToken(xVRTToken, oidcXSRFToken, loginResponse)
-            TokenProvider.TokenResponse.Success(token)
+            TokenRepo.TokenResponse.Success(token)
         }
 
     private suspend fun fetchToken(
         xVRTToken: XVRTToken,
         oidcXSRF: OIDCXSRF,
         login: LoginResponse,
-    ): Either<TokenProvider.TokenResponse.Failure, TokenWrapper> {
+    ): Either<TokenRepo.TokenResponse.Failure, TokenWrapper> {
         client.executeAsync(
             Request.Builder()
                 .url(VRT_LOGIN_URL)
