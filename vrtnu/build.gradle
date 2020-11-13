@@ -19,10 +19,13 @@ dependencies {
 
     implementation Dependencies.okHttp3
     implementation Dependencies.okHttpCurlInterceptor
+
+    implementation project(':common')
 }
 
 compileKotlin {
     kotlinOptions {
+        jvmTarget = "1.8"
         freeCompilerArgs = ["-Xinline-classes"]
     }
 }
