@@ -3,11 +3,11 @@ package be.tapped.vrtnu.content
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
-inline class Brand(val name: String)
-
+@Serializable
 data class AZProgram(
     val title: String,
     val type: String,
+    @SerialName("episode_count")
     val episodeCount: Int,
     val score: Double,
     val programUrl: String,
@@ -15,7 +15,7 @@ data class AZProgram(
     val programName: String,
     val thumbnail: String,
     val alternativeImage: String,
-    val brands: List<Brand>,
+    val brands: List<String>,
     val description: String,
 )
 
