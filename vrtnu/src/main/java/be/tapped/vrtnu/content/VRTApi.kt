@@ -6,6 +6,7 @@ import okhttp3.OkHttpClient
 sealed class ApiResponse {
     sealed class Success : ApiResponse() {
         data class AlphabeticPrograms(val programs: List<AZProgram>) : Success()
+        data class Categories(val categories: List<Category>) : Success()
     }
 
     sealed class Failure : ApiResponse() {
@@ -16,5 +17,7 @@ sealed class ApiResponse {
 
 class VRTApi(
     client: OkHttpClient = defaultOkHttpClient,
-    az: AZ = HttpAZ(client, JsonAZProgramParser()),
-) : AZ by az
+    azRepo: AZRepo = HttpAZRepo(client, JsonAZProgramParser()),
+    categoryRepo: CategoryRepo = HttpCategoryRepo(client, JsonCategoryParser()),
+) : AZRepo by azRepo,
+    CategoryRepo by categoryRepo

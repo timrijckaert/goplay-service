@@ -1,6 +1,9 @@
 package be.tapped.vrtnu.content
 
-data class Brand(val name: String)
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+
+inline class Brand(val name: String)
 
 data class AZProgram(
     val title: String,
@@ -14,4 +17,40 @@ data class AZProgram(
     val alternativeImage: String,
     val brands: List<Brand>,
     val description: String,
+)
+
+@Serializable
+data class Image(
+    val src: String,
+    val srcUriTemplate: String,
+    val focalPoint: String,
+    val id: String,
+    val hiddenInApp: Boolean,
+    @SerialName(":type")
+    val type: String,
+    val alt: String? = null,
+)
+
+@Serializable
+data class Reference(
+    val link: String,
+    val modelUri: String,
+    val referenceType: String,
+    val permalink: String? = null,
+)
+
+@Serializable
+data class Category(
+    val imageStoreUrl: String,
+    val name: String,
+    val permalink: String? = null,
+    val modelUri: String,
+    val title: String,
+    val link: String,
+    val thumbnailUrl: String,
+    val image: Image,
+    val reference: Reference,
+    val description: String? = null,
+    @SerialName(":type")
+    val type: String,
 )

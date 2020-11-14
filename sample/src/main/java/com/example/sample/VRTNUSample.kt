@@ -15,6 +15,13 @@ suspend fun main(args: Array<String>) {
 
     // API
     val vrtApi = VRTApi()
+
+    //// A-Z
     val azPrograms = vrtApi.fetchAZPrograms()
     println(azPrograms)
+
+    //// Categories
+    val categories = vrtApi.fetchCategories()
+    println(categories)
+
 }

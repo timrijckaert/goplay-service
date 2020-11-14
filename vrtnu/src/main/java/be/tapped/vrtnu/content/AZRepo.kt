@@ -15,10 +15,6 @@ import kotlinx.serialization.json.jsonPrimitive
 import okhttp3.OkHttpClient
 import okhttp3.Request
 
-interface AZ {
-    suspend fun fetchAZPrograms(): Either<ApiResponse.Failure, ApiResponse.Success.AlphabeticPrograms>
-}
-
 internal class JsonAZProgramParser {
     suspend fun parse(json: String): Either<ApiResponse.Failure, List<AZProgram>> =
         Either.catch {
@@ -42,10 +38,14 @@ internal class JsonAZProgramParser {
         }.mapLeft(::JsonParsingException)
 }
 
-internal class HttpAZ(
+interface AZRepo {
+    suspend fun fetchAZPrograms(): Either<ApiResponse.Failure, ApiResponse.Success.AlphabeticPrograms>
+}
+
+internal class HttpAZRepo(
     private val client: OkHttpClient,
     private val jsonAZProgramParser: JsonAZProgramParser,
-) : AZ {
+) : AZRepo {
 
     companion object {
         private const val AZ = "https://vrtnu-api.vrt.be/suggest?facets[transcodingStatus]=AVAILABLE"
