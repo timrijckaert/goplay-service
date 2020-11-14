@@ -5,9 +5,9 @@ import be.tapped.vrtnu.authentication.AuthenticationProvider
 suspend fun main(args: Array<String>) {
     val userName = args[0]
     val password = args[1]
-    val tokenResolver = AuthenticationProvider()
+    val authenticationProvider = AuthenticationProvider()
 
-    val tokenWrapperResult = tokenResolver.fetchTokenWrapper(userName, password)
+    val tokenWrapperResult = authenticationProvider.fetchTokenWrapper(userName, password)
     val refreshToken = tokenWrapperResult.orNull()!!.tokenWrapper.refreshToken
-    val newTokenWrapperResult = tokenResolver.refreshTokenWrapper(refreshToken)
+    val newTokenWrapperResult = authenticationProvider.refreshTokenWrapper(refreshToken)
 }
