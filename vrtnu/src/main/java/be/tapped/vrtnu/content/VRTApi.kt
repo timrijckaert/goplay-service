@@ -7,6 +7,7 @@ sealed class ApiResponse {
     sealed class Success : ApiResponse() {
         data class AlphabeticPrograms(val programs: List<AZProgram>) : Success()
         data class Categories(val categories: List<Category>) : Success()
+        data class Episodes(val episodes: List<Episode>) : Success()
     }
 
     sealed class Failure : ApiResponse() {
@@ -19,5 +20,7 @@ class VRTApi(
     client: OkHttpClient = defaultOkHttpClient,
     azRepo: AZRepo = HttpAZRepo(client, JsonAZProgramParser()),
     categoryRepo: CategoryRepo = HttpCategoryRepo(client, JsonCategoryParser()),
+    episodeRepo: EpisodeRepo = HttpEpisodeRepo(client, JsonEpisodeParser()),
 ) : AZRepo by azRepo,
-    CategoryRepo by categoryRepo
+    CategoryRepo by categoryRepo,
+    EpisodeRepo by episodeRepo

@@ -24,4 +24,8 @@ suspend fun main(args: Array<String>) {
     val categories = vrtApi.fetchCategories()
     println(categories)
 
+    ////// Episodes by category
+    val episodesFromFirstCategory = vrtApi.fetchEpisodeByCategory(categories.orNull()!!.categories.first())
+    println(episodesFromFirstCategory)
+
 }
