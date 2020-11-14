@@ -4,6 +4,43 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
+data class Pages(
+    val total: Int,
+    val current: Int,
+    val size: Int,
+)
+
+@Serializable
+data class Meta(
+    @SerialName("total_results")
+    val totalResults: Int,
+    val pages: Pages,
+)
+
+@Serializable
+data class Bucket(
+    val key: String,
+    @SerialName("doc_count")
+    val docCount: Int,
+)
+
+@Serializable
+data class Facet(
+    val name: String,
+    val buckets: List<Bucket>,
+)
+
+@Serializable
+data class FacetWrapper(val facets: List<Facet>)
+
+@Serializable
+data class ElasticSearchResult<T>(
+    val meta: Meta,
+    val results: List<T>,
+    val facets: FacetWrapper,
+)
+
+@Serializable
 data class AZProgram(
     val title: String,
     val type: String,

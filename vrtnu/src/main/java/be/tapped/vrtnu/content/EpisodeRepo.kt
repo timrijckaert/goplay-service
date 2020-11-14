@@ -2,28 +2,19 @@ package be.tapped.vrtnu.content
 
 import arrow.core.Either
 import arrow.core.computations.either
-import arrow.core.flatMap
+import be.tapped.vrtnu.content.ApiResponse.Failure.JsonParsingException
 import be.tapped.vtmgo.common.executeAsync
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.decodeFromJsonElement
-import kotlinx.serialization.json.jsonArray
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.OkHttpClient
 import okhttp3.Request
 
 internal class JsonEpisodeParser {
-    suspend fun parse(json: String): Either<ApiResponse.Failure, List<Episode>> =
-        Either.fromNullable(Json.decodeFromString<JsonObject>(json)["results"]?.jsonArray)
-            .mapLeft { ApiResponse.Failure.EmptyJson }
-            .flatMap {
-                Either.catch {
-                    Json.decodeFromJsonElement<List<Episode>>(it)
-                }.mapLeft {
-                    ApiResponse.Failure.JsonParsingException(it)
-                }
-            }
+    suspend fun parse(json: String): Either<ApiResponse.Failure, ElasticSearchResult<Episode>> =
+        Either
+            .catch { Json.decodeFromString<ElasticSearchResult<Episode>>(json) }
+            .mapLeft(::JsonParsingException)
 }
 
 interface EpisodeRepo {
@@ -52,7 +43,8 @@ internal class HttpEpisodeRepo(
 
         return either {
             val rawJson = !Either.fromNullable(episodeByCategoryResponse.body).mapLeft { ApiResponse.Failure.EmptyJson }
-            ApiResponse.Success.Episodes(!jsonEpisodeParser.parse(rawJson.string()))
+            val episodes = (!jsonEpisodeParser.parse(rawJson.string())).results
+            ApiResponse.Success.Episodes(episodes)
         }
     }
 }
