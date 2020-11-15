@@ -2,6 +2,7 @@ plugins {
     id 'java-library'
     id 'kotlin'
     id 'kotlin-kapt'
+    id 'org.jetbrains.kotlin.plugin.serialization' version '1.4.10'
 }
 
 java {
@@ -12,6 +13,7 @@ java {
 dependencies {
     implementation Dependencies.kotlinXSerialization
     implementation Dependencies.kotlinStdLib
+    implementation Dependencies.coroutinesCore
 
     implementation Dependencies.arrowCore
     implementation Dependencies.arrowSyntax

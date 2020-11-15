@@ -11,6 +11,7 @@ java {
 dependencies {
     implementation Dependencies.kotlinStdLib
     implementation Dependencies.kotlinXSerialization
+    implementation Dependencies.coroutinesCore
     implementation Dependencies.arrowCore
     implementation platform(Dependencies.awsBOM)
     implementation Dependencies.awsCognitoProvider

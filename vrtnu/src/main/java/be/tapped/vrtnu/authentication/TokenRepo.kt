@@ -19,7 +19,8 @@ import okhttp3.Request
 
 interface TokenRepo {
     sealed class TokenResponse {
-        data class Success(val tokenWrapper: TokenWrapper) : TokenResponse()
+        data class TokenWrapperSuccess(val tokenWrapper: TokenWrapper) : TokenResponse()
+        data class VRTPlayerTokenSuccess(val vrtPlayerToken: VRTPlayerToken) : TokenResponse()
         sealed class Failure : TokenResponse() {
             data class FailedToLogin(val loginResponseFailure: LoginFailure) : Failure()
             data class MissingCookieValues(val cookieValues: NonEmptyList<String>) : Failure()
@@ -27,8 +28,11 @@ interface TokenRepo {
         }
     }
 
-    suspend fun fetchTokenWrapper(userName: String, password: String): Either<TokenResponse.Failure, TokenResponse.Success>
-    suspend fun refreshTokenWrapper(refreshToken: RefreshToken): Either<TokenResponse.Failure, TokenResponse.Success>
+    suspend fun fetchTokenWrapper(userName: String, password: String): Either<TokenResponse.Failure, TokenResponse.TokenWrapperSuccess>
+
+    suspend fun refreshTokenWrapper(refreshToken: RefreshToken): Either<TokenResponse.Failure, TokenResponse.TokenWrapperSuccess>
+
+    suspend fun fetchVRTPlayerToken(): Either<TokenResponse.Failure, TokenResponse.VRTPlayerTokenSuccess>
 }
 
 class HttpTokenRepo(
@@ -53,7 +57,7 @@ class HttpTokenRepo(
     override suspend fun fetchTokenWrapper(
         userName: String,
         password: String,
-    ): Either<TokenRepo.TokenResponse.Failure, TokenRepo.TokenResponse.Success> =
+    ): Either<TokenRepo.TokenResponse.Failure, TokenRepo.TokenResponse.TokenWrapperSuccess> =
         either {
             val loginResponse = !fetchLoginResponse(userName, password)
             val oidcXSRFToken = !fetchXSRFToken()
@@ -63,7 +67,7 @@ class HttpTokenRepo(
     private suspend fun fetchToken(
         oidcXSRF: OIDCXSRF,
         login: LoginResponse,
-    ): Either<TokenRepo.TokenResponse.Failure, TokenRepo.TokenResponse.Success> {
+    ): Either<TokenRepo.TokenResponse.Failure, TokenRepo.TokenResponse.TokenWrapperSuccess> {
         client.executeAsync(
             Request.Builder()
                 .url(VRT_LOGIN_URL)
@@ -82,7 +86,7 @@ class HttpTokenRepo(
         return fetchTokenWrapperFromCookieJar(cookieJar)
     }
 
-    override suspend fun refreshTokenWrapper(refreshToken: RefreshToken): Either<TokenRepo.TokenResponse.Failure, TokenRepo.TokenResponse.Success> {
+    override suspend fun refreshTokenWrapper(refreshToken: RefreshToken): Either<TokenRepo.TokenResponse.Failure, TokenRepo.TokenResponse.TokenWrapperSuccess> {
         val newCookieJar = DefaultCookieJar()
         client
             .newBuilder()
@@ -99,7 +103,11 @@ class HttpTokenRepo(
         return fetchTokenWrapperFromCookieJar(newCookieJar)
     }
 
-    private suspend fun fetchTokenWrapperFromCookieJar(cookieJar: ReadOnlyCookieJar): Either<TokenRepo.TokenResponse.Failure, TokenRepo.TokenResponse.Success> {
+    override suspend fun fetchVRTPlayerToken(): Either<TokenRepo.TokenResponse.Failure, TokenRepo.TokenResponse.VRTPlayerTokenSuccess> {
+        TODO("To implement")
+    }
+
+    private suspend fun fetchTokenWrapperFromCookieJar(cookieJar: ReadOnlyCookieJar): Either<TokenRepo.TokenResponse.Failure, TokenRepo.TokenResponse.TokenWrapperSuccess> {
         return either {
             val (accessToken, newRefreshToken, expiry) = !Validated.applicative(NonEmptyList.semigroup<String>())
                 .tupledN(
@@ -110,7 +118,7 @@ class HttpTokenRepo(
                 .mapLeft(::MissingCookieValues)
                 .toEither()
 
-            TokenRepo.TokenResponse.Success(
+            TokenRepo.TokenResponse.TokenWrapperSuccess(
                 TokenWrapper(
                     accessToken,
                     newRefreshToken,
