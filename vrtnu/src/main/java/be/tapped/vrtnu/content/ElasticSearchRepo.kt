@@ -48,14 +48,17 @@ interface ElasticSearchRepo {
             }
         }
 
-        enum class Order {
-            ASC,
-            DESC;
+        enum class Order(val queryParamName: String) {
+            ASC("asc"),
+            DESC("desc");
         }
 
-        enum class Index {
-            VIDEO,
-            CORPORATE
+        enum class Index(val queryParamName: String) {
+            // VRT NU
+            VIDEO("video"),
+
+            // VRT
+            CORPORATE("corporate")
         }
     }
 
@@ -105,40 +108,42 @@ internal class HttpElasticSearchRepo(
         HttpUrl.Builder()
             .scheme("https")
             .host("vrtnu-api.vrt.be")
-            .addEncodedPathSegment("search")
+            .addPathSegment("search")
             .apply {
-                if (searchQuery.index != DEFAULT_SEARCH_QUERY_INDEX) {
-                    addQueryParameter("i", searchQuery.index.name.toLowerCase())
-                }
+                with(searchQuery) {
+                    if (index != DEFAULT_SEARCH_QUERY_INDEX) {
+                        addQueryParameter("i", index.queryParamName)
+                    }
 
-                addQueryParameter("size", "${searchQuery.size}")
+                    addQueryParameter("size", "$size")
 
-                if (searchQuery.order != DEFAULT_SEARCH_QUERY_ORDER) {
-                    addQueryParameter("order", searchQuery.order.name.toLowerCase())
-                }
+                    if (order != DEFAULT_SEARCH_QUERY_ORDER) {
+                        addQueryParameter("order", order.queryParamName)
+                    }
 
-                searchQuery.available?.let {
-                    addQueryParameter("available", "$it")
-                }
-                searchQuery.query?.let {
-                    addEncodedQueryParameter("q", it)
-                }
-                searchQuery.category?.let {
-                    addEncodedQueryParameter("facets[categories]", it)
-                }
-                searchQuery.start?.let {
-                    addQueryParameter("start", "$it")
-                }
-                searchQuery.end?.let {
-                    addQueryParameter("end", "$it")
-                }
+                    available?.let {
+                        addQueryParameter("available", "$it")
+                    }
+                    query?.let {
+                        addEncodedQueryParameter("q", it)
+                    }
+                    category?.let {
+                        addEncodedQueryParameter("facets[categories]", it)
+                    }
+                    start?.let {
+                        addQueryParameter("start", "$it")
+                    }
+                    end?.let {
+                        addQueryParameter("end", "$it")
+                    }
 
-                searchQuery.custom.forEach { (key, value) ->
-                    addQueryParameter("facets[$key]", "[$value]")
-                }
+                    custom.forEach { (key, value) ->
+                        addQueryParameter("facets[$key]", "[$value]")
+                    }
 
-                if (pageIndex != START_PAGE_INDEX) {
-                    addQueryParameter("from", "${((pageIndex - 1) * searchQuery.size) + 1}")
+                    if (pageIndex != START_PAGE_INDEX) {
+                        addQueryParameter("from", "${((pageIndex - 1) * size) + 1}")
+                    }
                 }
             }
             .build()
