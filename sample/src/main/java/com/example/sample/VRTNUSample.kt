@@ -1,8 +1,6 @@
 package com.example.sample
 
-import arrow.core.Either
 import be.tapped.vrtnu.authentication.AuthenticationProvider
-import be.tapped.vrtnu.content.ApiResponse
 import be.tapped.vrtnu.content.ElasticSearchRepo
 import be.tapped.vrtnu.content.VRTApi
 import kotlinx.coroutines.flow.toList

@@ -2,14 +2,12 @@ package be.tapped.vrtnu.content
 
 import arrow.core.Either
 import arrow.core.EitherPartialOf
-import arrow.core.Right
 import arrow.core.computations.either
 import arrow.typeclasses.suspended.BindSyntax
 import be.tapped.vrtnu.content.ApiResponse.Failure.JsonParsingException
 import be.tapped.vrtnu.content.ElasticSearchRepo.Companion.DEFAULT_SEARCH_QUERY_INDEX
 import be.tapped.vrtnu.content.ElasticSearchRepo.Companion.DEFAULT_SEARCH_QUERY_ORDER
 import be.tapped.vtmgo.common.executeAsync
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.serialization.decodeFromString
@@ -17,8 +15,6 @@ import kotlinx.serialization.json.Json
 import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import kotlin.experimental.ExperimentalTypeInference
-import kotlin.time.seconds
 
 internal class JsonEpisodeParser {
     suspend fun parse(json: String): Either<ApiResponse.Failure, ElasticSearchResult<Episode>> =
@@ -71,69 +67,6 @@ interface ElasticSearchRepo {
     fun search(searchQuery: SearchQuery): Flow<Either<ApiResponse.Failure, ApiResponse.Success.Episodes>>
 }
 
-/**
- * Creates a stream by successively applying [next] until a `null` is returned, emitting
- * each output [B] and using each output [A] as input to the next invocation of [next].
- *
- * ```kotlin
- * suspend fun main(): Unit =
- *   unfoldFlow(0) { i -> if (i < 5) Pair(i, i + 1) else null }
- *     .toList()
- *     .let(::println) //[0, 1, 2, 3, 4]
- * ```
- */
-//fun <A, B> unfoldFlow(initial: A, next: suspend (A) -> Pair<A, B>?): Flow<B> =
-//    flow {
-//        var initial = initial
-//        next(initial)?.let { (a, b) ->
-//            initial = a
-//            emit(b)
-//        }
-//    }
-
-/**
- * Creates a stream by successively applying [next] until a `null` is returned, emitting
- * each output [B] and using each output [A] as input to the next invocation of [next].
- *
- * ```kotlin
- * object Finished
- *
- * suspend fun main(): Unit {
- *   unfoldFlow(0) {
- *     if (i < 5) !Pair(i, i + 1).right()
- *     else null
- *   }.toList()
- *    .let(::println) //[Right(0), Right(1), Right(2), Right(3), Right(4)]
- *
- *   unfoldFlow(0) { i ->
- *     if (i < 5) !Pair(i, i + 1).right()
- *     else !Left(Finished)
- *   }
- *     .toList()
- *     .let(::println) //[Right(0), Right(1), Right(2), Right(3), Right(4), Left(Finished)]
- * }
- * ```
- */
-@JvmName("unfoldFlowEither")
-fun <A, B, E> unfoldFlow(initial: A, next: suspend BindSyntax<EitherPartialOf<E>>.(A) -> Pair<A, B>?): Flow<Either<E, B>> =
-    flow {
-        var initial: A? = initial
-        val res: Either<E, Unit> = either {
-            do {
-                val nextEither = next(this@either, initial!!)
-
-                initial = if (nextEither != null) {
-                    emit(Either.Right(nextEither.second))
-                    nextEither.first
-                } else null
-            } while (initial != null)
-        }
-        when (res) {
-            is Either.Left -> emit(res) // Emit failure
-            is Either.Right -> Unit // Already emitted all values
-        }
-    }
-
 internal class HttpElasticSearchRepo(
     private val client: OkHttpClient,
     private val jsonEpisodeParser: JsonEpisodeParser,
@@ -155,7 +88,7 @@ internal class HttpElasticSearchRepo(
             val rawJson = !Either.fromNullable(episodeByCategoryResponse.body).mapLeft { ApiResponse.Failure.EmptyJson }
             val searchResultEpisodes = !jsonEpisodeParser.parse(rawJson.string())
 
-            if (index > searchResultEpisodes.meta.pages.total + 1) null
+            if (index > searchResultEpisodes.meta.pages.total) null
             else Pair(index + 1, ApiResponse.Success.Episodes(searchResultEpisodes.results))
         }
 
@@ -203,4 +136,23 @@ internal class HttpElasticSearchRepo(
                 }
             }
             .build()
+
+    private fun <A, B, E> unfoldFlow(initial: A, next: suspend BindSyntax<EitherPartialOf<E>>.(A) -> Pair<A, B>?): Flow<Either<E, B>> =
+        flow {
+            var initial: A? = initial
+            val res: Either<E, Unit> = either {
+                do {
+                    val nextEither: Pair<A, B>? = next(this@either, initial!!)
+
+                    initial = if (nextEither != null) {
+                        emit(Either.Right(nextEither.second))
+                        nextEither.first
+                    } else null
+                } while (initial != null)
+            }
+            when (res) {
+                is Either.Left -> emit(res)
+                is Either.Right -> Unit
+            }
+        }
 }
