@@ -1,12 +1,15 @@
 package be.tapped.vrtnu.content
 
 import arrow.core.Either
+import arrow.core.EitherPartialOf
 import arrow.core.Right
 import arrow.core.computations.either
+import arrow.typeclasses.suspended.BindSyntax
 import be.tapped.vrtnu.content.ApiResponse.Failure.JsonParsingException
 import be.tapped.vrtnu.content.ElasticSearchRepo.Companion.DEFAULT_SEARCH_QUERY_INDEX
 import be.tapped.vrtnu.content.ElasticSearchRepo.Companion.DEFAULT_SEARCH_QUERY_ORDER
 import be.tapped.vtmgo.common.executeAsync
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.serialization.decodeFromString
@@ -14,6 +17,7 @@ import kotlinx.serialization.json.Json
 import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import kotlin.time.seconds
 
 internal class JsonEpisodeParser {
     suspend fun parse(json: String): Either<ApiResponse.Failure, ElasticSearchResult<Episode>> =
@@ -76,23 +80,23 @@ interface ElasticSearchRepo {
 //    }
 
 @JvmName("unfoldFlowEither")
-fun <A, B, E> unfoldFlow(initial: A, next: suspend (A) -> Either<E, Pair<A, B>?>): Flow<Either<E, B>> =
+fun <A, B, E> unfoldFlow(initial: A, next: suspend BindSyntax<EitherPartialOf<E>>.(A) -> Pair<A, B>?): Flow<Either<E, B>> =
     flow {
         var initial: A? = initial
-        do {
-            val nextEither = next(initial!!)
-            initial = when (nextEither) {
-                is Either.Left -> {
-                    emit(nextEither)
-                    null
-                }
-                is Either.Right ->
-                    if (nextEither.b != null) {
-                        emit(Either.Right(nextEither.b!!.second))
-                        nextEither.b!!.first
-                    } else null
-            }
-        } while (initial != null)
+        val res: Either<E, Unit> = either {
+            do {
+                val nextEither = next(this@either, initial!!)
+
+                initial = if (nextEither != null) {
+                    emit(Either.Right(nextEither.second))
+                    nextEither.first
+                } else null
+            } while (initial != null)
+        }
+        when (res) {
+            is Either.Left -> emit(res) // Emit failure
+            is Either.Right -> Unit // Already emitted all values
+        }
     }
 
 internal class HttpElasticSearchRepo(
@@ -106,20 +110,18 @@ internal class HttpElasticSearchRepo(
 
     override fun search(searchQuery: ElasticSearchRepo.SearchQuery): Flow<Either<ApiResponse.Failure, ApiResponse.Success.Episodes>> =
         unfoldFlow(START_PAGE_INDEX) { index ->
-            either {
-                val episodeByCategoryResponse = client.executeAsync(
-                    Request.Builder()
-                        .get()
-                        .url(constructUrl(searchQuery, index))
-                        .build()
-                )
+            val episodeByCategoryResponse = client.executeAsync(
+                Request.Builder()
+                    .get()
+                    .url(constructUrl(searchQuery, index))
+                    .build()
+            )
 
-                val rawJson = !Either.fromNullable(episodeByCategoryResponse.body).mapLeft { ApiResponse.Failure.EmptyJson }
-                val searchResultEpisodes = !jsonEpisodeParser.parse(rawJson.string())
+            val rawJson = !Either.fromNullable(episodeByCategoryResponse.body).mapLeft { ApiResponse.Failure.EmptyJson }
+            val searchResultEpisodes = !jsonEpisodeParser.parse(rawJson.string())
 
-                if (index > searchResultEpisodes.meta.pages.total + 1) null
-                else Pair(index + 1, ApiResponse.Success.Episodes(searchResultEpisodes.results))
-            }
+            if (index > searchResultEpisodes.meta.pages.total + 1) null
+            else Pair(index + 1, ApiResponse.Success.Episodes(searchResultEpisodes.results))
         }
 
     // Only add query parameters that differ from the defaults in order to limit the URL which is capped at max. 8192 characters
