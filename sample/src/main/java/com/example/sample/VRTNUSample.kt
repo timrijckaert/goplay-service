@@ -29,7 +29,6 @@ suspend fun main(args: Array<String>) {
     println(categories)
 
     //// Search
-    val allSearchResults = mutableListOf<Either<ApiResponse.Failure, ApiResponse.Success.Episodes>>()
-    val episodesFromSearch = vrtApi.search(ElasticSearchRepo.SearchQuery(category = "cultuur")).toList(allSearchResults)
+    val allSearchResults = vrtApi.search(ElasticSearchRepo.SearchQuery(category = "cultuur")).toList()
     println(allSearchResults)
 }
