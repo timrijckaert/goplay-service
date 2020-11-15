@@ -1,7 +1,11 @@
 package com.example.sample
 
+import arrow.core.Either
 import be.tapped.vrtnu.authentication.AuthenticationProvider
+import be.tapped.vrtnu.content.ApiResponse
+import be.tapped.vrtnu.content.ElasticSearchRepo
 import be.tapped.vrtnu.content.VRTApi
+import kotlinx.coroutines.flow.toList
 
 suspend fun main(args: Array<String>) {
     val userName = args[0]
@@ -24,8 +28,8 @@ suspend fun main(args: Array<String>) {
     val categories = vrtApi.fetchCategories()
     println(categories)
 
-    ////// Episodes by category
-    val episodesFromFirstCategory = vrtApi.fetchEpisodeByCategory(categories.orNull()!!.categories.first())
-    println(episodesFromFirstCategory)
-
+    //// Search
+    val allSearchResults = mutableListOf<Either<ApiResponse.Failure, ApiResponse.Success.Episodes>>()
+    val episodesFromSearch = vrtApi.search(ElasticSearchRepo.SearchQuery(category = "cultuur")).toList(allSearchResults)
+    println(allSearchResults)
 }

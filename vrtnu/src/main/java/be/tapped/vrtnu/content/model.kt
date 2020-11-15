@@ -94,13 +94,14 @@ data class Category(
 
 @Serializable
 data class DisplayOptions(
-    val hideNumberOfEpisodes: Boolean,
     val showBroadcastDate: Boolean,
     val showEpisodeNumber: Boolean,
     val showEpisodeTitle: Boolean,
     val showGroupedEpisodes: Boolean,
     val showSeason: Boolean,
     val showShortDescription: Boolean,
+    val hideNumberOfEpisodes: Boolean? = null,
+    val showMostRelevantEpisode: Boolean? = null,
 )
 
 @Serializable
@@ -175,51 +176,31 @@ data class Tag(
 
 @Serializable
 data class Episode(
-    val ageGroup: String? = null,
     val allowedRegion: String,
     val assetOffTime: String,
     val assetOnTime: String,
-    val assetPath: String,
     val assetStatus: String,
     val brands: List<String>,
     val broadcastDate: Long,
     val categories: List<String>,
-    val chapters: List<Chapter> = emptyList(),
-    val description: String,
     val displayOptions: DisplayOptions,
     val duration: Int,
     val episodeNumber: Int,
-    val externalPermalink: String,
-    val formattedBroadcastDate: String,
-    val formattedBroadcastFullDate: String,
-    val formattedBroadcastShortDate: String,
     val name: String,
-    val offTimeDate: Long? = null,
-    val onTimeDate: Long? = null,
-    val pageId: String,
     val pagePath: String,
-    val path: String,
-    val permalink: String,
-    val productPlacement: Boolean? = null,
+    val path: String? = null,
     val program: String,
-    val programAlternativeImageUrl: String,
-    val programBrands: List<String>,
     val programDescription: String,
     val programImageUrl: String,
     val programName: String,
     val programPath: String,
-    val programTags: List<ProgramTag> = emptyList(),
     val programType: String,
     val programUrl: String,
-    val programWhatsonId: String,
     val publicationId: String,
     val seasonName: String,
     val seasonNbOfEpisodes: Int,
     val seasonPath: String,
     val seasonTitle: String,
-    val shortDescription: String,
-    val subtitle: String,
-    val tags: List<Tag>,
     val title: String,
     val transcodingStatus: String,
     val url: String,
@@ -231,4 +212,56 @@ data class Episode(
     val id: String,
     val score: Double,
     val type: String,
-)
+    val programBrands: List<String> = emptyList(),
+    val programTags: List<ProgramTag> = emptyList(),
+    val tags: List<Tag> = emptyList(),
+    val chapters: List<Chapter> = emptyList(),
+    val pageId: String? = null,
+    val shortDescription: String? = null,
+    val description: String? = null,
+    val formattedBroadcastShortDate: String? = null,
+    val formattedBroadcastFullDate: String? = null,
+    val formattedBroadcastDate: String? = null,
+    val externalPermalink: String? = null,
+    val programWhatsonId: String? = null,
+    val permalink: String? = null,
+    val assetPath: String? = null,
+    val programAlternativeImageUrl: String? = null,
+    val offTimeDate: Long? = null,
+    val subtitle: String? = null,
+    val ageGroup: String? = null,
+    val onTimeDate: Long? = null,
+    val productPlacement: Boolean? = null,
+) {
+    init {
+        require(allowedRegion.isNotEmpty()) { "Episode: allowedRegion can not be empty" }
+        require(assetOffTime.isNotEmpty()) { "Episode: assetOffTime can not be empty" }
+        require(assetOnTime.isNotEmpty()) { "Episode: assetOnTime can not be empty" }
+        require(assetStatus.isNotEmpty()) { "Episode: assetStatus can not be empty" }
+        require(brands.isNotEmpty()) { "Episode: brands can not be empty" }
+        require(categories.isNotEmpty()) { "Episode: categories can not be empty" }
+        require(name.isNotEmpty()) { "Episode: name can not be empty" }
+        require(pagePath.isNotEmpty()) { "Episode: pagePath can not be empty" }
+        require(program.isNotEmpty()) { "Episode: program can not be empty" }
+        require(programDescription.isNotEmpty()) { "Episode: programDescription can not be empty" }
+        require(programImageUrl.isNotEmpty()) { "Episode: programImageUrl can not be empty" }
+        require(programName.isNotEmpty()) { "Episode: programName can not be empty" }
+        require(programPath.isNotEmpty()) { "Episode: programPath can not be empty" }
+        require(programType.isNotEmpty()) { "Episode: programType can not be empty" }
+        require(programUrl.isNotEmpty()) { "Episode: programUrl can not be empty" }
+        require(publicationId.isNotEmpty()) { "Episode: publicationId can not be empty" }
+        require(seasonName.isNotEmpty()) { "Episode: seasonName can not be empty" }
+        require(seasonPath.isNotEmpty()) { "Episode: seasonPath can not be empty" }
+        require(seasonTitle.isNotEmpty()) { "Episode: seasonTitle can not be empty" }
+        require(title.isNotEmpty()) { "Episode: title can not be empty" }
+        require(transcodingStatus.isNotEmpty()) { "Episode: transcodingStatus can not be empty" }
+        require(url.isNotEmpty()) { "Episode: url can not be empty" }
+        require(videoId.isNotEmpty()) { "Episode: videoId can not be empty" }
+        require(videoThumbnailUrl.isNotEmpty()) { "Episode: videoThumbnailUrl can not be empty" }
+        require(whatsonId.isNotEmpty()) { "Episode: whatsonId can not be empty" }
+        require(instigator.isNotEmpty()) { "Episode: instigator can not be empty" }
+        require(lastIndex.isNotEmpty()) { "Episode: lastIndex can not be empty" }
+        require(id.isNotEmpty()) { "Episode: id can not be empty" }
+        require(type.isNotEmpty()) { "Episode: type can not be empty" }
+    }
+}

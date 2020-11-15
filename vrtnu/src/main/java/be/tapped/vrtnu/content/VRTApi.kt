@@ -20,7 +20,7 @@ class VRTApi(
     client: OkHttpClient = defaultOkHttpClient,
     azRepo: AZRepo = HttpAZRepo(client, JsonAZProgramParser()),
     categoryRepo: CategoryRepo = HttpCategoryRepo(client, JsonCategoryParser()),
-    episodeRepo: EpisodeRepo = HttpEpisodeRepo(client, JsonEpisodeParser()),
+    elasticSearchRepo: ElasticSearchRepo = HttpElasticSearchRepo(client, JsonEpisodeParser()),
 ) : AZRepo by azRepo,
     CategoryRepo by categoryRepo,
-    EpisodeRepo by episodeRepo
+    ElasticSearchRepo by elasticSearchRepo
