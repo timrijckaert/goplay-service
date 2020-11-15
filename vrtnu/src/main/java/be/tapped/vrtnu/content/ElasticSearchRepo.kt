@@ -17,6 +17,7 @@ import kotlinx.serialization.json.Json
 import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import kotlin.experimental.ExperimentalTypeInference
 import kotlin.time.seconds
 
 internal class JsonEpisodeParser {
@@ -70,6 +71,17 @@ interface ElasticSearchRepo {
     fun search(searchQuery: SearchQuery): Flow<Either<ApiResponse.Failure, ApiResponse.Success.Episodes>>
 }
 
+/**
+ * Creates a stream by successively applying [next] until a `null` is returned, emitting
+ * each output [B] and using each output [A] as input to the next invocation of [next].
+ *
+ * ```kotlin
+ * suspend fun main(): Unit =
+ *   unfoldFlow(0) { i -> if (i < 5) Pair(i, i + 1) else null }
+ *     .toList()
+ *     .let(::println) //[0, 1, 2, 3, 4]
+ * ```
+ */
 //fun <A, B> unfoldFlow(initial: A, next: suspend (A) -> Pair<A, B>?): Flow<B> =
 //    flow {
 //        var initial = initial
@@ -79,6 +91,29 @@ interface ElasticSearchRepo {
 //        }
 //    }
 
+/**
+ * Creates a stream by successively applying [next] until a `null` is returned, emitting
+ * each output [B] and using each output [A] as input to the next invocation of [next].
+ *
+ * ```kotlin
+ * object Finished
+ *
+ * suspend fun main(): Unit {
+ *   unfoldFlow(0) {
+ *     if (i < 5) !Pair(i, i + 1).right()
+ *     else null
+ *   }.toList()
+ *    .let(::println) //[Right(0), Right(1), Right(2), Right(3), Right(4)]
+ *
+ *   unfoldFlow(0) { i ->
+ *     if (i < 5) !Pair(i, i + 1).right()
+ *     else !Left(Finished)
+ *   }
+ *     .toList()
+ *     .let(::println) //[Right(0), Right(1), Right(2), Right(3), Right(4), Left(Finished)]
+ * }
+ * ```
+ */
 @JvmName("unfoldFlowEither")
 fun <A, B, E> unfoldFlow(initial: A, next: suspend BindSyntax<EitherPartialOf<E>>.(A) -> Pair<A, B>?): Flow<Either<E, B>> =
     flow {
