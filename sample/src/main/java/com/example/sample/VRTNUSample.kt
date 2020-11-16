@@ -1,7 +1,7 @@
 package com.example.sample
 
 import be.tapped.vrtnu.authentication.AuthenticationProvider
-import be.tapped.vrtnu.content.ElasticSearchRepo
+import be.tapped.vrtnu.content.SearchQuery
 import be.tapped.vrtnu.content.VRTApi
 import kotlinx.coroutines.flow.toList
 
@@ -16,17 +16,17 @@ suspend fun main(args: Array<String>) {
     val newTokenWrapperResult = authenticationProvider.refreshTokenWrapper(refreshToken)
 
     // API
-    val vrtApi = VRTApi()
+    with(VRTApi()) {
+        //// A-Z
+        val azPrograms = fetchAZPrograms()
+        println(azPrograms)
 
-    //// A-Z
-    val azPrograms = vrtApi.fetchAZPrograms()
-    println(azPrograms)
+        //// Categories
+        val categories = fetchCategories()
+        println(categories)
 
-    //// Categories
-    val categories = vrtApi.fetchCategories()
-    println(categories)
-
-    //// Search
-    val allSearchResults = vrtApi.search(ElasticSearchRepo.SearchQuery(category = "cultuur")).toList()
-    println(allSearchResults)
+        //// Search
+        val allSearchResults = search(SearchQuery(category = "cultuur")).toList()
+        println(allSearchResults)
+    }
 }

@@ -5,7 +5,7 @@ import okhttp3.OkHttpClient
 
 sealed class ApiResponse {
     sealed class Success : ApiResponse() {
-        data class AlphabeticPrograms(val programs: List<Program>) : Success()
+        data class Programs(val programs: List<Program>) : Success()
         data class Categories(val categories: List<Category>) : Success()
         data class Episodes(val episodes: List<Episode>) : Success()
     }
@@ -18,11 +18,11 @@ sealed class ApiResponse {
 
 class VRTApi(
     client: OkHttpClient = defaultOkHttpClient,
-    azRepo: AZRepo = HttpAZRepo(client, JsonAZProgramParser()),
+    programRepo: ProgramRepo = HttpProgramRepo(client, JsonAZProgramParser()),
     categoryRepo: CategoryRepo = HttpCategoryRepo(client, JsonCategoryParser()),
     elasticSearchRepo: ElasticSearchRepo = HttpElasticSearchRepo(client, JsonEpisodeParser()),
     screenshotRepo: ScreenshotRepo = DefaultScreenshotRepo,
-) : AZRepo by azRepo,
+) : ProgramRepo by programRepo,
     CategoryRepo by categoryRepo,
     ElasticSearchRepo by elasticSearchRepo,
     ScreenshotRepo by screenshotRepo
