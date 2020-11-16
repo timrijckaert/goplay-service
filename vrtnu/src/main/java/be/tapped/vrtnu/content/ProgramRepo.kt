@@ -11,7 +11,7 @@ import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
 import okhttp3.Request
 
-internal class JsonAZProgramParser {
+internal class JsonProgramParser {
     suspend fun parse(json: String): Either<ApiResponse.Failure, List<Program>> =
         Either.catch { Json.decodeFromString<List<Program>>(json) }.mapLeft(::JsonParsingException)
 }
@@ -22,7 +22,7 @@ interface ProgramRepo {
 
 internal class HttpProgramRepo(
     private val client: OkHttpClient,
-    private val jsonAZProgramParser: JsonAZProgramParser,
+    private val jsonProgramParser: JsonProgramParser,
 ) : ProgramRepo {
 
     override suspend fun fetchAZPrograms(): Either<ApiResponse.Failure, ApiResponse.Success.Programs> {
@@ -35,7 +35,7 @@ internal class HttpProgramRepo(
 
         return either {
             val rawAZJson = !Either.fromNullable(programsAZSorted.body).mapLeft { ApiResponse.Failure.EmptyJson }
-            ApiResponse.Success.Programs(!jsonAZProgramParser.parse(rawAZJson.string()))
+            ApiResponse.Success.Programs(!jsonProgramParser.parse(rawAZJson.string()))
         }
     }
 

@@ -18,7 +18,7 @@ sealed class ApiResponse {
 
 class VRTApi(
     client: OkHttpClient = defaultOkHttpClient,
-    programRepo: ProgramRepo = HttpProgramRepo(client, JsonAZProgramParser()),
+    programRepo: ProgramRepo = HttpProgramRepo(client, JsonProgramParser()),
     categoryRepo: CategoryRepo = HttpCategoryRepo(client, JsonCategoryParser()),
     elasticSearchRepo: ElasticSearchRepo = HttpElasticSearchRepo(client, JsonEpisodeParser()),
     screenshotRepo: ScreenshotRepo = DefaultScreenshotRepo,
