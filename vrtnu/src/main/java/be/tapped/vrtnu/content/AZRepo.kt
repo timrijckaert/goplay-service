@@ -10,8 +10,8 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 
 internal class JsonAZProgramParser {
-    suspend fun parse(json: String): Either<ApiResponse.Failure, List<AZProgram>> =
-        Either.catch { Json.decodeFromString<List<AZProgram>>(json) }.mapLeft(::JsonParsingException)
+    suspend fun parse(json: String): Either<ApiResponse.Failure, List<Program>> =
+        Either.catch { Json.decodeFromString<List<Program>>(json) }.mapLeft(::JsonParsingException)
 }
 
 interface AZRepo {
