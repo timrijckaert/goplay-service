@@ -21,6 +21,8 @@ class VRTApi(
     azRepo: AZRepo = HttpAZRepo(client, JsonAZProgramParser()),
     categoryRepo: CategoryRepo = HttpCategoryRepo(client, JsonCategoryParser()),
     elasticSearchRepo: ElasticSearchRepo = HttpElasticSearchRepo(client, JsonEpisodeParser()),
+    screenshotRepo: ScreenshotRepo = DefaultScreenshotRepo,
 ) : AZRepo by azRepo,
     CategoryRepo by categoryRepo,
-    ElasticSearchRepo by elasticSearchRepo
+    ElasticSearchRepo by elasticSearchRepo,
+    ScreenshotRepo by screenshotRepo
