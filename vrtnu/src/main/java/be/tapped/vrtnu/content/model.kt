@@ -2,7 +2,6 @@ package be.tapped.vrtnu.content
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import okhttp3.HttpUrl
 
 @Serializable
 data class Pages(
@@ -283,63 +282,19 @@ data class SearchQuery(
     val programName: String? = null,
     val custom: Map<String, String> = emptyMap(),
 ) {
+
     companion object {
         private const val DEFAULT_SEARCH_SIZE = 150
         private const val MAX_SEARCH_SIZE = 300
 
-        private const val DEFAULT_START_PAGE_INDEX = 1
-        private val DEFAULT_SEARCH_QUERY_INDEX = Index.VIDEO
-        private val DEFAULT_SEARCH_QUERY_ORDER = Order.DESC
-        private const val DEFAULT_TRANSCODING_STATUS = "AVAILABLE"
-
-        // Only add query parameters that differ from the defaults in order to limit the URL which is capped at max. 8192 characters
-        fun HttpUrl.Builder.applySearchQuery(searchQuery: SearchQuery): HttpUrl.Builder {
-            return apply {
-                with(searchQuery) {
-                    if (index != DEFAULT_SEARCH_QUERY_INDEX) {
-                        addQueryParameter("i", index.queryParamName)
-                    }
-
-                    addQueryParameter("size", "$size")
-
-                    if (order != DEFAULT_SEARCH_QUERY_ORDER) {
-                        addQueryParameter("order", order.queryParamName)
-                    }
-
-                    addQueryParameter("facets[transcodingStatus]", transcodingStatus)
-
-                    available?.let {
-                        addQueryParameter("available", "$it")
-                    }
-                    query?.let {
-                        addEncodedQueryParameter("q", it)
-                    }
-                    category?.let {
-                        addEncodedQueryParameter("facets[categories]", it)
-                    }
-                    start?.let {
-                        addQueryParameter("start", "$it")
-                    }
-                    end?.let {
-                        addQueryParameter("end", "$it")
-                    }
-
-                    custom.forEach { (key, value) ->
-                        // Supports dotted JSON Path notation
-                        addQueryParameter("facets[$key]", "[$value]")
-                    }
-
-                    programName?.let {
-                        addQueryParameter("facets[program]", it)
-                    }
-
-                    if (pageIndex != DEFAULT_START_PAGE_INDEX) {
-                        addQueryParameter("from", "${((pageIndex - 1) * size) + 1}")
-                    }
-                }
-            }
-        }
+        const val DEFAULT_START_PAGE_INDEX = 1
+        val DEFAULT_SEARCH_QUERY_INDEX = Index.VIDEO
+        val DEFAULT_SEARCH_QUERY_ORDER = Order.DESC
+        const val DEFAULT_TRANSCODING_STATUS = "AVAILABLE"
     }
+
+    val from: Int
+        get() = ((pageIndex - 1) * size) + 1
 
     init {
         if (size > MAX_SEARCH_SIZE) {

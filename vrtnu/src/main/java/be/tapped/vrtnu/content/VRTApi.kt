@@ -6,6 +6,7 @@ import okhttp3.OkHttpClient
 sealed class ApiResponse {
     sealed class Success : ApiResponse() {
         data class Programs(val programs: List<Program>) : Success()
+        data class SingleProgram(val program: Program) : Success()
         data class Categories(val categories: List<Category>) : Success()
         data class Episodes(val episodes: List<Episode>) : Success()
     }

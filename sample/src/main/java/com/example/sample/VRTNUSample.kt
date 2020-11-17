@@ -17,16 +17,20 @@ suspend fun main(args: Array<String>) {
 
     // API
     with(VRTApi()) {
-        //// A-Z
+        // A-Z
         val azPrograms = fetchAZPrograms()
         println(azPrograms)
 
-        //// Categories
+        // Categories
         val categories = fetchCategories()
         println(categories)
 
-        //// Search
+        // Search
         val allSearchResults = search(SearchQuery(category = "cultuur")).toList()
         println(allSearchResults)
+
+        // Single Program
+        val geubelsEnDeHollanders = fetchProgramByName("Geubels en de Hollanders")
+        println(geubelsEnDeHollanders)
     }
 }

@@ -5,7 +5,10 @@ import arrow.core.EitherPartialOf
 import arrow.core.computations.either
 import arrow.typeclasses.suspended.BindSyntax
 import be.tapped.vrtnu.content.ApiResponse.Failure.JsonParsingException
-import be.tapped.vrtnu.content.SearchQuery.Companion.applySearchQuery
+import be.tapped.vrtnu.content.ElasticSearchUrlBuilder.applySearchQuery
+import be.tapped.vrtnu.content.SearchQuery.Companion.DEFAULT_SEARCH_QUERY_INDEX
+import be.tapped.vrtnu.content.SearchQuery.Companion.DEFAULT_SEARCH_QUERY_ORDER
+import be.tapped.vrtnu.content.SearchQuery.Companion.DEFAULT_START_PAGE_INDEX
 import be.tapped.vtmgo.common.executeAsync
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -73,4 +76,58 @@ internal class HttpElasticSearchRepo(
                 is Either.Right -> Unit
             }
         }
+}
+
+object ElasticSearchUrlBuilder {
+
+    private val nonWordCharacterRegex = Regex("\\W")
+    private fun sanitizeProgramName(programName: String): String = programName.replace(nonWordCharacterRegex, "-").toLowerCase()
+
+    // Only add query parameters that differ from the defaults in order to limit the URL which is capped at max. 8192 characters
+    fun HttpUrl.Builder.applySearchQuery(searchQuery: SearchQuery): HttpUrl.Builder {
+        return apply {
+            with(searchQuery) {
+                if (index != DEFAULT_SEARCH_QUERY_INDEX) {
+                    addQueryParameter("i", index.queryParamName)
+                }
+
+                addQueryParameter("size", "$size")
+
+                if (order != DEFAULT_SEARCH_QUERY_ORDER) {
+                    addQueryParameter("order", order.queryParamName)
+                }
+
+                addQueryParameter("facets[transcodingStatus]", transcodingStatus)
+
+                available?.let {
+                    addQueryParameter("available", "$it")
+                }
+                query?.let {
+                    addEncodedQueryParameter("q", it)
+                }
+                category?.let {
+                    addEncodedQueryParameter("facets[categories]", it)
+                }
+                start?.let {
+                    addQueryParameter("start", "$it")
+                }
+                end?.let {
+                    addQueryParameter("end", "$it")
+                }
+
+                custom.forEach { (key, value) ->
+                    // Supports dotted JSON Path notation
+                    addQueryParameter("facets[$key]", "[$value]")
+                }
+
+                programName?.let {
+                    addQueryParameter("facets[programName]", sanitizeProgramName(it))
+                }
+
+                if (pageIndex != DEFAULT_START_PAGE_INDEX) {
+                    addQueryParameter("from", "$from")
+                }
+            }
+        }
+    }
 }
