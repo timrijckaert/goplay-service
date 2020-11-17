@@ -5,10 +5,7 @@ import arrow.core.EitherPartialOf
 import arrow.core.computations.either
 import arrow.typeclasses.suspended.BindSyntax
 import be.tapped.vrtnu.content.ApiResponse.Failure.JsonParsingException
-import be.tapped.vrtnu.content.ElasticSearchUrlBuilder.applySearchQuery
-import be.tapped.vrtnu.content.SearchQuery.Companion.DEFAULT_SEARCH_QUERY_INDEX
-import be.tapped.vrtnu.content.SearchQuery.Companion.DEFAULT_SEARCH_QUERY_ORDER
-import be.tapped.vrtnu.content.SearchQuery.Companion.DEFAULT_START_PAGE_INDEX
+import be.tapped.vrtnu.content.ElasticSearchQueryBuilder.applySearchQuery
 import be.tapped.vtmgo.common.executeAsync
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -26,7 +23,7 @@ internal class JsonEpisodeParser {
 }
 
 interface ElasticSearchRepo {
-    fun search(searchQuery: SearchQuery): Flow<Either<ApiResponse.Failure, ApiResponse.Success.Episodes>>
+    fun search(searchQuery: ElasticSearchQueryBuilder.SearchQuery): Flow<Either<ApiResponse.Failure, ApiResponse.Success.Episodes>>
 }
 
 internal class HttpElasticSearchRepo(
@@ -34,7 +31,7 @@ internal class HttpElasticSearchRepo(
     private val jsonEpisodeParser: JsonEpisodeParser,
 ) : ElasticSearchRepo {
 
-    override fun search(searchQuery: SearchQuery): Flow<Either<ApiResponse.Failure, ApiResponse.Success.Episodes>> =
+    override fun search(searchQuery: ElasticSearchQueryBuilder.SearchQuery): Flow<Either<ApiResponse.Failure, ApiResponse.Success.Episodes>> =
         unfoldFlow(searchQuery.pageIndex) { index ->
             val episodeByCategoryResponse = client.executeAsync(
                 Request.Builder()
@@ -50,7 +47,7 @@ internal class HttpElasticSearchRepo(
             else Pair(index + 1, ApiResponse.Success.Episodes(searchResultEpisodes.results))
         }
 
-    private fun constructUrl(searchQuery: SearchQuery) =
+    private fun constructUrl(searchQuery: ElasticSearchQueryBuilder.SearchQuery) =
         HttpUrl.Builder()
             .scheme("https")
             .host("vrtnu-api.vrt.be")
@@ -78,7 +75,55 @@ internal class HttpElasticSearchRepo(
         }
 }
 
-object ElasticSearchUrlBuilder {
+object ElasticSearchQueryBuilder {
+
+    private const val DEFAULT_SEARCH_SIZE = 150
+    private const val MAX_SEARCH_SIZE = 300
+
+    private const val DEFAULT_START_PAGE_INDEX = 1
+    private val DEFAULT_SEARCH_QUERY_INDEX = SearchQuery.Index.VIDEO
+    private val DEFAULT_SEARCH_QUERY_ORDER = SearchQuery.Order.DESC
+    private const val DEFAULT_TRANSCODING_STATUS = "AVAILABLE"
+
+    // https://github.com/add-ons/plugin.video.vrt.nu/wiki/VRT-NU-API#vrt-api-parameters
+    data class SearchQuery(
+        val size: Int = DEFAULT_SEARCH_SIZE,
+        val index: Index = DEFAULT_SEARCH_QUERY_INDEX,
+        val order: Order = DEFAULT_SEARCH_QUERY_ORDER,
+        //TODO Can we convert this to an enum? What are the other values?
+        val transcodingStatus: String = DEFAULT_TRANSCODING_STATUS,
+        val pageIndex: Int = DEFAULT_SEARCH_SIZE,
+        val available: Boolean? = null,
+        val query: String? = null,
+        val category: String? = null,
+        val start: Long? = null,
+        val end: Long? = null,
+        val programName: String? = null,
+        val custom: Map<String, String> = emptyMap(),
+    ) {
+
+        val from: Int
+            get() = ((pageIndex - 1) * size) + 1
+
+        init {
+            if (size > MAX_SEARCH_SIZE) {
+                throw IllegalArgumentException("search size can not be bigger than $MAX_SEARCH_SIZE")
+            }
+        }
+
+        enum class Order(val queryParamName: String) {
+            ASC("asc"),
+            DESC("desc");
+        }
+
+        enum class Index(val queryParamName: String) {
+            // VRT NU
+            VIDEO("video"),
+
+            // VRT
+            CORPORATE("corporate")
+        }
+    }
 
     private val nonWordCharacterRegex = Regex("\\W")
     private fun sanitizeProgramName(programName: String): String = programName.replace(nonWordCharacterRegex, "-").toLowerCase()

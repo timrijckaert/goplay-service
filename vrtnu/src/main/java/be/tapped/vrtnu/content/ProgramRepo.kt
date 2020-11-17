@@ -3,7 +3,7 @@ package be.tapped.vrtnu.content
 import arrow.core.Either
 import arrow.core.computations.either
 import be.tapped.vrtnu.content.ApiResponse.Failure.JsonParsingException
-import be.tapped.vrtnu.content.ElasticSearchUrlBuilder.applySearchQuery
+import be.tapped.vrtnu.content.ElasticSearchQueryBuilder.applySearchQuery
 import be.tapped.vtmgo.common.executeAsync
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
@@ -33,7 +33,7 @@ internal class HttpProgramRepo(
         val programsAZSorted = client.executeAsync(
             Request.Builder()
                 .get()
-                .url(constructUrl(SearchQuery(transcodingStatus = "AVAILABLE")))
+                .url(constructUrl(ElasticSearchQueryBuilder.SearchQuery(transcodingStatus = "AVAILABLE")))
                 .build()
         )
 
@@ -49,7 +49,7 @@ internal class HttpProgramRepo(
                 .get()
                 .url(
                     constructUrl(
-                        SearchQuery(
+                        ElasticSearchQueryBuilder.SearchQuery(
                             transcodingStatus = "AVAILABLE",
                             programName = programName,
                             size = 1
@@ -65,7 +65,7 @@ internal class HttpProgramRepo(
         }
     }
 
-    private fun constructUrl(searchQuery: SearchQuery): HttpUrl =
+    private fun constructUrl(searchQuery: ElasticSearchQueryBuilder.SearchQuery): HttpUrl =
         HttpUrl.Builder()
             .scheme("https")
             .host("vrtnu-api.vrt.be")

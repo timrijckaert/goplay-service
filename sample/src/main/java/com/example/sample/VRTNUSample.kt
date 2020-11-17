@@ -1,6 +1,7 @@
 package com.example.sample
 
 import be.tapped.vrtnu.authentication.AuthenticationProvider
+import be.tapped.vrtnu.content.ElasticSearchQueryBuilder
 import be.tapped.vrtnu.content.SearchQuery
 import be.tapped.vrtnu.content.VRTApi
 import kotlinx.coroutines.flow.toList
@@ -26,7 +27,7 @@ suspend fun main(args: Array<String>) {
         println(categories)
 
         // Search
-        val allSearchResults = search(SearchQuery(category = "cultuur")).toList()
+        val allSearchResults = search(ElasticSearchQueryBuilder.SearchQuery(category = "cultuur")).toList()
         println(allSearchResults)
 
         // Single Program
