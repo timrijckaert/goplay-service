@@ -41,7 +41,7 @@ data class ElasticSearchResult<T>(
 )
 
 @Serializable
-data class AZProgram(
+data class Program(
     val title: String,
     val type: String,
     @SerialName("episode_count")

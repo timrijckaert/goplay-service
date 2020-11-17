@@ -21,3 +21,10 @@ dependencies {
     implementation project(':vrtnu')
     implementation project(':vtmgo')
 }
+
+compileKotlin {
+    kotlinOptions {
+        jvmTarget = "1.8"
+        freeCompilerArgs = ["-Xinline-classes"]
+    }
+}
