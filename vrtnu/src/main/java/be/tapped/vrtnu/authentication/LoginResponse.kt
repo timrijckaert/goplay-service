@@ -8,7 +8,7 @@ import kotlinx.serialization.json.jsonPrimitive
 
 data class LoginFailure(
     val errorCode: Int,
-    val errorDetails: String?,
+    private val errorDetails: String?,
 ) {
     enum class LoginFailure {
         INVALID_CREDENTIALS,
