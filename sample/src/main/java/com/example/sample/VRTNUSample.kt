@@ -11,11 +11,21 @@ suspend fun main(args: Array<String>) {
     val authenticationProvider = AuthenticationProvider()
 
     // Authentication
+    authentication(authenticationProvider, userName, password)
+
+    // API
+    apiSamples()
+}
+
+private suspend fun authentication(authenticationProvider: AuthenticationProvider, userName: String, password: String) {
     val tokenWrapperResult = authenticationProvider.fetchTokenWrapper(userName, password)
     val refreshToken = tokenWrapperResult.orNull()!!.tokenWrapper.refreshToken
     val newTokenWrapperResult = authenticationProvider.refreshTokenWrapper(refreshToken)
+    val xVRTToken = authenticationProvider.fetchXVRTToken(userName, password)
+    val vrtPlayerToken = authenticationProvider.fetchVRTPlayerToken(xVRTToken.orNull()!!.xVRTToken)
+}
 
-    // API
+private suspend fun apiSamples() {
     val vrtApi = VRTApi()
     // A-Z
     val azPrograms = vrtApi.fetchAZPrograms()
