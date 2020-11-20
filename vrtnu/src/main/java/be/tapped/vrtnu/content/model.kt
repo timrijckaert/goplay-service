@@ -2,6 +2,7 @@ package be.tapped.vrtnu.content
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.JsonElement
 
 @Serializable
 data class Pages(
@@ -265,3 +266,31 @@ data class Episode(
         require(type.isNotEmpty()) { "Episode: type can not be empty" }
     }
 }
+
+@Serializable
+data class TargetUrl(val type: String, val url: String)
+
+@Serializable
+data class Content(val eventType: String, val duration: Long, val skippable: Boolean)
+
+@Serializable
+data class PlayList(val content: List<Content>)
+
+@Serializable
+data class Chaptering(val content: List<Content>)
+
+@Serializable
+data class StreamInformation(
+    val duration: Long,
+    val skinType: String,
+    val title: String,
+    val shortDescription: String,
+    val drm: JsonElement?,
+    val drmExpired: JsonElement,
+    val aspectRatio: String,
+    val targetUrls: List<TargetUrl>,
+    val posterImageUrl: String,
+    val channelId: JsonElement?,
+    val playlist: PlayList,
+    val chaptering: Chaptering,
+)
