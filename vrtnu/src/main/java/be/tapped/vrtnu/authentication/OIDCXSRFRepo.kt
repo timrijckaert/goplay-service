@@ -8,6 +8,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import okhttp3.internal.closeQuietly
 
 interface OIDCXSRFRepo {
     suspend fun fetchXSRFToken(): Either<MissingCookieValues, OIDCXSRF>
@@ -30,7 +31,7 @@ internal class HttpOIDCXSRFRepo(
                     .get()
                     .url(USER_TOKEN_GATEWAY_URL)
                     .build()
-            )
+            ).closeQuietly()
 
             cookieJar.validateCookie(COOKIE_XSRF).map(::OIDCXSRF).mapLeft(::MissingCookieValues).toEither()
         }

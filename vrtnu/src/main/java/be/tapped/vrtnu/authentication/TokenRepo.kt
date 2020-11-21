@@ -14,6 +14,7 @@ import kotlinx.coroutines.withContext
 import okhttp3.FormBody
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import okhttp3.internal.closeQuietly
 
 interface TokenRepo {
     sealed class TokenResponse {
@@ -83,7 +84,7 @@ class HttpTokenRepo(
                                 .build()
                         )
                         .build()
-                )
+                ).closeQuietly()
                 !fetchTokenWrapperFromCookieJar(cookieJar)
             }
         }
@@ -101,7 +102,7 @@ class HttpTokenRepo(
                         .header("Cookie", "vrtlogin-rt=${refreshToken.token}")
                         .url("$TOKEN_GATEWAY_URL/refreshtoken?legacy=true")
                         .build()
-                )
+                ).closeQuietly()
 
             fetchTokenWrapperFromCookieJar(newCookieJar)
         }

@@ -8,8 +8,13 @@ import be.tapped.vrtnu.authentication.TokenRepo
 import be.tapped.vrtnu.content.ElasticSearchQueryBuilder
 import be.tapped.vrtnu.content.VRTApi
 import kotlinx.coroutines.flow.toList
+import okhttp3.OkHttpClient
+import java.util.logging.Level
+import java.util.logging.Logger
 
 suspend fun main(args: Array<String>) {
+    Logger.getLogger(OkHttpClient::class.java.name).level = Level.FINE
+
     val userName = args[0]
     val password = args[1]
     val authenticationProvider = AuthenticationProvider()
@@ -46,16 +51,16 @@ private suspend fun apiSamples(authenticationTokens: Tuple5<Either<TokenRepo.Tok
 
     // Search
     val allSearchResults = vrtApi.episodes(ElasticSearchQueryBuilder.SearchQuery(category = "cultuur")).toList()
-    println(allSearchResults)
+    // println(allSearchResults)
 
     // Single Program
-    val programName = "Geubels en de Hollanders"
-    val geubelsEnDeHollanders = vrtApi.fetchProgramByName(programName).map { vrtApi.episodesForProgram(it.program).toList() }
-    println(geubelsEnDeHollanders)
+    // val programName = "Geubels en de Hollanders"
+    // val geubelsEnDeHollanders = vrtApi.fetchProgramByName(programName).map { vrtApi.episodesForProgram(it.program).toList() }
+    // println(geubelsEnDeHollanders)
 
     // Fetch Streams
-    val vrtPlayerToken = authenticationTokens.e.orNull()!!.vrtPlayerToken
-    val firstGeubelsEnDeHollandersEpisode = geubelsEnDeHollanders.orNull()!!.first().orNull()!!.episodes.first()
-    val firstGeubelsEnDeHollandersEpisodeStreamInfo = vrtApi.getVODStream(vrtPlayerToken, firstGeubelsEnDeHollandersEpisode.videoId, firstGeubelsEnDeHollandersEpisode.publicationId)
-    println(firstGeubelsEnDeHollandersEpisodeStreamInfo)
+    // val vrtPlayerToken = authenticationTokens.e.orNull()!!.vrtPlayerToken
+    // val firstGeubelsEnDeHollandersEpisode = geubelsEnDeHollanders.orNull()!!.first().orNull()!!.episodes.first()
+    // val firstGeubelsEnDeHollandersEpisodeStreamInfo = vrtApi.getVODStream(vrtPlayerToken, firstGeubelsEnDeHollandersEpisode.videoId, firstGeubelsEnDeHollandersEpisode.publicationId)
+    // println(firstGeubelsEnDeHollandersEpisodeStreamInfo)
 }
