@@ -271,13 +271,16 @@ data class Episode(
 data class TargetUrl(val type: String, val url: String)
 
 @Serializable
-data class Content(val eventType: String, val duration: Long, val skippable: Boolean)
+data class PlaylistContent(val eventType: String, val duration: Long, val skippable: Boolean)
 
 @Serializable
-data class PlayList(val content: List<Content>)
+data class PlayList(val content: List<PlaylistContent>)
 
 @Serializable
-data class Chaptering(val content: List<Content>)
+data class ChapteringContent(val id: String, val title: String, val time: String, val imageUrl: String? = null)
+
+@Serializable
+data class Chaptering(val content: List<ChapteringContent>)
 
 @Serializable
 data class StreamInformation(
@@ -285,12 +288,21 @@ data class StreamInformation(
     val skinType: String,
     val title: String,
     val shortDescription: String,
-    val drm: JsonElement?,
+    val drm: JsonElement? = null,
     val drmExpired: JsonElement,
     val aspectRatio: String,
     val targetUrls: List<TargetUrl>,
     val posterImageUrl: String,
-    val channelId: JsonElement?,
+    val channelId: JsonElement? = null,
     val playlist: PlayList,
     val chaptering: Chaptering,
-)
+) {
+    init {
+        require(skinType.isNotEmpty()) { "skinType should not be empty" }
+        require(title.isNotEmpty()) { "title should not be empty" }
+        require(shortDescription.isNotEmpty()) { "shortDescription should not be empty" }
+        require(aspectRatio.isNotEmpty()) { "aspectRatio should not be empty" }
+        require(targetUrls.isNotEmpty()) { "targetUrls should not be empty" }
+        require(posterImageUrl.isNotEmpty()) { "posterImageUrl should not be empty" }
+    }
+}

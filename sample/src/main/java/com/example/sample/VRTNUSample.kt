@@ -51,16 +51,16 @@ private suspend fun apiSamples(authenticationTokens: Tuple5<Either<TokenRepo.Tok
 
     // Search
     val allSearchResults = vrtApi.episodes(ElasticSearchQueryBuilder.SearchQuery(category = "cultuur")).toList()
-    // println(allSearchResults)
+    println(allSearchResults)
 
     // Single Program
-    // val programName = "Geubels en de Hollanders"
-    // val geubelsEnDeHollanders = vrtApi.fetchProgramByName(programName).map { vrtApi.episodesForProgram(it.program).toList() }
-    // println(geubelsEnDeHollanders)
+    val programName = "terzake"
+    val episodesForProgram = vrtApi.fetchProgramByName(programName).map { vrtApi.episodesForProgram(it.program).toList() }
+    println(episodesForProgram)
 
     // Fetch Streams
-    // val vrtPlayerToken = authenticationTokens.e.orNull()!!.vrtPlayerToken
-    // val firstGeubelsEnDeHollandersEpisode = geubelsEnDeHollanders.orNull()!!.first().orNull()!!.episodes.first()
-    // val firstGeubelsEnDeHollandersEpisodeStreamInfo = vrtApi.getVODStream(vrtPlayerToken, firstGeubelsEnDeHollandersEpisode.videoId, firstGeubelsEnDeHollandersEpisode.publicationId)
-    // println(firstGeubelsEnDeHollandersEpisodeStreamInfo)
+    val vrtPlayerToken = authenticationTokens.e.orNull()!!.vrtPlayerToken
+    val latestAiredEpisode = episodesForProgram.orNull()!!.first().orNull()!!.episodes.first()
+    val latestAiredEpisodeStreamInfo = vrtApi.getVODStream(vrtPlayerToken, latestAiredEpisode.videoId, latestAiredEpisode.publicationId)
+    println(latestAiredEpisodeStreamInfo)
 }
