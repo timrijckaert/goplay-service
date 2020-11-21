@@ -5,6 +5,8 @@ import arrow.core.computations.either
 import be.tapped.vrtnu.content.ApiResponse.Failure.JsonParsingException
 import be.tapped.vrtnu.content.ElasticSearchQueryBuilder.applySearchQuery
 import be.tapped.vtmgo.common.executeAsync
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import okhttp3.HttpUrl
@@ -29,41 +31,43 @@ internal class HttpProgramRepo(
     private val jsonProgramParser: JsonProgramParser,
 ) : ProgramRepo {
 
-    override suspend fun fetchAZPrograms(): Either<ApiResponse.Failure, ApiResponse.Success.Programs> {
-        val programsAZSorted = client.executeAsync(
-            Request.Builder()
-                .get()
-                .url(constructUrl(ElasticSearchQueryBuilder.SearchQuery(transcodingStatus = "AVAILABLE")))
-                .build()
-        )
+    override suspend fun fetchAZPrograms(): Either<ApiResponse.Failure, ApiResponse.Success.Programs> =
+        withContext(Dispatchers.IO) {
+            val programsAZSorted = client.executeAsync(
+                Request.Builder()
+                    .get()
+                    .url(constructUrl(ElasticSearchQueryBuilder.SearchQuery(transcodingStatus = "AVAILABLE")))
+                    .build()
+            )
 
-        return either {
-            val rawAZJson = !Either.fromNullable(programsAZSorted.body).mapLeft { ApiResponse.Failure.EmptyJson }
-            ApiResponse.Success.Programs(!jsonProgramParser.parse(rawAZJson.string()))
+            either {
+                val rawAZJson = !Either.fromNullable(programsAZSorted.body).mapLeft { ApiResponse.Failure.EmptyJson }
+                ApiResponse.Success.Programs(!jsonProgramParser.parse(rawAZJson.string()))
+            }
         }
-    }
 
-    override suspend fun fetchProgramByName(programName: String): Either<ApiResponse.Failure, ApiResponse.Success.SingleProgram> {
-        val fetchSingleProgram = client.executeAsync(
-            Request.Builder()
-                .get()
-                .url(
-                    constructUrl(
-                        ElasticSearchQueryBuilder.SearchQuery(
-                            transcodingStatus = "AVAILABLE",
-                            programName = programName,
-                            size = 1
+    override suspend fun fetchProgramByName(programName: String): Either<ApiResponse.Failure, ApiResponse.Success.SingleProgram> =
+        withContext(Dispatchers.IO) {
+            val fetchSingleProgram = client.executeAsync(
+                Request.Builder()
+                    .get()
+                    .url(
+                        constructUrl(
+                            ElasticSearchQueryBuilder.SearchQuery(
+                                transcodingStatus = "AVAILABLE",
+                                programName = programName,
+                                size = 1
+                            )
                         )
                     )
-                )
-                .build()
-        )
+                    .build()
+            )
 
-        return either {
-            val singleProgramJson = !Either.fromNullable(fetchSingleProgram.body).mapLeft { ApiResponse.Failure.EmptyJson }
-            ApiResponse.Success.SingleProgram((!jsonProgramParser.parse(singleProgramJson.string())).first())
+            either {
+                val singleProgramJson = !Either.fromNullable(fetchSingleProgram.body).mapLeft { ApiResponse.Failure.EmptyJson }
+                ApiResponse.Success.SingleProgram((!jsonProgramParser.parse(singleProgramJson.string())).first())
+            }
         }
-    }
 
     private fun constructUrl(searchQuery: ElasticSearchQueryBuilder.SearchQuery): HttpUrl =
         HttpUrl.Builder()

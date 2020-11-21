@@ -7,8 +7,10 @@ import arrow.typeclasses.suspended.BindSyntax
 import be.tapped.vrtnu.content.ApiResponse.Failure.JsonParsingException
 import be.tapped.vrtnu.content.ElasticSearchQueryBuilder.applySearchQuery
 import be.tapped.vtmgo.common.executeAsync
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import okhttp3.HttpUrl
@@ -38,18 +40,20 @@ internal class HttpEpisodeRepo(
 
     override fun episodes(searchQuery: ElasticSearchQueryBuilder.SearchQuery): Flow<Either<ApiResponse.Failure, ApiResponse.Success.Episodes>> =
         unfoldFlow(searchQuery.pageIndex) { index ->
-            val episodeByCategoryResponse = client.executeAsync(
-                Request.Builder()
-                    .get()
-                    .url(constructUrl(searchQuery.copy(pageIndex = index)))
-                    .build()
-            )
+            withContext(Dispatchers.IO) {
+                val episodeByCategoryResponse = client.executeAsync(
+                    Request.Builder()
+                        .get()
+                        .url(constructUrl(searchQuery.copy(pageIndex = index)))
+                        .build()
+                )
 
-            val rawJson = !Either.fromNullable(episodeByCategoryResponse.body).mapLeft { ApiResponse.Failure.EmptyJson }
-            val searchResultEpisodes = !jsonEpisodeParser.parse(rawJson.string())
+                val rawJson = !Either.fromNullable(episodeByCategoryResponse.body).mapLeft { ApiResponse.Failure.EmptyJson }
+                val searchResultEpisodes = !jsonEpisodeParser.parse(rawJson.string())
 
-            if (index > searchResultEpisodes.meta.pages.total) null
-            else Pair(index + 1, ApiResponse.Success.Episodes(searchResultEpisodes.results))
+                if (index > searchResultEpisodes.meta.pages.total) null
+                else Pair(index + 1, ApiResponse.Success.Episodes(searchResultEpisodes.results))
+            }
         }
 
     private fun constructUrl(searchQuery: ElasticSearchQueryBuilder.SearchQuery) =

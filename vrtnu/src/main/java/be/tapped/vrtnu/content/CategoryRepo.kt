@@ -3,7 +3,10 @@ package be.tapped.vrtnu.content
 import arrow.core.Either
 import arrow.core.computations.either
 import arrow.core.flatMap
+import be.tapped.vrtnu.content.ApiResponse.Failure.JsonParsingException
 import be.tapped.vtmgo.common.executeAsync
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
@@ -19,9 +22,7 @@ internal class JsonCategoryParser {
             .flatMap {
                 Either.catch {
                     Json.decodeFromJsonElement<List<Category>>(it)
-                }.mapLeft {
-                    ApiResponse.Failure.JsonParsingException(it)
-                }
+                }.mapLeft(::JsonParsingException)
             }
 }
 
@@ -37,17 +38,18 @@ internal class HttpCategoryRepo(
         private const val CATEGORIES_URL = "https://www.vrt.be/vrtnu/categorieen/jcr:content/par/categories.model.json"
     }
 
-    override suspend fun fetchCategories(): Either<ApiResponse.Failure, ApiResponse.Success.Categories> {
-        val categoryResponse = client.executeAsync(
-            Request.Builder()
-                .get()
-                .url(CATEGORIES_URL)
-                .build()
-        )
+    override suspend fun fetchCategories(): Either<ApiResponse.Failure, ApiResponse.Success.Categories> =
+        withContext(Dispatchers.IO) {
+            val categoryResponse = client.executeAsync(
+                Request.Builder()
+                    .get()
+                    .url(CATEGORIES_URL)
+                    .build()
+            )
 
-        return either {
-            val rawJson = !Either.fromNullable(categoryResponse.body).mapLeft { ApiResponse.Failure.EmptyJson }
-            ApiResponse.Success.Categories(!jsonCategoryParser.parse(rawJson.string()))
+            either {
+                val rawJson = !Either.fromNullable(categoryResponse.body).mapLeft { ApiResponse.Failure.EmptyJson }
+                ApiResponse.Success.Categories(!jsonCategoryParser.parse(rawJson.string()))
+            }
         }
-    }
 }

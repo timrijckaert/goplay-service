@@ -4,6 +4,8 @@ import arrow.core.Either
 import arrow.core.computations.either
 import be.tapped.vrtnu.authentication.TokenRepo.TokenResponse.Failure.FailedToLogin
 import be.tapped.vtmgo.common.executeAsync
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import okhttp3.FormBody
@@ -23,27 +25,28 @@ internal class HttpLoginRepo(
         private const val LOGIN_URL = "https://accounts.vrt.be/accounts.login"
     }
 
-    override suspend fun fetchLoginResponse(userName: String, password: String): Either<TokenRepo.TokenResponse.Failure, LoginResponse> {
-        val loginJson = client.executeAsync(
-            Request.Builder()
-                .url(LOGIN_URL)
-                .post(
-                    FormBody.Builder()
-                        .add("loginID", userName)
-                        .add("password", password)
-                        .add("sessionExpiration", "-2")
-                        .add("APIKey", API_KEY)
-                        .add("targetEnv", "jssdk")
-                        .build()
-                )
-                .build()
-        )
+    override suspend fun fetchLoginResponse(userName: String, password: String): Either<TokenRepo.TokenResponse.Failure, LoginResponse> =
+        withContext(Dispatchers.IO) {
+            val loginJson = client.executeAsync(
+                Request.Builder()
+                    .url(LOGIN_URL)
+                    .post(
+                        FormBody.Builder()
+                            .add("loginID", userName)
+                            .add("password", password)
+                            .add("sessionExpiration", "-2")
+                            .add("APIKey", API_KEY)
+                            .add("targetEnv", "jssdk")
+                            .build()
+                    )
+                    .build()
+            ).body?.string()
 
-        return either {
-            val rawLoginJson = !Either.fromNullable(loginJson.body?.string()).mapLeft { TokenRepo.TokenResponse.Failure.EmptyJson }
-            val loginResponse = jsonLoginResponseMapper.parse(Json.decodeFromString(rawLoginJson))
+            either {
+                val rawLoginJson = !Either.fromNullable(loginJson).mapLeft { TokenRepo.TokenResponse.Failure.EmptyJson }
+                val loginResponse = jsonLoginResponseMapper.parse(Json.decodeFromString(rawLoginJson))
 
-            !loginResponse.mapLeft(::FailedToLogin)
+                !loginResponse.mapLeft(::FailedToLogin)
+            }
         }
-    }
 }

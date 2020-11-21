@@ -3,9 +3,13 @@ package be.tapped.vrtnu.content
 import arrow.core.Either
 import arrow.core.computations.either
 import be.tapped.vrtnu.authentication.VRTPlayerToken
-import be.tapped.vrtnu.content.ApiResponse.*
-import be.tapped.vrtnu.content.ApiResponse.Failure.*
+import be.tapped.vrtnu.content.ApiResponse.Failure
+import be.tapped.vrtnu.content.ApiResponse.Failure.EmptyJson
+import be.tapped.vrtnu.content.ApiResponse.Failure.JsonParsingException
+import be.tapped.vrtnu.content.ApiResponse.Success
 import be.tapped.vtmgo.common.executeAsync
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import okhttp3.HttpUrl
@@ -59,19 +63,20 @@ class HttpStreamRepo(
         vrtPlayerToken: VRTPlayerToken,
         videoId: String,
         publicationId: String,
-    ): Either<Failure, Success.StreamInfo> {
-        val videoStreamResponse = client.executeAsync(
-            Request.Builder()
-                .get()
-                .url(constructVideoStreamUrl(publicationId, videoId, vrtPlayerToken))
-                .build()
-        ).body
+    ): Either<Failure, Success.StreamInfo> =
+        withContext(Dispatchers.IO) {
+            val videoStreamResponse = client.executeAsync(
+                Request.Builder()
+                    .get()
+                    .url(constructVideoStreamUrl(publicationId, videoId, vrtPlayerToken))
+                    .build()
+            ).body
 
-        return either {
-            val json = !Either.fromNullable(videoStreamResponse).mapLeft { EmptyJson }
-            Success.StreamInfo(!jsonStreamInformationParser.parse(json.string()))
+            either {
+                val json = !Either.fromNullable(videoStreamResponse).mapLeft { EmptyJson }
+                Success.StreamInfo(!jsonStreamInformationParser.parse(json.string()))
+            }
         }
-    }
 
     override suspend fun getLiveStream(vrtPlayerToken: VRTPlayerToken, videoId: String): Either<Failure, Success.StreamInfo> {
         TODO("Not yet implemented")

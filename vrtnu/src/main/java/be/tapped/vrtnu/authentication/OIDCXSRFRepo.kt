@@ -4,6 +4,8 @@ import arrow.core.Either
 import be.tapped.vrtnu.authentication.TokenRepo.TokenResponse.Failure.MissingCookieValues
 import be.tapped.vtmgo.common.ReadOnlyCookieJar
 import be.tapped.vtmgo.common.executeAsync
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 import okhttp3.Request
 
@@ -21,14 +23,15 @@ internal class HttpOIDCXSRFRepo(
         private const val COOKIE_XSRF = "OIDCXSRF"
     }
 
-    override suspend fun fetchXSRFToken(): Either<MissingCookieValues, OIDCXSRF> {
-        client.executeAsync(
-            Request.Builder()
-                .get()
-                .url(USER_TOKEN_GATEWAY_URL)
-                .build()
-        )
+    override suspend fun fetchXSRFToken(): Either<MissingCookieValues, OIDCXSRF> =
+        withContext(Dispatchers.IO) {
+            client.executeAsync(
+                Request.Builder()
+                    .get()
+                    .url(USER_TOKEN_GATEWAY_URL)
+                    .build()
+            )
 
-        return cookieJar.validateCookie(COOKIE_XSRF).map(::OIDCXSRF).mapLeft(::MissingCookieValues).toEither()
-    }
+            cookieJar.validateCookie(COOKIE_XSRF).map(::OIDCXSRF).mapLeft(::MissingCookieValues).toEither()
+        }
 }

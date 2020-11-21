@@ -6,17 +6,14 @@ import arrow.core.extensions.nonemptylist.semigroup.semigroup
 import arrow.core.extensions.validated.applicative.applicative
 import arrow.core.extensions.validated.bifunctor.mapLeft
 import be.tapped.vrtnu.authentication.TokenRepo.TokenResponse.Failure.MissingCookieValues
-import be.tapped.vrtnu.content.ApiResponse
 import be.tapped.vtmgo.common.DefaultCookieJar
 import be.tapped.vtmgo.common.ReadOnlyCookieJar
 import be.tapped.vtmgo.common.executeAsync
-import kotlinx.serialization.json.buildJsonObject
-import kotlinx.serialization.json.put
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import okhttp3.FormBody
-import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import okhttp3.RequestBody.Companion.toRequestBody
 
 interface TokenRepo {
     sealed class TokenResponse {
@@ -69,42 +66,45 @@ class HttpTokenRepo(
         userName: String,
         password: String,
     ): Either<TokenRepo.TokenResponse.Failure, TokenRepo.TokenResponse.Success.Token> =
-        either {
-            val loginResponse = !fetchLoginResponse(userName, password)
-            val oidcXSRFToken = !fetchXSRFToken()
-            client.executeAsync(
-                Request.Builder()
-                    .url(VRT_LOGIN_URL)
-                    .post(
-                        FormBody.Builder()
-                            .add("UID", loginResponse.uid)
-                            .add("UIDSignature", loginResponse.uidSignature)
-                            .add("signatureTimestamp", loginResponse.signatureTimestamp)
-                            .add("client_id", "vrtnu-site")
-                            .add("_csrf", oidcXSRFToken.token)
-                            .build()
-                    )
-                    .build()
-            )
-            !fetchTokenWrapperFromCookieJar(cookieJar)
+        withContext(Dispatchers.IO) {
+            either {
+                val loginResponse = !fetchLoginResponse(userName, password)
+                val oidcXSRFToken = !fetchXSRFToken()
+                client.executeAsync(
+                    Request.Builder()
+                        .url(VRT_LOGIN_URL)
+                        .post(
+                            FormBody.Builder()
+                                .add("UID", loginResponse.uid)
+                                .add("UIDSignature", loginResponse.uidSignature)
+                                .add("signatureTimestamp", loginResponse.signatureTimestamp)
+                                .add("client_id", "vrtnu-site")
+                                .add("_csrf", oidcXSRFToken.token)
+                                .build()
+                        )
+                        .build()
+                )
+                !fetchTokenWrapperFromCookieJar(cookieJar)
+            }
         }
 
-    override suspend fun refreshTokenWrapper(refreshToken: RefreshToken): Either<TokenRepo.TokenResponse.Failure, TokenRepo.TokenResponse.Success.Token> {
-        val newCookieJar = DefaultCookieJar()
-        client
-            .newBuilder()
-            .cookieJar(newCookieJar)
-            .build()
-            .executeAsync(
-                Request.Builder()
-                    .get()
-                    .header("Cookie", "vrtlogin-rt=${refreshToken.token}")
-                    .url("$TOKEN_GATEWAY_URL/refreshtoken?legacy=true")
-                    .build()
-            )
+    override suspend fun refreshTokenWrapper(refreshToken: RefreshToken): Either<TokenRepo.TokenResponse.Failure, TokenRepo.TokenResponse.Success.Token> =
+        withContext(Dispatchers.IO) {
+            val newCookieJar = DefaultCookieJar()
+            client
+                .newBuilder()
+                .cookieJar(newCookieJar)
+                .build()
+                .executeAsync(
+                    Request.Builder()
+                        .get()
+                        .header("Cookie", "vrtlogin-rt=${refreshToken.token}")
+                        .url("$TOKEN_GATEWAY_URL/refreshtoken?legacy=true")
+                        .build()
+                )
 
-        return fetchTokenWrapperFromCookieJar(newCookieJar)
-    }
+            fetchTokenWrapperFromCookieJar(newCookieJar)
+        }
 
     override suspend fun fetchXVRTToken(
         userName: String,

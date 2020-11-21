@@ -5,6 +5,8 @@ import arrow.core.NonEmptyList
 import be.tapped.vtmgo.common.ReadOnlyCookieJar
 import be.tapped.vtmgo.common.executeAsync
 import be.tapped.vtmgo.common.jsonMediaType
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import okhttp3.OkHttpClient
@@ -35,16 +37,19 @@ internal class HttpXVRTTokenRepo(
             put("email", userName)
         }.toString()
 
-        client.executeAsync(
-            Request.Builder()
-                .url(TOKEN_GATEWAY_URL)
-                .addHeader("Cookie", loginCookie)
-                .post(json.toRequestBody(jsonMediaType))
-                .build()
-        )
-        return cookieJar.validateCookie(COOKIE_X_VRT_TOKEN)
-            .map(::XVRTToken)
-            .toEither()
-            .mapLeft { TokenRepo.TokenResponse.Failure.MissingCookieValues(NonEmptyList(COOKIE_X_VRT_TOKEN)) }
+        return withContext(Dispatchers.IO) {
+            client.executeAsync(
+                Request.Builder()
+                    .url(TOKEN_GATEWAY_URL)
+                    .addHeader("Cookie", loginCookie)
+                    .post(json.toRequestBody(jsonMediaType))
+                    .build()
+            )
+
+            cookieJar.validateCookie(COOKIE_X_VRT_TOKEN)
+                .map(::XVRTToken)
+                .toEither()
+                .mapLeft { TokenRepo.TokenResponse.Failure.MissingCookieValues(NonEmptyList(COOKIE_X_VRT_TOKEN)) }
+        }
     }
 }
