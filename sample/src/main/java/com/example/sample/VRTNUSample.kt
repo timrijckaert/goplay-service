@@ -3,6 +3,7 @@ package com.example.sample
 import arrow.core.Tuple6
 import be.tapped.vrtnu.content.ElasticSearchQueryBuilder
 import be.tapped.vrtnu.content.VRTApi
+import be.tapped.vrtnu.epg.HttpEpgRepo
 import be.tapped.vrtnu.profile.FavoriteWrapper
 import be.tapped.vrtnu.profile.ProfileRepo
 import be.tapped.vrtnu.profile.RefreshToken
@@ -11,6 +12,7 @@ import be.tapped.vrtnu.profile.VRTPlayerToken
 import be.tapped.vrtnu.profile.XVRTToken
 import kotlinx.coroutines.flow.toList
 import okhttp3.OkHttpClient
+import java.util.*
 import java.util.logging.Level
 import java.util.logging.Logger
 
@@ -26,6 +28,9 @@ suspend fun main(args: Array<String>) {
 
     // API
     apiSamples(authenticationTokens)
+
+    // EPG
+    epg()
 }
 
 private suspend fun authentication(
@@ -93,4 +98,12 @@ private suspend fun apiSamples(tokenTuple: Tuple6<TokenWrapper, RefreshToken, To
     // Fetch Live Stream Video
     val vrtNWSLiveStreamInfo = vrtApi.getStream(vrtPlayerToken, "vualto_een_geo")
     println(vrtNWSLiveStreamInfo)
+}
+
+private suspend fun epg() {
+    val epg = HttpEpgRepo()
+
+    val todaysEpg = epg.epg()
+    val yesterdaysEpg = epg.epg(Calendar.getInstance().apply { roll(Calendar.DAY_OF_MONTH, false) })
+    val someDayEpg = epg.epg(Calendar.getInstance().apply { set(2020, 10, 22) })
 }
