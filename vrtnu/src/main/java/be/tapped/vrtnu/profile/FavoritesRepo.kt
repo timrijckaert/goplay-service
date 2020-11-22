@@ -48,11 +48,6 @@ internal class JsonFavoriteParser {
 }
 
 interface FavoritesRepo {
-    /***
-     * Returns the user favorite programs.
-     * @return A map where the key is the 'vrtnuaz' + program name
-     * eg: vrtnuazdeafspraak, vrtnuazdeafspraakopvrijdag
-     */
     suspend fun favorites(xVRTToken: XVRTToken): Either<ProfileResponse.Failure, ProfileResponse.Success.Favorites>
 }
 
