@@ -1,4 +1,4 @@
-package be.tapped.vrtnu.authentication
+package be.tapped.vrtnu.profile
 
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable

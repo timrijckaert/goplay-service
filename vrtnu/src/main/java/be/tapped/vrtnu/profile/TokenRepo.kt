@@ -1,4 +1,4 @@
-package be.tapped.vrtnu.authentication
+package be.tapped.vrtnu.profile
 
 import arrow.core.Either
 import arrow.core.NonEmptyList
@@ -9,7 +9,7 @@ import arrow.core.extensions.validated.applicative.applicative
 import arrow.core.extensions.validated.bifunctor.mapLeft
 import arrow.core.invalidNel
 import arrow.core.validNel
-import be.tapped.vrtnu.authentication.ProfileResponse.Failure.MissingCookieValues
+import be.tapped.vrtnu.profile.ProfileResponse.Failure.MissingCookieValues
 import be.tapped.vtmgo.common.DefaultCookieJar
 import be.tapped.vtmgo.common.ReadOnlyCookieJar
 import be.tapped.vtmgo.common.executeAsync

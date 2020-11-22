@@ -2,11 +2,11 @@ package com.example.sample
 
 import arrow.core.Either
 import arrow.core.Tuple5
-import be.tapped.vrtnu.authentication.ProfileRepo
-import be.tapped.vrtnu.authentication.ProfileResponse
-import be.tapped.vrtnu.authentication.RefreshToken
 import be.tapped.vrtnu.content.ElasticSearchQueryBuilder
 import be.tapped.vrtnu.content.VRTApi
+import be.tapped.vrtnu.profile.ProfileRepo
+import be.tapped.vrtnu.profile.ProfileResponse
+import be.tapped.vrtnu.profile.RefreshToken
 import kotlinx.coroutines.flow.toList
 import okhttp3.OkHttpClient
 import java.util.logging.Level

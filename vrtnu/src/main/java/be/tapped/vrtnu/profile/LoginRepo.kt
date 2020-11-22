@@ -1,8 +1,8 @@
-package be.tapped.vrtnu.authentication
+package be.tapped.vrtnu.profile
 
 import arrow.core.Either
 import arrow.core.computations.either
-import be.tapped.vrtnu.authentication.ProfileResponse.Failure.FailedToLogin
+import be.tapped.vrtnu.profile.ProfileResponse.Failure.FailedToLogin
 import be.tapped.vtmgo.common.executeAsync
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext

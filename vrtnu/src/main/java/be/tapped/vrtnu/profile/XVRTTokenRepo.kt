@@ -1,4 +1,4 @@
-package be.tapped.vrtnu.authentication
+package be.tapped.vrtnu.profile
 
 import arrow.core.Either
 import arrow.core.NonEmptyList
