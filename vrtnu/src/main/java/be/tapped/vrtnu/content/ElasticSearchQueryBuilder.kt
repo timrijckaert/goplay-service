@@ -10,15 +10,14 @@ object ElasticSearchQueryBuilder {
     private const val DEFAULT_START_PAGE_INDEX = 1
     private val DEFAULT_SEARCH_QUERY_INDEX = SearchQuery.Index.VIDEO
     private val DEFAULT_SEARCH_QUERY_ORDER = SearchQuery.Order.DESC
-    private const val DEFAULT_TRANSCODING_STATUS = "AVAILABLE"
+    private val DEFAULT_TRANSCODING_STATUS = TranscodingStatus.AVAILABLE
 
     // https://github.com/add-ons/plugin.video.vrt.nu/wiki/VRT-NU-API#vrt-api-parameters
     data class SearchQuery(
         val size: Int = DEFAULT_SEARCH_SIZE,
         val index: Index = DEFAULT_SEARCH_QUERY_INDEX,
         val order: Order = DEFAULT_SEARCH_QUERY_ORDER,
-        //TODO Can we convert this to an enum? What are the other values?
-        val transcodingStatus: String = DEFAULT_TRANSCODING_STATUS,
+        val transcodingStatus: TranscodingStatus = DEFAULT_TRANSCODING_STATUS,
         val pageIndex: Int = DEFAULT_START_PAGE_INDEX,
         val available: Boolean? = null,
         val query: String? = null,
@@ -70,7 +69,7 @@ object ElasticSearchQueryBuilder {
                     addQueryParameter("order", order.queryParamName)
                 }
 
-                addQueryParameter("facets[transcodingStatus]", transcodingStatus)
+                addQueryParameter("facets[transcodingStatus]", transcodingStatus.name)
 
                 available?.let {
                     addQueryParameter("available", "$it")

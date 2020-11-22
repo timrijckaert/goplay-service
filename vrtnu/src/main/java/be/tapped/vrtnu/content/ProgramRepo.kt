@@ -36,7 +36,7 @@ internal class HttpProgramRepo(
             val programsAZSorted = client.executeAsync(
                 Request.Builder()
                     .get()
-                    .url(constructUrl(ElasticSearchQueryBuilder.SearchQuery(transcodingStatus = "AVAILABLE")))
+                    .url(constructUrl(ElasticSearchQueryBuilder.SearchQuery(transcodingStatus = TranscodingStatus.AVAILABLE)))
                     .build()
             )
 
@@ -54,7 +54,7 @@ internal class HttpProgramRepo(
                     .url(
                         constructUrl(
                             ElasticSearchQueryBuilder.SearchQuery(
-                                transcodingStatus = "AVAILABLE",
+                                transcodingStatus = TranscodingStatus.AVAILABLE,
                                 programName = programName,
                                 size = 1
                             )

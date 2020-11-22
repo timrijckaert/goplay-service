@@ -176,11 +176,23 @@ data class Tag(
 }
 
 @Serializable
+enum class AssetStatus {
+    AVAILABLE,
+    NOT_AVAILABLE_YET
+}
+
+@Serializable
+enum class TranscodingStatus {
+    AVAILABLE,
+    NOT_AVAILABLE_YET
+}
+
+@Serializable
 data class Episode(
     val allowedRegion: String,
     val assetOffTime: String,
     val assetOnTime: String,
-    val assetStatus: String,
+    val assetStatus: AssetStatus,
     val brands: List<String>,
     val broadcastDate: Long,
     val categories: List<String>,
@@ -203,7 +215,7 @@ data class Episode(
     val seasonPath: String,
     val seasonTitle: String,
     val title: String,
-    val transcodingStatus: String,
+    val transcodingStatus: TranscodingStatus,
     val url: String,
     val videoId: String,
     val videoThumbnailUrl: String,
@@ -238,7 +250,6 @@ data class Episode(
         require(allowedRegion.isNotEmpty()) { "Episode: allowedRegion can not be empty" }
         require(assetOffTime.isNotEmpty()) { "Episode: assetOffTime can not be empty" }
         require(assetOnTime.isNotEmpty()) { "Episode: assetOnTime can not be empty" }
-        require(assetStatus.isNotEmpty()) { "Episode: assetStatus can not be empty" }
         require(brands.isNotEmpty()) { "Episode: brands can not be empty" }
         require(categories.isNotEmpty()) { "Episode: categories can not be empty" }
         require(name.isNotEmpty()) { "Episode: name can not be empty" }
@@ -255,7 +266,6 @@ data class Episode(
         require(seasonPath.isNotEmpty()) { "Episode: seasonPath can not be empty" }
         require(seasonTitle.isNotEmpty()) { "Episode: seasonTitle can not be empty" }
         require(title.isNotEmpty()) { "Episode: title can not be empty" }
-        require(transcodingStatus.isNotEmpty()) { "Episode: transcodingStatus can not be empty" }
         require(url.isNotEmpty()) { "Episode: url can not be empty" }
         require(videoId.isNotEmpty()) { "Episode: videoId can not be empty" }
         require(videoThumbnailUrl.isNotEmpty()) { "Episode: videoThumbnailUrl can not be empty" }

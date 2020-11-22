@@ -78,11 +78,15 @@ private suspend fun apiSamples(tokenTuple: Tuple6<TokenWrapper, RefreshToken, To
 
     // Single Program
     val programName = "terzake"
-    val episodesForProgram = vrtApi.fetchProgramByName(programName).map { vrtApi.episodesForProgram(it.program).toList() }
-    println(episodesForProgram)
+    val programWithEpisodes = vrtApi.fetchProgramByName(programName).map { it.program to vrtApi.episodesForProgram(it.program).toList() }
+    val forceUnwrappedProgramWithEpisodes = programWithEpisodes.orNull()!!
+    val program = forceUnwrappedProgramWithEpisodes.first
+    val episodes = forceUnwrappedProgramWithEpisodes.second.flatMap { it.orNull()!!.episodes }
+    println(program)
+    println(episodes)
 
     // Fetch Streams
-    val latestAiredEpisode = episodesForProgram.orNull()!!.first().orNull()!!.episodes.first()
+    val latestAiredEpisode = episodes.first()
     val latestAiredEpisodeStreamInfo = vrtApi.getVODStream(vrtPlayerToken, latestAiredEpisode.videoId, latestAiredEpisode.publicationId)
     println(latestAiredEpisodeStreamInfo)
 }
