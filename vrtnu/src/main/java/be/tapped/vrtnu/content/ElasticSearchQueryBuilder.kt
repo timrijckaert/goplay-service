@@ -26,6 +26,7 @@ object ElasticSearchQueryBuilder {
         val end: Long? = null,
         val programName: String? = null,
         val programUrl: String? = null,
+        val whatsonId: String? = null,
         val custom: Map<String, String> = emptyMap(),
     ) {
 
@@ -98,6 +99,10 @@ object ElasticSearchQueryBuilder {
 
                 programUrl?.let {
                     addEncodedQueryParameter("facets[programUrl]", it)
+                }
+
+                whatsonId?.let {
+                    addQueryParameter("facets[whatsonId]", it)
                 }
 
                 if (pageIndex != DEFAULT_START_PAGE_INDEX) {
