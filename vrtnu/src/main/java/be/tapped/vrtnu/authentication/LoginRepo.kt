@@ -2,7 +2,7 @@ package be.tapped.vrtnu.authentication
 
 import arrow.core.Either
 import arrow.core.computations.either
-import be.tapped.vrtnu.authentication.TokenRepo.TokenResponse.Failure.FailedToLogin
+import be.tapped.vrtnu.authentication.ProfileResponse.Failure.FailedToLogin
 import be.tapped.vtmgo.common.executeAsync
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -63,7 +63,7 @@ internal object JsonLoginResponseMapper {
 }
 
 interface LoginRepo {
-    suspend fun fetchLoginResponse(userName: String, password: String): Either<TokenRepo.TokenResponse.Failure, LoginResponse>
+    suspend fun fetchLoginResponse(userName: String, password: String): Either<ProfileResponse.Failure, LoginResponse>
 }
 
 internal class HttpLoginRepo(
@@ -75,7 +75,7 @@ internal class HttpLoginRepo(
         private const val LOGIN_URL = "https://accounts.vrt.be/accounts.login"
     }
 
-    override suspend fun fetchLoginResponse(userName: String, password: String): Either<TokenRepo.TokenResponse.Failure, LoginResponse> =
+    override suspend fun fetchLoginResponse(userName: String, password: String): Either<ProfileResponse.Failure, LoginResponse> =
         withContext(Dispatchers.IO) {
             val loginJson = client.executeAsync(
                 Request.Builder()
@@ -93,7 +93,7 @@ internal class HttpLoginRepo(
             ).body?.string()
 
             either {
-                val rawLoginJson = !Either.fromNullable(loginJson).mapLeft { TokenRepo.TokenResponse.Failure.EmptyJson }
+                val rawLoginJson = !Either.fromNullable(loginJson).mapLeft { ProfileResponse.Failure.EmptyJson }
                 val loginResponse = jsonLoginResponseMapper.parse(Json.decodeFromString(rawLoginJson))
 
                 !loginResponse.mapLeft(::FailedToLogin)

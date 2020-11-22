@@ -1,11 +1,15 @@
 package be.tapped.vrtnu.authentication
 
-import arrow.core.*
+import arrow.core.Either
+import arrow.core.NonEmptyList
+import arrow.core.Validated
 import arrow.core.computations.either
 import arrow.core.extensions.nonemptylist.semigroup.semigroup
 import arrow.core.extensions.validated.applicative.applicative
 import arrow.core.extensions.validated.bifunctor.mapLeft
-import be.tapped.vrtnu.authentication.TokenRepo.TokenResponse.Failure.MissingCookieValues
+import arrow.core.invalidNel
+import arrow.core.validNel
+import be.tapped.vrtnu.authentication.ProfileResponse.Failure.MissingCookieValues
 import be.tapped.vtmgo.common.DefaultCookieJar
 import be.tapped.vtmgo.common.ReadOnlyCookieJar
 import be.tapped.vtmgo.common.executeAsync
@@ -17,32 +21,18 @@ import okhttp3.Request
 import okhttp3.internal.closeQuietly
 
 interface TokenRepo {
-    sealed class TokenResponse {
-        sealed class Success : TokenResponse() {
-            data class Token(val tokenWrapper: TokenWrapper) : Success()
-            data class PlayerToken(val vrtPlayerToken: VRTPlayerToken) : Success()
-            data class VRTToken(val xVRTToken: XVRTToken) : Success()
-        }
 
-        sealed class Failure : TokenResponse() {
-            data class JsonParsingException(val throwable: Throwable) : Failure()
-            data class FailedToLogin(val loginResponseFailure: LoginFailure) : Failure()
-            data class MissingCookieValues(val cookieValues: NonEmptyList<String>) : Failure()
-            object EmptyJson : Failure()
-        }
-    }
+    suspend fun fetchTokenWrapper(userName: String, password: String): Either<ProfileResponse.Failure, ProfileResponse.Success.Token>
 
-    suspend fun fetchTokenWrapper(userName: String, password: String): Either<TokenResponse.Failure, TokenResponse.Success.Token>
+    suspend fun refreshTokenWrapper(refreshToken: RefreshToken): Either<ProfileResponse.Failure, ProfileResponse.Success.Token>
 
-    suspend fun refreshTokenWrapper(refreshToken: RefreshToken): Either<TokenResponse.Failure, TokenResponse.Success.Token>
+    suspend fun fetchXVRTToken(userName: String, password: String): Either<ProfileResponse.Failure, ProfileResponse.Success.VRTToken>
 
-    suspend fun fetchXVRTToken(userName: String, password: String): Either<TokenResponse.Failure, TokenResponse.Success.VRTToken>
-
-    suspend fun fetchVRTPlayerToken(xVRTToken: XVRTToken): Either<TokenResponse.Failure, TokenResponse.Success.PlayerToken>
+    suspend fun fetchVRTPlayerToken(xVRTToken: XVRTToken): Either<ProfileResponse.Failure, ProfileResponse.Success.PlayerToken>
 
 }
 
-class HttpTokenRepo(
+internal class HttpTokenRepo(
     private val client: OkHttpClient,
     private val cookieJar: ReadOnlyCookieJar,
     loginRepo: LoginRepo = HttpLoginRepo(client, JsonLoginResponseMapper),
@@ -66,7 +56,7 @@ class HttpTokenRepo(
     override suspend fun fetchTokenWrapper(
         userName: String,
         password: String,
-    ): Either<TokenRepo.TokenResponse.Failure, TokenRepo.TokenResponse.Success.Token> =
+    ): Either<ProfileResponse.Failure, ProfileResponse.Success.Token> =
         withContext(Dispatchers.IO) {
             either {
                 val loginResponse = !fetchLoginResponse(userName, password)
@@ -89,7 +79,7 @@ class HttpTokenRepo(
             }
         }
 
-    override suspend fun refreshTokenWrapper(refreshToken: RefreshToken): Either<TokenRepo.TokenResponse.Failure, TokenRepo.TokenResponse.Success.Token> =
+    override suspend fun refreshTokenWrapper(refreshToken: RefreshToken): Either<ProfileResponse.Failure, ProfileResponse.Success.Token> =
         withContext(Dispatchers.IO) {
             val newCookieJar = DefaultCookieJar()
             client
@@ -110,13 +100,13 @@ class HttpTokenRepo(
     override suspend fun fetchXVRTToken(
         userName: String,
         password: String,
-    ): Either<TokenRepo.TokenResponse.Failure, TokenRepo.TokenResponse.Success.VRTToken> =
+    ): Either<ProfileResponse.Failure, ProfileResponse.Success.VRTToken> =
         either {
             val loginResponse = !fetchLoginResponse(userName, password)
-            TokenRepo.TokenResponse.Success.VRTToken(!fetchXVRTToken(userName, loginResponse))
+            ProfileResponse.Success.VRTToken(!fetchXVRTToken(userName, loginResponse))
         }
 
-    private suspend fun fetchTokenWrapperFromCookieJar(cookieJar: ReadOnlyCookieJar): Either<TokenRepo.TokenResponse.Failure, TokenRepo.TokenResponse.Success.Token> =
+    private suspend fun fetchTokenWrapperFromCookieJar(cookieJar: ReadOnlyCookieJar): Either<ProfileResponse.Failure, ProfileResponse.Success.Token> =
         either {
             val (accessToken, newRefreshToken, expiry) = !Validated.applicative(NonEmptyList.semigroup<String>())
                 .tupledN(
@@ -127,7 +117,7 @@ class HttpTokenRepo(
                 .mapLeft(::MissingCookieValues)
                 .toEither()
 
-            TokenRepo.TokenResponse.Success.Token(
+            ProfileResponse.Success.Token(
                 TokenWrapper(
                     accessToken,
                     newRefreshToken,

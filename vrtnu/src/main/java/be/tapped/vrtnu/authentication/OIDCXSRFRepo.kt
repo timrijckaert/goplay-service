@@ -1,7 +1,7 @@
 package be.tapped.vrtnu.authentication
 
 import arrow.core.Either
-import be.tapped.vrtnu.authentication.TokenRepo.TokenResponse.Failure.MissingCookieValues
+import be.tapped.vrtnu.authentication.ProfileResponse.Failure.MissingCookieValues
 import be.tapped.vtmgo.common.ReadOnlyCookieJar
 import be.tapped.vtmgo.common.executeAsync
 import kotlinx.coroutines.Dispatchers
