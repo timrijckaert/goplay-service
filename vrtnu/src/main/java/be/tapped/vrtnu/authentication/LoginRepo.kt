@@ -6,11 +6,61 @@ import be.tapped.vrtnu.authentication.TokenRepo.TokenResponse.Failure.FailedToLo
 import be.tapped.vtmgo.common.executeAsync
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.int
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 import okhttp3.FormBody
 import okhttp3.OkHttpClient
 import okhttp3.Request
+
+data class LoginFailure(
+    val errorCode: Int,
+    private val errorDetails: String?,
+) {
+    enum class LoginFailure {
+        INVALID_CREDENTIALS,
+        MISSING_LOGIN_ID,
+        MISSING_PASSWORD,
+        UNKNOWN
+    }
+
+    val isValid = errorCode == 0
+    val loginFailure = when (errorDetails) {
+        "invalid loginID or password" -> LoginFailure.INVALID_CREDENTIALS
+        "loginID must be provided" -> LoginFailure.MISSING_LOGIN_ID
+        "Missing required parameter: password" -> LoginFailure.MISSING_PASSWORD
+        else                                   -> LoginFailure.UNKNOWN
+    }
+}
+
+@Serializable
+data class LoginResponse(
+    val loginToken: String?,
+    val uid: String,
+    val uidSignature: String,
+    val signatureTimestamp: String,
+)
+
+internal object JsonLoginResponseMapper {
+    suspend fun parse(loginJson: JsonObject): Either<LoginFailure, LoginResponse> =
+        Either.catch {
+            LoginResponse(
+                loginJson["sessionInfo"]!!.jsonObject["login_token"]?.jsonPrimitive?.content,
+                loginJson["UID"]!!.jsonPrimitive.content,
+                loginJson["UIDSignature"]!!.jsonPrimitive.content,
+                loginJson["signatureTimestamp"]!!.jsonPrimitive.content,
+            )
+        }.mapLeft {
+            LoginFailure(
+                loginJson["errorCode"]!!.jsonPrimitive.int,
+                loginJson["errorDetails"]?.jsonPrimitive?.content
+            )
+        }
+}
 
 interface LoginRepo {
     suspend fun fetchLoginResponse(userName: String, password: String): Either<TokenRepo.TokenResponse.Failure, LoginResponse>
