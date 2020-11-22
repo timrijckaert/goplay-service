@@ -1,9 +1,9 @@
 package be.tapped.vrtnu.profile
 
 import arrow.core.NonEmptyList
+import be.tapped.common.DefaultCookieJar
+import be.tapped.common.ReadOnlyCookieJar
 import be.tapped.vrtnu.common.defaultOkHttpClient
-import be.tapped.vtmgo.common.DefaultCookieJar
-import be.tapped.vtmgo.common.ReadOnlyCookieJar
 import okhttp3.OkHttpClient
 
 sealed class ProfileResponse {
