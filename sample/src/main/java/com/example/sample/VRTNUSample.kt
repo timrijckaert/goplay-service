@@ -1,12 +1,14 @@
 package com.example.sample
 
-import arrow.core.Either
-import arrow.core.Tuple5
+import arrow.core.Tuple6
 import be.tapped.vrtnu.content.ElasticSearchQueryBuilder
 import be.tapped.vrtnu.content.VRTApi
+import be.tapped.vrtnu.profile.FavoriteWrapper
 import be.tapped.vrtnu.profile.ProfileRepo
-import be.tapped.vrtnu.profile.ProfileResponse
 import be.tapped.vrtnu.profile.RefreshToken
+import be.tapped.vrtnu.profile.TokenWrapper
+import be.tapped.vrtnu.profile.VRTPlayerToken
+import be.tapped.vrtnu.profile.XVRTToken
 import kotlinx.coroutines.flow.toList
 import okhttp3.OkHttpClient
 import java.util.logging.Level
@@ -30,16 +32,37 @@ private suspend fun authentication(
     profileRepo: ProfileRepo,
     userName: String,
     password: String,
-): Tuple5<Either<ProfileResponse.Failure, ProfileResponse.Success.Token>, RefreshToken, Either<ProfileResponse.Failure, ProfileResponse.Success.Token>, Either<ProfileResponse.Failure, ProfileResponse.Success.VRTToken>, Either<ProfileResponse.Failure, ProfileResponse.Success.PlayerToken>> {
+): Tuple6<TokenWrapper, RefreshToken, TokenWrapper, XVRTToken, VRTPlayerToken, FavoriteWrapper> {
+    // Token wrapper
     val tokenWrapperResult = profileRepo.fetchTokenWrapper(userName, password)
+
+    // Refresh token with refresh token
     val refreshToken = tokenWrapperResult.orNull()!!.tokenWrapper.refreshToken
     val newTokenWrapperResult = profileRepo.refreshTokenWrapper(refreshToken)
+
+    // X-VRT-Token
     val xVRTToken = profileRepo.fetchXVRTToken(userName, password)
+
+    // VRT Player Token
     val vrtPlayerToken = profileRepo.fetchVRTPlayerToken(xVRTToken.orNull()!!.xVRTToken)
-    return Tuple5(tokenWrapperResult, refreshToken, newTokenWrapperResult, xVRTToken, vrtPlayerToken)
+
+    // Favorites
+    val forceUnwrappedXVRTToken = xVRTToken.orNull()!!.xVRTToken
+    val userFavorites = profileRepo.favorites(forceUnwrappedXVRTToken)
+
+    return Tuple6(
+        tokenWrapperResult.orNull()!!.tokenWrapper,
+        refreshToken,
+        newTokenWrapperResult.orNull()!!.tokenWrapper,
+        xVRTToken.orNull()!!.xVRTToken,
+        vrtPlayerToken.orNull()!!.vrtPlayerToken,
+        userFavorites.orNull()!!.favorites
+    )
 }
 
-private suspend fun apiSamples(authenticationTokens: Tuple5<Either<ProfileResponse.Failure, ProfileResponse.Success.Token>, RefreshToken, Either<ProfileResponse.Failure, ProfileResponse.Success.Token>, Either<ProfileResponse.Failure, ProfileResponse.Success.VRTToken>, Either<ProfileResponse.Failure, ProfileResponse.Success.PlayerToken>>) {
+private suspend fun apiSamples(tokenTuple: Tuple6<TokenWrapper, RefreshToken, TokenWrapper, XVRTToken, VRTPlayerToken, FavoriteWrapper>) {
+    val (tokenWrapper, refreshToken, refreshedTokenWrapper, xVRTToken, vrtPlayerToken, favorites) = tokenTuple
+
     val vrtApi = VRTApi()
     // A-Z
     val azPrograms = vrtApi.fetchAZPrograms()
@@ -59,7 +82,6 @@ private suspend fun apiSamples(authenticationTokens: Tuple5<Either<ProfileRespon
     println(episodesForProgram)
 
     // Fetch Streams
-    val vrtPlayerToken = authenticationTokens.e.orNull()!!.vrtPlayerToken
     val latestAiredEpisode = episodesForProgram.orNull()!!.first().orNull()!!.episodes.first()
     val latestAiredEpisodeStreamInfo = vrtApi.getVODStream(vrtPlayerToken, latestAiredEpisode.videoId, latestAiredEpisode.publicationId)
     println(latestAiredEpisodeStreamInfo)
