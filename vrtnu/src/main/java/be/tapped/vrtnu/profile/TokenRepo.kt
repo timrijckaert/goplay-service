@@ -6,13 +6,11 @@ import arrow.core.Validated
 import arrow.core.computations.either
 import arrow.core.extensions.nonemptylist.semigroup.semigroup
 import arrow.core.extensions.validated.applicative.applicative
-import arrow.core.extensions.validated.bifunctor.mapLeft
 import arrow.core.invalidNel
-import arrow.core.validNel
+import be.tapped.common.executeAsync
 import be.tapped.vrtnu.profile.ProfileResponse.Failure.MissingCookieValues
 import be.tapped.vtmgo.common.DefaultCookieJar
 import be.tapped.vtmgo.common.ReadOnlyCookieJar
-import be.tapped.vtmgo.common.executeAsync
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.FormBody

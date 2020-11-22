@@ -2,7 +2,7 @@ package be.tapped.vrtnu.profile
 
 import arrow.core.Either
 import arrow.core.computations.either
-import be.tapped.vtmgo.common.executeAsync
+import be.tapped.common.executeAsync
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable

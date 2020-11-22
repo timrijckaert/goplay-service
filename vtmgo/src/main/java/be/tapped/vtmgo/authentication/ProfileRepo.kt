@@ -1,6 +1,6 @@
 package be.tapped.vtmgo.authentication
 
-import be.tapped.vtmgo.common.executeAsync
+import be.tapped.common.executeAsync
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray

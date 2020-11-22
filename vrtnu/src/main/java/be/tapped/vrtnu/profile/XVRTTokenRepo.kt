@@ -2,9 +2,9 @@ package be.tapped.vrtnu.profile
 
 import arrow.core.Either
 import arrow.core.NonEmptyList
+import be.tapped.common.executeAsync
+import be.tapped.common.jsonMediaType
 import be.tapped.vtmgo.common.ReadOnlyCookieJar
-import be.tapped.vtmgo.common.executeAsync
-import be.tapped.vtmgo.common.jsonMediaType
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.buildJsonObject

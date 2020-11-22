@@ -2,9 +2,9 @@ package be.tapped.vrtnu.content
 
 import arrow.core.Either
 import arrow.core.computations.either
+import be.tapped.common.executeAsync
 import be.tapped.vrtnu.content.ApiResponse.Failure.JsonParsingException
 import be.tapped.vrtnu.content.ElasticSearchQueryBuilder.applySearchQuery
-import be.tapped.vtmgo.common.executeAsync
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.decodeFromString

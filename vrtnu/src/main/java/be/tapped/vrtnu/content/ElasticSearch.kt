@@ -4,9 +4,9 @@ import arrow.core.Either
 import arrow.core.EitherPartialOf
 import arrow.core.computations.either
 import arrow.typeclasses.suspended.BindSyntax
+import be.tapped.common.executeAsync
 import be.tapped.vrtnu.content.ApiResponse.Failure.JsonParsingException
 import be.tapped.vrtnu.content.ElasticSearchQueryBuilder.applySearchQuery
-import be.tapped.vtmgo.common.executeAsync
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow

@@ -2,9 +2,9 @@ package be.tapped.vrtnu.epg
 
 import arrow.core.Either
 import arrow.core.computations.either
+import be.tapped.common.executeAsync
 import be.tapped.vrtnu.common.defaultOkHttpClient
 import be.tapped.vrtnu.epg.ApiResponse.Failure.JsonParsingException
-import be.tapped.vtmgo.common.executeAsync
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.decodeFromString

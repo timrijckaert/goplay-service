@@ -1,4 +1,4 @@
-package be.tapped.vtmgo.common
+package be.tapped.common
 
 import okhttp3.Cookie
 import okhttp3.CookieJar

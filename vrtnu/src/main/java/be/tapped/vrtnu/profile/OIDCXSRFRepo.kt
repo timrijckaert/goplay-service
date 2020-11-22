@@ -1,9 +1,9 @@
 package be.tapped.vrtnu.profile
 
 import arrow.core.Either
+import be.tapped.common.executeAsync
 import be.tapped.vrtnu.profile.ProfileResponse.Failure.MissingCookieValues
 import be.tapped.vtmgo.common.ReadOnlyCookieJar
-import be.tapped.vtmgo.common.executeAsync
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
