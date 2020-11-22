@@ -23,13 +23,15 @@ class JsonStreamInformationParser {
 
 interface StreamRepo {
 
-    suspend fun getVODStream(
+    /***
+     * Get stream information for a videoId and optional publication id.
+     * When a video is a live stream no publication id is required.
+     */
+    suspend fun getStream(
         vrtPlayerToken: VRTPlayerToken,
         videoId: String,
-        publicationId: String,
+        publicationId: String? = null,
     ): Either<Failure, Success.StreamInfo>
-
-    suspend fun getLiveStream(vrtPlayerToken: VRTPlayerToken, videoId: String): Either<Failure, Success.StreamInfo>
 
     suspend fun getStreamByUrl(
         vrtPlayerToken: VRTPlayerToken,
@@ -48,27 +50,31 @@ class HttpStreamRepo(
         private const val CLIENT = "vrtvideo@PROD"
     }
 
-    private fun constructVideoStreamUrl(publicationId: String, videoId: String, vrtPlayerToken: VRTPlayerToken): HttpUrl =
+    private fun constructVideoStreamUrl(vrtPlayerToken: VRTPlayerToken, videoId: String, publicationId: String? = null): HttpUrl =
         HttpUrl.Builder()
             .scheme("https")
             .host("media-services-public.vrt.be")
             .addPathSegments("vualto-video-aggregator-web/rest/external/v1")
             .addPathSegment("videos")
-            .addEncodedPathSegment("${publicationId}$${videoId}")
+            .apply {
+                publicationId?.let {
+                    addEncodedPathSegment("${publicationId}$${videoId}")
+                } ?: addEncodedPathSegment(videoId)
+            }
             .addQueryParameter("vrtPlayerToken", vrtPlayerToken.vrtPlayerToken)
             .addQueryParameter("client", CLIENT)
             .build()
 
-    override suspend fun getVODStream(
+    override suspend fun getStream(
         vrtPlayerToken: VRTPlayerToken,
         videoId: String,
-        publicationId: String,
+        publicationId: String?,
     ): Either<Failure, Success.StreamInfo> =
         withContext(Dispatchers.IO) {
             val videoStreamResponse = client.executeAsync(
                 Request.Builder()
                     .get()
-                    .url(constructVideoStreamUrl(publicationId, videoId, vrtPlayerToken))
+                    .url(constructVideoStreamUrl(vrtPlayerToken, videoId, publicationId))
                     .build()
             ).body
 
@@ -77,10 +83,6 @@ class HttpStreamRepo(
                 Success.StreamInfo(!jsonStreamInformationParser.parse(json.string()))
             }
         }
-
-    override suspend fun getLiveStream(vrtPlayerToken: VRTPlayerToken, videoId: String): Either<Failure, Success.StreamInfo> {
-        TODO("Not yet implemented")
-    }
 
     override suspend fun getStreamByUrl(
         vrtPlayerToken: VRTPlayerToken,

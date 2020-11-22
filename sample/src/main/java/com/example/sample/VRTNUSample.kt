@@ -85,8 +85,12 @@ private suspend fun apiSamples(tokenTuple: Tuple6<TokenWrapper, RefreshToken, To
     println(program)
     println(episodes)
 
-    // Fetch Streams
+    // Fetch Video on Demand Streams
     val latestAiredEpisode = episodes.first()
-    val latestAiredEpisodeStreamInfo = vrtApi.getVODStream(vrtPlayerToken, latestAiredEpisode.videoId, latestAiredEpisode.publicationId)
+    val latestAiredEpisodeStreamInfo = vrtApi.getStream(vrtPlayerToken, latestAiredEpisode.videoId, latestAiredEpisode.publicationId)
     println(latestAiredEpisodeStreamInfo)
+
+    // Fetch Live Stream Video
+    val vrtNWSLiveStreamInfo = vrtApi.getStream(vrtPlayerToken, "vualto_een_geo")
+    println(vrtNWSLiveStreamInfo)
 }
