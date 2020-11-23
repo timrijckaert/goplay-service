@@ -16,6 +16,8 @@ import arrow.core.rightIfNotNull
 import arrow.core.validNel
 import be.tapped.common.ReadOnlyCookieJar
 import be.tapped.common.executeAsync
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import okhttp3.FormBody
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -84,51 +86,54 @@ internal class VTMGOJWTTokenFactory(
                 { LoginException.JWTTokenNotValid })
         }
 
-    private suspend fun initLogin(): Either<LoginException, Unit> {
-        val initLoginResponse = client.executeAsync(
-            Request.Builder()
-                .get()
-                .url("https://vtm.be/vtmgo/aanmelden?redirectUrl=https://vtm.be/vtmgo")
-                .build()
-        )
+    private suspend fun initLogin(): Either<LoginException, Unit> =
+        withContext(Dispatchers.IO) {
+            val initLoginResponse = client.executeAsync(
+                Request.Builder()
+                    .get()
+                    .url("https://vtm.be/vtmgo/aanmelden?redirectUrl=https://vtm.be/vtmgo")
+                    .build()
+            )
 
-        return if (!initLoginResponse.isSuccessful) initLoginResponse.toNetworkException()
-        else Unit.right()
-    }
+            if (!initLoginResponse.isSuccessful) initLoginResponse.toNetworkException()
+            else Unit.right()
+        }
 
     private suspend fun logIn(
         userName: String,
         password: String,
-    ): Either<LoginException, Unit> {
-        val loginResponse = client.executeAsync(
-            Request.Builder()
-                .url("https://login2.vtm.be/login?client_id=vtm-go-web")
-                .post(
-                    FormBody.Builder()
-                        .addEncoded("userName", userName)
-                        .addEncoded("password", password)
-                        .add("jsEnabled", "true")
-                        .build()
-                )
-                .build()
-        )
+    ): Either<LoginException, Unit> =
+        withContext(Dispatchers.IO) {
+            val loginResponse = client.executeAsync(
+                Request.Builder()
+                    .url("https://login2.vtm.be/login?client_id=vtm-go-web")
+                    .post(
+                        FormBody.Builder()
+                            .addEncoded("userName", userName)
+                            .addEncoded("password", password)
+                            .add("jsEnabled", "true")
+                            .build()
+                    )
+                    .build()
+            )
 
-        return if (!loginResponse.isSuccessful) loginResponse.toNetworkException()
-        else Unit.right()
-    }
+            if (!loginResponse.isSuccessful) loginResponse.toNetworkException()
+            else Unit.right()
+        }
 
-    private suspend fun authorize(): Either<LoginException, String> {
-        val authorizeResponse = client.executeAsync(
-            Request.Builder()
-                .get()
-                .url("https://login2.vtm.be/authorize/continue?client_id=vtm-go-web")
-                .build()
-        )
+    private suspend fun authorize(): Either<LoginException, String> =
+        withContext(Dispatchers.IO) {
+            val authorizeResponse = client.executeAsync(
+                Request.Builder()
+                    .get()
+                    .url("https://login2.vtm.be/authorize/continue?client_id=vtm-go-web")
+                    .build()
+            )
 
-        return if (!authorizeResponse.isSuccessful) authorizeResponse.toNetworkException()
-        else authorizeResponse.body?.let(ResponseBody::string)?.right()
-            ?: LoginException.NoAuthorizeResponse.left()
-    }
+            if (!authorizeResponse.isSuccessful) authorizeResponse.toNetworkException()
+            else authorizeResponse.body?.let(ResponseBody::string)?.right()
+                ?: LoginException.NoAuthorizeResponse.left()
+        }
 
     private fun findCode(authorizeHtmlResponse: String): Either<LoginException, String> =
         codeRegex.find(authorizeHtmlResponse)?.let { it.groups[1]?.value }?.right()
@@ -141,22 +146,23 @@ internal class VTMGOJWTTokenFactory(
     private suspend fun logInCallback(
         state: String,
         code: String,
-    ): Either<LoginException, Unit> {
-        val loginCallbackResponse = client.executeAsync(
-            Request.Builder()
-                .url("https://vtm.be/vtmgo/login-callback")
-                .post(
-                    FormBody.Builder()
-                        .add("state", state)
-                        .add("code", code)
-                        .build()
-                )
-                .build()
-        )
+    ): Either<LoginException, Unit> =
+        withContext(Dispatchers.IO) {
+            val loginCallbackResponse = client.executeAsync(
+                Request.Builder()
+                    .url("https://vtm.be/vtmgo/login-callback")
+                    .post(
+                        FormBody.Builder()
+                            .add("state", state)
+                            .add("code", code)
+                            .build()
+                    )
+                    .build()
+            )
 
-        return if (!loginCallbackResponse.isSuccessful) loginCallbackResponse.toNetworkException()
-        else Unit.right()
-    }
+            if (!loginCallbackResponse.isSuccessful) loginCallbackResponse.toNetworkException()
+            else Unit.right()
+        }
 
     private fun getJWT(): Either<LoginException, JWT> =
         vtmCookieJar[COOKIE_LFVP_AUTH]?.let(::JWT)
