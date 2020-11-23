@@ -1,7 +1,7 @@
 package be.tapped.vtmgo.authentication
 
-import be.tapped.vtmgo.common.DefaultCookieJar
-import be.tapped.vtmgo.common.ReadOnlyCookieJar
+import be.tapped.common.DefaultCookieJar
+import be.tapped.common.ReadOnlyCookieJar
 import com.moczul.ok2curl.CurlInterceptor
 import okhttp3.OkHttpClient
 

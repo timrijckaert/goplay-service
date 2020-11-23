@@ -1,6 +1,6 @@
 package be.tapped.vtmgo.authentication
 
-import be.tapped.vtmgo.common.ReadOnlyCookieJar
+import be.tapped.common.ReadOnlyCookieJar
 import okhttp3.Cookie
 import okhttp3.HttpUrl
 import java.util.*

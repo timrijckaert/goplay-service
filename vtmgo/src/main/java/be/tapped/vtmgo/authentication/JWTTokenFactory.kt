@@ -12,8 +12,10 @@ import arrow.core.filterOrElse
 import arrow.core.invalidNel
 import arrow.core.left
 import arrow.core.right
+import arrow.core.rightIfNotNull
+import arrow.core.validNel
+import be.tapped.common.ReadOnlyCookieJar
 import be.tapped.common.executeAsync
-import be.tapped.vtmgo.common.ReadOnlyCookieJar
 import okhttp3.FormBody
 import okhttp3.OkHttpClient
 import okhttp3.Request
