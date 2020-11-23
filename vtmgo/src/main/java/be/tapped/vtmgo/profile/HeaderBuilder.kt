@@ -1,4 +1,4 @@
-package be.tapped.vtmgo.authentication
+package be.tapped.vtmgo.profile
 
 import okhttp3.Headers
 

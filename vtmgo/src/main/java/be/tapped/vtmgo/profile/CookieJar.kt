@@ -1,4 +1,4 @@
-package be.tapped.vtmgo.authentication
+package be.tapped.vtmgo.profile
 
 import be.tapped.common.ReadOnlyCookieJar
 import okhttp3.Cookie

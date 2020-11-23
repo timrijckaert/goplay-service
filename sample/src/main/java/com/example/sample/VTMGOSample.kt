@@ -1,17 +1,16 @@
 package com.example.sample
 
-import be.tapped.vtmgo.authentication.AuthenticationProvider
+import be.tapped.vtmgo.profile.ProfileRepo
 
 suspend fun main(args: Array<String>) {
     val userName = args[0]
     val password = args[1]
-    val tokenProvider = AuthenticationProvider()
+    val profileRepo = ProfileRepo()
 
-    val jwtToken = tokenProvider.login(userName, password)
+    val jwtToken = profileRepo.login(userName, password)
     println(jwtToken)
 
-    jwtToken.orNull()?.let { token ->
-        val profiles = tokenProvider.getProfiles(token)
-        println("Fetched profiles=$profiles")
-    }
+    val token = jwtToken.orNull()!!
+    val profiles = profileRepo.getProfiles(token)
+    println("Fetched profiles=$profiles")
 }

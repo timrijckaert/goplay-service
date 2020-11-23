@@ -1,4 +1,4 @@
-package be.tapped.vtmgo.authentication
+package be.tapped.vtmgo.profile
 
 import arrow.core.Either
 import arrow.core.NonEmptyList
