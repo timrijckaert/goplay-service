@@ -8,27 +8,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonArray
-import kotlinx.serialization.json.JsonElement
-import kotlinx.serialization.json.jsonObject
-import kotlinx.serialization.json.jsonPrimitive
 import okhttp3.OkHttpClient
 import okhttp3.Request
 
 internal class JsonProfileParser {
-    fun parse(json: JsonElement): Profile {
-        val profile = json.jsonObject
-        val color = profile["color"]!!.jsonObject
-        return Profile(
-            id = profile["id"]!!.jsonPrimitive.content,
-            VTMGOProducts = VTMGOProducts.valueOf(profile["product"]!!.jsonPrimitive.content),
-            name = profile["name"]!!.jsonPrimitive.content,
-            gender = profile["gender"]!!.jsonPrimitive.content,
-            birthDate = profile["birthDate"]!!.jsonPrimitive.content,
-            color = color["start"]!!.jsonPrimitive.content,
-            color2 = color["end"]!!.jsonPrimitive.content,
-        )
-    }
+    fun parse(json: String): List<Profile> = Json.decodeFromString(json)
 }
 
 class ProfileRepo(
@@ -58,6 +42,6 @@ class ProfileRepo(
                     .build()
             )
 
-            Json.decodeFromString<JsonArray>(profiles.body!!.string()).map(jsonProfileParser::parse)
+            jsonProfileParser.parse(profiles.body!!.string())
         }
 }

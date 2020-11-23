@@ -74,7 +74,7 @@ internal class VTMGOJWTTokenFactory(
                 .mapLeft(LoginException::MissingCookieValues)
                 .toEither()
 
-            !logIn(userName, password)
+            !webLogin(userName, password)
 
             val authorizeHtmlResponse = !authorize()
             val code = !findCode(authorizeHtmlResponse)
@@ -88,23 +88,23 @@ internal class VTMGOJWTTokenFactory(
 
     private suspend fun initLogin(): Either<LoginException, Unit> =
         withContext(Dispatchers.IO) {
-            val initLoginResponse = client.executeAsync(
+            client.executeAsync(
                 Request.Builder()
                     .get()
                     .url("https://vtm.be/vtmgo/aanmelden?redirectUrl=https://vtm.be/vtmgo")
                     .build()
-            )
-
-            if (!initLoginResponse.isSuccessful) initLoginResponse.toNetworkException()
-            else Unit.right()
+            ).use { response ->
+                if (!response.isSuccessful) response.toNetworkException()
+                else Unit.right()
+            }
         }
 
-    private suspend fun logIn(
+    private suspend fun webLogin(
         userName: String,
         password: String,
     ): Either<LoginException, Unit> =
         withContext(Dispatchers.IO) {
-            val loginResponse = client.executeAsync(
+            client.executeAsync(
                 Request.Builder()
                     .url("https://login2.vtm.be/login?client_id=vtm-go-web")
                     .post(
@@ -115,24 +115,24 @@ internal class VTMGOJWTTokenFactory(
                             .build()
                     )
                     .build()
-            )
-
-            if (!loginResponse.isSuccessful) loginResponse.toNetworkException()
-            else Unit.right()
+            ).use { response ->
+                if (!response.isSuccessful) response.toNetworkException()
+                else Unit.right()
+            }
         }
 
     private suspend fun authorize(): Either<LoginException, String> =
         withContext(Dispatchers.IO) {
-            val authorizeResponse = client.executeAsync(
+            client.executeAsync(
                 Request.Builder()
                     .get()
                     .url("https://login2.vtm.be/authorize/continue?client_id=vtm-go-web")
                     .build()
-            )
-
-            if (!authorizeResponse.isSuccessful) authorizeResponse.toNetworkException()
-            else authorizeResponse.body?.let(ResponseBody::string)?.right()
-                ?: LoginException.NoAuthorizeResponse.left()
+            ).use { authorizeResponse ->
+                if (!authorizeResponse.isSuccessful) authorizeResponse.toNetworkException()
+                else authorizeResponse.body?.let(ResponseBody::string)?.right()
+                    ?: LoginException.NoAuthorizeResponse.left()
+            }
         }
 
     private fun findCode(authorizeHtmlResponse: String): Either<LoginException, String> =
@@ -148,7 +148,7 @@ internal class VTMGOJWTTokenFactory(
         code: String,
     ): Either<LoginException, Unit> =
         withContext(Dispatchers.IO) {
-            val loginCallbackResponse = client.executeAsync(
+            client.executeAsync(
                 Request.Builder()
                     .url("https://vtm.be/vtmgo/login-callback")
                     .post(
@@ -158,21 +158,15 @@ internal class VTMGOJWTTokenFactory(
                             .build()
                     )
                     .build()
-            )
-
-            if (!loginCallbackResponse.isSuccessful) loginCallbackResponse.toNetworkException()
-            else Unit.right()
+            ).use { loginCallbackResponse ->
+                if (!loginCallbackResponse.isSuccessful) loginCallbackResponse.toNetworkException()
+                else Unit.right()
+            }
         }
 
     private fun getJWT(): Either<LoginException, JWT> =
         vtmCookieJar[COOKIE_LFVP_AUTH]?.let(::JWT)
-            .rightIfNotNull {
-                LoginException.MissingCookieValues(
-                    NonEmptyList(
-                        COOKIE_LFVP_AUTH
-                    )
-                )
-            }
+            .rightIfNotNull { LoginException.MissingCookieValues(NonEmptyList(COOKIE_LFVP_AUTH)) }
 
     private suspend fun isValidToken(jwtToken: JWT): Boolean =
         //TODO do we really need an extra lib for this?
