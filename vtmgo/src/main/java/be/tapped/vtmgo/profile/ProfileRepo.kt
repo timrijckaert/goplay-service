@@ -1,9 +1,11 @@
 package be.tapped.vtmgo.profile
 
-import be.tapped.common.DefaultCookieJar
 import be.tapped.common.ReadOnlyCookieJar
 import be.tapped.common.executeAsync
-import com.moczul.ok2curl.CurlInterceptor
+import be.tapped.vtmgo.common.AuthorizationHeaderBuilder
+import be.tapped.vtmgo.common.HeaderBuilder
+import be.tapped.vtmgo.common.defaultCookieJar
+import be.tapped.vtmgo.common.defaultOkHttpClient
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.decodeFromString
@@ -11,22 +13,12 @@ import kotlinx.serialization.json.Json
 import okhttp3.OkHttpClient
 import okhttp3.Request
 
-internal class JsonProfileParser {
-    fun parse(json: String): List<Profile> = Json.decodeFromString(json)
-}
-
 class ProfileRepo(
-    private val cookieJar: ReadOnlyCookieJar = CookieJar(DefaultCookieJar()),
-    private val client: OkHttpClient =
-        OkHttpClient.Builder()
-            .addNetworkInterceptor(CurlInterceptor { message -> println("$message\n\r") })
-            .cookieJar(cookieJar)
-            .build(),
+    private val cookieJar: ReadOnlyCookieJar = defaultCookieJar,
+    private val client: OkHttpClient = defaultOkHttpClient,
+    private val headerBuilder: HeaderBuilder = AuthorizationHeaderBuilder(),
     jwtTokenFactory: JWTTokenFactory = VTMGOJWTTokenFactory(client, cookieJar),
 ) : JWTTokenFactory by jwtTokenFactory {
-
-    private val headerBuilder: HeaderBuilder = HeaderBuilder()
-    private val jsonProfileParser: JsonProfileParser = JsonProfileParser()
 
     companion object {
         private const val API_ENDPOINT = "https://lfvp-api.dpgmedia.net"
@@ -42,6 +34,6 @@ class ProfileRepo(
                     .build()
             )
 
-            jsonProfileParser.parse(profiles.body!!.string())
+            Json.decodeFromString(profiles.body!!.string())
         }
 }
