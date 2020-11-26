@@ -1,6 +1,6 @@
 # Wat?
 
-JVM lib voor het inloggen en ophalen van Vlaamse media content.
+JVM lib voor het inloggen en ophalen van Vlaamse media content.  
 Er is een `sample` module voorzien.
 
 # VRT NU
@@ -22,6 +22,7 @@ Er is een `sample` module voorzien.
 - [x] Live screen grabs
 - [x] Live streams
 
+## EPG
 - [x] EPG
 
 # VTM GO
@@ -40,7 +41,8 @@ Er is een `sample` module voorzien.
 - [ ] Live screen grabs
 - [ ] Live streams
 
-- [] EPG
+## EPG
+- [ ] EPG
 
 # VIER
 
@@ -58,5 +60,6 @@ Er is een `sample` module voorzien.
 - [ ] Live screen grabs
 - [ ] Live streams
 
-- [] EPG
+## EPG
+- [ ] EPG
 
