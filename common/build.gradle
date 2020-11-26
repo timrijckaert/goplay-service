@@ -10,6 +10,14 @@ java {
 
 dependencies {
     implementation Dependencies.kotlinStdLib
+    implementation Dependencies.arrowCore
     implementation Dependencies.okHttp3
     implementation Dependencies.coroutinesCore
+}
+
+compileKotlin {
+    kotlinOptions {
+        jvmTarget = "1.8"
+        freeCompilerArgs = ["-Xinline-classes"]
+    }
 }

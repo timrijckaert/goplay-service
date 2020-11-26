@@ -3,6 +3,7 @@ package be.tapped.vtmgo.content
 import arrow.core.Either
 import arrow.core.computations.either
 import be.tapped.common.executeAsync
+import be.tapped.common.validateResponse
 import be.tapped.vtmgo.common.HeaderBuilder
 import be.tapped.vtmgo.profile.JWT
 import be.tapped.vtmgo.profile.Profile
@@ -62,6 +63,7 @@ internal class HttpProgramRepo(
                         .build()
                 )
 
+                !response.validateResponse { ApiResponse.Failure.NetworkFailure(response.code, response.request) }
                 val responseBody = !Either.fromNullable(response.body).mapLeft { ApiResponse.Failure.EmptyJson }
                 ApiResponse.Success.Programs(!jsonPagedTeaserContentParser.parse(responseBody))
             }

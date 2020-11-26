@@ -4,6 +4,7 @@ import be.tapped.vtmgo.common.AuthorizationHeaderBuilder
 import be.tapped.vtmgo.common.HeaderBuilder
 import be.tapped.vtmgo.common.defaultOkHttpClient
 import okhttp3.OkHttpClient
+import okhttp3.Request
 
 sealed class ApiResponse {
     sealed class Success : ApiResponse() {
@@ -11,6 +12,7 @@ sealed class ApiResponse {
     }
 
     sealed class Failure : ApiResponse() {
+        data class NetworkFailure(val responseCode: Int, val request: Request) : Failure()
         data class JsonParsingException(val throwable: Throwable) : Failure()
         object EmptyJson : Failure()
     }
