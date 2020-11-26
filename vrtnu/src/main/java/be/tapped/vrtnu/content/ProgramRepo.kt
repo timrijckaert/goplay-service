@@ -66,6 +66,7 @@ internal class HttpProgramRepo(
             )
 
             either {
+                !fetchSingleProgram.validateResponse { ApiResponse.Failure.NetworkFailure(fetchSingleProgram.code, fetchSingleProgram.request) }
                 val singleProgramJson = !Either.fromNullable(fetchSingleProgram.body).mapLeft { ApiResponse.Failure.EmptyJson }
                 ApiResponse.Success.SingleProgram((!jsonProgramParser.parse(singleProgramJson.string())).first())
             }
