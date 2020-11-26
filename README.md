@@ -1,10 +1,62 @@
-# vrtnu-vtmgo-vier-service
-Aggregating the Flemish online TV services
-For now it is nothing more than a poc
+# Wat?
 
-Heavily inspired by:
+JVM lib voor het inloggen en ophalen van Vlaamse media content.
+Er is een `sample` module voorzien.
 
-- https://github.com/add-ons/plugin.video.vrt.nu
-- https://github.com/add-ons/plugin.video.vtm.go
-- https://github.com/add-ons/plugin.video.viervijfzes
+# VRT NU
+
+## Authenticatie
+- [x] Authenticatie
+  - [x] accessToken
+  - [x] refreshToken
+  - [x] expiry
+- [ ] VRT Profiel ophalen
+- [x] Favorieten
+
+## Content
+- [x] Alle programma's alfabetisch
+- [x] Alle categorieën
+- [x] Zoeken
+- [x] Ophalen van episodes
+- [x] Ophalen van streams
+- [x] Live screen grabs
+- [x] Live streams
+
+- [x] EPG
+
+# VTM GO
+
+## Authenticatie
+- [x] Authenticatie
+- [x] VTM GO Profiel ophalen
+- [ ] Favorieten
+
+## Content
+- [x] Alle programma's alfabetisch
+- [ ] Alle categorieën
+- [ ] Zoeken
+- [ ] Ophalen van episodes
+- [ ] Ophalen van streams
+- [ ] Live screen grabs
+- [ ] Live streams
+
+- [] EPG
+
+# VIER
+
+## Authenticatie
+- [x] Authenticatie
+- [ ] Vier Profiel ophalen
+- [ ] Favorieten
+
+## Content
+- [ ] Alle programma's alfabetisch
+- [ ] Alle categorieën
+- [ ] Zoeken
+- [ ] Ophalen van episodes
+- [ ] Ophalen van streams
+- [ ] Live screen grabs
+- [ ] Live streams
+
+- [] EPG
 
