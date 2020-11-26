@@ -49,6 +49,8 @@ data class LoginResponse(
 internal object JsonLoginResponseMapper {
     suspend fun parse(loginJson: JsonObject): Either<LoginFailure, LoginResponse> =
         Either.catch {
+            //TODO: Parse VRT Profile out of the JSON
+            //TODO: Refactor to use KotlinX Serialization
             LoginResponse(
                 loginJson["sessionInfo"]!!.jsonObject["login_token"]?.jsonPrimitive?.content,
                 loginJson["UID"]!!.jsonPrimitive.content,
@@ -96,9 +98,7 @@ internal class HttpLoginRepo(
             either {
                 !loginResponse.validateResponse { ProfileResponse.Failure.NetworkFailure(loginResponse.code, loginResponse.request) }
                 val rawLoginJson = !Either.fromNullable(loginResponse.body).mapLeft { ProfileResponse.Failure.EmptyJson }
-                val loginResponse = jsonLoginResponseMapper.parse(Json.decodeFromString(rawLoginJson.string()))
-
-                !loginResponse.mapLeft(::FailedToLogin)
+                !jsonLoginResponseMapper.parse(Json.decodeFromString(rawLoginJson.string())).mapLeft(::FailedToLogin)
             }
         }
 }
