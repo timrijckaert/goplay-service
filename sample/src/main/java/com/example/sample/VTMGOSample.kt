@@ -1,5 +1,7 @@
 package com.example.sample
 
+import be.tapped.vtmgo.content.VTMApi
+import be.tapped.vtmgo.profile.Profile
 import be.tapped.vtmgo.profile.ProfileRepo
 
 suspend fun main(args: Array<String>) {
@@ -13,4 +15,10 @@ suspend fun main(args: Array<String>) {
     val token = jwtToken.orNull()!!
     val profiles = profileRepo.getProfiles(token)
     println("Fetched profiles=$profiles")
+
+    val profile: Profile = profiles.first()
+
+    val vtmApi = VTMApi()
+    val programsForChosenVtmGoProduct = vtmApi.fetchAZPrograms(token, profile)
+    println(programsForChosenVtmGoProduct)
 }
