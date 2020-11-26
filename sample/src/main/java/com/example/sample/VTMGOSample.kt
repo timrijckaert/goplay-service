@@ -20,5 +20,7 @@ suspend fun main(args: Array<String>) {
 
     val vtmApi = VTMApi()
     val programsForChosenVtmGoProduct = vtmApi.fetchAZPrograms(token, profile)
+    val categories = vtmApi.fetchCategories(token, profile)
     println(programsForChosenVtmGoProduct)
+    println(categories)
 }

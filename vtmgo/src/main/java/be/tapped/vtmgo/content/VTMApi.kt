@@ -9,6 +9,7 @@ import okhttp3.Request
 sealed class ApiResponse {
     sealed class Success : ApiResponse() {
         data class Programs(val programResponse: List<PagedTeaserContent>) : Success()
+        data class Categories(val categories: List<Category>) : Success()
     }
 
     sealed class Failure : ApiResponse() {
@@ -21,5 +22,7 @@ sealed class ApiResponse {
 class VTMApi(
     client: OkHttpClient = defaultOkHttpClient,
     headerBuilder: HeaderBuilder = AuthorizationHeaderBuilder(),
-    programRepo: ProgramRepo = HttpProgramRepo(client, headerBuilder, JsonPagedTeaserContentParser()),
-) : ProgramRepo by programRepo
+    programRepo: ProgramRepo = HttpProgramRepo(client, BaseContentHttpUrlBuilder, headerBuilder, JsonPagedTeaserContentParser()),
+    categoryRepo: CategoryRepo = HttpCategoryRepo(client, BaseContentHttpUrlBuilder, headerBuilder, JsonCategoryParser()),
+) : ProgramRepo by programRepo,
+    CategoryRepo by categoryRepo

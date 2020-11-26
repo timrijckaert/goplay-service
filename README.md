@@ -1,6 +1,6 @@
 # Wat?
 
-JVM lib voor het inloggen en ophalen van Vlaamse media content.  
+JVM lib voor het inloggen en ophalen van Vlaamse media content.
 Er is een `sample` module voorzien.
 
 # VRT NU
@@ -34,7 +34,7 @@ Er is een `sample` module voorzien.
 
 ## Content
 - [x] Alle programma's alfabetisch
-- [ ] Alle categorieën
+- [x] Alle categorieën
 - [ ] Zoeken
 - [ ] Ophalen van episodes
 - [ ] Ophalen van streams

@@ -35,6 +35,7 @@ interface ProgramRepo {
 
 internal class HttpProgramRepo(
     private val client: OkHttpClient,
+    private val baseContentHttpUrlBuilder: BaseContentHttpUrlBuilder,
     private val headerBuilder: HeaderBuilder,
     private val jsonPagedTeaserContentParser: JsonPagedTeaserContentParser,
 ) : ProgramRepo {
@@ -67,16 +68,9 @@ internal class HttpProgramRepo(
             }
         }
 
-    private fun constructUrl(vtmGoProduct: VTMGOProduct, filter: String? = null): HttpUrl {
-        val vtmGoProductToUrlPath = when (vtmGoProduct) {
-            VTMGOProduct.VTM_GO -> "vtmgo"
-            VTMGOProduct.VTM_GO_KIDS -> "vtmgo-kids"
-        }
-
-        return HttpUrl.Builder()
-            .scheme("https")
-            .host("lfvp-api.dpgmedia.net")
-            .addPathSegments("${vtmGoProductToUrlPath}/catalog")
+    private fun constructUrl(vtmGoProduct: VTMGOProduct, filter: String? = null): HttpUrl =
+        baseContentHttpUrlBuilder.constructBaseContentUrl(vtmGoProduct)
+            .addPathSegments("catalog")
             .addQueryParameter("pageSize", "2000")
             .apply {
                 filter?.let {
@@ -85,5 +79,4 @@ internal class HttpProgramRepo(
                 }
             }
             .build()
-    }
 }
