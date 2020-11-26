@@ -5,6 +5,7 @@ import arrow.core.computations.either
 import be.tapped.common.executeAsync
 import be.tapped.common.validateResponse
 import be.tapped.vtmgo.common.HeaderBuilder
+import be.tapped.vtmgo.content.ApiResponse.Failure.JsonParsingException
 import be.tapped.vtmgo.profile.JWT
 import be.tapped.vtmgo.profile.Profile
 import be.tapped.vtmgo.profile.VTMGOProduct
@@ -21,14 +22,11 @@ import okhttp3.Request
 import okhttp3.ResponseBody
 
 internal class JsonPagedTeaserContentParser {
-    suspend fun parse(responseBody: ResponseBody): Either<ApiResponse.Failure, List<PagedTeaserContent>> =
+    suspend fun parse(json: String): Either<ApiResponse.Failure, List<PagedTeaserContent>> =
         Either.catch {
-            val pagedTeasers = Json.decodeFromString<JsonObject>(responseBody.string())["pagedTeasers"]!!.jsonObject["content"]!!
+            val pagedTeasers = Json.decodeFromString<JsonObject>(json)["pagedTeasers"]!!.jsonObject["content"]!!
             Json.decodeFromJsonElement<List<PagedTeaserContent>>(pagedTeasers)
-        }
-            .mapLeft {
-                ApiResponse.Failure.JsonParsingException(it)
-            }
+        }.mapLeft(::JsonParsingException)
 }
 
 interface ProgramRepo {
@@ -65,7 +63,7 @@ internal class HttpProgramRepo(
 
                 !response.validateResponse { ApiResponse.Failure.NetworkFailure(response.code, response.request) }
                 val responseBody = !Either.fromNullable(response.body).mapLeft { ApiResponse.Failure.EmptyJson }
-                ApiResponse.Success.Programs(!jsonPagedTeaserContentParser.parse(responseBody))
+                ApiResponse.Success.Programs(!jsonPagedTeaserContentParser.parse(responseBody.string()))
             }
         }
 
