@@ -3,6 +3,7 @@ package be.tapped.vrtnu.profile
 import arrow.core.Either
 import arrow.core.computations.either
 import be.tapped.common.executeAsync
+import be.tapped.common.validateResponse
 import be.tapped.vrtnu.profile.ProfileResponse.Failure.FailedToLogin
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -77,7 +78,7 @@ internal class HttpLoginRepo(
 
     override suspend fun fetchLoginResponse(userName: String, password: String): Either<ProfileResponse.Failure, LoginResponse> =
         withContext(Dispatchers.IO) {
-            val loginJson = client.executeAsync(
+            val loginResponse = client.executeAsync(
                 Request.Builder()
                     .url(LOGIN_URL)
                     .post(
@@ -90,11 +91,12 @@ internal class HttpLoginRepo(
                             .build()
                     )
                     .build()
-            ).body?.string()
+            )
 
             either {
-                val rawLoginJson = !Either.fromNullable(loginJson).mapLeft { ProfileResponse.Failure.EmptyJson }
-                val loginResponse = jsonLoginResponseMapper.parse(Json.decodeFromString(rawLoginJson))
+                !loginResponse.validateResponse { ProfileResponse.Failure.NetworkFailure(loginResponse.code, loginResponse.request) }
+                val rawLoginJson = !Either.fromNullable(loginResponse.body).mapLeft { ProfileResponse.Failure.EmptyJson }
+                val loginResponse = jsonLoginResponseMapper.parse(Json.decodeFromString(rawLoginJson.string()))
 
                 !loginResponse.mapLeft(::FailedToLogin)
             }

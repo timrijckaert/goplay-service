@@ -3,6 +3,7 @@ package be.tapped.vrtnu.epg
 import arrow.core.Either
 import arrow.core.computations.either
 import be.tapped.common.executeAsync
+import be.tapped.common.validateResponse
 import be.tapped.vrtnu.common.defaultOkHttpClient
 import be.tapped.vrtnu.epg.ApiResponse.Failure.JsonParsingException
 import kotlinx.coroutines.Dispatchers
@@ -22,6 +23,7 @@ class JsonEpgParser {
 sealed class ApiResponse {
     data class Success(val epg: Epg) : ApiResponse()
     sealed class Failure : ApiResponse() {
+        data class NetworkFailure(val responseCode: Int, val request: Request) : Failure()
         data class JsonParsingException(val throwable: Throwable) : Failure()
         object EmptyJson : Failure()
     }
@@ -58,11 +60,12 @@ class HttpEpgRepo(
                     .get()
                     .url(constructUrl(dayOfTheMonth, month, year))
                     .build()
-            ).body
+            )
 
             either {
-                val epgJson = !Either.fromNullable(epgResponse?.string()).mapLeft { ApiResponse.Failure.EmptyJson }
-                ApiResponse.Success(!jsonEpgParser.parse(epgJson))
+                !epgResponse.validateResponse { ApiResponse.Failure.NetworkFailure(epgResponse.code, epgResponse.request) }
+                val epgJson = !Either.fromNullable(epgResponse.body).mapLeft { ApiResponse.Failure.EmptyJson }
+                ApiResponse.Success(!jsonEpgParser.parse(epgJson.string()))
             }
         }
     }

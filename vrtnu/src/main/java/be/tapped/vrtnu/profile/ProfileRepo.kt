@@ -4,7 +4,9 @@ import arrow.core.NonEmptyList
 import be.tapped.common.DefaultCookieJar
 import be.tapped.common.ReadOnlyCookieJar
 import be.tapped.vrtnu.common.defaultOkHttpClient
+import be.tapped.vrtnu.content.ApiResponse
 import okhttp3.OkHttpClient
+import okhttp3.Request
 
 sealed class ProfileResponse {
     sealed class Success : ProfileResponse() {
@@ -15,6 +17,7 @@ sealed class ProfileResponse {
     }
 
     sealed class Failure : ProfileResponse() {
+        data class NetworkFailure(val responseCode: Int, val request: Request) : Failure()
         data class JsonParsingException(val throwable: Throwable) : Failure()
         data class FailedToLogin(val loginResponseFailure: LoginFailure) : Failure()
         data class MissingCookieValues(val cookieValues: NonEmptyList<String>) : Failure()

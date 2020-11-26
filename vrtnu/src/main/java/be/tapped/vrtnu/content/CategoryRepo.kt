@@ -4,6 +4,7 @@ import arrow.core.Either
 import arrow.core.computations.either
 import arrow.core.flatMap
 import be.tapped.common.executeAsync
+import be.tapped.common.validateResponse
 import be.tapped.vrtnu.content.ApiResponse.Failure.JsonParsingException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -48,6 +49,7 @@ internal class HttpCategoryRepo(
             )
 
             either {
+                !categoryResponse.validateResponse { ApiResponse.Failure.NetworkFailure(categoryResponse.code, categoryResponse.request) }
                 val rawJson = !Either.fromNullable(categoryResponse.body).mapLeft { ApiResponse.Failure.EmptyJson }
                 ApiResponse.Success.Categories(!jsonCategoryParser.parse(rawJson.string()))
             }

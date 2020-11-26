@@ -5,6 +5,7 @@ import arrow.core.EitherPartialOf
 import arrow.core.computations.either
 import arrow.typeclasses.suspended.BindSyntax
 import be.tapped.common.executeAsync
+import be.tapped.common.validateResponse
 import be.tapped.vrtnu.content.ApiResponse.Failure.JsonParsingException
 import be.tapped.vrtnu.content.ElasticSearchQueryBuilder.applySearchQuery
 import kotlinx.coroutines.Dispatchers
@@ -48,6 +49,12 @@ internal class HttpEpisodeRepo(
                         .build()
                 )
 
+                !episodeByCategoryResponse.validateResponse {
+                    ApiResponse.Failure.NetworkFailure(
+                        episodeByCategoryResponse.code,
+                        episodeByCategoryResponse.request
+                    )
+                }
                 val rawJson = !Either.fromNullable(episodeByCategoryResponse.body).mapLeft { ApiResponse.Failure.EmptyJson }
                 val searchResultEpisodes = !jsonEpisodeParser.parse(rawJson.string())
 

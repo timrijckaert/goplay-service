@@ -3,6 +3,7 @@ package be.tapped.vrtnu.content
 import arrow.core.Either
 import arrow.core.computations.either
 import be.tapped.common.executeAsync
+import be.tapped.common.validateResponse
 import be.tapped.vrtnu.content.ApiResponse.Failure.JsonParsingException
 import be.tapped.vrtnu.content.ElasticSearchQueryBuilder.applySearchQuery
 import kotlinx.coroutines.Dispatchers
@@ -41,6 +42,7 @@ internal class HttpProgramRepo(
             )
 
             either {
+                !programsAZSorted.validateResponse { ApiResponse.Failure.NetworkFailure(programsAZSorted.code, programsAZSorted.request) }
                 val rawAZJson = !Either.fromNullable(programsAZSorted.body).mapLeft { ApiResponse.Failure.EmptyJson }
                 ApiResponse.Success.Programs(!jsonProgramParser.parse(rawAZJson.string()))
             }

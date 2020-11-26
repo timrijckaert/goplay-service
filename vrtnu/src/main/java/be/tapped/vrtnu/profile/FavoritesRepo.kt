@@ -3,6 +3,7 @@ package be.tapped.vrtnu.profile
 import arrow.core.Either
 import arrow.core.computations.either
 import be.tapped.common.executeAsync
+import be.tapped.common.validateResponse
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
@@ -73,11 +74,12 @@ internal class HttpFavoritesRepo(
                     .header("Authorization", "Bearer ${xVRTToken.token}")
                     .url(FAVORITES_URL)
                     .build()
-            ).body
+            )
 
             either {
-                val favoritesJson = !Either.fromNullable(favoritesResponse?.string()).mapLeft { ProfileResponse.Failure.EmptyJson }
-                ProfileResponse.Success.Favorites(!jsonFavoriteParser.parse(favoritesJson))
+                !favoritesResponse.validateResponse { ProfileResponse.Failure.NetworkFailure(favoritesResponse.code, favoritesResponse.request) }
+                val favoritesJson = !Either.fromNullable(favoritesResponse.body).mapLeft { ProfileResponse.Failure.EmptyJson }
+                ProfileResponse.Success.Favorites(!jsonFavoriteParser.parse(favoritesJson.string()))
             }
         }
 }

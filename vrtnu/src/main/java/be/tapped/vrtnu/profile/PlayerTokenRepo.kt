@@ -2,7 +2,9 @@ package be.tapped.vrtnu.profile
 
 import arrow.core.Either
 import arrow.core.computations.either
+import arrow.core.valid
 import be.tapped.common.executeAsync
+import be.tapped.common.validateResponse
 import be.tapped.vrtnu.profile.ProfileResponse.Failure.JsonParsingException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.serialization.decodeFromString
@@ -44,6 +46,10 @@ internal class HttpPlayerTokenRepo(
             )
 
             either {
+                !vrtPlayerTokenResponse.validateResponse {
+                    ProfileResponse.Failure.NetworkFailure(vrtPlayerTokenResponse.code,
+                        vrtPlayerTokenResponse.request)
+                }
                 val vrtPlayerTokenJson = !Either.fromNullable(vrtPlayerTokenResponse.body).mapLeft { ProfileResponse.Failure.EmptyJson }
                 ProfileResponse.Success.PlayerToken(!jsonVRTPlayerTokenParser.parse(vrtPlayerTokenJson.string()))
             }

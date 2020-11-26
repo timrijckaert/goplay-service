@@ -3,6 +3,7 @@ package be.tapped.vrtnu.content
 import arrow.core.Either
 import arrow.core.computations.either
 import be.tapped.common.executeAsync
+import be.tapped.common.validateResponse
 import be.tapped.vrtnu.content.ApiResponse.Failure
 import be.tapped.vrtnu.content.ApiResponse.Failure.EmptyJson
 import be.tapped.vrtnu.content.ApiResponse.Failure.JsonParsingException
@@ -76,10 +77,11 @@ class HttpStreamRepo(
                     .get()
                     .url(constructVideoStreamUrl(vrtPlayerToken, videoId, publicationId))
                     .build()
-            ).body
+            )
 
             either {
-                val json = !Either.fromNullable(videoStreamResponse).mapLeft { EmptyJson }
+                !videoStreamResponse.validateResponse { ApiResponse.Failure.NetworkFailure(videoStreamResponse.code, videoStreamResponse.request) }
+                val json = !Either.fromNullable(videoStreamResponse.body).mapLeft { EmptyJson }
                 Success.StreamInfo(!jsonStreamInformationParser.parse(json.string()))
             }
         }
