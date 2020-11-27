@@ -16,6 +16,8 @@ import arrow.core.rightIfNotNull
 import arrow.core.validNel
 import be.tapped.common.ReadOnlyCookieJar
 import be.tapped.common.executeAsync
+import be.tapped.vtmgo.ApiResponse
+import be.tapped.vtmgo.ApiResponse.Failure.Authentication
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.FormBody
@@ -23,21 +25,13 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
 import okhttp3.ResponseBody
-
-sealed class LoginException {
-    data class NetworkException(val networkFailure: NetworkFailure) : LoginException()
-    data class MissingCookieValues(val cookieValues: NonEmptyList<String>) : LoginException()
-    object NoAuthorizeResponse : LoginException()
-    object NoCodeFound : LoginException()
-    object NoStateFound : LoginException()
-    object JWTTokenNotValid : LoginException()
-}
+import javax.security.auth.login.LoginException
 
 interface JWTTokenFactory {
     suspend fun login(
         userName: String,
         password: String,
-    ): Either<LoginException, JWT>
+    ): Either<ApiResponse.Failure, JWT>
 }
 
 internal class VTMGOJWTTokenFactory(
@@ -65,13 +59,13 @@ internal class VTMGOJWTTokenFactory(
     override suspend fun login(
         userName: String,
         password: String,
-    ): Either<LoginException, JWT> =
+    ): Either<ApiResponse.Failure, JWT> =
         either {
             !initLogin()
 
             !Validated.applicative(NonEmptyList.semigroup<String>())
                 .tupledN(authState, debugId, ticket)
-                .mapLeft(LoginException::MissingCookieValues)
+                .mapLeft(Authentication::MissingCookieValues)
                 .toEither()
 
             !webLogin(userName, password)
@@ -83,10 +77,10 @@ internal class VTMGOJWTTokenFactory(
             !logInCallback(state, code)
             !getJWT().filterOrElse(
                 { isValidToken(it) },
-                { LoginException.JWTTokenNotValid })
+                { Authentication.JWTTokenNotValid })
         }
 
-    private suspend fun initLogin(): Either<LoginException, Unit> =
+    private suspend fun initLogin(): Either<ApiResponse.Failure, Unit> =
         withContext(Dispatchers.IO) {
             client.executeAsync(
                 Request.Builder()
@@ -102,7 +96,7 @@ internal class VTMGOJWTTokenFactory(
     private suspend fun webLogin(
         userName: String,
         password: String,
-    ): Either<LoginException, Unit> =
+    ): Either<ApiResponse.Failure, Unit> =
         withContext(Dispatchers.IO) {
             client.executeAsync(
                 Request.Builder()
@@ -121,7 +115,7 @@ internal class VTMGOJWTTokenFactory(
             }
         }
 
-    private suspend fun authorize(): Either<LoginException, String> =
+    private suspend fun authorize(): Either<ApiResponse.Failure, String> =
         withContext(Dispatchers.IO) {
             client.executeAsync(
                 Request.Builder()
@@ -131,22 +125,22 @@ internal class VTMGOJWTTokenFactory(
             ).use { authorizeResponse ->
                 if (!authorizeResponse.isSuccessful) authorizeResponse.toNetworkException()
                 else authorizeResponse.body?.let(ResponseBody::string)?.right()
-                    ?: LoginException.NoAuthorizeResponse.left()
+                    ?: Authentication.NoAuthorizeResponse.left()
             }
         }
 
-    private fun findCode(authorizeHtmlResponse: String): Either<LoginException, String> =
+    private fun findCode(authorizeHtmlResponse: String): Either<Authentication, String> =
         codeRegex.find(authorizeHtmlResponse)?.let { it.groups[1]?.value }?.right()
-            ?: LoginException.NoCodeFound.left()
+            ?: Authentication.NoCodeFound.left()
 
-    private fun findState(authorizeHtmlResponse: String): Either<LoginException, String> =
+    private fun findState(authorizeHtmlResponse: String): Either<Authentication, String> =
         stateRegex.find(authorizeHtmlResponse)?.let { it.groups[1]?.value }?.right()
-            ?: LoginException.NoStateFound.left()
+            ?: Authentication.NoStateFound.left()
 
     private suspend fun logInCallback(
         state: String,
         code: String,
-    ): Either<LoginException, Unit> =
+    ): Either<ApiResponse.Failure, Unit> =
         withContext(Dispatchers.IO) {
             client.executeAsync(
                 Request.Builder()
@@ -164,9 +158,9 @@ internal class VTMGOJWTTokenFactory(
             }
         }
 
-    private fun getJWT(): Either<LoginException, JWT> =
+    private fun getJWT(): Either<Authentication, JWT> =
         vtmCookieJar[COOKIE_LFVP_AUTH]?.let(::JWT)
-            .rightIfNotNull { LoginException.MissingCookieValues(NonEmptyList(COOKIE_LFVP_AUTH)) }
+            .rightIfNotNull { Authentication.MissingCookieValues(NonEmptyList(COOKIE_LFVP_AUTH)) }
 
     private suspend fun isValidToken(jwtToken: JWT): Boolean =
         //TODO do we really need an extra lib for this?
@@ -176,7 +170,7 @@ internal class VTMGOJWTTokenFactory(
     private fun validateCookie(cookieName: String): ValidatedNel<String, String> =
         vtmCookieJar[cookieName]?.let { it.validNel() } ?: cookieName.invalidNel()
 
-    private fun Response.toNetworkException(): Either<LoginException.NetworkException, Nothing> =
-        LoginException.NetworkException(NetworkFailure(request.url.toString(), code)).left()
+    private fun Response.toNetworkException(): Either<ApiResponse.Failure, Nothing> =
+        ApiResponse.Failure.NetworkFailure(code, request).left()
 
 }

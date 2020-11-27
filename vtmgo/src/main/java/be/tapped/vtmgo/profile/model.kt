@@ -2,9 +2,6 @@ package be.tapped.vtmgo.profile
 
 import kotlinx.serialization.Serializable
 
-data class NetworkFailure(val url: String, val code: Int) :
-    Exception("$url failed with status code $code")
-
 enum class VTMGOProduct {
     VTM_GO,
     VTM_GO_KIDS;
