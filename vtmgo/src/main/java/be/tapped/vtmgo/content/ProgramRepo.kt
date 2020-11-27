@@ -20,7 +20,6 @@ import kotlinx.serialization.json.jsonObject
 import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import okhttp3.ResponseBody
 
 internal class JsonPagedTeaserContentParser {
     suspend fun parse(json: String): Either<ApiResponse.Failure, List<PagedTeaserContent>> =
@@ -31,7 +30,7 @@ internal class JsonPagedTeaserContentParser {
 }
 
 interface ProgramRepo {
-    suspend fun fetchAZPrograms(jwt: JWT, profile: Profile): Either<ApiResponse.Failure, ApiResponse.Success.Programs>
+    suspend fun fetchAZPrograms(jwt: JWT, profile: Profile): Either<ApiResponse.Failure, ApiResponse.Success.Content.Programs>
 }
 
 internal class HttpProgramRepo(
@@ -52,7 +51,7 @@ internal class HttpProgramRepo(
     // -H "Connection:Keep-Alive" \
     // -H "Accept-Encoding:gzip" \
     // -H "User-Agent:okhttp/4.9.0" "https://lfvp-api.dpgmedia.net/vtmgo/catalog?pageSize=2000"
-    override suspend fun fetchAZPrograms(jwt: JWT, profile: Profile): Either<ApiResponse.Failure, ApiResponse.Success.Programs> =
+    override suspend fun fetchAZPrograms(jwt: JWT, profile: Profile): Either<ApiResponse.Failure, ApiResponse.Success.Content.Programs> =
         withContext(Dispatchers.IO) {
             either {
                 val response = client.executeAsync(
@@ -65,7 +64,7 @@ internal class HttpProgramRepo(
 
                 !response.validateResponse { ApiResponse.Failure.NetworkFailure(response.code, response.request) }
                 val responseBody = !Either.fromNullable(response.body).mapLeft { ApiResponse.Failure.EmptyJson }
-                ApiResponse.Success.Programs(!jsonPagedTeaserContentParser.parse(responseBody.string()))
+                ApiResponse.Success.Content.Programs(!jsonPagedTeaserContentParser.parse(responseBody.string()))
             }
         }
 

@@ -24,7 +24,7 @@ internal class JsonCategoryParser {
 }
 
 interface CategoryRepo {
-    suspend fun fetchCategories(jwt: JWT, profile: Profile): Either<ApiResponse.Failure, ApiResponse.Success.Categories>
+    suspend fun fetchCategories(jwt: JWT, profile: Profile): Either<ApiResponse.Failure, ApiResponse.Success.Content.Categories>
 }
 
 internal class HttpCategoryRepo(
@@ -45,7 +45,7 @@ internal class HttpCategoryRepo(
     // -H "Connection:Keep-Alive" \
     // -H "Accept-Encoding:gzip" \
     // -H "User-Agent:okhttp/4.9.0" "https://lfvp-api.dpgmedia.net/vtmgo/catalog/filters?pageSize=2000"
-    override suspend fun fetchCategories(jwt: JWT, profile: Profile): Either<ApiResponse.Failure, ApiResponse.Success.Categories> =
+    override suspend fun fetchCategories(jwt: JWT, profile: Profile): Either<ApiResponse.Failure, ApiResponse.Success.Content.Categories> =
         withContext(Dispatchers.IO) {
             val response = client.executeAsync(
                 Request.Builder()
@@ -59,7 +59,7 @@ internal class HttpCategoryRepo(
                 !response.validateResponse { ApiResponse.Failure.NetworkFailure(response.code, response.request) }
                 val responseBody = !Either.fromNullable(response.body).mapLeft { ApiResponse.Failure.EmptyJson }
                 val categoryResponse = !jsonCategoryParser.parse(responseBody.string())
-                ApiResponse.Success.Categories(categoryResponse.categories)
+                ApiResponse.Success.Content.Categories(categoryResponse.categories)
             }
         }
 
