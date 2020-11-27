@@ -36,11 +36,12 @@ interface StreamRepo {
         publicationId: String? = null,
     ): Either<Failure, Success.Content.StreamInfo>
 
-    suspend fun getStreamByUrl(
-        vrtPlayerToken: VRTPlayerToken,
-        videoId: String?,
-        url: String,
-    ): Either<Failure, Success.Content.StreamInfo>
+    //TODO("This will need web scraping")
+    //suspend fun getStreamByUrl(
+    //    vrtPlayerToken: VRTPlayerToken,
+    //    videoId: String?,
+    //    url: String,
+    //): Either<Failure, Success.Content.StreamInfo>
 
 }
 
@@ -85,13 +86,5 @@ class HttpStreamRepo(
                 Success.Content.StreamInfo(!jsonStreamInformationParser.parse(!videoStreamResponse.safeBodyString()))
             }
         }
-
-    override suspend fun getStreamByUrl(
-        vrtPlayerToken: VRTPlayerToken,
-        videoId: String?,
-        url: String,
-    ): Either<Failure, Success.Content.StreamInfo> {
-        TODO("This will need web scraping")
-    }
 
 }
