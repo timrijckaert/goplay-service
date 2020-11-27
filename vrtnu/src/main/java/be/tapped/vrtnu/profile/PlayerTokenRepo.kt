@@ -2,10 +2,10 @@ package be.tapped.vrtnu.profile
 
 import arrow.core.Either
 import arrow.core.computations.either
-import arrow.core.valid
 import be.tapped.common.executeAsync
 import be.tapped.common.validateResponse
-import be.tapped.vrtnu.profile.ProfileResponse.Failure.JsonParsingException
+import be.tapped.vrtnu.ApiResponse
+import be.tapped.vrtnu.ApiResponse.Failure.JsonParsingException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
@@ -17,19 +17,19 @@ import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 
 class JsonVRTPlayerTokenParser {
-    suspend fun parse(json: String): Either<ProfileResponse.Failure, VRTPlayerToken> =
+    suspend fun parse(json: String): Either<ApiResponse.Failure, VRTPlayerToken> =
         Either.catch { Json.decodeFromString<VRTPlayerToken>(json) }.mapLeft(::JsonParsingException)
 }
 
 interface PlayerTokenRepo {
-    suspend fun fetchVRTPlayerToken(xVRTToken: XVRTToken): Either<ProfileResponse.Failure, ProfileResponse.Success.PlayerToken>
+    suspend fun fetchVRTPlayerToken(xVRTToken: XVRTToken): Either<ApiResponse.Failure, ApiResponse.Success.PlayerToken>
 }
 
 internal class HttpPlayerTokenRepo(
     private val client: OkHttpClient,
     private val jsonVRTPlayerTokenParser: JsonVRTPlayerTokenParser,
 ) : PlayerTokenRepo {
-    override suspend fun fetchVRTPlayerToken(xVRTToken: XVRTToken): Either<ProfileResponse.Failure, ProfileResponse.Success.PlayerToken> =
+    override suspend fun fetchVRTPlayerToken(xVRTToken: XVRTToken): Either<ApiResponse.Failure, ApiResponse.Success.PlayerToken> =
         with(Dispatchers.IO) {
             val vrtPlayerTokenResponse = client.executeAsync(
                 Request.Builder()
@@ -47,11 +47,11 @@ internal class HttpPlayerTokenRepo(
 
             either {
                 !vrtPlayerTokenResponse.validateResponse {
-                    ProfileResponse.Failure.NetworkFailure(vrtPlayerTokenResponse.code,
+                    ApiResponse.Failure.NetworkFailure(vrtPlayerTokenResponse.code,
                         vrtPlayerTokenResponse.request)
                 }
-                val vrtPlayerTokenJson = !Either.fromNullable(vrtPlayerTokenResponse.body).mapLeft { ProfileResponse.Failure.EmptyJson }
-                ProfileResponse.Success.PlayerToken(!jsonVRTPlayerTokenParser.parse(vrtPlayerTokenJson.string()))
+                val vrtPlayerTokenJson = !Either.fromNullable(vrtPlayerTokenResponse.body).mapLeft { ApiResponse.Failure.EmptyJson }
+                ApiResponse.Success.PlayerToken(!jsonVRTPlayerTokenParser.parse(vrtPlayerTokenJson.string()))
             }
         }
 }

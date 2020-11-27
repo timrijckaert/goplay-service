@@ -4,6 +4,7 @@ import arrow.core.Either
 import arrow.core.computations.either
 import be.tapped.common.executeAsync
 import be.tapped.common.validateResponse
+import be.tapped.vrtnu.ApiResponse
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
@@ -35,7 +36,7 @@ data class Favorite(
 )
 
 internal class JsonFavoriteParser {
-    suspend fun parse(json: String): Either<ProfileResponse.Failure, FavoriteWrapper> =
+    suspend fun parse(json: String): Either<ApiResponse.Failure, FavoriteWrapper> =
         Either.catch {
             val rootJsonObject = Json.decodeFromString<JsonObject>(json)
             FavoriteWrapper(rootJsonObject.keys.associateWith {
@@ -45,11 +46,11 @@ internal class JsonFavoriteParser {
                 val valueJsonObject = favoriteJson["value"]!!.jsonObject
                 Json.decodeFromJsonElement<Favorite>(valueJsonObject).copy(created = created, updated = updated)
             })
-        }.mapLeft(ProfileResponse.Failure::JsonParsingException)
+        }.mapLeft(ApiResponse.Failure::JsonParsingException)
 }
 
 interface FavoritesRepo {
-    suspend fun favorites(xVRTToken: XVRTToken): Either<ProfileResponse.Failure, ProfileResponse.Success.Favorites>
+    suspend fun favorites(xVRTToken: XVRTToken): Either<ApiResponse.Failure, ApiResponse.Success.Favorites>
 }
 
 internal class HttpFavoritesRepo(
@@ -66,7 +67,7 @@ internal class HttpFavoritesRepo(
     // -H 'Content-Type: application/json' \
     // -H 'Authorization: Bearer <xVRTToken>' \
     // 'https://video-user-data.vrt.be/favorites'
-    override suspend fun favorites(xVRTToken: XVRTToken): Either<ProfileResponse.Failure, ProfileResponse.Success.Favorites> =
+    override suspend fun favorites(xVRTToken: XVRTToken): Either<ApiResponse.Failure, ApiResponse.Success.Favorites> =
         withContext(Dispatchers.IO) {
             val favoritesResponse = client.executeAsync(
                 Request.Builder()
@@ -77,9 +78,9 @@ internal class HttpFavoritesRepo(
             )
 
             either {
-                !favoritesResponse.validateResponse { ProfileResponse.Failure.NetworkFailure(favoritesResponse.code, favoritesResponse.request) }
-                val favoritesJson = !Either.fromNullable(favoritesResponse.body).mapLeft { ProfileResponse.Failure.EmptyJson }
-                ProfileResponse.Success.Favorites(!jsonFavoriteParser.parse(favoritesJson.string()))
+                !favoritesResponse.validateResponse { ApiResponse.Failure.NetworkFailure(favoritesResponse.code, favoritesResponse.request) }
+                val favoritesJson = !Either.fromNullable(favoritesResponse.body).mapLeft { ApiResponse.Failure.EmptyJson }
+                ApiResponse.Success.Favorites(!jsonFavoriteParser.parse(favoritesJson.string()))
             }
         }
 }

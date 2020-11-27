@@ -1,28 +1,9 @@
 package be.tapped.vrtnu.profile
 
-import arrow.core.NonEmptyList
 import be.tapped.common.DefaultCookieJar
 import be.tapped.common.ReadOnlyCookieJar
 import be.tapped.vrtnu.common.defaultOkHttpClient
 import okhttp3.OkHttpClient
-import okhttp3.Request
-
-sealed class ProfileResponse {
-    sealed class Success : ProfileResponse() {
-        data class Token(val tokenWrapper: TokenWrapper) : Success()
-        data class PlayerToken(val vrtPlayerToken: VRTPlayerToken) : Success()
-        data class VRTToken(val xVRTToken: XVRTToken) : Success()
-        data class Favorites(val favorites: FavoriteWrapper) : Success()
-    }
-
-    sealed class Failure : ProfileResponse() {
-        data class NetworkFailure(val responseCode: Int, val request: Request) : Failure()
-        data class JsonParsingException(val throwable: Throwable) : Failure()
-        data class FailedToLogin(val loginResponseFailure: LoginFailure) : Failure()
-        data class MissingCookieValues(val cookieValues: NonEmptyList<String>) : Failure()
-        object EmptyJson : Failure()
-    }
-}
 
 class ProfileRepo(
     cookieJar: ReadOnlyCookieJar = DefaultCookieJar(),

@@ -4,7 +4,8 @@ import arrow.core.Either
 import arrow.core.computations.either
 import be.tapped.common.executeAsync
 import be.tapped.common.validateResponse
-import be.tapped.vrtnu.profile.ProfileResponse.Failure.FailedToLogin
+import be.tapped.vrtnu.ApiResponse
+import be.tapped.vrtnu.ApiResponse.Failure.FailedToLogin
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
@@ -66,7 +67,7 @@ internal object JsonLoginResponseMapper {
 }
 
 interface LoginRepo {
-    suspend fun fetchLoginResponse(userName: String, password: String): Either<ProfileResponse.Failure, LoginResponse>
+    suspend fun fetchLoginResponse(userName: String, password: String): Either<ApiResponse.Failure, LoginResponse>
 }
 
 internal class HttpLoginRepo(
@@ -78,7 +79,7 @@ internal class HttpLoginRepo(
         private const val LOGIN_URL = "https://accounts.vrt.be/accounts.login"
     }
 
-    override suspend fun fetchLoginResponse(userName: String, password: String): Either<ProfileResponse.Failure, LoginResponse> =
+    override suspend fun fetchLoginResponse(userName: String, password: String): Either<ApiResponse.Failure, LoginResponse> =
         withContext(Dispatchers.IO) {
             val loginResponse = client.executeAsync(
                 Request.Builder()
@@ -96,8 +97,8 @@ internal class HttpLoginRepo(
             )
 
             either {
-                !loginResponse.validateResponse { ProfileResponse.Failure.NetworkFailure(loginResponse.code, loginResponse.request) }
-                val rawLoginJson = !Either.fromNullable(loginResponse.body).mapLeft { ProfileResponse.Failure.EmptyJson }
+                !loginResponse.validateResponse { ApiResponse.Failure.NetworkFailure(loginResponse.code, loginResponse.request) }
+                val rawLoginJson = !Either.fromNullable(loginResponse.body).mapLeft { ApiResponse.Failure.EmptyJson }
                 !jsonLoginResponseMapper.parse(Json.decodeFromString(rawLoginJson.string())).mapLeft(::FailedToLogin)
             }
         }

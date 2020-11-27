@@ -5,6 +5,7 @@ import arrow.core.NonEmptyList
 import be.tapped.common.ReadOnlyCookieJar
 import be.tapped.common.executeAsync
 import be.tapped.common.jsonMediaType
+import be.tapped.vrtnu.ApiResponse
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.buildJsonObject
@@ -14,7 +15,7 @@ import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 
 interface XVRTTokenRepo {
-    suspend fun fetchXVRTToken(userName: String, loginResponse: LoginResponse): Either<ProfileResponse.Failure, XVRTToken>
+    suspend fun fetchXVRTToken(userName: String, loginResponse: LoginResponse): Either<ApiResponse.Failure, XVRTToken>
 }
 
 internal class HttpXVRTTokenRepo(
@@ -28,7 +29,7 @@ internal class HttpXVRTTokenRepo(
         private const val COOKIE_X_VRT_TOKEN = "X-VRT-Token"
     }
 
-    override suspend fun fetchXVRTToken(userName: String, loginResponse: LoginResponse): Either<ProfileResponse.Failure, XVRTToken> {
+    override suspend fun fetchXVRTToken(userName: String, loginResponse: LoginResponse): Either<ApiResponse.Failure, XVRTToken> {
         val loginCookie = "glt_${API_KEY}=${loginResponse.loginToken}"
         val json = buildJsonObject {
             put("uid", loginResponse.uid)
@@ -49,7 +50,7 @@ internal class HttpXVRTTokenRepo(
             cookieJar.validateCookie(COOKIE_X_VRT_TOKEN)
                 .map(::XVRTToken)
                 .toEither()
-                .mapLeft { ProfileResponse.Failure.MissingCookieValues(NonEmptyList(COOKIE_X_VRT_TOKEN)) }
+                .mapLeft { ApiResponse.Failure.MissingCookieValues(NonEmptyList(COOKIE_X_VRT_TOKEN)) }
         }
     }
 }
