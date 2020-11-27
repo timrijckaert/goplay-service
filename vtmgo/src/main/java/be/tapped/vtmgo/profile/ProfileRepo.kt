@@ -24,6 +24,7 @@ class ProfileRepo(
         private const val API_ENDPOINT = "https://lfvp-api.dpgmedia.net"
     }
 
+    //TODO Use Either to make it safe
     suspend fun getProfiles(jwtToken: JWT): List<Profile> =
         withContext(Dispatchers.IO) {
             val profiles = client.executeAsync(
