@@ -4,8 +4,9 @@ import arrow.core.Either
 import arrow.core.computations.either
 import be.tapped.common.executeAsync
 import be.tapped.common.validateResponse
+import be.tapped.vrtnu.ApiResponse
 import be.tapped.vrtnu.common.defaultOkHttpClient
-import be.tapped.vrtnu.epg.ApiResponse.Failure.JsonParsingException
+import be.tapped.vrtnu.ApiResponse.Failure.JsonParsingException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.decodeFromString
@@ -18,15 +19,6 @@ import java.util.*
 class JsonEpgParser {
     suspend fun parse(json: String): Either<ApiResponse.Failure, Epg> =
         Either.catch { Json.decodeFromString<Epg>(json) }.mapLeft(::JsonParsingException)
-}
-
-sealed class ApiResponse {
-    data class Success(val epg: Epg) : ApiResponse()
-    sealed class Failure : ApiResponse() {
-        data class NetworkFailure(val responseCode: Int, val request: Request) : Failure()
-        data class JsonParsingException(val throwable: Throwable) : Failure()
-        object EmptyJson : Failure()
-    }
 }
 
 interface EpgRepo {
@@ -65,7 +57,7 @@ class HttpEpgRepo(
             either {
                 !epgResponse.validateResponse { ApiResponse.Failure.NetworkFailure(epgResponse.code, epgResponse.request) }
                 val epgJson = !Either.fromNullable(epgResponse.body).mapLeft { ApiResponse.Failure.EmptyJson }
-                ApiResponse.Success(!jsonEpgParser.parse(epgJson.string()))
+                ApiResponse.Success.ProgramGuide(!jsonEpgParser.parse(epgJson.string()))
             }
         }
     }

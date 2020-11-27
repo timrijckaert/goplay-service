@@ -4,6 +4,7 @@ import be.tapped.vrtnu.content.Category
 import be.tapped.vrtnu.content.Episode
 import be.tapped.vrtnu.content.Program
 import be.tapped.vrtnu.content.StreamInformation
+import be.tapped.vrtnu.epg.Epg
 import okhttp3.Request
 
 sealed class ApiResponse {
@@ -13,6 +14,7 @@ sealed class ApiResponse {
         data class Categories(val categories: List<Category>) : Success()
         data class Episodes(val episodes: List<Episode>) : Success()
         data class StreamInfo(val info: StreamInformation) : Success()
+        data class ProgramGuide(val epg: Epg) : Success()
     }
 
     sealed class Failure : ApiResponse() {
