@@ -17,7 +17,7 @@ sealed class ApiResponse {
     sealed class Success : ApiResponse() {
         sealed class Content : Success() {
             data class Programs(val programs: List<Program>) : Content()
-            data class SingleProgram(val program: Program) : Content()
+            data class SingleProgram(val program: Program?) : Content()
             data class Categories(val categories: List<Category>) : Content()
             data class Episodes(val episodes: List<Episode>) : Content()
             data class StreamInfo(val info: StreamInformation) : Content()

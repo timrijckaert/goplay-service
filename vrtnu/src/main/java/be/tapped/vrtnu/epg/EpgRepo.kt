@@ -7,6 +7,7 @@ import be.tapped.common.validateResponse
 import be.tapped.vrtnu.ApiResponse
 import be.tapped.vrtnu.common.defaultOkHttpClient
 import be.tapped.vrtnu.ApiResponse.Failure.JsonParsingException
+import be.tapped.vrtnu.common.safeBodyString
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.decodeFromString
@@ -55,9 +56,7 @@ class HttpEpgRepo(
             )
 
             either {
-                !epgResponse.validateResponse { ApiResponse.Failure.NetworkFailure(epgResponse.code, epgResponse.request) }
-                val epgJson = !Either.fromNullable(epgResponse.body).mapLeft { ApiResponse.Failure.EmptyJson }
-                ApiResponse.Success.ProgramGuide(!jsonEpgParser.parse(epgJson.string()))
+                ApiResponse.Success.ProgramGuide(!jsonEpgParser.parse(!epgResponse.safeBodyString()))
             }
         }
     }

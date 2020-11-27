@@ -8,6 +8,7 @@ import be.tapped.common.executeAsync
 import be.tapped.common.validateResponse
 import be.tapped.vrtnu.ApiResponse
 import be.tapped.vrtnu.ApiResponse.Failure.JsonParsingException
+import be.tapped.vrtnu.common.safeBodyString
 import be.tapped.vrtnu.content.ElasticSearchQueryBuilder.applySearchQuery
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -50,15 +51,7 @@ internal class HttpEpisodeRepo(
                         .build()
                 )
 
-                !episodeByCategoryResponse.validateResponse {
-                    ApiResponse.Failure.NetworkFailure(
-                        episodeByCategoryResponse.code,
-                        episodeByCategoryResponse.request
-                    )
-                }
-                val rawJson = !Either.fromNullable(episodeByCategoryResponse.body).mapLeft { ApiResponse.Failure.EmptyJson }
-                val searchResultEpisodes = !jsonEpisodeParser.parse(rawJson.string())
-
+                val searchResultEpisodes = !jsonEpisodeParser.parse(!episodeByCategoryResponse.safeBodyString())
                 if (index > searchResultEpisodes.meta.pages.total) null
                 else Pair(index + 1, ApiResponse.Success.Content.Episodes(searchResultEpisodes.results))
             }

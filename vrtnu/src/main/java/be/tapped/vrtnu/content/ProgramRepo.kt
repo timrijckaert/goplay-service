@@ -6,6 +6,7 @@ import be.tapped.common.executeAsync
 import be.tapped.common.validateResponse
 import be.tapped.vrtnu.ApiResponse
 import be.tapped.vrtnu.ApiResponse.Failure.JsonParsingException
+import be.tapped.vrtnu.common.safeBodyString
 import be.tapped.vrtnu.content.ElasticSearchQueryBuilder.applySearchQuery
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -43,9 +44,7 @@ internal class HttpProgramRepo(
             )
 
             either {
-                !programsAZSorted.validateResponse { ApiResponse.Failure.NetworkFailure(programsAZSorted.code, programsAZSorted.request) }
-                val rawAZJson = !Either.fromNullable(programsAZSorted.body).mapLeft { ApiResponse.Failure.EmptyJson }
-                ApiResponse.Success.Content.Programs(!jsonProgramParser.parse(rawAZJson.string()))
+                ApiResponse.Success.Content.Programs(!jsonProgramParser.parse(!programsAZSorted.safeBodyString()))
             }
         }
 
@@ -67,9 +66,7 @@ internal class HttpProgramRepo(
             )
 
             either {
-                !fetchSingleProgram.validateResponse { ApiResponse.Failure.NetworkFailure(fetchSingleProgram.code, fetchSingleProgram.request) }
-                val singleProgramJson = !Either.fromNullable(fetchSingleProgram.body).mapLeft { ApiResponse.Failure.EmptyJson }
-                ApiResponse.Success.Content.SingleProgram((!jsonProgramParser.parse(singleProgramJson.string())).first())
+                ApiResponse.Success.Content.SingleProgram((!jsonProgramParser.parse(!fetchSingleProgram.safeBodyString())).firstOrNull())
             }
         }
 

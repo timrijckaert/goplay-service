@@ -6,6 +6,7 @@ import be.tapped.common.executeAsync
 import be.tapped.common.validateResponse
 import be.tapped.vrtnu.ApiResponse
 import be.tapped.vrtnu.ApiResponse.Failure.JsonParsingException
+import be.tapped.vrtnu.common.safeBodyString
 import kotlinx.coroutines.Dispatchers
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
@@ -46,12 +47,7 @@ internal class HttpPlayerTokenRepo(
             )
 
             either {
-                !vrtPlayerTokenResponse.validateResponse {
-                    ApiResponse.Failure.NetworkFailure(vrtPlayerTokenResponse.code,
-                        vrtPlayerTokenResponse.request)
-                }
-                val vrtPlayerTokenJson = !Either.fromNullable(vrtPlayerTokenResponse.body).mapLeft { ApiResponse.Failure.EmptyJson }
-                ApiResponse.Success.Authentication.PlayerToken(!jsonVRTPlayerTokenParser.parse(vrtPlayerTokenJson.string()))
+                ApiResponse.Success.Authentication.PlayerToken(!jsonVRTPlayerTokenParser.parse(!vrtPlayerTokenResponse.safeBodyString()))
             }
         }
 }

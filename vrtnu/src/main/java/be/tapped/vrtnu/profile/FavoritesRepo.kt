@@ -5,6 +5,7 @@ import arrow.core.computations.either
 import be.tapped.common.executeAsync
 import be.tapped.common.validateResponse
 import be.tapped.vrtnu.ApiResponse
+import be.tapped.vrtnu.common.safeBodyString
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
@@ -78,9 +79,7 @@ internal class HttpFavoritesRepo(
             )
 
             either {
-                !favoritesResponse.validateResponse { ApiResponse.Failure.NetworkFailure(favoritesResponse.code, favoritesResponse.request) }
-                val favoritesJson = !Either.fromNullable(favoritesResponse.body).mapLeft { ApiResponse.Failure.EmptyJson }
-                ApiResponse.Success.Authentication.Favorites(!jsonFavoriteParser.parse(favoritesJson.string()))
+                ApiResponse.Success.Authentication.Favorites(!jsonFavoriteParser.parse(!favoritesResponse.safeBodyString()))
             }
         }
 }

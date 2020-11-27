@@ -5,6 +5,7 @@ import arrow.core.computations.either
 import be.tapped.common.executeAsync
 import be.tapped.common.validateResponse
 import be.tapped.vrtnu.ApiResponse
+import be.tapped.vrtnu.common.safeBodyString
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
@@ -96,9 +97,8 @@ internal class HttpLoginRepo(
             )
 
             either {
-                !loginResponse.validateResponse { ApiResponse.Failure.NetworkFailure(loginResponse.code, loginResponse.request) }
-                val rawLoginJson = !Either.fromNullable(loginResponse.body).mapLeft { ApiResponse.Failure.EmptyJson }
-                !jsonLoginResponseMapper.parse(Json.decodeFromString(rawLoginJson.string()))
+                !jsonLoginResponseMapper
+                    .parse(Json.decodeFromString(!loginResponse.safeBodyString()))
                     .mapLeft(ApiResponse.Failure.Authentication::FailedToLogin)
             }
         }

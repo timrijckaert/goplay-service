@@ -9,6 +9,7 @@ import be.tapped.vrtnu.ApiResponse.Failure
 import be.tapped.vrtnu.ApiResponse.Failure.EmptyJson
 import be.tapped.vrtnu.ApiResponse.Failure.JsonParsingException
 import be.tapped.vrtnu.ApiResponse.Success
+import be.tapped.vrtnu.common.safeBodyString
 import be.tapped.vrtnu.profile.VRTPlayerToken
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -81,9 +82,7 @@ class HttpStreamRepo(
             )
 
             either {
-                !videoStreamResponse.validateResponse { Failure.NetworkFailure(videoStreamResponse.code, videoStreamResponse.request) }
-                val json = !Either.fromNullable(videoStreamResponse.body).mapLeft { EmptyJson }
-                Success.Content.StreamInfo(!jsonStreamInformationParser.parse(json.string()))
+                Success.Content.StreamInfo(!jsonStreamInformationParser.parse(!videoStreamResponse.safeBodyString()))
             }
         }
 
