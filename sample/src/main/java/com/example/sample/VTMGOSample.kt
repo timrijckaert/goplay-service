@@ -1,6 +1,7 @@
 package com.example.sample
 
 import be.tapped.vtmgo.content.VTMApi
+import be.tapped.vtmgo.profile.JWT
 import be.tapped.vtmgo.profile.Profile
 import be.tapped.vtmgo.profile.ProfileRepo
 
@@ -18,9 +19,22 @@ suspend fun main(args: Array<String>) {
 
     val profile: Profile = profiles.first()
 
+    api(token, profile)
+}
+
+private suspend fun api(token: JWT, profile: Profile) {
     val vtmApi = VTMApi()
+
+    // Programs
     val programsForChosenVtmGoProduct = vtmApi.fetchAZPrograms(token, profile)
-    val categories = vtmApi.fetchCategories(token, profile)
     println(programsForChosenVtmGoProduct)
+
+    // Categories
+    val categories = vtmApi.fetchCategories(token, profile)
     println(categories)
+
+    // Live Channels
+    val liveChannels = vtmApi.fetchChannels(token, profile)
+    println(liveChannels)
+
 }

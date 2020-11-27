@@ -2,6 +2,7 @@ package be.tapped.vtmgo
 
 import arrow.core.NonEmptyList
 import be.tapped.vtmgo.content.Category
+import be.tapped.vtmgo.content.LiveChannel
 import be.tapped.vtmgo.content.PagedTeaserContent
 import be.tapped.vtmgo.profile.JWT
 import okhttp3.Request
@@ -11,6 +12,7 @@ sealed class ApiResponse {
         sealed class Content : Success() {
             data class Programs(val programResponse: List<PagedTeaserContent>) : Content()
             data class Categories(val categories: List<Category>) : Content()
+            data class LiveChannels(val channels: List<LiveChannel>) : Content()
         }
 
         sealed class Authentication : ApiResponse() {

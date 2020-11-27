@@ -10,5 +10,7 @@ class VTMApi(
     headerBuilder: HeaderBuilder = AuthorizationHeaderBuilder(),
     programRepo: ProgramRepo = HttpProgramRepo(client, BaseContentHttpUrlBuilder, headerBuilder, JsonPagedTeaserContentParser()),
     categoryRepo: CategoryRepo = HttpCategoryRepo(client, BaseContentHttpUrlBuilder, headerBuilder, JsonCategoryParser()),
+    channelRepo: ChannelRepo = HttpChannelRepo(client, BaseContentHttpUrlBuilder, headerBuilder, JsonChannelParser()),
 ) : ProgramRepo by programRepo,
-    CategoryRepo by categoryRepo
+    CategoryRepo by categoryRepo,
+    ChannelRepo by channelRepo
