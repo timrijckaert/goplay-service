@@ -30,7 +30,7 @@ internal class HttpXVRTTokenRepo(
     }
 
     override suspend fun fetchXVRTToken(userName: String, loginResponse: LoginResponse): Either<ApiResponse.Failure, XVRTToken> {
-        val loginCookie = "glt_${API_KEY}=${loginResponse.loginToken}"
+        val loginCookie = "glt_${API_KEY}=${loginResponse.sessionInfo.loginToken}"
         val json = buildJsonObject {
             put("uid", loginResponse.uid)
             put("uidsig", loginResponse.uidSignature)

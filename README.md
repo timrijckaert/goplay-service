@@ -10,7 +10,7 @@ Er is een `sample` module voorzien.
   - [x] accessToken
   - [x] refreshToken
   - [x] expiry
-- [ ] VRT Profiel ophalen
+- [x] VRT Profiel ophalen
 - [x] Favorieten
 
 ## Content

@@ -3,25 +3,28 @@ package be.tapped.vrtnu.profile
 import arrow.core.Either
 import arrow.core.computations.either
 import be.tapped.common.executeAsync
-import be.tapped.common.validateResponse
 import be.tapped.vrtnu.ApiResponse
 import be.tapped.vrtnu.common.safeBodyString
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.int
-import kotlinx.serialization.json.jsonObject
-import kotlinx.serialization.json.jsonPrimitive
 import okhttp3.FormBody
 import okhttp3.OkHttpClient
 import okhttp3.Request
 
+@Serializable
 data class LoginFailure(
+    val callId: String,
     val errorCode: Int,
     private val errorDetails: String?,
+    val errorMessage: String,
+    val apiVersion: Int,
+    val statusCode: Int,
+    val statusReason: String,
+    val time: String,
 ) {
     enum class LoginFailure {
         INVALID_CREDENTIALS,
@@ -40,30 +43,61 @@ data class LoginFailure(
 }
 
 @Serializable
+data class Profile(
+    val firstName: String,
+    val lastName: String,
+    val age: Int,
+    val birthDay: Int,
+    val birthMonth: Int,
+    val birthYear: Int,
+    val city: String,
+    val country: String,
+    val email: String,
+    val gender: String,
+    val zip: String,
+)
+
+@Serializable
+data class SessionInfo(@SerialName("login_token") val loginToken: String)
+
+@Serializable
 data class LoginResponse(
-    val loginToken: String?,
+    val callId: String,
+    val errorCode: Int,
+    val apiVersion: Int,
+    val statusCode: Int,
+    val statusReason: String,
+    val time: String,
+    val registeredTimestamp: Long,
+    @SerialName("UID")
     val uid: String,
+    @SerialName("UIDSignature")
     val uidSignature: String,
     val signatureTimestamp: String,
+    val created: String,
+    val createdTimestamp: Long,
+    val isActive: Boolean,
+    val isRegistered: Boolean,
+    val isVerified: Boolean,
+    val lastLogin: String,
+    val lastLoginTimestamp: Long,
+    val lastUpdated: String,
+    val lastUpdatedTimestamp: Long,
+    val loginProvider: String,
+    val oldestDataUpdated: String,
+    val oldestDataUpdatedTimestamp: Long,
+    val profile: Profile,
+    val registered: String,
+    val socialProviders: String,
+    val verified: String,
+    val verifiedTimestamp: Long,
+    val newUser: Boolean,
+    val sessionInfo: SessionInfo,
 )
 
 internal object JsonLoginResponseMapper {
-    suspend fun parse(loginJson: JsonObject): Either<LoginFailure, LoginResponse> =
-        Either.catch {
-            //TODO: Parse VRT Profile out of the JSON
-            //TODO: Refactor to use KotlinX Serialization
-            LoginResponse(
-                loginJson["sessionInfo"]!!.jsonObject["login_token"]?.jsonPrimitive?.content,
-                loginJson["UID"]!!.jsonPrimitive.content,
-                loginJson["UIDSignature"]!!.jsonPrimitive.content,
-                loginJson["signatureTimestamp"]!!.jsonPrimitive.content,
-            )
-        }.mapLeft {
-            LoginFailure(
-                loginJson["errorCode"]!!.jsonPrimitive.int,
-                loginJson["errorDetails"]?.jsonPrimitive?.content
-            )
-        }
+    suspend fun parse(json: String): Either<LoginFailure, LoginResponse> =
+        Either.catch { Json.decodeFromString<LoginResponse>(json) }.mapLeft { Json.decodeFromString(json) }
 }
 
 interface LoginRepo {
@@ -98,7 +132,7 @@ internal class HttpLoginRepo(
 
             either {
                 !jsonLoginResponseMapper
-                    .parse(Json.decodeFromString(!loginResponse.safeBodyString()))
+                    .parse(!loginResponse.safeBodyString())
                     .mapLeft(ApiResponse.Failure.Authentication::FailedToLogin)
             }
         }
