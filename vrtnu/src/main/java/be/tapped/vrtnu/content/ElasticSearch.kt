@@ -28,9 +28,9 @@ internal class JsonEpisodeParser {
 
 interface EpisodeRepo {
 
-    fun episodes(searchQuery: ElasticSearchQueryBuilder.SearchQuery): Flow<Either<ApiResponse.Failure, ApiResponse.Success.Episodes>>
+    fun episodes(searchQuery: ElasticSearchQueryBuilder.SearchQuery): Flow<Either<ApiResponse.Failure, ApiResponse.Success.Content.Episodes>>
 
-    fun episodesForProgram(program: Program): Flow<Either<ApiResponse.Failure, ApiResponse.Success.Episodes>> =
+    fun episodesForProgram(program: Program): Flow<Either<ApiResponse.Failure, ApiResponse.Success.Content.Episodes>> =
         episodes(ElasticSearchQueryBuilder.SearchQuery(programName = program.programName))
 
 }
@@ -40,7 +40,7 @@ internal class HttpEpisodeRepo(
     private val jsonEpisodeParser: JsonEpisodeParser,
 ) : EpisodeRepo {
 
-    override fun episodes(searchQuery: ElasticSearchQueryBuilder.SearchQuery): Flow<Either<ApiResponse.Failure, ApiResponse.Success.Episodes>> =
+    override fun episodes(searchQuery: ElasticSearchQueryBuilder.SearchQuery): Flow<Either<ApiResponse.Failure, ApiResponse.Success.Content.Episodes>> =
         unfoldFlow(searchQuery.pageIndex) { index ->
             withContext(Dispatchers.IO) {
                 val episodeByCategoryResponse = client.executeAsync(
@@ -60,7 +60,7 @@ internal class HttpEpisodeRepo(
                 val searchResultEpisodes = !jsonEpisodeParser.parse(rawJson.string())
 
                 if (index > searchResultEpisodes.meta.pages.total) null
-                else Pair(index + 1, ApiResponse.Success.Episodes(searchResultEpisodes.results))
+                else Pair(index + 1, ApiResponse.Success.Content.Episodes(searchResultEpisodes.results))
             }
         }
 

@@ -4,7 +4,7 @@ import arrow.core.Either
 import be.tapped.common.ReadOnlyCookieJar
 import be.tapped.common.executeAsync
 import be.tapped.vrtnu.ApiResponse
-import be.tapped.vrtnu.ApiResponse.Failure.MissingCookieValues
+import be.tapped.vrtnu.ApiResponse.Failure.Authentication.MissingCookieValues
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
@@ -34,6 +34,6 @@ internal class HttpOIDCXSRFRepo(
                     .build()
             ).closeQuietly()
 
-            cookieJar.validateCookie(COOKIE_XSRF).map(::OIDCXSRF).mapLeft(::MissingCookieValues).toEither()
+            cookieJar.validateCookie(COOKIE_XSRF).map(::OIDCXSRF).mapLeft(ApiResponse.Failure.Authentication::MissingCookieValues).toEither()
         }
 }

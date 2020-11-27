@@ -22,9 +22,9 @@ internal class JsonProgramParser {
 
 interface ProgramRepo {
 
-    suspend fun fetchAZPrograms(): Either<ApiResponse.Failure, ApiResponse.Success.Programs>
+    suspend fun fetchAZPrograms(): Either<ApiResponse.Failure, ApiResponse.Success.Content.Programs>
 
-    suspend fun fetchProgramByName(programName: String): Either<ApiResponse.Failure, ApiResponse.Success.SingleProgram>
+    suspend fun fetchProgramByName(programName: String): Either<ApiResponse.Failure, ApiResponse.Success.Content.SingleProgram>
 
 }
 
@@ -33,7 +33,7 @@ internal class HttpProgramRepo(
     private val jsonProgramParser: JsonProgramParser,
 ) : ProgramRepo {
 
-    override suspend fun fetchAZPrograms(): Either<ApiResponse.Failure, ApiResponse.Success.Programs> =
+    override suspend fun fetchAZPrograms(): Either<ApiResponse.Failure, ApiResponse.Success.Content.Programs> =
         withContext(Dispatchers.IO) {
             val programsAZSorted = client.executeAsync(
                 Request.Builder()
@@ -45,11 +45,11 @@ internal class HttpProgramRepo(
             either {
                 !programsAZSorted.validateResponse { ApiResponse.Failure.NetworkFailure(programsAZSorted.code, programsAZSorted.request) }
                 val rawAZJson = !Either.fromNullable(programsAZSorted.body).mapLeft { ApiResponse.Failure.EmptyJson }
-                ApiResponse.Success.Programs(!jsonProgramParser.parse(rawAZJson.string()))
+                ApiResponse.Success.Content.Programs(!jsonProgramParser.parse(rawAZJson.string()))
             }
         }
 
-    override suspend fun fetchProgramByName(programName: String): Either<ApiResponse.Failure, ApiResponse.Success.SingleProgram> =
+    override suspend fun fetchProgramByName(programName: String): Either<ApiResponse.Failure, ApiResponse.Success.Content.SingleProgram> =
         withContext(Dispatchers.IO) {
             val fetchSingleProgram = client.executeAsync(
                 Request.Builder()
@@ -69,7 +69,7 @@ internal class HttpProgramRepo(
             either {
                 !fetchSingleProgram.validateResponse { ApiResponse.Failure.NetworkFailure(fetchSingleProgram.code, fetchSingleProgram.request) }
                 val singleProgramJson = !Either.fromNullable(fetchSingleProgram.body).mapLeft { ApiResponse.Failure.EmptyJson }
-                ApiResponse.Success.SingleProgram((!jsonProgramParser.parse(singleProgramJson.string())).first())
+                ApiResponse.Success.Content.SingleProgram((!jsonProgramParser.parse(singleProgramJson.string())).first())
             }
         }
 

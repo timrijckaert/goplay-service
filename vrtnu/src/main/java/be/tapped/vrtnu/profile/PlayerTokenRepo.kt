@@ -22,14 +22,14 @@ class JsonVRTPlayerTokenParser {
 }
 
 interface PlayerTokenRepo {
-    suspend fun fetchVRTPlayerToken(xVRTToken: XVRTToken): Either<ApiResponse.Failure, ApiResponse.Success.PlayerToken>
+    suspend fun fetchVRTPlayerToken(xVRTToken: XVRTToken): Either<ApiResponse.Failure, ApiResponse.Success.Authentication.PlayerToken>
 }
 
 internal class HttpPlayerTokenRepo(
     private val client: OkHttpClient,
     private val jsonVRTPlayerTokenParser: JsonVRTPlayerTokenParser,
 ) : PlayerTokenRepo {
-    override suspend fun fetchVRTPlayerToken(xVRTToken: XVRTToken): Either<ApiResponse.Failure, ApiResponse.Success.PlayerToken> =
+    override suspend fun fetchVRTPlayerToken(xVRTToken: XVRTToken): Either<ApiResponse.Failure, ApiResponse.Success.Authentication.PlayerToken> =
         with(Dispatchers.IO) {
             val vrtPlayerTokenResponse = client.executeAsync(
                 Request.Builder()
@@ -51,7 +51,7 @@ internal class HttpPlayerTokenRepo(
                         vrtPlayerTokenResponse.request)
                 }
                 val vrtPlayerTokenJson = !Either.fromNullable(vrtPlayerTokenResponse.body).mapLeft { ApiResponse.Failure.EmptyJson }
-                ApiResponse.Success.PlayerToken(!jsonVRTPlayerTokenParser.parse(vrtPlayerTokenJson.string()))
+                ApiResponse.Success.Authentication.PlayerToken(!jsonVRTPlayerTokenParser.parse(vrtPlayerTokenJson.string()))
             }
         }
 }

@@ -29,7 +29,7 @@ internal class JsonCategoryParser {
 }
 
 interface CategoryRepo {
-    suspend fun fetchCategories(): Either<ApiResponse.Failure, ApiResponse.Success.Categories>
+    suspend fun fetchCategories(): Either<ApiResponse.Failure, ApiResponse.Success.Content.Categories>
 }
 
 internal class HttpCategoryRepo(
@@ -40,7 +40,7 @@ internal class HttpCategoryRepo(
         private const val CATEGORIES_URL = "https://www.vrt.be/vrtnu/categorieen/jcr:content/par/categories.model.json"
     }
 
-    override suspend fun fetchCategories(): Either<ApiResponse.Failure, ApiResponse.Success.Categories> =
+    override suspend fun fetchCategories(): Either<ApiResponse.Failure, ApiResponse.Success.Content.Categories> =
         withContext(Dispatchers.IO) {
             val categoryResponse = client.executeAsync(
                 Request.Builder()
@@ -52,7 +52,7 @@ internal class HttpCategoryRepo(
             either {
                 !categoryResponse.validateResponse { ApiResponse.Failure.NetworkFailure(categoryResponse.code, categoryResponse.request) }
                 val rawJson = !Either.fromNullable(categoryResponse.body).mapLeft { ApiResponse.Failure.EmptyJson }
-                ApiResponse.Success.Categories(!jsonCategoryParser.parse(rawJson.string()))
+                ApiResponse.Success.Content.Categories(!jsonCategoryParser.parse(rawJson.string()))
             }
         }
 }

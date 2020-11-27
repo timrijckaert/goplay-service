@@ -22,7 +22,7 @@ class JsonEpgParser {
 }
 
 interface EpgRepo {
-    suspend fun epg(calendar: Calendar = Calendar.getInstance(TimeZone.getTimeZone("Europe/Brussels"))): Either<ApiResponse.Failure, ApiResponse.Success>
+    suspend fun epg(calendar: Calendar = Calendar.getInstance(TimeZone.getTimeZone("Europe/Brussels"))): Either<ApiResponse.Failure, ApiResponse.Success.ProgramGuide>
 }
 
 class HttpEpgRepo(
@@ -40,7 +40,7 @@ class HttpEpgRepo(
             .build()
     }
 
-    override suspend fun epg(calendar: Calendar): Either<ApiResponse.Failure, ApiResponse.Success> {
+    override suspend fun epg(calendar: Calendar): Either<ApiResponse.Failure, ApiResponse.Success.ProgramGuide> {
         val year: Int = calendar.get(Calendar.YEAR)
         // Note that months are 0 based. 0 -> january, 11 -> december
         val month: Int = calendar.get(Calendar.MONTH) + 1

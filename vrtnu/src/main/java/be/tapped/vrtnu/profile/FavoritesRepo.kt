@@ -50,7 +50,7 @@ internal class JsonFavoriteParser {
 }
 
 interface FavoritesRepo {
-    suspend fun favorites(xVRTToken: XVRTToken): Either<ApiResponse.Failure, ApiResponse.Success.Favorites>
+    suspend fun favorites(xVRTToken: XVRTToken): Either<ApiResponse.Failure, ApiResponse.Success.Authentication.Favorites>
 }
 
 internal class HttpFavoritesRepo(
@@ -67,7 +67,7 @@ internal class HttpFavoritesRepo(
     // -H 'Content-Type: application/json' \
     // -H 'Authorization: Bearer <xVRTToken>' \
     // 'https://video-user-data.vrt.be/favorites'
-    override suspend fun favorites(xVRTToken: XVRTToken): Either<ApiResponse.Failure, ApiResponse.Success.Favorites> =
+    override suspend fun favorites(xVRTToken: XVRTToken): Either<ApiResponse.Failure, ApiResponse.Success.Authentication.Favorites> =
         withContext(Dispatchers.IO) {
             val favoritesResponse = client.executeAsync(
                 Request.Builder()
@@ -80,7 +80,7 @@ internal class HttpFavoritesRepo(
             either {
                 !favoritesResponse.validateResponse { ApiResponse.Failure.NetworkFailure(favoritesResponse.code, favoritesResponse.request) }
                 val favoritesJson = !Either.fromNullable(favoritesResponse.body).mapLeft { ApiResponse.Failure.EmptyJson }
-                ApiResponse.Success.Favorites(!jsonFavoriteParser.parse(favoritesJson.string()))
+                ApiResponse.Success.Authentication.Favorites(!jsonFavoriteParser.parse(favoritesJson.string()))
             }
         }
 }

@@ -33,13 +33,13 @@ interface StreamRepo {
         vrtPlayerToken: VRTPlayerToken,
         videoId: String,
         publicationId: String? = null,
-    ): Either<Failure, Success.StreamInfo>
+    ): Either<Failure, Success.Content.StreamInfo>
 
     suspend fun getStreamByUrl(
         vrtPlayerToken: VRTPlayerToken,
         videoId: String?,
         url: String,
-    ): Either<Failure, Success.StreamInfo>
+    ): Either<Failure, Success.Content.StreamInfo>
 
 }
 
@@ -71,7 +71,7 @@ class HttpStreamRepo(
         vrtPlayerToken: VRTPlayerToken,
         videoId: String,
         publicationId: String?,
-    ): Either<Failure, Success.StreamInfo> =
+    ): Either<Failure, Success.Content.StreamInfo> =
         withContext(Dispatchers.IO) {
             val videoStreamResponse = client.executeAsync(
                 Request.Builder()
@@ -81,9 +81,9 @@ class HttpStreamRepo(
             )
 
             either {
-                !videoStreamResponse.validateResponse { ApiResponse.Failure.NetworkFailure(videoStreamResponse.code, videoStreamResponse.request) }
+                !videoStreamResponse.validateResponse { Failure.NetworkFailure(videoStreamResponse.code, videoStreamResponse.request) }
                 val json = !Either.fromNullable(videoStreamResponse.body).mapLeft { EmptyJson }
-                Success.StreamInfo(!jsonStreamInformationParser.parse(json.string()))
+                Success.Content.StreamInfo(!jsonStreamInformationParser.parse(json.string()))
             }
         }
 
@@ -91,7 +91,7 @@ class HttpStreamRepo(
         vrtPlayerToken: VRTPlayerToken,
         videoId: String?,
         url: String,
-    ): Either<Failure, Success.StreamInfo> {
+    ): Either<Failure, Success.Content.StreamInfo> {
         TODO("This will need web scraping")
     }
 
