@@ -4,7 +4,6 @@ import arrow.core.NonEmptyList
 import be.tapped.common.DefaultCookieJar
 import be.tapped.common.ReadOnlyCookieJar
 import be.tapped.vrtnu.common.defaultOkHttpClient
-import be.tapped.vrtnu.content.ApiResponse
 import okhttp3.OkHttpClient
 import okhttp3.Request
 

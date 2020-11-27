@@ -4,7 +4,8 @@ import arrow.core.Either
 import arrow.core.computations.either
 import be.tapped.common.executeAsync
 import be.tapped.common.validateResponse
-import be.tapped.vrtnu.content.ApiResponse.Failure.JsonParsingException
+import be.tapped.vrtnu.ApiResponse
+import be.tapped.vrtnu.ApiResponse.Failure.JsonParsingException
 import be.tapped.vrtnu.content.ElasticSearchQueryBuilder.applySearchQuery
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext

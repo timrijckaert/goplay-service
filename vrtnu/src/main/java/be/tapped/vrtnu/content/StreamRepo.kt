@@ -4,10 +4,11 @@ import arrow.core.Either
 import arrow.core.computations.either
 import be.tapped.common.executeAsync
 import be.tapped.common.validateResponse
-import be.tapped.vrtnu.content.ApiResponse.Failure
-import be.tapped.vrtnu.content.ApiResponse.Failure.EmptyJson
-import be.tapped.vrtnu.content.ApiResponse.Failure.JsonParsingException
-import be.tapped.vrtnu.content.ApiResponse.Success
+import be.tapped.vrtnu.ApiResponse
+import be.tapped.vrtnu.ApiResponse.Failure
+import be.tapped.vrtnu.ApiResponse.Failure.EmptyJson
+import be.tapped.vrtnu.ApiResponse.Failure.JsonParsingException
+import be.tapped.vrtnu.ApiResponse.Success
 import be.tapped.vrtnu.profile.VRTPlayerToken
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
