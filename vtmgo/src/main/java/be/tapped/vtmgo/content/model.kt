@@ -4,8 +4,14 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
+enum class TargetType {
+    MOVIE,
+    PROGRAM
+}
+
+@Serializable
 data class Target(
-    val type: String,
+    val type: TargetType,
     val id: String,
     val name: String,
 )
