@@ -33,6 +33,17 @@ internal class HttpCategoryRepo(
     private val jsonCategoryParser: JsonCategoryParser,
 ) : CategoryRepo {
 
+    // curl -X GET \
+    // -H "x-app-version:8" \
+    // -H "x-persgroep-mobile-app:true" \
+    // -H "x-persgroep-os:android" \
+    // -H "x-persgroep-os-version:23" \
+    // -H "x-dpp-jwt: <jwt-token>" \
+    // -H "x-dpp-profile: <profile-id>" \
+    // -H "Host:lfvp-api.dpgmedia.net" \
+    // -H "Connection:Keep-Alive" \
+    // -H "Accept-Encoding:gzip" \
+    // -H "User-Agent:okhttp/4.9.0" "https://lfvp-api.dpgmedia.net/vtmgo/catalog/filters?pageSize=2000"
     override suspend fun fetchCategories(jwt: JWT, profile: Profile): Either<ApiResponse.Failure, ApiResponse.Success.Categories> =
         withContext(Dispatchers.IO) {
             val response = client.executeAsync(
