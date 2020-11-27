@@ -10,7 +10,7 @@ import okhttp3.Request
 sealed class ApiResponse {
     sealed class Success : ApiResponse() {
         sealed class Content : Success() {
-            data class Programs(val programResponse: List<PagedTeaserContent>) : Content()
+            data class Catalog(val catalog: List<PagedTeaserContent>) : Content()
             data class Categories(val categories: List<Category>) : Content()
             data class LiveChannels(val channels: List<LiveChannel>) : Content()
         }

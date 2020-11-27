@@ -26,8 +26,9 @@ private suspend fun api(token: JWT, profile: Profile) {
     val vtmApi = VTMApi()
 
     // Programs
-    val programsForChosenVtmGoProduct = vtmApi.fetchAZPrograms(token, profile)
-    println(programsForChosenVtmGoProduct)
+    val catalogForChosenVtmGoProduct = vtmApi.fetchAZ(token, profile).orNull()!!.catalog
+    val productTypeWithCatalog = catalogForChosenVtmGoProduct.groupBy { it.target.type }
+    println(productTypeWithCatalog)
 
     // Categories
     val categories = vtmApi.fetchCategories(token, profile)

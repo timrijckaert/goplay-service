@@ -3,7 +3,6 @@ package be.tapped.vtmgo.content
 import arrow.core.Either
 import arrow.core.computations.either
 import be.tapped.common.executeAsync
-import be.tapped.common.validateResponse
 import be.tapped.vtmgo.ApiResponse
 import be.tapped.vtmgo.common.HeaderBuilder
 import be.tapped.vtmgo.ApiResponse.Failure.JsonParsingException
@@ -31,7 +30,7 @@ internal class JsonPagedTeaserContentParser {
 }
 
 interface ProgramRepo {
-    suspend fun fetchAZPrograms(jwt: JWT, profile: Profile): Either<ApiResponse.Failure, ApiResponse.Success.Content.Programs>
+    suspend fun fetchAZ(jwt: JWT, profile: Profile): Either<ApiResponse.Failure, ApiResponse.Success.Content.Catalog>
 }
 
 internal class HttpProgramRepo(
@@ -52,7 +51,7 @@ internal class HttpProgramRepo(
     // -H "Connection:Keep-Alive" \
     // -H "Accept-Encoding:gzip" \
     // -H "User-Agent:okhttp/4.9.0" "https://lfvp-api.dpgmedia.net/vtmgo/catalog?pageSize=2000"
-    override suspend fun fetchAZPrograms(jwt: JWT, profile: Profile): Either<ApiResponse.Failure, ApiResponse.Success.Content.Programs> =
+    override suspend fun fetchAZ(jwt: JWT, profile: Profile): Either<ApiResponse.Failure, ApiResponse.Success.Content.Catalog> =
         withContext(Dispatchers.IO) {
             either {
                 val response = client.executeAsync(
@@ -63,7 +62,7 @@ internal class HttpProgramRepo(
                         .build()
                 )
 
-                ApiResponse.Success.Content.Programs(!jsonPagedTeaserContentParser.parse(!response.safeBodyString()))
+                ApiResponse.Success.Content.Catalog(!jsonPagedTeaserContentParser.parse(!response.safeBodyString()))
             }
         }
 
