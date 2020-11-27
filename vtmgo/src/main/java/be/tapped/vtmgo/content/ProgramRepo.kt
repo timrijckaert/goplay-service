@@ -7,6 +7,7 @@ import be.tapped.common.validateResponse
 import be.tapped.vtmgo.ApiResponse
 import be.tapped.vtmgo.common.HeaderBuilder
 import be.tapped.vtmgo.ApiResponse.Failure.JsonParsingException
+import be.tapped.vtmgo.common.safeBodyString
 import be.tapped.vtmgo.profile.JWT
 import be.tapped.vtmgo.profile.Profile
 import be.tapped.vtmgo.profile.VTMGOProduct
@@ -62,9 +63,7 @@ internal class HttpProgramRepo(
                         .build()
                 )
 
-                !response.validateResponse { ApiResponse.Failure.NetworkFailure(response.code, response.request) }
-                val responseBody = !Either.fromNullable(response.body).mapLeft { ApiResponse.Failure.EmptyJson }
-                ApiResponse.Success.Content.Programs(!jsonPagedTeaserContentParser.parse(responseBody.string()))
+                ApiResponse.Success.Content.Programs(!jsonPagedTeaserContentParser.parse(!response.safeBodyString()))
             }
         }
 
