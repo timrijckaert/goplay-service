@@ -12,7 +12,7 @@ suspend fun main(args: Array<String>) {
     val jwtToken = profileRepo.login(userName, password)
     println(jwtToken)
 
-    val token = jwtToken.orNull()!!
+    val token = jwtToken.orNull()!!.jwt
     val profiles = profileRepo.getProfiles(token)
     println("Fetched profiles=$profiles")
 

@@ -31,7 +31,7 @@ interface JWTTokenFactory {
     suspend fun login(
         userName: String,
         password: String,
-    ): Either<ApiResponse.Failure, JWT>
+    ): Either<ApiResponse.Failure, ApiResponse.Success.Authentication.Token>
 }
 
 internal class VTMGOJWTTokenFactory(
@@ -59,7 +59,7 @@ internal class VTMGOJWTTokenFactory(
     override suspend fun login(
         userName: String,
         password: String,
-    ): Either<ApiResponse.Failure, JWT> =
+    ): Either<ApiResponse.Failure, ApiResponse.Success.Authentication.Token> =
         either {
             !initLogin()
 
@@ -75,9 +75,11 @@ internal class VTMGOJWTTokenFactory(
             val state = !findState(authorizeHtmlResponse)
 
             !logInCallback(state, code)
-            !getJWT().filterOrElse(
-                { isValidToken(it) },
-                { Authentication.JWTTokenNotValid })
+            ApiResponse.Success.Authentication.Token(
+                !getJWT().filterOrElse(
+                    { isValidToken(it) },
+                    { Authentication.JWTTokenNotValid })
+            )
         }
 
     private suspend fun initLogin(): Either<ApiResponse.Failure, Unit> =
