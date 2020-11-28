@@ -4,8 +4,8 @@ import arrow.core.Either
 import arrow.core.computations.either
 import be.tapped.common.executeAsync
 import be.tapped.vtmgo.ApiResponse
-import be.tapped.vtmgo.common.HeaderBuilder
 import be.tapped.vtmgo.ApiResponse.Failure.JsonParsingException
+import be.tapped.vtmgo.common.HeaderBuilder
 import be.tapped.vtmgo.common.safeBodyString
 import be.tapped.vtmgo.profile.JWT
 import be.tapped.vtmgo.profile.Profile

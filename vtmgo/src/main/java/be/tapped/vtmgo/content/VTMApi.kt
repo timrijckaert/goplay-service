@@ -11,6 +11,8 @@ class VTMApi(
     programRepo: ProgramRepo = HttpProgramRepo(client, BaseContentHttpUrlBuilder, headerBuilder, JsonPagedTeaserContentParser()),
     categoryRepo: CategoryRepo = HttpCategoryRepo(client, BaseContentHttpUrlBuilder, headerBuilder, JsonCategoryParser()),
     channelRepo: ChannelRepo = HttpChannelRepo(client, BaseContentHttpUrlBuilder, headerBuilder, JsonChannelParser()),
+    storeFrontRepo: StoreFrontRepo = HttpStoreFrontRepo(client, BaseContentHttpUrlBuilder, headerBuilder, JsonStoreFrontParser()),
 ) : ProgramRepo by programRepo,
     CategoryRepo by categoryRepo,
-    ChannelRepo by channelRepo
+    ChannelRepo by channelRepo,
+    StoreFrontRepo by storeFrontRepo

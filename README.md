@@ -35,6 +35,11 @@ Er is een `sample` module voorzien.
 ## Content
 - [x] Alle programma's alfabetisch
 - [x] Alle categorieën
+- [x] Home page content
+  - [x] Main
+  - [x] Series
+  - [x] Movies
+  - [x] Kids
 - [ ] Zoeken
 - [ ] Ophalen van episodes
 - [ ] Ophalen van streams
@@ -63,4 +68,3 @@ Er is een `sample` module voorzien.
 
 ## EPG
 - [ ] EPG
-

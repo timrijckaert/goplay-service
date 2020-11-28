@@ -2,24 +2,45 @@ package be.tapped.vtmgo.content
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.JsonObject
 
-@Serializable
 enum class TargetType {
     MOVIE,
-    PROGRAM
+    PROGRAM,
+    EPISODE,
+    EXTERNAL_URL;
 }
 
 @Serializable
-data class Target(
-    val type: TargetType,
-    val id: String,
-    val name: String,
-)
+data class TargetResponse(
+    private val type: TargetType,
+    private val id: String? = null,
+    private val url: String? = null,
+    private val name: String? = null,
+    private val programId: String? = null,
+) {
+    sealed class Target {
+        data class Movie(val id: String, val name: String) : Target()
+        data class Program(val id: String, val name: String) : Target()
+        data class Episode(val id: String, val programId: String) : Target()
+        data class External(val url: String) : Target()
+    }
+
+    val asTarget: Target
+        get() {
+            return when (type) {
+                TargetType.MOVIE -> Target.Movie(id!!, name!!)
+                TargetType.PROGRAM -> Target.Program(id!!, name!!)
+                TargetType.EPISODE -> Target.Episode(id!!, programId!!)
+                TargetType.EXTERNAL_URL -> Target.External(url!!)
+            }
+        }
+}
 
 @Serializable
 data class PagedTeaserContent(
     val title: String,
-    val target: Target,
+    val target: TargetResponse,
     val imageUrl: String,
     val geoBlocked: Boolean,
     val blockedFor: String? = null,
@@ -43,3 +64,150 @@ data class LiveChannel(
     val channelPosterUrl: String,
     val seoKey: String,
 )
+
+@Serializable
+enum class Overlay {
+    TITLE,
+    BUTTONS
+}
+
+@Serializable
+data class CarouselTeaser(
+    val tagline: String? = null,
+    val bannerAltText: String? = null,
+    val largeImageUrl: String,
+    val mediumImageUrl: String,
+    val mobileImageUrl: String,
+    val mobileCompressedImageUrl: String,
+    val smartTvImageUrl: String,
+    val visualOnly: Boolean,
+    val addedToMyList: Boolean,
+    val overlay: List<Overlay>,
+    val title: String,
+    val target: TargetResponse,
+)
+
+@Serializable
+data class DefaultSwimlaneTeaser(
+    val title: String,
+    val target: TargetResponse,
+    val imageUrl: String,
+    val geoBlocked: Boolean,
+    val blockedFor: String? = null,
+)
+
+@Serializable
+data class ContinueWatchingTeaser(
+    val title: String,
+    val label: String? = null,
+    val target: TargetResponse,
+    val imageUrl: String,
+    val userProgressPercentage: Int,
+    val playerPositionSeconds: Int,
+    val remainingDaysAvailable: Long,
+    val geoBlocked: Boolean,
+    val blockedFor: String? = null,
+)
+
+@Serializable
+data class MyListTeaser(
+    val title: String,
+    val target: TargetResponse,
+    val imageUrl: String,
+    val geoBlocked: Boolean,
+    val blockedFor: String? = null,
+)
+
+@Serializable
+data class MarketingTeaser(
+    val tagline: String? = null,
+    val bannerAltText: String? = null,
+    val largeImageUrl: String,
+    val mediumImageUrl: String,
+    val mobileImageUrl: String,
+    val mobileCompressedImageUrl: String,
+    val smartTvImageUrl: String,
+    val visualOnly: Boolean,
+    val addedToMyList: Boolean,
+    val overlay: List<Overlay>,
+    val title: String,
+    val target: TargetResponse,
+)
+
+@Serializable
+data class Metadata(
+    val provider: String,
+    val requestId: String,
+    val routingGroup: String,
+    val abGroup: String,
+)
+
+//<editor-fold desc="Polymorphic StoreFront JSON. Discriminated by `rowType`">
+@Serializable
+abstract class StoreFront {
+    abstract val id: String
+    abstract val metaData: Metadata
+    abstract val hasDetail: Boolean
+}
+
+@Serializable
+@SerialName("CAROUSEL")
+data class CarouselStoreFront(
+    override val id: String,
+    val teasers: List<CarouselTeaser>,
+    override val metaData: Metadata,
+    override val hasDetail: Boolean,
+) : StoreFront()
+
+@Serializable
+@SerialName("SWIMLANE_DEFAULT")
+data class DefaultSwimlaneStoreFront(
+    override val id: String,
+    override val metaData: Metadata,
+    val title: String,
+    val logoUrl: String? = null,
+    val teasers: List<DefaultSwimlaneTeaser>,
+    override val hasDetail: Boolean,
+) : StoreFront()
+
+@Serializable
+@SerialName("CONTINUE_WATCHING")
+data class ContinueWatchingStoreFront(
+    override val id: String,
+    override val metaData: Metadata,
+    val title: String,
+    val logoUrl: String? = null,
+    val teasers: List<ContinueWatchingTeaser>,
+    override val hasDetail: Boolean,
+) : StoreFront()
+
+@Serializable
+@SerialName("MY_LIST")
+data class MyListStoreFront(
+    override val id: String,
+    override val metaData: Metadata,
+    val title: String,
+    val logoUrl: String? = null,
+    val teasers: List<MyListTeaser>,
+    override val hasDetail: Boolean,
+) : StoreFront()
+
+@Serializable
+@SerialName("MARKETING_BLOCK")
+data class MarketingStoreFront(
+    override val id: String,
+    val teaser: MarketingTeaser,
+    override val metaData: Metadata,
+    override val hasDetail: Boolean,
+) : StoreFront()
+
+@Serializable
+@SerialName("PROFILE_SWITCHER")
+data class ProfileSwitcherStoreFront(
+    override val id: String,
+    override val metaData: Metadata,
+    val title: String,
+    val profiles: List<JsonObject>,
+    override val hasDetail: Boolean,
+) : StoreFront()
+//</editor-fold>

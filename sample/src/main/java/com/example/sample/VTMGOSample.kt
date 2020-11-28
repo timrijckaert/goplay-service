@@ -1,5 +1,6 @@
 package com.example.sample
 
+import be.tapped.vtmgo.content.StoreFrontType
 import be.tapped.vtmgo.content.VTMApi
 import be.tapped.vtmgo.profile.JWT
 import be.tapped.vtmgo.profile.Profile
@@ -26,8 +27,8 @@ private suspend fun api(token: JWT, profile: Profile) {
     val vtmApi = VTMApi()
 
     // Programs
-    val catalogForChosenVtmGoProduct = vtmApi.fetchAZ(token, profile).orNull()!!.catalog
-    val productTypeWithCatalog = catalogForChosenVtmGoProduct.groupBy { it.target.type }
+    val catalogForChosenVtmGoProduct = vtmApi.fetchAZ(token, profile)
+    val productTypeWithCatalog = catalogForChosenVtmGoProduct.orNull()!!.catalog.groupBy { it.target::class.java }
     println(productTypeWithCatalog)
 
     // Categories
@@ -38,4 +39,7 @@ private suspend fun api(token: JWT, profile: Profile) {
     val liveChannels = vtmApi.fetchChannels(token, profile)
     println(liveChannels)
 
+    // Store front
+    val series = vtmApi.fetchStoreFront(token, profile, StoreFrontType.MAIN)
+    println(series)
 }

@@ -4,6 +4,7 @@ import arrow.core.NonEmptyList
 import be.tapped.vtmgo.content.Category
 import be.tapped.vtmgo.content.LiveChannel
 import be.tapped.vtmgo.content.PagedTeaserContent
+import be.tapped.vtmgo.content.StoreFront
 import be.tapped.vtmgo.profile.JWT
 import okhttp3.Request
 
@@ -13,6 +14,7 @@ sealed class ApiResponse {
             data class Catalog(val catalog: List<PagedTeaserContent>) : Content()
             data class Categories(val categories: List<Category>) : Content()
             data class LiveChannels(val channels: List<LiveChannel>) : Content()
+            data class StoreFrontRows(val rows: List<StoreFront>) : Content()
         }
 
         sealed class Authentication : ApiResponse() {
