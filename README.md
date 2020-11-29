@@ -33,7 +33,6 @@ Er is een `sample` module voorzien.
 ## Authenticatie
 - [x] Authenticatie
 - [x] VTM GO Profiel ophalen
-- [ ] Favorieten
 
 ## Content
 - [x] Alle programma's alfabetisch
