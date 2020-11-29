@@ -48,7 +48,7 @@ Er is een `sample` module voorzien.
 - [ ] Live Streams
 
 ## EPG
-- [ ] EPG
+- [x] EPG
 
 # VIER
 

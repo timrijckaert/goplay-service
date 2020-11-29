@@ -5,6 +5,7 @@ import be.tapped.vtmgo.content.Category
 import be.tapped.vtmgo.content.LiveChannel
 import be.tapped.vtmgo.content.PagedTeaserContent
 import be.tapped.vtmgo.content.StoreFront
+import be.tapped.vtmgo.epg.Epg
 import be.tapped.vtmgo.profile.JWT
 import okhttp3.Request
 
@@ -16,6 +17,8 @@ sealed class ApiResponse {
             data class LiveChannels(val channels: List<LiveChannel>) : Content()
             data class StoreFrontRows(val rows: List<StoreFront>) : Content()
         }
+
+        data class ProgramGuide(val epg: Epg) : Success()
 
         sealed class Authentication : ApiResponse() {
             data class Token(val jwt: JWT) : Authentication()

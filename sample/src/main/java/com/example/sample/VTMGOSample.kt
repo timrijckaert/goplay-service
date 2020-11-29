@@ -1,5 +1,6 @@
 package com.example.sample
 
+import be.tapped.vtmgo.epg.HttpEpgRepo
 import be.tapped.vtmgo.content.StoreFrontType
 import be.tapped.vtmgo.content.VTMApi
 import be.tapped.vtmgo.profile.JWT
@@ -9,6 +10,18 @@ import be.tapped.vtmgo.profile.ProfileRepo
 suspend fun main(args: Array<String>) {
     val userName = args[0]
     val password = args[1]
+
+    // Authentication
+    val (token, profile) = auth(userName, password)
+
+    // Content
+    api(token, profile)
+
+    // EPG
+    epg()
+}
+
+private suspend fun auth(userName: String, password: String): Pair<JWT, Profile> {
     val profileRepo = ProfileRepo()
 
     val jwtToken = profileRepo.login(userName, password)
@@ -19,8 +32,7 @@ suspend fun main(args: Array<String>) {
     println("Fetched profiles=$profiles")
 
     val profile: Profile = profiles.first()
-
-    api(token, profile)
+    return token to profile
 }
 
 private suspend fun api(token: JWT, profile: Profile) {
@@ -42,4 +54,10 @@ private suspend fun api(token: JWT, profile: Profile) {
     // Store front
     val series = vtmApi.fetchStoreFront(token, profile, StoreFrontType.MAIN)
     println(series)
+}
+
+private suspend fun epg() {
+    val httpEpgRepo = HttpEpgRepo()
+    val todayEpg = httpEpgRepo.epg()
+    println(todayEpg)
 }
