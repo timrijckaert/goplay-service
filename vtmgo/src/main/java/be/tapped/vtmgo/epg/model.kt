@@ -64,7 +64,7 @@ data class Channel(
 )
 
 @Serializable
-class Epg(
+data class Epg(
     val from: Long,
     val to: Long,
     val timestamp: Long,
