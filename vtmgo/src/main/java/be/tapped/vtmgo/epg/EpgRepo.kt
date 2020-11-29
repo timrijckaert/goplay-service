@@ -13,6 +13,8 @@ import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import java.text.SimpleDateFormat
+import java.time.format.DateTimeFormatter
 import java.util.*
 
 class JsonEpgParser {
@@ -27,6 +29,7 @@ interface EpgRepo {
 class HttpEpgRepo(
     private val client: OkHttpClient = defaultOkHttpClient,
     private val jsonEpgParser: JsonEpgParser = JsonEpgParser(),
+    private val dateFormatter: SimpleDateFormat = SimpleDateFormat("yyyy-MM-dd")
 ) : EpgRepo {
 
     // curl -X GET \
@@ -49,12 +52,5 @@ class HttpEpgRepo(
             }
         }
 
-    private fun constructUrl(calendar: Calendar): String {
-        val year: Int = calendar.get(Calendar.YEAR)
-        // Note that months are 0 based. 0 -> january, 11 -> december
-        val month: Int = calendar.get(Calendar.MONTH) + 1
-        val dayOfTheMonth: Int = calendar.get(Calendar.DAY_OF_MONTH)
-
-        return "https://vtm.be/tv-gids/api/v2/broadcasts/$year-$month-$dayOfTheMonth"
-    }
+    private fun constructUrl(calendar: Calendar): String = "https://vtm.be/tv-gids/api/v2/broadcasts/${dateFormatter.format(calendar.time)}"
 }
