@@ -16,7 +16,6 @@ Er is een `sample` module voorzien.
 ## Content
 - [x] Alle programma's alfabetisch
 - [x] Alle categorieën
-- [ ] Favorieten
 - [x] Zoeken
 - [x] Ophalen van episodes
 - [x] Ophalen van streams
