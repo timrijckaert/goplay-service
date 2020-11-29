@@ -51,6 +51,11 @@ private suspend fun api(jwtToken: JWT, profile: Profile) {
     val liveChannels = vtmApi.fetchChannels(jwtToken, profile)
     println(liveChannels)
 
+    // Live Channel stream
+    val firstLiveChannel = liveChannels.orNull()!!.channels.first()
+    val firstLiveChannelStream = vtmApi.fetchStream(firstLiveChannel)
+    println(firstLiveChannelStream)
+
     // Store front
     val series = vtmApi.fetchStoreFront(jwtToken, profile, StoreFrontType.MAIN)
     println(series)
