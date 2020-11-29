@@ -12,7 +12,9 @@ class VTMApi(
     categoryRepo: CategoryRepo = HttpCategoryRepo(client, BaseContentHttpUrlBuilder, headerBuilder, JsonCategoryParser()),
     channelRepo: ChannelRepo = HttpChannelRepo(client, BaseContentHttpUrlBuilder, headerBuilder, JsonChannelParser()),
     storeFrontRepo: StoreFrontRepo = HttpStoreFrontRepo(client, BaseContentHttpUrlBuilder, headerBuilder, JsonStoreFrontParser()),
+    favoritesRepo: FavoritesRepo = HttpFavoritesRepo(client, BaseContentHttpUrlBuilder, headerBuilder, JsonFavoritesParser())
 ) : ProgramRepo by programRepo,
     CategoryRepo by categoryRepo,
     ChannelRepo by channelRepo,
-    StoreFrontRepo by storeFrontRepo
+    StoreFrontRepo by storeFrontRepo,
+    FavoritesRepo by favoritesRepo

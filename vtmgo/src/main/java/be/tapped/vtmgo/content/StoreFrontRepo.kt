@@ -33,9 +33,6 @@ internal class JsonStoreFrontParser {
             val rows = jsonParser.decodeFromString<JsonObject>(json)["rows"]!!.jsonArray
             jsonParser.decodeFromJsonElement<List<StoreFront>>(rows)
         }.mapLeft(::JsonParsingException)
-
-    suspend fun parseMyListStoreFront(json: String): Either<ApiResponse.Failure, StoreFront.MyListStoreFront> =
-        Either.catch { jsonParser.decodeFromString<StoreFront.MyListStoreFront>(json) }.mapLeft(::JsonParsingException)
 }
 
 interface StoreFrontRepo {
@@ -45,8 +42,6 @@ interface StoreFrontRepo {
         profile: Profile,
         storeFrontType: StoreFrontType,
     ): Either<ApiResponse.Failure, ApiResponse.Success.Content.StoreFrontRows>
-
-    suspend fun fetchMyFavorites(jwt: JWT, profile: Profile): Either<ApiResponse.Failure, ApiResponse.Success.Content.Favorites>
 
 }
 
@@ -90,42 +85,6 @@ internal class HttpStoreFrontRepo(
 
             either {
                 ApiResponse.Success.Content.StoreFrontRows(!jsonStoreFrontParser.parseListOfStoreFront(!response.safeBodyString()))
-            }
-        }
-    }
-
-    // curl -X GET \
-    // -H "x-app-version:8" \
-    // -H "x-persgroep-mobile-app:true" \
-    // -H "x-persgroep-os:android" \
-    // -H "x-persgroep-os-version:23" \
-    // -H "x-dpp-jwt: <jwt-token>" \
-    // -H "x-dpp-profile: <profile-id>" \
-    // -H "Host:lfvp-api.dpgmedia.net" \
-    // -H "Connection:Keep-Alive" \
-    // -H "Accept-Encoding:gzip" \
-    // -H "Cookie:authId=44de1089-dac7-43a8-a7b5-0f01042ab769" \
-    // -H "User-Agent:okhttp/4.9.0" "https://lfvp-api.dpgmedia.net/vtmgo/main/swimlane/my-list"
-    override suspend fun fetchMyFavorites(
-        jwt: JWT,
-        profile: Profile,
-    ): Either<ApiResponse.Failure, ApiResponse.Success.Content.Favorites> {
-        fun constructUrl(product: VTMGOProduct): HttpUrl =
-            baseContentHttpUrlBuilder.constructBaseContentUrl(product)
-                .addPathSegments("main/swimlane/my-list")
-                .build()
-
-        return withContext(Dispatchers.IO) {
-            val response = client.executeAsync(
-                Request.Builder()
-                    .headers(headerBuilder.authenticationHeaders(jwt, profile))
-                    .get()
-                    .url(constructUrl(profile.product))
-                    .build()
-            )
-
-            either {
-                ApiResponse.Success.Content.Favorites(!jsonStoreFrontParser.parseMyListStoreFront(!response.safeBodyString()))
             }
         }
     }
