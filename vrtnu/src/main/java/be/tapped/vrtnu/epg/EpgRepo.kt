@@ -15,6 +15,7 @@ import kotlinx.serialization.json.Json
 import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import java.text.SimpleDateFormat
 import java.util.*
 
 class JsonEpgParser {
@@ -29,29 +30,25 @@ interface EpgRepo {
 class HttpEpgRepo(
     private val client: OkHttpClient = defaultOkHttpClient,
     private val jsonEpgParser: JsonEpgParser = JsonEpgParser(),
+    private val dateFormatter: SimpleDateFormat = SimpleDateFormat("yyyy-MM-dd"),
 ) : EpgRepo {
 
     // curl 'https://www.vrt.be/bin/epg/schedule.2020-11-21.json'
-    private fun constructUrl(dayOfTheMonth: Int, month: Int, year: Int): HttpUrl {
+    private fun constructUrl(calendar: Calendar): HttpUrl {
         return HttpUrl.Builder()
             .scheme("https")
             .host("vrt.be")
             .addPathSegments("bin/epg")
-            .addPathSegment("schedule.$year-$month-$dayOfTheMonth.json")
+            .addPathSegment("schedule.${dateFormatter.format(calendar.time)}.json")
             .build()
     }
 
-    override suspend fun epg(calendar: Calendar): Either<ApiResponse.Failure, ApiResponse.Success.ProgramGuide> {
-        val year: Int = calendar.get(Calendar.YEAR)
-        // Note that months are 0 based. 0 -> january, 11 -> december
-        val month: Int = calendar.get(Calendar.MONTH) + 1
-        val dayOfTheMonth: Int = calendar.get(Calendar.DAY_OF_MONTH)
-
-        return withContext(Dispatchers.IO) {
+    override suspend fun epg(calendar: Calendar): Either<ApiResponse.Failure, ApiResponse.Success.ProgramGuide> =
+        withContext(Dispatchers.IO) {
             val epgResponse = client.executeAsync(
                 Request.Builder()
                     .get()
-                    .url(constructUrl(dayOfTheMonth, month, year))
+                    .url(constructUrl(calendar))
                     .build()
             )
 
@@ -59,5 +56,4 @@ class HttpEpgRepo(
                 ApiResponse.Success.ProgramGuide(!jsonEpgParser.parse(!epgResponse.safeBodyString()))
             }
         }
-    }
 }

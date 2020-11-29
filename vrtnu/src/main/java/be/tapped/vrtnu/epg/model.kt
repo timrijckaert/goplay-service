@@ -21,7 +21,7 @@ data class EpgProgram(
     val endTime: String,
     val title: String,
     @SerialName("vrt.whatson-id")
-    val whatsonId: String,
+    val whatsonId: String? = null,
     val image: String? = null,
     val programWhatsonId: String? = null,
     val featured: Boolean? = null,
@@ -38,6 +38,5 @@ data class EpgProgram(
         require(startTime.isNotEmpty()) { "startTime can not be blank." }
         require(endTime.isNotEmpty()) { "endTime can not be blank." }
         require(title.isNotEmpty()) { "title can not be blank." }
-        require(whatsonId.isNotEmpty()) { "whatsonId can not be blank." }
     }
 }

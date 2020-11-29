@@ -104,6 +104,11 @@ private suspend fun epg() {
     val epg = HttpEpgRepo()
 
     val todaysEpg = epg.epg()
+    println(todaysEpg)
+
     val yesterdaysEpg = epg.epg(Calendar.getInstance().apply { roll(Calendar.DAY_OF_MONTH, false) })
-    val someDayEpg = epg.epg(Calendar.getInstance().apply { set(2020, 10, 22) })
+    println(yesterdaysEpg)
+
+    val someDayEpg = epg.epg(Calendar.getInstance().apply { set(2020, 10, 1) })
+    println(someDayEpg)
 }
