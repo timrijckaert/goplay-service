@@ -16,6 +16,7 @@ Er is een `sample` module voorzien.
 ## Content
 - [x] Alle programma's alfabetisch
 - [x] Alle categorieën
+- [ ] Favorieten
 - [x] Zoeken
 - [x] Ophalen van episodes
 - [x] Ophalen van streams
@@ -40,6 +41,7 @@ Er is een `sample` module voorzien.
   - [x] Series
   - [x] Movies
   - [x] Kids
+- [x] Favorieten
 - [ ] Zoeken
 - [ ] Ophalen van episodes
 - [ ] Ophalen van streams
@@ -60,6 +62,7 @@ Er is een `sample` module voorzien.
 ## Content
 - [ ] Alle programma's alfabetisch
 - [ ] Alle categorieën
+- [ ] Favorieten
 - [ ] Zoeken
 - [ ] Ophalen van episodes
 - [ ] Ophalen van streams

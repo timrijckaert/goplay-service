@@ -142,72 +142,77 @@ data class Metadata(
     val abGroup: String,
 )
 
-//<editor-fold desc="Polymorphic StoreFront JSON. Discriminated by `rowType`">
 @Serializable
-abstract class StoreFront {
+sealed class StoreFront {
+    abstract val rowType: String
     abstract val id: String
     abstract val metaData: Metadata
     abstract val hasDetail: Boolean
+
+    @Serializable
+    @SerialName("CAROUSEL")
+    data class CarouselStoreFront(
+        override val id: String,
+        val teasers: List<CarouselTeaser>,
+        override val metaData: Metadata,
+        override val hasDetail: Boolean,
+        override val rowType: String,
+    ) : StoreFront()
+
+    @Serializable
+    @SerialName("SWIMLANE_DEFAULT")
+    data class DefaultSwimlaneStoreFront(
+        override val id: String,
+        override val metaData: Metadata,
+        val title: String,
+        val logoUrl: String? = null,
+        val teasers: List<DefaultSwimlaneTeaser>,
+        override val hasDetail: Boolean,
+        override val rowType: String,
+    ) : StoreFront()
+
+    @Serializable
+    @SerialName("CONTINUE_WATCHING")
+    data class ContinueWatchingStoreFront(
+        override val id: String,
+        override val metaData: Metadata,
+        val title: String,
+        val logoUrl: String? = null,
+        val teasers: List<ContinueWatchingTeaser>,
+        override val hasDetail: Boolean,
+        override val rowType: String,
+    ) : StoreFront()
+
+    @Serializable
+    @SerialName("MY_LIST")
+    data class MyListStoreFront(
+        override val id: String,
+        override val metaData: Metadata,
+        val title: String,
+        val logoUrl: String? = null,
+        val teasers: List<MyListTeaser>,
+        override val hasDetail: Boolean,
+        override val rowType: String,
+    ) : StoreFront()
+
+    @Serializable
+    @SerialName("MARKETING_BLOCK")
+    data class MarketingStoreFront(
+        override val id: String,
+        val teaser: MarketingTeaser,
+        override val metaData: Metadata,
+        override val hasDetail: Boolean,
+        override val rowType: String,
+    ) : StoreFront()
+
+    @Serializable
+    @SerialName("PROFILE_SWITCHER")
+    data class ProfileSwitcherStoreFront(
+        override val id: String,
+        override val metaData: Metadata,
+        val title: String,
+        val profiles: List<JsonObject>,
+        override val hasDetail: Boolean,
+        override val rowType: String,
+    ) : StoreFront()
 }
-
-@Serializable
-@SerialName("CAROUSEL")
-data class CarouselStoreFront(
-    override val id: String,
-    val teasers: List<CarouselTeaser>,
-    override val metaData: Metadata,
-    override val hasDetail: Boolean,
-) : StoreFront()
-
-@Serializable
-@SerialName("SWIMLANE_DEFAULT")
-data class DefaultSwimlaneStoreFront(
-    override val id: String,
-    override val metaData: Metadata,
-    val title: String,
-    val logoUrl: String? = null,
-    val teasers: List<DefaultSwimlaneTeaser>,
-    override val hasDetail: Boolean,
-) : StoreFront()
-
-@Serializable
-@SerialName("CONTINUE_WATCHING")
-data class ContinueWatchingStoreFront(
-    override val id: String,
-    override val metaData: Metadata,
-    val title: String,
-    val logoUrl: String? = null,
-    val teasers: List<ContinueWatchingTeaser>,
-    override val hasDetail: Boolean,
-) : StoreFront()
-
-@Serializable
-@SerialName("MY_LIST")
-data class MyListStoreFront(
-    override val id: String,
-    override val metaData: Metadata,
-    val title: String,
-    val logoUrl: String? = null,
-    val teasers: List<MyListTeaser>,
-    override val hasDetail: Boolean,
-) : StoreFront()
-
-@Serializable
-@SerialName("MARKETING_BLOCK")
-data class MarketingStoreFront(
-    override val id: String,
-    val teaser: MarketingTeaser,
-    override val metaData: Metadata,
-    override val hasDetail: Boolean,
-) : StoreFront()
-
-@Serializable
-@SerialName("PROFILE_SWITCHER")
-data class ProfileSwitcherStoreFront(
-    override val id: String,
-    override val metaData: Metadata,
-    val title: String,
-    val profiles: List<JsonObject>,
-    override val hasDetail: Boolean,
-) : StoreFront()
-//</editor-fold>

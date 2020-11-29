@@ -14,9 +14,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.*
-import kotlinx.serialization.modules.SerializersModule
-import kotlinx.serialization.modules.polymorphic
-import kotlinx.serialization.modules.subclass
 import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -29,29 +26,28 @@ enum class StoreFrontType(internal val id: String) {
 }
 
 internal class JsonStoreFrontParser {
-    suspend fun parse(json: String): Either<ApiResponse.Failure, List<StoreFront>> {
-        return Either.catch {
-            val jsonParser = Json {
-                classDiscriminator = "rowType"
-                serializersModule = SerializersModule {
-                    polymorphic(StoreFront::class) {
-                        subclass(CarouselStoreFront::class)
-                        subclass(DefaultSwimlaneStoreFront::class)
-                        subclass(ContinueWatchingStoreFront::class)
-                        subclass(MyListStoreFront::class)
-                        subclass(MarketingStoreFront::class)
-                        subclass(ProfileSwitcherStoreFront::class)
-                    }
-                }
-            }
+    private val jsonParser: Json = Json { classDiscriminator = "rowType" }
+
+    suspend fun parseListOfStoreFront(json: String): Either<ApiResponse.Failure, List<StoreFront>> =
+        Either.catch {
             val rows = jsonParser.decodeFromString<JsonObject>(json)["rows"]!!.jsonArray
             jsonParser.decodeFromJsonElement<List<StoreFront>>(rows)
         }.mapLeft(::JsonParsingException)
-    }
+
+    suspend fun parseMyListStoreFront(json: String): Either<ApiResponse.Failure, StoreFront.MyListStoreFront> =
+        Either.catch { jsonParser.decodeFromString<StoreFront.MyListStoreFront>(json) }.mapLeft(::JsonParsingException)
 }
 
 interface StoreFrontRepo {
-    suspend fun fetchStoreFront(jwt: JWT, profile: Profile, storeFrontType: StoreFrontType): Either<ApiResponse.Failure, ApiResponse.Success.Content.StoreFrontRows>
+
+    suspend fun fetchStoreFront(
+        jwt: JWT,
+        profile: Profile,
+        storeFrontType: StoreFrontType,
+    ): Either<ApiResponse.Failure, ApiResponse.Success.Content.StoreFrontRows>
+
+    suspend fun fetchMyFavorites(jwt: JWT, profile: Profile): Either<ApiResponse.Failure, ApiResponse.Success.Content.Favorites>
+
 }
 
 internal class HttpStoreFrontRepo(
@@ -72,8 +68,18 @@ internal class HttpStoreFrontRepo(
     // -H "Connection:Keep-Alive" \
     // -H "Accept-Encoding:gzip" \
     // -H "User-Agent:okhttp/4.9.0" "https://lfvp-api.dpgmedia.net/vtmgo/storefronts/<StoreFrontType.id>"
-    override suspend fun fetchStoreFront(jwt: JWT, profile: Profile, storeFrontType: StoreFrontType): Either<ApiResponse.Failure, ApiResponse.Success.Content.StoreFrontRows> =
-        withContext(Dispatchers.IO) {
+    override suspend fun fetchStoreFront(
+        jwt: JWT,
+        profile: Profile,
+        storeFrontType: StoreFrontType,
+    ): Either<ApiResponse.Failure, ApiResponse.Success.Content.StoreFrontRows> {
+        fun constructUrl(product: VTMGOProduct, storeFrontType: StoreFrontType): HttpUrl =
+            baseContentHttpUrlBuilder.constructBaseContentUrl(product)
+                .addPathSegment("storefronts")
+                .addPathSegment(storeFrontType.id)
+                .build()
+
+        return withContext(Dispatchers.IO) {
             val response = client.executeAsync(
                 Request.Builder()
                     .headers(headerBuilder.authenticationHeaders(jwt, profile))
@@ -83,13 +89,44 @@ internal class HttpStoreFrontRepo(
             )
 
             either {
-                ApiResponse.Success.Content.StoreFrontRows(!jsonStoreFrontParser.parse(!response.safeBodyString()))
+                ApiResponse.Success.Content.StoreFrontRows(!jsonStoreFrontParser.parseListOfStoreFront(!response.safeBodyString()))
             }
         }
+    }
 
-    private fun constructUrl(product: VTMGOProduct, storeFrontType: StoreFrontType): HttpUrl =
-        baseContentHttpUrlBuilder.constructBaseContentUrl(product)
-            .addPathSegment("storefronts")
-            .addPathSegment(storeFrontType.id)
-            .build()
+    // curl -X GET \
+    // -H "x-app-version:8" \
+    // -H "x-persgroep-mobile-app:true" \
+    // -H "x-persgroep-os:android" \
+    // -H "x-persgroep-os-version:23" \
+    // -H "x-dpp-jwt: <jwt-token>" \
+    // -H "x-dpp-profile: <profile-id>" \
+    // -H "Host:lfvp-api.dpgmedia.net" \
+    // -H "Connection:Keep-Alive" \
+    // -H "Accept-Encoding:gzip" \
+    // -H "Cookie:authId=44de1089-dac7-43a8-a7b5-0f01042ab769" \
+    // -H "User-Agent:okhttp/4.9.0" "https://lfvp-api.dpgmedia.net/vtmgo/main/swimlane/my-list"
+    override suspend fun fetchMyFavorites(
+        jwt: JWT,
+        profile: Profile,
+    ): Either<ApiResponse.Failure, ApiResponse.Success.Content.Favorites> {
+        fun constructUrl(product: VTMGOProduct): HttpUrl =
+            baseContentHttpUrlBuilder.constructBaseContentUrl(product)
+                .addPathSegments("main/swimlane/my-list")
+                .build()
+
+        return withContext(Dispatchers.IO) {
+            val response = client.executeAsync(
+                Request.Builder()
+                    .headers(headerBuilder.authenticationHeaders(jwt, profile))
+                    .get()
+                    .url(constructUrl(profile.product))
+                    .build()
+            )
+
+            either {
+                ApiResponse.Success.Content.Favorites(!jsonStoreFrontParser.parseMyListStoreFront(!response.safeBodyString()))
+            }
+        }
+    }
 }

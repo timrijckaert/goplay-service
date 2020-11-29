@@ -35,25 +35,29 @@ private suspend fun auth(userName: String, password: String): Pair<JWT, Profile>
     return token to profile
 }
 
-private suspend fun api(token: JWT, profile: Profile) {
+private suspend fun api(jwtToken: JWT, profile: Profile) {
     val vtmApi = VTMApi()
 
     // Programs
-    val catalogForChosenVtmGoProduct = vtmApi.fetchAZ(token, profile)
+    val catalogForChosenVtmGoProduct = vtmApi.fetchAZ(jwtToken, profile)
     val productTypeWithCatalog = catalogForChosenVtmGoProduct.orNull()!!.catalog.groupBy { it.target::class.java }
     println(productTypeWithCatalog)
 
     // Categories
-    val categories = vtmApi.fetchCategories(token, profile)
+    val categories = vtmApi.fetchCategories(jwtToken, profile)
     println(categories)
 
     // Live Channels
-    val liveChannels = vtmApi.fetchChannels(token, profile)
+    val liveChannels = vtmApi.fetchChannels(jwtToken, profile)
     println(liveChannels)
 
     // Store front
-    val series = vtmApi.fetchStoreFront(token, profile, StoreFrontType.MAIN)
+    val series = vtmApi.fetchStoreFront(jwtToken, profile, StoreFrontType.MAIN)
     println(series)
+
+    // Favorites
+    val myFavorites = vtmApi.fetchMyFavorites(jwtToken, profile)
+    println(myFavorites)
 }
 
 private suspend fun epg() {
