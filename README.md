@@ -20,7 +20,10 @@ Er is een `sample` module voorzien.
 - [x] Ophalen van episodes
 - [x] Ophalen van streams
 - [x] Live screen grabs
+
+## Streaming
 - [x] Live streams
+- [ ] Progress update
 
 ## EPG
 - [x] EPG
@@ -46,7 +49,10 @@ Er is een `sample` module voorzien.
 - [ ] Ophalen van streams
 - [ ] Live screen grabs
 - [x] Live Channel Information + EPG
+
+## Streaming
 - [ ] Live Streams
+- [ ] Progress updates
 
 ## EPG
 - [x] EPG
