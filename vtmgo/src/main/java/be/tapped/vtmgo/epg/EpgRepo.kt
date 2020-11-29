@@ -28,6 +28,13 @@ class HttpEpgRepo(
     private val client: OkHttpClient = defaultOkHttpClient,
     private val jsonEpgParser: JsonEpgParser = JsonEpgParser(),
 ) : EpgRepo {
+
+    // curl -X GET \
+    // -H "Host:vtm.be" \
+    // -H "Connection:Keep-Alive" \
+    // -H "Accept-Encoding:gzip" \
+    // -H "Cookie: authId=<uuid4>" \
+    // -H "User-Agent:okhttp/4.9.0" "https://vtm.be/tv-gids/api/v2/broadcasts/<year>-<monthIndex>-<dayOfWeek>"
     override suspend fun epg(calendar: Calendar): Either<ApiResponse.Failure, ApiResponse.Success.ProgramGuide> =
         withContext(Dispatchers.IO) {
             val epgResponse = client.executeAsync(
