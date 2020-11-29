@@ -58,6 +58,10 @@ private suspend fun api(jwtToken: JWT, profile: Profile) {
     // Favorites
     val myFavorites = vtmApi.fetchMyFavorites(jwtToken, profile)
     println(myFavorites)
+
+    // Search
+    val searchResult = vtmApi.search(jwtToken, profile, "Code van Coppens")
+    println(searchResult)
 }
 
 private suspend fun epg() {

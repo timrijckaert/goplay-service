@@ -216,3 +216,20 @@ sealed class StoreFront {
         override val rowType: String,
     ) : StoreFront()
 }
+
+@Serializable
+enum class SearchResultType {
+    @SerialName("related")
+    RELATED,
+    @SerialName("exact")
+    EXACT,
+    @SerialName("fallback")
+    FALLBACK;
+}
+
+@Serializable
+data class SearchResultResponse(
+    val title: String,
+    val type: SearchResultType,
+    val teasers: List<PagedTeaserContent>
+)

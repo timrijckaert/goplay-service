@@ -14,6 +14,7 @@ sealed class ApiResponse {
             data class LiveChannels(val channels: List<LiveChannel>) : Content()
             data class StoreFrontRows(val rows: List<StoreFront>) : Content()
             data class Favorites(val favorites: StoreFront.MyListStoreFront) : Content()
+            data class Search(val search: List<SearchResultResponse>) : Content()
         }
 
         data class ProgramGuide(val epg: Epg) : Success()

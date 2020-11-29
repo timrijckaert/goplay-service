@@ -51,7 +51,7 @@ Er is een `sample` module voorzien.
   - [x] Movies
   - [x] Kids
 - [x] Favorieten
-- [ ] Zoeken
+- [x] Zoeken
 - [ ] Ophalen van episodes
 - [ ] Ophalen van streams
 - [ ] Live screen grabs
@@ -68,7 +68,7 @@ Er is een `sample` module voorzien.
 
 <details>
 <summary>VIER</summary>
-    
+
 # VIER
 
 ## Authenticatie
