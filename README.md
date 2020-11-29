@@ -3,6 +3,9 @@
 JVM lib voor het inloggen en ophalen van Vlaamse media content.
 Er is een `sample` module voorzien.
 
+<details>
+<summary>VRT NU</summary>
+
 # VRT NU
 
 ## Authenticatie
@@ -27,6 +30,11 @@ Er is een `sample` module voorzien.
 
 ## EPG
 - [x] EPG
+
+</details>
+
+<details>
+<summary>VTM GO</summary>
 
 # VTM GO
 
@@ -56,6 +64,11 @@ Er is een `sample` module voorzien.
 ## EPG
 - [x] EPG
 
+</details>
+
+<details>
+<summary>VIER</summary>
+    
 # VIER
 
 ## Authenticatie
@@ -75,6 +88,8 @@ Er is een `sample` module voorzien.
 
 ## EPG
 - [ ] EPG
+
+</details>
 
 # Inspired by
 
