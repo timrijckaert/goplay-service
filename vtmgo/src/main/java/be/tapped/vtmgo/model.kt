@@ -36,5 +36,12 @@ sealed class ApiResponse {
             object NoStateFound : Authentication()
             object JWTTokenNotValid : Authentication()
         }
+
+        sealed class Stream : Failure() {
+            object NoAnvatoStreamFound : Stream()
+            object NoAnvatoResponseFound : Stream()
+            object NoPublishedEmbedUrlFound : Stream()
+            object NoMPDManifestUrlFound : Stream()
+        }
     }
 }

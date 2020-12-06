@@ -5,7 +5,7 @@ import be.tapped.common.executeAsync
 import be.tapped.vtmgo.common.AuthorizationHeaderBuilder
 import be.tapped.vtmgo.common.HeaderBuilder
 import be.tapped.vtmgo.common.defaultCookieJar
-import be.tapped.vtmgo.common.defaultOkHttpClient
+import be.tapped.vtmgo.common.vtmApiDefaultOkHttpClient
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.decodeFromString
@@ -15,7 +15,7 @@ import okhttp3.Request
 
 class ProfileRepo(
     private val cookieJar: ReadOnlyCookieJar = defaultCookieJar,
-    private val client: OkHttpClient = defaultOkHttpClient,
+    private val client: OkHttpClient = vtmApiDefaultOkHttpClient,
     private val headerBuilder: HeaderBuilder = AuthorizationHeaderBuilder(),
     jwtTokenFactory: JWTTokenFactory = VTMGOJWTTokenFactory(client, cookieJar),
 ) : JWTTokenFactory by jwtTokenFactory {

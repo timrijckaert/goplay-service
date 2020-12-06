@@ -5,7 +5,7 @@ import arrow.core.computations.either
 import be.tapped.common.executeAsync
 import be.tapped.vtmgo.ApiResponse
 import be.tapped.vtmgo.ApiResponse.Failure.JsonParsingException
-import be.tapped.vtmgo.common.defaultOkHttpClient
+import be.tapped.vtmgo.common.vtmApiDefaultOkHttpClient
 import be.tapped.vtmgo.common.safeBodyString
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -14,7 +14,6 @@ import kotlinx.serialization.json.Json
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import java.text.SimpleDateFormat
-import java.time.format.DateTimeFormatter
 import java.util.*
 
 class JsonEpgParser {
@@ -27,9 +26,9 @@ interface EpgRepo {
 }
 
 class HttpEpgRepo(
-    private val client: OkHttpClient = defaultOkHttpClient,
+    private val client: OkHttpClient = vtmApiDefaultOkHttpClient,
     private val jsonEpgParser: JsonEpgParser = JsonEpgParser(),
-    private val dateFormatter: SimpleDateFormat = SimpleDateFormat("yyyy-MM-dd")
+    private val dateFormatter: SimpleDateFormat = SimpleDateFormat("yyyy-MM-dd"),
 ) : EpgRepo {
 
     // curl -X GET \

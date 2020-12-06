@@ -2,11 +2,12 @@ package be.tapped.vtmgo.content
 
 import be.tapped.vtmgo.common.AuthorizationHeaderBuilder
 import be.tapped.vtmgo.common.HeaderBuilder
-import be.tapped.vtmgo.common.defaultOkHttpClient
+import be.tapped.vtmgo.common.anvatoDefaultOkHttpClient
+import be.tapped.vtmgo.common.vtmApiDefaultOkHttpClient
 import okhttp3.OkHttpClient
 
 class VTMApi(
-    client: OkHttpClient = defaultOkHttpClient,
+    client: OkHttpClient = vtmApiDefaultOkHttpClient,
     headerBuilder: HeaderBuilder = AuthorizationHeaderBuilder(),
     programRepo: ProgramRepo = HttpProgramRepo(client, BaseContentHttpUrlBuilder, headerBuilder, JsonPagedTeaserContentParser()),
     categoryRepo: CategoryRepo = HttpCategoryRepo(client, BaseContentHttpUrlBuilder, headerBuilder, JsonCategoryParser()),
@@ -14,7 +15,12 @@ class VTMApi(
     storeFrontRepo: StoreFrontRepo = HttpStoreFrontRepo(client, BaseContentHttpUrlBuilder, headerBuilder, JsonStoreFrontParser()),
     favoritesRepo: FavoritesRepo = HttpFavoritesRepo(client, BaseContentHttpUrlBuilder, headerBuilder, JsonFavoritesParser()),
     searchRepo: SearchRepo = HttpSearchRepo(client, BaseContentHttpUrlBuilder, headerBuilder, JsonSearchResultResponseParser()),
-    streamRepo: StreamRepo = HttpStreamRepo(client, headerBuilder)
+    streamRepo: StreamRepo = HttpStreamRepo(
+        client,
+        headerBuilder,
+        JsonStreamResponseParser(),
+        HttpAnvatoResponse(anvatoDefaultOkHttpClient, AnvatoVideoJsonLoadedParser())
+    ),
 ) : ProgramRepo by programRepo,
     CategoryRepo by categoryRepo,
     ChannelRepo by channelRepo,
