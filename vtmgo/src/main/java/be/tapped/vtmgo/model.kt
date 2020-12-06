@@ -22,6 +22,10 @@ sealed class ApiResponse {
         sealed class Authentication : ApiResponse() {
             data class Token(val jwt: JWT) : Authentication()
         }
+
+        sealed class Stream : Success() {
+            data class Live(val anvatoStreamWrapper: AnvatoStreamWrapper) : Stream()
+        }
     }
 
     sealed class Failure : ApiResponse() {

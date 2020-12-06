@@ -391,4 +391,11 @@ data class AnvatoVideoStreamResponse(
 inline class MPDUrl(val url: String)
 inline class LicenseUrl(val url: String)
 
-data class AnvatoStream(val mdpUrl: MPDUrl, val licenseUrl: LicenseUrl)
+data class AnvatoStreamWrapper(
+    val rawMdpUrl: MPDUrl,
+    val mdpUrl: MPDUrl,
+    val rawBackUpMdpUrl: MPDUrl,
+    val backUpMdpUrl: MPDUrl,
+    val licenseUrl: LicenseUrl,
+    val backUpLicenseUrl: LicenseUrl,
+)
