@@ -13,6 +13,7 @@ sealed class ApiResponse {
             data class Categories(val categories: List<Category>) : Content()
             data class LiveChannels(val channels: List<LiveChannel>) : Content()
             data class StoreFrontRows(val rows: List<StoreFront>) : Content()
+            data class Programs(val program: Program) : Content()
             data class Favorites(val favorites: StoreFront.MyListStoreFront) : Content()
             data class Search(val search: List<SearchResultResponse>) : Content()
         }

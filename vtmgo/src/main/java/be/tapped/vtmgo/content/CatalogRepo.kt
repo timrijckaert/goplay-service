@@ -29,16 +29,16 @@ internal class JsonPagedTeaserContentParser {
         }.mapLeft(::JsonParsingException)
 }
 
-interface ProgramRepo {
+interface CatalogRepo {
     suspend fun fetchAZ(jwt: JWT, profile: Profile): Either<ApiResponse.Failure, ApiResponse.Success.Content.Catalog>
 }
 
-internal class HttpProgramRepo(
+internal class HttpCatalogRepo(
     private val client: OkHttpClient,
     private val baseContentHttpUrlBuilder: BaseContentHttpUrlBuilder,
     private val headerBuilder: HeaderBuilder,
     private val jsonPagedTeaserContentParser: JsonPagedTeaserContentParser,
-) : ProgramRepo {
+) : CatalogRepo {
 
     // curl -X GET \
     // -H "x-app-version:8" \
