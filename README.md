@@ -54,6 +54,8 @@ Er is een `sample` module voorzien.
 - [x] Zoeken
 - [ ] Ophalen van episodes
 - [ ] Ophalen van streams
+  - [x] Live Stream
+  - [ ] VOD
 - [ ] Live screen grabs
 - [x] Live Channel Information + EPG
 
