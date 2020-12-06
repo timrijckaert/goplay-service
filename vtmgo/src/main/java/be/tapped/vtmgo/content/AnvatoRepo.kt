@@ -33,7 +33,7 @@ internal class AnvatoVideoJsonLoadedParser {
 }
 
 interface AnvatoRepo {
-    suspend fun fetchStream(anvato: Anvato, streamResponse: StreamResponse): Either<ApiResponse.Failure, AnvatoStream>
+    suspend fun fetchStream(anvato: Anvato, streamResponse: StreamResponse): Either<ApiResponse.Failure, AnvatoStreamWrapper>
 }
 
 internal class HttpAnvatoResponse(
@@ -45,7 +45,7 @@ internal class HttpAnvatoResponse(
         private const val ANVATO_USER_AGENT = "ANVSDK Android/5.0.39 (Linux; Android 6.0.1; Nexus 5)"
     }
 
-    override suspend fun fetchStream(anvato: Anvato, streamResponse: StreamResponse): Either<ApiResponse.Failure, AnvatoStream> =
+    override suspend fun fetchStream(anvato: Anvato, streamResponse: StreamResponse): Either<ApiResponse.Failure, AnvatoStreamWrapper> =
         withContext(Dispatchers.IO) {
             val anvatoRequestJson = constructAnvatoRequestBody(streamResponse.ads.freewheel, anvato)
 
@@ -75,9 +75,20 @@ internal class HttpAnvatoResponse(
 
             either {
                 val firstPublishedUrl = !anvatoVideoJsonLoadedParser.getFirstPublishedUrl(!anvatoResponse.safeBodyString())
+
                 val mpdManifestUrl = !mpdManifestUrl(firstPublishedUrl.embedUrl)
+                val backUpMpdManifestUrl = !mpdManifestUrl(firstPublishedUrl.backupUrl)
                 val licenseUrl = firstPublishedUrl.licenseUrl
-                AnvatoStream(MPDUrl(mpdManifestUrl), LicenseUrl(licenseUrl))
+                val backUpLicenseUrl = firstPublishedUrl.backupLicenseUrl
+
+                AnvatoStreamWrapper(
+                    rawMdpUrl = MPDUrl(firstPublishedUrl.embedUrl),
+                    mdpUrl = MPDUrl(mpdManifestUrl),
+                    rawBackUpMdpUrl = MPDUrl(firstPublishedUrl.backupUrl),
+                    backUpMdpUrl = MPDUrl(backUpMpdManifestUrl),
+                    licenseUrl = LicenseUrl(licenseUrl),
+                    backUpLicenseUrl = LicenseUrl(backUpLicenseUrl)
+                )
             }
         }
 

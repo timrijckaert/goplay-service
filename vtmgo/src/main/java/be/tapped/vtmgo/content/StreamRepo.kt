@@ -2,9 +2,7 @@ package be.tapped.vtmgo.content
 
 import arrow.core.Either
 import arrow.core.computations.either
-import arrow.core.right
 import be.tapped.common.executeAsync
-import be.tapped.common.validateResponse
 import be.tapped.vtmgo.ApiResponse
 import be.tapped.vtmgo.ApiResponse.Failure
 import be.tapped.vtmgo.ApiResponse.Failure.Stream.*
@@ -16,16 +14,11 @@ import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.decodeFromJsonElement
-import kotlinx.serialization.json.encodeToJsonElement
 import kotlinx.serialization.json.jsonObject
 import okhttp3.Headers
-import okhttp3.Headers.Companion.headersOf
-import okhttp3.Headers.Companion.toHeaders
 import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import okhttp3.RequestBody.Companion.toRequestBody
-import org.intellij.lang.annotations.Language
 
 internal class JsonStreamResponseParser {
     suspend fun parse(json: String): Either<Failure, StreamResponse> =
@@ -35,7 +28,7 @@ internal class JsonStreamResponseParser {
 }
 
 interface StreamRepo {
-    suspend fun fetchStream(liveChannel: LiveChannel): Either<Failure, AnvatoStream>
+    suspend fun fetchStream(liveChannel: LiveChannel): Either<Failure, ApiResponse.Success.Stream>
 }
 
 internal class HttpStreamRepo(
@@ -49,7 +42,7 @@ internal class HttpStreamRepo(
         private const val POPCORN_API_KEY = "zTxhgTEtb055Ihgw3tN158DZ0wbbaVO86lJJulMl"
     }
 
-    override suspend fun fetchStream(liveChannel: LiveChannel): Either<Failure, AnvatoStream> =
+    override suspend fun fetchStream(liveChannel: LiveChannel): Either<Failure, ApiResponse.Success.Stream> =
         withContext(Dispatchers.IO) {
             val liveStreamResponse = client.executeAsync(
                 Request.Builder()
@@ -62,7 +55,7 @@ internal class HttpStreamRepo(
             either {
                 val streamInfo = !jsonStreamResponseParser.parse(!liveStreamResponse.safeBodyString())
                 val anvato = !Either.fromNullable(streamInfo.streams.map(Stream::anvato).firstOrNull()).mapLeft { NoAnvatoStreamFound }
-                !anvatoRepo.fetchStream(anvato, streamInfo)
+                ApiResponse.Success.Stream.Live(!anvatoRepo.fetchStream(anvato, streamInfo))
             }
         }
 
