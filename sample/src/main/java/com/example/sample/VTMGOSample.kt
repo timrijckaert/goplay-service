@@ -1,7 +1,9 @@
 package com.example.sample
 
+import be.tapped.vtmgo.content.PagedTeaserContent
 import be.tapped.vtmgo.epg.HttpEpgRepo
 import be.tapped.vtmgo.content.StoreFrontType
+import be.tapped.vtmgo.content.TargetResponse
 import be.tapped.vtmgo.content.VTMApi
 import be.tapped.vtmgo.profile.JWT
 import be.tapped.vtmgo.profile.Profile
@@ -40,8 +42,14 @@ private suspend fun api(jwtToken: JWT, profile: Profile) {
 
     // Programs
     val catalogForChosenVtmGoProduct = vtmApi.fetchAZ(jwtToken, profile)
-    val productTypeWithCatalog = catalogForChosenVtmGoProduct.orNull()!!.catalog.groupBy { it.target::class.java }
+    val productTypeWithCatalog = catalogForChosenVtmGoProduct.orNull()!!.catalog.groupBy { it.target.asTarget::class.java }
     println(productTypeWithCatalog)
+
+    //// Program Details
+    val firstProgram: PagedTeaserContent = productTypeWithCatalog.getValue(TargetResponse.Target.Program::class.java).first()
+    val programTarget = firstProgram.target.asTarget as TargetResponse.Target.Program
+    val programDetailsForFirstProgram = vtmApi.fetchProgram(programTarget, jwtToken, profile)
+    println(programDetailsForFirstProgram)
 
     // Categories
     val categories = vtmApi.fetchCategories(jwtToken, profile)

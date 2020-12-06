@@ -1,11 +1,10 @@
 package be.tapped.vtmgo.content
 
-import com.sun.org.apache.xpath.internal.operations.Bool
+import be.tapped.vtmgo.epg.LegalIcon
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
-import java.awt.Image
 
 enum class TargetType {
     MOVIE,
@@ -30,13 +29,11 @@ data class TargetResponse(
     }
 
     val asTarget: Target
-        get() {
-            return when (type) {
-                TargetType.MOVIE -> Target.Movie(id!!, name!!)
-                TargetType.PROGRAM -> Target.Program(id!!, name!!)
-                TargetType.EPISODE -> Target.Episode(id!!, programId!!)
-                TargetType.EXTERNAL_URL -> Target.External(url!!)
-            }
+        get() = when (type) {
+            TargetType.MOVIE -> Target.Movie(id!!, name!!)
+            TargetType.PROGRAM -> Target.Program(id!!, name!!)
+            TargetType.EPISODE -> Target.Episode(id!!, programId!!)
+            TargetType.EXTERNAL_URL -> Target.External(url!!)
         }
 }
 
@@ -249,10 +246,10 @@ data class Stream(
 )
 
 @Serializable
-data class Channel(val id: String, val title: String)
+data class AnvatoChannel(val id: String, val title: String)
 
 @Serializable
-data class Program(val id: String, val title: String)
+data class AnvatoProgram(val id: String, val title: String)
 
 @Serializable
 data class StreamBroadcast(val id: String, val technicalFromMs: Long, val technicalToMs: Long)
@@ -261,10 +258,10 @@ data class StreamBroadcast(val id: String, val technicalFromMs: Long, val techni
 data class Synopsis(val xs: String, val s: String, val m: String)
 
 @Serializable
-data class Season(val order: Int)
+data class AnvatoSeason(val order: Int)
 
 @Serializable
-data class Episode(val order: Int, val season: Season)
+data class AnvatoEpisode(val order: Int, val season: AnvatoSeason)
 
 @Serializable
 data class PosterImage(val height: Int, val url: String)
@@ -276,12 +273,12 @@ data class StreamMetadata(
     val availability: Int? = null,
     val assetType: String,
     val title: String,
-    val channel: Channel,
+    val channel: AnvatoChannel,
     val videoType: String,
-    val program: Program? = null,
+    val program: AnvatoProgram? = null,
     val broadcast: StreamBroadcast,
     val synopsis: Synopsis? = null,
-    val episode: Episode? = null,
+    val episode: AnvatoEpisode? = null,
     val legalTags: List<String>,
     val posterImages: List<PosterImage>,
 )
@@ -399,3 +396,75 @@ data class AnvatoStreamWrapper(
     val licenseUrl: LicenseUrl,
     val backUpLicenseUrl: LicenseUrl,
 )
+
+@Serializable
+data class Episode(
+    val id: String,
+    val name: String,
+    val description: String,
+    val index: Int,
+    val bigPhotoUrl: String,
+    val mediumPhotoUrl: String,
+    val smallPhotoUrl: String,
+    val userProgressPercentage: Int,
+    val playerPositionSeconds: Int,
+    val durationSeconds: Int,
+    val remainingDaysAvailable: Int,
+    val broadcastTimestamp: String? = null,
+    val doneWatching: Boolean,
+    val geoBlocked: Boolean,
+    val ageBlocked: Boolean,
+    val blockedFor: String? = null,
+    val downloadAllowed: Boolean,
+) {
+    init {
+        require(id.isNotEmpty()) { "id is not empty" }
+        require(name.isNotEmpty()) { "name is not empty" }
+        require(description.isNotEmpty()) { "description is not empty" }
+        require(bigPhotoUrl.isNotEmpty()) { "bigPhotoUrl is not empty" }
+        require(mediumPhotoUrl.isNotEmpty()) { "mediumPhotoUrl is not empty" }
+        require(smallPhotoUrl.isNotEmpty()) { "smallPhotoUrl is not empty" }
+    }
+}
+
+@Serializable
+data class Season(
+    val episodes: List<Episode>,
+    val trailers: List<JsonElement> = emptyList(),
+    val catchUpEpisode: JsonElement? = null,
+    val index: Int,
+    val active: Boolean,
+)
+
+@Serializable
+data class Program(
+    val id: String,
+    val name: String,
+    val description: String,
+    val bigPhotoUrl: String,
+    val mediumPhotoUrl: String,
+    val smallPhotoUrl: String,
+    val teaserImageUrl: String,
+    val activeSeasonIndex: Int,
+    val activeEpisodeId: String,
+    val watching: Boolean,
+    val channelLogoUrl: String? = null,
+    val seasons: List<Season>,
+    val geoBlocked: Boolean,
+    val blockedFor: String? = null,
+    val kidsContent: Boolean,
+    val legalIcons: List<LegalIcon>,
+    val addedToMyList: Boolean,
+) {
+    init {
+        require(id.isNotEmpty()) { "id is not empty" }
+        require(name.isNotEmpty()) { "name is not empty" }
+        require(description.isNotEmpty()) { "description is not empty" }
+        require(bigPhotoUrl.isNotEmpty()) { "bigPhotoUrl is not empty" }
+        require(mediumPhotoUrl.isNotEmpty()) { "mediumPhotoUrl is not empty" }
+        require(smallPhotoUrl.isNotEmpty()) { "smallPhotoUrl is not empty" }
+        require(teaserImageUrl.isNotEmpty()) { "teaserImageUrl is not empty" }
+        require(activeEpisodeId.isNotEmpty()) { "activeEpisodeId is not empty" }
+        require(seasons.isNotEmpty()) { "seasons is not empty" }
+    }
+}

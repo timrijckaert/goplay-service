@@ -9,7 +9,8 @@ import okhttp3.OkHttpClient
 class VTMApi(
     client: OkHttpClient = vtmApiDefaultOkHttpClient,
     headerBuilder: HeaderBuilder = AuthorizationHeaderBuilder(),
-    programRepo: ProgramRepo = HttpProgramRepo(client, BaseContentHttpUrlBuilder, headerBuilder, JsonPagedTeaserContentParser()),
+    catalogRepo: CatalogRepo = HttpCatalogRepo(client, BaseContentHttpUrlBuilder, headerBuilder, JsonPagedTeaserContentParser()),
+    episodeRepo: EpisodeRepo = HttpEpisodeRepo(client, BaseContentHttpUrlBuilder, headerBuilder, JsonProgramParser()),
     categoryRepo: CategoryRepo = HttpCategoryRepo(client, BaseContentHttpUrlBuilder, headerBuilder, JsonCategoryParser()),
     channelRepo: ChannelRepo = HttpChannelRepo(client, BaseContentHttpUrlBuilder, headerBuilder, JsonChannelParser()),
     storeFrontRepo: StoreFrontRepo = HttpStoreFrontRepo(client, BaseContentHttpUrlBuilder, headerBuilder, JsonStoreFrontParser()),
@@ -21,7 +22,8 @@ class VTMApi(
         JsonStreamResponseParser(),
         HttpAnvatoResponse(anvatoDefaultOkHttpClient, AnvatoVideoJsonLoadedParser())
     ),
-) : ProgramRepo by programRepo,
+) : CatalogRepo by catalogRepo,
+    EpisodeRepo by episodeRepo,
     CategoryRepo by categoryRepo,
     ChannelRepo by channelRepo,
     StoreFrontRepo by storeFrontRepo,
