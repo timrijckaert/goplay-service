@@ -23,6 +23,7 @@ class VTMApi(
         HttpAnvatoResponse(
             anvatoDefaultOkHttpClient,
             AnvatoVideoJsonParser(AnvatoJsonJavascriptFunctionExtractor(), AnvatoPublishedUrlParser()),
+            AnvatoMasterM3U8JsonParser()
         )
     ),
 ) : CatalogRepo by catalogRepo,
