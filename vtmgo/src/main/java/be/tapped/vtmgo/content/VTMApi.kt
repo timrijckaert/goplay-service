@@ -19,8 +19,11 @@ class VTMApi(
     streamRepo: StreamRepo = HttpStreamRepo(
         client,
         headerBuilder,
-        JsonStreamResponseParser(),
-        HttpAnvatoResponse(anvatoDefaultOkHttpClient, AnvatoVideoJsonLoadedParser())
+        JsonLiveStreamResponseParser(),
+        HttpAnvatoResponse(
+            anvatoDefaultOkHttpClient,
+            AnvatoVideoJsonParser(AnvatoJsonJavascriptFunctionExtractor(), AnvatoPublishedUrlParser()),
+        )
     ),
 ) : CatalogRepo by catalogRepo,
     EpisodeRepo by episodeRepo,

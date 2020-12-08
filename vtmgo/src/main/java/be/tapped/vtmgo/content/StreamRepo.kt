@@ -20,21 +20,26 @@ import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
 import okhttp3.Request
 
-internal class JsonStreamResponseParser {
+internal class JsonLiveStreamResponseParser {
     suspend fun parse(json: String): Either<Failure, StreamResponse> =
         Either.catch {
-            Json.decodeFromJsonElement<StreamResponse>(Json.decodeFromString<JsonObject>(json)["video"]!!.jsonObject)
+            val videoObject = Json.decodeFromString<JsonObject>(json)["video"]!!.jsonObject
+            Json.decodeFromJsonElement<StreamResponse>(videoObject)
         }.mapLeft(Failure::JsonParsingException)
 }
 
 interface StreamRepo {
+
     suspend fun fetchStream(liveChannel: LiveChannel): Either<Failure, ApiResponse.Success.Stream>
+
+    suspend fun fetchStream(episodeId: String): Either<Failure, ApiResponse.Success.Stream>
+
 }
 
 internal class HttpStreamRepo(
     private val client: OkHttpClient,
     private val headerBuilder: HeaderBuilder,
-    private val jsonStreamResponseParser: JsonStreamResponseParser,
+    private val jsonLiveStreamResponseParser: JsonLiveStreamResponseParser,
     private val anvatoRepo: AnvatoRepo,
 ) : StreamRepo {
 
@@ -43,41 +48,51 @@ internal class HttpStreamRepo(
     }
 
     override suspend fun fetchStream(liveChannel: LiveChannel): Either<Failure, ApiResponse.Success.Stream> =
+        either {
+            val streamInfo = !getStreamResponseForId("channels", liveChannel.channelId)
+            val anvato = !anvatoFromStreamInfo(streamInfo)
+            ApiResponse.Success.Stream.Live(!anvatoRepo.fetchStream(anvato, streamInfo))
+        }
+
+    override suspend fun fetchStream(episodeId: String): Either<Failure, ApiResponse.Success.Stream> =
+        either {
+            val streamInfo = !getStreamResponseForId("episodes", episodeId)
+            val anvato = !anvatoFromStreamInfo(streamInfo)
+            !anvatoRepo.fetchStream(anvato, streamInfo)
+            ApiResponse.Success.Stream.Live(!anvatoRepo.fetchStream(anvato, streamInfo))
+        }
+
+    private fun anvatoFromStreamInfo(streamInfo: StreamResponse) =
+        Either.fromNullable(streamInfo.streams.map(Stream::anvato).firstOrNull()).mapLeft { NoAnvatoStreamFound }
+
+    private suspend fun getStreamResponseForId(streamType: String, id: String): Either<Failure, StreamResponse> =
         withContext(Dispatchers.IO) {
-            val liveStreamResponse = client.executeAsync(
+            val response = client.executeAsync(
                 Request.Builder()
                     .get()
-                    .headers(constructHeaders())
-                    .url(constructUrl("channels", liveChannel.channelId))
+                    .headers(
+                        Headers.Builder()
+                            .addAll(headerBuilder.defaultHeaders)
+                            .add("x-api-key", POPCORN_API_KEY)
+                            .add("Popcorn-SDK-Version", "2")
+                            //TODO check if this is needed since it returns the same response for the channels
+                            .add("User-Agent", "Dalvik/2.1.0 (Linux; U; Android 6.0.1; Nexus 5 Build/M4B30Z)")
+                            .build()
+                    )
+                    .url(
+                        HttpUrl.Builder()
+                            .scheme("https")
+                            .host("videoplayer-service.api.persgroep.cloud")
+                            .addPathSegments("config/$streamType")
+                            .addQueryParameter("startPosition", "0.0")
+                            .addQueryParameter("autoPlay", "true")
+                            .addPathSegment(id)
+                            .build()
+                    )
                     .build()
             )
 
-            either {
-                val streamInfo = !jsonStreamResponseParser.parse(!liveStreamResponse.safeBodyString())
-                val anvato = !Either.fromNullable(streamInfo.streams.map(Stream::anvato).firstOrNull()).mapLeft { NoAnvatoStreamFound }
-                ApiResponse.Success.Stream.Live(!anvatoRepo.fetchStream(anvato, streamInfo))
-            }
+            either { !jsonLiveStreamResponseParser.parse(!response.safeBodyString()) }
         }
-
-    private fun constructHeaders(): Headers =
-        Headers.Builder()
-            .addAll(headerBuilder.defaultHeaders)
-            .add("x-api-key", POPCORN_API_KEY)
-            .add("Popcorn-SDK-Version", "2")
-            //TODO check if this is needed since it returns the same response for the channels
-            .add("User-Agent", "Dalvik/2.1.0 (Linux; U; Android 6.0.1; Nexus 5 Build/M4B30Z)")
-            .build()
-
-    //TODO should be generic to function for all types
-    private fun constructUrl(streamType: String, channelId: String): HttpUrl =
-        HttpUrl.Builder()
-            .scheme("https")
-            .host("videoplayer-service.api.persgroep.cloud")
-            .addPathSegment("config")
-            .addPathSegment(streamType)
-            .addQueryParameter("startPosition", "0.0")
-            .addQueryParameter("autoPlay", "true")
-            .addPathSegment(channelId)
-            .build()
 
 }
