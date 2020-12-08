@@ -58,7 +58,7 @@ private suspend fun api(jwtToken: JWT, profile: Profile) {
     val programDetailsForFirstProgram = vtmApi.fetchProgram(programTarget, jwtToken, profile)
     println(programDetailsForFirstProgram)
     //// Episode
-    val streamsForFirstEpisodeOfFirstSeasonOfFirstProgram = vtmApi.fetchStream(programDetailsForFirstProgram.orNull()!!.program.seasons.first().episodes.first().id)
+    val streamsForFirstEpisodeOfFirstSeasonOfFirstProgram = vtmApi.fetchStream(TargetResponse.Target.Episode(programDetailsForFirstProgram.orNull()!!.program.seasons.first().episodes.first().id))
     println(streamsForFirstEpisodeOfFirstSeasonOfFirstProgram)
 
     // Categories
@@ -68,6 +68,10 @@ private suspend fun api(jwtToken: JWT, profile: Profile) {
     // Store front
     val series = vtmApi.fetchStoreFront(jwtToken, profile, StoreFrontType.MAIN)
     println(series)
+    //// The Hunger Games: Catching Fire
+    val theHungerGamesCatchingFire = TargetResponse.Target.Movie("2322020d-e6df-44fd-865c-a121b94f2e91")
+    val theHungerGamesCatchingFireStream = vtmApi.fetchStream(theHungerGamesCatchingFire)
+    println(theHungerGamesCatchingFireStream)
 
     // Favorites
     val myFavorites = vtmApi.fetchMyFavorites(jwtToken, profile)
@@ -77,7 +81,7 @@ private suspend fun api(jwtToken: JWT, profile: Profile) {
     val searchResult = vtmApi.search(jwtToken, profile, "Code van Coppens")
     val firstExactSearchResultProgramTarget = (searchResult.orNull()!!.search.first { it.type == SearchResultType.EXACT }.teasers.first().target.asTarget as TargetResponse.Target.Program)
     val firstExactProgram = vtmApi.fetchProgram(firstExactSearchResultProgramTarget, jwtToken, profile)
-    val streamOfActiveEpisodeOfSearchedProgram = vtmApi.fetchStream(firstExactProgram.orNull()!!.program.activeEpisodeId)
+    val streamOfActiveEpisodeOfSearchedProgram = vtmApi.fetchStream(TargetResponse.Target.Episode(firstExactProgram.orNull()!!.program.seasons.first().episodes.first().id))
     println(streamOfActiveEpisodeOfSearchedProgram)
 }
 

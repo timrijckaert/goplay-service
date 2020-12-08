@@ -1,6 +1,6 @@
 package be.tapped.vtmgo.content
 
-import arrow.core.Either
+import arrow.core.*
 import arrow.core.computations.either
 import be.tapped.common.executeAsync
 import be.tapped.vtmgo.ApiResponse
@@ -32,7 +32,7 @@ interface StreamRepo {
 
     suspend fun fetchStream(liveChannel: LiveChannel): Either<Failure, ApiResponse.Success.Stream>
 
-    suspend fun fetchStream(episodeId: String): Either<Failure, ApiResponse.Success.Stream>
+    suspend fun fetchStream(target: TargetResponse.Target): Either<Failure, ApiResponse.Success.Stream>
 
 }
 
@@ -54,17 +54,27 @@ internal class HttpStreamRepo(
             ApiResponse.Success.Stream(!anvatoRepo.fetchLiveStream(anvato, streamInfo))
         }
 
-    override suspend fun fetchStream(episodeId: String): Either<Failure, ApiResponse.Success.Stream> =
-        either {
-            val streamInfo = !getStreamResponseForId("episodes", episodeId)
+    override suspend fun fetchStream(target: TargetResponse.Target): Either<Failure, ApiResponse.Success.Stream> {
+        fun canFetchResults(target: TargetResponse.Target): Validated<UnsupportedTargetType, Tuple2<String, String>> =
+            when (target) {
+                is TargetResponse.Target.Movie -> ("movies" toT target.id).valid()
+                is TargetResponse.Target.Episode -> ("episodes" toT target.id).valid()
+                is TargetResponse.Target.Program,
+                is TargetResponse.Target.External -> UnsupportedTargetType(target).invalid()
+            }
+
+        return either {
+            val (pathSegmentForStreamType, id) = !canFetchResults(target).toEither()
+            val streamInfo = !getStreamResponseForId(pathSegmentForStreamType, id)
             val anvato = !anvatoFromStreamInfo(streamInfo)
             ApiResponse.Success.Stream(!anvatoRepo.fetchEpisodeStream(anvato, streamInfo))
         }
+    }
 
     private fun anvatoFromStreamInfo(streamInfo: StreamResponse) =
         Either.fromNullable(streamInfo.streams.map(Stream::anvato).firstOrNull()).mapLeft { NoAnvatoStreamFound }
 
-    private suspend fun getStreamResponseForId(streamType: String, id: String): Either<Failure, StreamResponse> =
+    private suspend fun getStreamResponseForId(pathSegmentForStreamType: String, id: String): Either<Failure, StreamResponse> =
         withContext(Dispatchers.IO) {
             val response = client.executeAsync(
                 Request.Builder()
@@ -82,7 +92,7 @@ internal class HttpStreamRepo(
                         HttpUrl.Builder()
                             .scheme("https")
                             .host("videoplayer-service.api.persgroep.cloud")
-                            .addPathSegments("config/$streamType")
+                            .addPathSegments("config/$pathSegmentForStreamType")
                             .addQueryParameter("startPosition", "0.0")
                             .addQueryParameter("autoPlay", "true")
                             .addPathSegment(id)

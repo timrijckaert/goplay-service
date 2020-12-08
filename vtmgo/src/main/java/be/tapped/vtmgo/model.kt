@@ -41,6 +41,7 @@ sealed class ApiResponse {
         }
 
         sealed class Stream : Failure() {
+            data class UnsupportedTargetType(val targetType: TargetResponse.Target): Stream()
             object NoAnvatoStreamFound : Stream()
             object NoJSONFoundInAnvatoJavascriptFunction : Stream()
             object NoPublishedEmbedUrlFound : Stream()

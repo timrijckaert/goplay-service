@@ -22,17 +22,17 @@ data class TargetResponse(
     private val programId: String? = null,
 ) {
     sealed class Target {
-        data class Movie(val id: String, val name: String) : Target()
-        data class Program(val id: String, val name: String) : Target()
-        data class Episode(val id: String, val programId: String) : Target()
+        data class Movie(val id: String) : Target()
+        data class Program(val id: String) : Target()
+        data class Episode(val id: String) : Target()
         data class External(val url: String) : Target()
     }
 
     val asTarget: Target
         get() = when (type) {
-            TargetType.MOVIE -> Target.Movie(id!!, name!!)
-            TargetType.PROGRAM -> Target.Program(id!!, name!!)
-            TargetType.EPISODE -> Target.Episode(id!!, programId!!)
+            TargetType.MOVIE -> Target.Movie(id!!)
+            TargetType.PROGRAM -> Target.Program(id!!)
+            TargetType.EPISODE -> Target.Episode(id!!)
             TargetType.EXTERNAL_URL -> Target.External(url!!)
         }
 }
