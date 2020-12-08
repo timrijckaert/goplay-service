@@ -52,15 +52,15 @@ Er is een `sample` module voorzien.
   - [x] Kids
 - [x] Favorieten
 - [x] Zoeken
-- [ ] Ophalen van episodes
-- [ ] Ophalen van streams
+- [x] Ophalen van episodes
+- [x] Ophalen van streams
   - [x] Live Stream
   - [x] VOD
-- [ ] Live screen grabs
+- [ ] Live screen grabs (niet beschikbaar)
 - [x] Live Channel Information + EPG
 
 ## Streaming
-- [ ] Live Streams
+- [x] Live Streams
 - [ ] Progress updates
 
 ## EPG
