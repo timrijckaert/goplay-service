@@ -1,10 +1,10 @@
 package com.example.sample
 
-import be.tapped.vtmgo.content.PagedTeaserContent
-import be.tapped.vtmgo.epg.HttpEpgRepo
+import be.tapped.vtmgo.content.SearchResultType
 import be.tapped.vtmgo.content.StoreFrontType
 import be.tapped.vtmgo.content.TargetResponse
 import be.tapped.vtmgo.content.VTMApi
+import be.tapped.vtmgo.epg.HttpEpgRepo
 import be.tapped.vtmgo.profile.JWT
 import be.tapped.vtmgo.profile.Profile
 import be.tapped.vtmgo.profile.ProfileRepo
@@ -53,7 +53,7 @@ private suspend fun api(jwtToken: JWT, profile: Profile) {
     val productTypeWithCatalog = catalogForChosenVtmGoProduct.orNull()!!.catalog.groupBy { it.target.asTarget::class.java }
     println(productTypeWithCatalog)
     //// Program Details
-    val firstProgram: PagedTeaserContent = productTypeWithCatalog.getValue(TargetResponse.Target.Program::class.java).first()
+    val firstProgram = productTypeWithCatalog.getValue(TargetResponse.Target.Program::class.java).first()
     val programTarget = firstProgram.target.asTarget as TargetResponse.Target.Program
     val programDetailsForFirstProgram = vtmApi.fetchProgram(programTarget, jwtToken, profile)
     println(programDetailsForFirstProgram)
@@ -75,7 +75,10 @@ private suspend fun api(jwtToken: JWT, profile: Profile) {
 
     // Search
     val searchResult = vtmApi.search(jwtToken, profile, "Code van Coppens")
-    println(searchResult)
+    val firstExactSearchResultProgramTarget = (searchResult.orNull()!!.search.first { it.type == SearchResultType.EXACT }.teasers.first().target.asTarget as TargetResponse.Target.Program)
+    val firstExactProgram = vtmApi.fetchProgram(firstExactSearchResultProgramTarget, jwtToken, profile)
+    val streamOfFirstEpisodeOfFirstExactProgram = vtmApi.fetchStream(firstExactProgram.orNull()!!.program.activeEpisodeId)
+    println(streamOfFirstEpisodeOfFirstExactProgram)
 }
 
 private suspend fun epg() {

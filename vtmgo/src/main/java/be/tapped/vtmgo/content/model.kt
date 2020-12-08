@@ -336,16 +336,24 @@ data class AnvatoPublishedUrl(
 )
 
 inline class MPDUrl(val url: String)
+inline class M3U8Url(val url: String)
 inline class LicenseUrl(val url: String)
 
-data class AnvatoStreamWrapper(
-    val rawMdpUrl: MPDUrl,
-    val mdpUrl: MPDUrl,
-    val rawBackUpMdpUrl: MPDUrl? = null,
-    val backUpMdpUrl: MPDUrl? = null,
-    val licenseUrl: LicenseUrl,
-    val backUpLicenseUrl: LicenseUrl? = null,
-)
+sealed class AnvatoStream {
+    abstract val mdpUrl: MPDUrl
+    abstract val licenseUrl: LicenseUrl
+
+    data class Live(
+        val rawMdpUrl: MPDUrl,
+        override val mdpUrl: MPDUrl,
+        val rawBackUpMdpUrl: MPDUrl,
+        val backUpMdpUrl: MPDUrl,
+        override val licenseUrl: LicenseUrl,
+        val backUpLicenseUrl: LicenseUrl,
+    ) : AnvatoStream()
+
+    data class Episode(override val mdpUrl: MPDUrl, override val licenseUrl: LicenseUrl) : AnvatoStream()
+}
 
 @Serializable
 data class Episode(

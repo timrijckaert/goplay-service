@@ -51,15 +51,14 @@ internal class HttpStreamRepo(
         either {
             val streamInfo = !getStreamResponseForId("channels", liveChannel.channelId)
             val anvato = !anvatoFromStreamInfo(streamInfo)
-            ApiResponse.Success.Stream.Live(!anvatoRepo.fetchStream(anvato, streamInfo))
+            ApiResponse.Success.Stream(!anvatoRepo.fetchLiveStream(anvato, streamInfo))
         }
 
     override suspend fun fetchStream(episodeId: String): Either<Failure, ApiResponse.Success.Stream> =
         either {
             val streamInfo = !getStreamResponseForId("episodes", episodeId)
             val anvato = !anvatoFromStreamInfo(streamInfo)
-            !anvatoRepo.fetchStream(anvato, streamInfo)
-            ApiResponse.Success.Stream.Live(!anvatoRepo.fetchStream(anvato, streamInfo))
+            ApiResponse.Success.Stream(!anvatoRepo.fetchEpisodeStream(anvato, streamInfo))
         }
 
     private fun anvatoFromStreamInfo(streamInfo: StreamResponse) =
