@@ -33,6 +33,7 @@ data class Broadcast(
     val from: Long,
     val to: Long,
     val title: String,
+    val productionCountry : List<JsonElement> = emptyList(),
     val live : Boolean,
     val rerun: Boolean,
     val prime: Boolean,
