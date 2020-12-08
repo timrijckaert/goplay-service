@@ -44,7 +44,7 @@ sealed class ApiResponse {
 
         sealed class Stream : Failure() {
             object NoAnvatoStreamFound : Stream()
-            object NoAnvatoResponseFound : Stream()
+            object NoJSONFoundInAnvatoJavascriptFunction : Stream()
             object NoPublishedEmbedUrlFound : Stream()
             object NoMPDManifestUrlFound : Stream()
         }
