@@ -77,8 +77,8 @@ private suspend fun api(jwtToken: JWT, profile: Profile) {
     val searchResult = vtmApi.search(jwtToken, profile, "Code van Coppens")
     val firstExactSearchResultProgramTarget = (searchResult.orNull()!!.search.first { it.type == SearchResultType.EXACT }.teasers.first().target.asTarget as TargetResponse.Target.Program)
     val firstExactProgram = vtmApi.fetchProgram(firstExactSearchResultProgramTarget, jwtToken, profile)
-    val streamOfFirstEpisodeOfFirstExactProgram = vtmApi.fetchStream(firstExactProgram.orNull()!!.program.activeEpisodeId)
-    println(streamOfFirstEpisodeOfFirstExactProgram)
+    val streamOfActiveEpisodeOfSearchedProgram = vtmApi.fetchStream(firstExactProgram.orNull()!!.program.activeEpisodeId)
+    println(streamOfActiveEpisodeOfSearchedProgram)
 }
 
 private suspend fun epg() {
