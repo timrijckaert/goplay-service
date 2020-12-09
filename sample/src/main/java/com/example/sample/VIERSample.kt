@@ -1,16 +1,17 @@
 package com.example.sample
 
 import be.tapped.vier.VierAPI
-import be.tapped.vier.authentication.VierTokenProvider
+import be.tapped.vier.profile.HttpProfileRepo
 
-public fun main(args: Array<String>) {
+public suspend fun main(args: Array<String>) {
     val userName = args[0]
     val password = args[1]
-    val tokenProvider = VierTokenProvider()
-    val tokens = tokenProvider.getAuthenticationResultType(userName, password)
-    val userAttributes = tokenProvider.getUserAttributes(tokens.accessToken())
-    val newTokens = tokenProvider.refreshToken(tokens.refreshToken())
+    val httpProfileRepo = HttpProfileRepo()
+    val token = httpProfileRepo.fetchTokens(userName, password).orNull()!!
+    val newTokens = httpProfileRepo.refreshTokens(token.refreshToken)
+
+    val profile = httpProfileRepo.getUserAttributes(token.accessToken)
 
     val vierApi = VierAPI()
-    val contentTree = vierApi.getContentTree(newTokens.accessToken())
+    val contentTree = vierApi.getContentTree(token.accessToken)
 }

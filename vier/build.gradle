@@ -1,7 +1,11 @@
 dependencies {
     implementation Dependencies.kotlinXSerialization
     implementation Dependencies.kotlinStdLib
+
     implementation platform(Dependencies.awsBOM)
     implementation Dependencies.awsCognitoProvider
+
     implementation Dependencies.okHttp3
+
+    implementation Dependencies.arrowCore
 }
