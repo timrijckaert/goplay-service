@@ -1,11 +1,12 @@
 package be.tapped.vtmgo.profile
 
+import arrow.core.Either
+import arrow.core.computations.either
 import be.tapped.common.internal.ReadOnlyCookieJar
 import be.tapped.common.internal.executeAsync
-import be.tapped.vtmgo.common.AuthorizationHeaderBuilder
-import be.tapped.vtmgo.common.HeaderBuilder
-import be.tapped.vtmgo.common.defaultCookieJar
-import be.tapped.vtmgo.common.vtmApiDefaultOkHttpClient
+import be.tapped.vtmgo.ApiResponse
+import be.tapped.vtmgo.ApiResponse.Failure.JsonParsingException
+import be.tapped.vtmgo.common.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.decodeFromString
@@ -13,21 +14,39 @@ import kotlinx.serialization.json.Json
 import okhttp3.OkHttpClient
 import okhttp3.Request
 
-public class ProfileRepo(
+public class JsonProfileParser {
+    public suspend fun parse(json: String): Either<ApiResponse.Failure, List<Profile>> =
+        Either.catch { Json.decodeFromString<List<Profile>>(json) }.mapLeft(::JsonParsingException)
+}
+
+public interface ProfileRepo {
+    public suspend fun getProfiles(jwtToken: JWT): Either<ApiResponse.Failure, ApiResponse.Success.Authentication.Profiles>
+}
+
+public class HttpProfileRepo(
     private val cookieJar: ReadOnlyCookieJar = defaultCookieJar,
     private val client: OkHttpClient = vtmApiDefaultOkHttpClient,
     private val headerBuilder: HeaderBuilder = AuthorizationHeaderBuilder(),
+    private val jsonProfileParser: JsonProfileParser = JsonProfileParser(),
     jwtTokenFactory: JWTTokenFactory = VTMGOJWTTokenFactory(client, cookieJar),
-) : JWTTokenFactory by jwtTokenFactory {
+) : ProfileRepo,
+    JWTTokenFactory by jwtTokenFactory {
 
-    public companion object {
+    private companion object {
         private const val API_ENDPOINT = "https://lfvp-api.dpgmedia.net"
     }
 
-    //TODO Use Either to make it safe
-    public suspend fun getProfiles(jwtToken: JWT): List<Profile> =
+    // curl -X GET \
+    // -H "x-app-version:8" \
+    // -H "x-persgroep-mobile-app:true" \
+    // -H "x-persgroep-os:android" \
+    // -H "x-persgroep-os-version:23" \
+    // -H "x-dpp-jwt: <jwt-token>" \
+    // -H "Cookie:authId=<authId>" \
+    // -H "User-Agent:okhttp/4.9.0" "https://lfvp-api.dpgmedia.net/profiles?products=VTM_GO,VTM_GO_KIDS"
+    override suspend fun getProfiles(jwtToken: JWT): Either<ApiResponse.Failure, ApiResponse.Success.Authentication.Profiles> =
         withContext(Dispatchers.IO) {
-            val profiles = client.executeAsync(
+            val response = client.executeAsync(
                 Request.Builder()
                     .get()
                     .headers(headerBuilder.authenticationHeaders(jwtToken))
@@ -35,6 +54,9 @@ public class ProfileRepo(
                     .build()
             )
 
-            Json.decodeFromString(profiles.body!!.string())
+            either {
+                val profiles = !jsonProfileParser.parse(!response.safeBodyString())
+                ApiResponse.Success.Authentication.Profiles(profiles)
+            }
         }
 }

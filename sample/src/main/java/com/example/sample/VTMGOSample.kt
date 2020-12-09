@@ -5,9 +5,9 @@ import be.tapped.vtmgo.content.StoreFrontType
 import be.tapped.vtmgo.content.TargetResponse
 import be.tapped.vtmgo.content.VTMApi
 import be.tapped.vtmgo.epg.HttpEpgRepo
+import be.tapped.vtmgo.profile.HttpProfileRepo
 import be.tapped.vtmgo.profile.JWT
 import be.tapped.vtmgo.profile.Profile
-import be.tapped.vtmgo.profile.ProfileRepo
 
 public suspend fun main(args: Array<String>) {
     val userName = args[0]
@@ -24,7 +24,7 @@ public suspend fun main(args: Array<String>) {
 }
 
 private suspend fun auth(userName: String, password: String): Pair<JWT, Profile> {
-    val profileRepo = ProfileRepo()
+    val profileRepo = HttpProfileRepo()
 
     val jwtToken = profileRepo.login(userName, password)
     println(jwtToken)
@@ -33,7 +33,7 @@ private suspend fun auth(userName: String, password: String): Pair<JWT, Profile>
     val profiles = profileRepo.getProfiles(token)
     println("Fetched profiles=$profiles")
 
-    val profile: Profile = profiles.first()
+    val profile = profiles.orNull()!!.profiles.first()
     return token to profile
 }
 

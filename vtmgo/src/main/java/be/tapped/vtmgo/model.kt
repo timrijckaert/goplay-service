@@ -4,6 +4,7 @@ import arrow.core.NonEmptyList
 import be.tapped.vtmgo.content.*
 import be.tapped.vtmgo.epg.Epg
 import be.tapped.vtmgo.profile.JWT
+import be.tapped.vtmgo.profile.Profile
 import okhttp3.Request
 
 public sealed class ApiResponse {
@@ -22,6 +23,7 @@ public sealed class ApiResponse {
 
         public sealed class Authentication : ApiResponse() {
             public data class Token(val jwt: JWT) : Authentication()
+            public data class Profiles(val profiles: List<Profile>) : Authentication()
         }
 
         public data class Stream(val stream: AnvatoStream) : Success()
