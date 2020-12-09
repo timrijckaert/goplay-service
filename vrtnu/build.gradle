@@ -1,13 +1,5 @@
 plugins {
-    id 'java-library'
-    id 'kotlin'
-    id 'kotlin-kapt'
     id 'org.jetbrains.kotlin.plugin.serialization' version '1.4.10'
-}
-
-java {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
 }
 
 dependencies {
@@ -17,17 +9,9 @@ dependencies {
 
     implementation Dependencies.arrowCore
     implementation Dependencies.arrowSyntax
-    kapt Dependencies.arrowMeta
 
     implementation Dependencies.okHttp3
     implementation Dependencies.okHttpCurlInterceptor
 
     implementation project(':common')
-}
-
-compileKotlin {
-    kotlinOptions {
-        jvmTarget = "1.8"
-        freeCompilerArgs = ["-Xinline-classes"]
-    }
 }
