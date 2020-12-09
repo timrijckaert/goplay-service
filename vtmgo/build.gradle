@@ -9,8 +9,6 @@ dependencies {
 
     implementation Dependencies.arrowCore
 
-    implementation Dependencies.jwt
-
     implementation Dependencies.okHttp3
     implementation Dependencies.okHttpCurlInterceptor
 

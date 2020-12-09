@@ -39,7 +39,6 @@ public sealed class ApiResponse {
             public object NoAuthorizeResponse : Authentication()
             public object NoCodeFound : Authentication()
             public object NoStateFound : Authentication()
-            public object JWTTokenNotValid : Authentication()
         }
 
         public sealed class Stream : Failure() {

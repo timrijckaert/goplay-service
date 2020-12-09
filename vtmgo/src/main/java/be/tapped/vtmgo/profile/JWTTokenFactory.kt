@@ -61,11 +61,7 @@ internal class VTMGOJWTTokenFactory(
             val state = !findState(authorizeHtmlResponse)
 
             !logInCallback(state, code)
-            ApiResponse.Success.Authentication.Token(
-                !getJWT().filterOrElse(
-                    { isValidToken(it) },
-                    { Authentication.JWTTokenNotValid })
-            )
+            ApiResponse.Success.Authentication.Token(!getJWT())
         }
 
     private suspend fun initLogin(): Either<ApiResponse.Failure, Unit> =
@@ -149,11 +145,6 @@ internal class VTMGOJWTTokenFactory(
     private fun getJWT(): Either<Authentication, JWT> =
         vtmCookieJar[COOKIE_LFVP_AUTH]?.let(::JWT)
             .rightIfNotNull { Authentication.MissingCookieValues(NonEmptyList(COOKIE_LFVP_AUTH)) }
-
-    private suspend fun isValidToken(jwtToken: JWT): Boolean =
-        //TODO do we really need an extra lib for this?
-        Either.catch { com.auth0.jwt.JWT.decode(jwtToken.token) }
-            .fold({ false }, { true })
 
     private fun validateCookie(cookieName: String): ValidatedNel<String, String> =
         vtmCookieJar[cookieName]?.let { it.validNel() } ?: cookieName.invalidNel()
