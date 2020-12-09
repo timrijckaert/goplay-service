@@ -3,7 +3,7 @@ package com.example.sample
 import be.tapped.vier.VierAPI
 import be.tapped.vier.authentication.VierTokenProvider
 
-fun main(args: Array<String>) {
+public fun main(args: Array<String>) {
     val userName = args[0]
     val password = args[1]
     val tokenProvider = VierTokenProvider()

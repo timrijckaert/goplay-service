@@ -3,12 +3,13 @@ package be.tapped.vier
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
-import okhttp3.*
+import okhttp3.OkHttpClient
+import okhttp3.Request
 
-class VierAPI {
+public class VierAPI {
     private val client = OkHttpClient.Builder().build()
 
-    fun getContentTree(accessToken: String): JsonObject =
+    public fun getContentTree(accessToken: String): JsonObject =
         Json.decodeFromString(
             client.newCall(
                 Request.Builder()
@@ -21,7 +22,7 @@ class VierAPI {
 
     private fun constructDidomiToken(accessToken: String) = "didomi_token=$accessToken"
 
-    companion object {
+    public companion object {
         private const val BASE_VIER_API = "https://www.vier.be/api"
         private const val CONTENT_TREE = "$BASE_VIER_API/content_tree"
     }

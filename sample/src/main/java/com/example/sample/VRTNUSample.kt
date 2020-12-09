@@ -4,19 +4,14 @@ import arrow.core.Tuple6
 import be.tapped.vrtnu.content.ElasticSearchQueryBuilder
 import be.tapped.vrtnu.content.VRTApi
 import be.tapped.vrtnu.epg.HttpEpgRepo
-import be.tapped.vrtnu.profile.FavoriteWrapper
-import be.tapped.vrtnu.profile.ProfileRepo
-import be.tapped.vrtnu.profile.RefreshToken
-import be.tapped.vrtnu.profile.TokenWrapper
-import be.tapped.vrtnu.profile.VRTPlayerToken
-import be.tapped.vrtnu.profile.XVRTToken
+import be.tapped.vrtnu.profile.*
 import kotlinx.coroutines.flow.toList
 import okhttp3.OkHttpClient
 import java.util.*
 import java.util.logging.Level
 import java.util.logging.Logger
 
-suspend fun main(args: Array<String>) {
+public suspend fun main(args: Array<String>) {
     Logger.getLogger(OkHttpClient::class.java.name).level = Level.FINE
 
     val userName = args[0]

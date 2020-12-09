@@ -4,7 +4,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonElement
 
 @Serializable
-enum class LegalIcon {
+public enum class LegalIcon {
     PGAL,
     PG12,
     PG16,
@@ -12,29 +12,29 @@ enum class LegalIcon {
 }
 
 @Serializable
-data class LiveStreamLink(
-    val url : String,
+public data class LiveStreamLink(
+    val url: String,
     val title: String,
     val iconImageUrl: String,
 )
 
 @Serializable
-enum class ImageFormat {
+public enum class ImageFormat {
     LANDSCAPE,
     WALLPAPER;
 }
 
 @Serializable
-data class Broadcast(
+public data class Broadcast(
     val uuid: String,
     val playableUuid: String,
     val programUuid: String? = null,
-    val channelUuid : String,
+    val channelUuid: String,
     val from: Long,
     val to: Long,
     val title: String,
-    val productionCountry : List<JsonElement> = emptyList(),
-    val live : Boolean,
+    val productionCountry: List<JsonElement> = emptyList(),
+    val live: Boolean,
     val rerun: Boolean,
     val prime: Boolean,
     val legalIcons: List<LegalIcon>,
@@ -42,7 +42,7 @@ data class Broadcast(
     val synopsis: String? = null,
     val playableType: String,
     val genre: String? = null,
-    val subGenres : List<JsonElement>,
+    val subGenres: List<JsonElement>,
     val tip: Boolean,
     val rating: JsonElement? = null,
     val imageUrl: String? = null,
@@ -50,24 +50,24 @@ data class Broadcast(
     val videoOnDemandLinks: List<JsonElement>,
     val entitlements: List<JsonElement>,
     val fromIso: String,
-    val toIso: String
+    val toIso: String,
 )
 
 @Serializable
-data class Channel(
+public data class Channel(
     val name: String,
     val seoKey: String,
     val uuid: String,
     val channelLogoUrl: String,
     val broadcasts: List<Broadcast>,
     val liveStreamLinks: List<LiveStreamLink>,
-    val order: Int
+    val order: Int,
 )
 
 @Serializable
-data class Epg(
+public data class Epg(
     val from: Long,
     val to: Long,
     val timestamp: Long,
-    val channels: List<Channel>
+    val channels: List<Channel>,
 )

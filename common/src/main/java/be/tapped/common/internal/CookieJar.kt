@@ -1,18 +1,19 @@
-package be.tapped.common
+package be.tapped.common.internal
 
 import okhttp3.Cookie
 import okhttp3.CookieJar
 import okhttp3.HttpUrl
 
-interface ReadOnlyCookieJar : CookieJar {
-    operator fun get(name: String): String?
+public interface ReadOnlyCookieJar : CookieJar {
+    public operator fun get(name: String): String?
 }
 
 /**
  * Simply saves all incoming cookies.
  * Matching cookies are returned based on the host name of the requested host.
  */
-class DefaultCookieJar : ReadOnlyCookieJar {
+@InterModuleUseOnly
+public class DefaultCookieJar : ReadOnlyCookieJar {
     private val cookieCache: MutableMap<HttpUrl, List<Cookie>> = mutableMapOf()
 
     private val fullCookieList: List<Cookie>

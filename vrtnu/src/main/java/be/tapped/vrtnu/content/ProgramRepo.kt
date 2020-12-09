@@ -2,8 +2,7 @@ package be.tapped.vrtnu.content
 
 import arrow.core.Either
 import arrow.core.computations.either
-import be.tapped.common.executeAsync
-import be.tapped.common.validateResponse
+import be.tapped.common.internal.executeAsync
 import be.tapped.vrtnu.ApiResponse
 import be.tapped.vrtnu.ApiResponse.Failure.JsonParsingException
 import be.tapped.vrtnu.common.safeBodyString
@@ -21,11 +20,11 @@ internal class JsonProgramParser {
         Either.catch { Json.decodeFromString<List<Program>>(json) }.mapLeft(::JsonParsingException)
 }
 
-interface ProgramRepo {
+public interface ProgramRepo {
 
-    suspend fun fetchAZPrograms(): Either<ApiResponse.Failure, ApiResponse.Success.Content.Programs>
+    public suspend fun fetchAZPrograms(): Either<ApiResponse.Failure, ApiResponse.Success.Content.Programs>
 
-    suspend fun fetchProgramByName(programName: String): Either<ApiResponse.Failure, ApiResponse.Success.Content.SingleProgram>
+    public suspend fun fetchProgramByName(programName: String): Either<ApiResponse.Failure, ApiResponse.Success.Content.SingleProgram>
 
 }
 

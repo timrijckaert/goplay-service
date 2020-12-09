@@ -4,8 +4,7 @@ import arrow.core.Either
 import arrow.core.EitherPartialOf
 import arrow.core.computations.either
 import arrow.typeclasses.suspended.BindSyntax
-import be.tapped.common.executeAsync
-import be.tapped.common.validateResponse
+import be.tapped.common.internal.executeAsync
 import be.tapped.vrtnu.ApiResponse
 import be.tapped.vrtnu.ApiResponse.Failure.JsonParsingException
 import be.tapped.vrtnu.common.safeBodyString
@@ -27,11 +26,11 @@ internal class JsonEpisodeParser {
             .mapLeft(::JsonParsingException)
 }
 
-interface EpisodeRepo {
+public interface EpisodeRepo {
 
-    fun episodes(searchQuery: ElasticSearchQueryBuilder.SearchQuery): Flow<Either<ApiResponse.Failure, ApiResponse.Success.Content.Episodes>>
+    public fun episodes(searchQuery: ElasticSearchQueryBuilder.SearchQuery): Flow<Either<ApiResponse.Failure, ApiResponse.Success.Content.Episodes>>
 
-    fun episodesForProgram(program: Program): Flow<Either<ApiResponse.Failure, ApiResponse.Success.Content.Episodes>> =
+    public fun episodesForProgram(program: Program): Flow<Either<ApiResponse.Failure, ApiResponse.Success.Content.Episodes>> =
         episodes(ElasticSearchQueryBuilder.SearchQuery(programName = program.programName))
 
 }
@@ -65,9 +64,9 @@ internal class HttpEpisodeRepo(
             .applySearchQuery(searchQuery)
             .build()
 
-    private fun <A, B, E> unfoldFlow(initial: A, next: suspend BindSyntax<EitherPartialOf<E>>.(A) -> Pair<A, B>?): Flow<Either<E, B>> =
+    private fun <A, B, E> unfoldFlow(initialA: A, next: suspend BindSyntax<EitherPartialOf<E>>.(A) -> Pair<A, B>?): Flow<Either<E, B>> =
         flow {
-            var initial: A? = initial
+            var initial: A? = initialA
             val res: Either<E, Unit> = either {
                 do {
                     val nextEither: Pair<A, B>? = next(this@either, initial!!)

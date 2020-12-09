@@ -2,7 +2,7 @@ package be.tapped.vrtnu.profile
 
 import arrow.core.Either
 import arrow.core.computations.either
-import be.tapped.common.executeAsync
+import be.tapped.common.internal.executeAsync
 import be.tapped.vrtnu.ApiResponse
 import be.tapped.vrtnu.common.safeBodyString
 import kotlinx.coroutines.Dispatchers
@@ -16,7 +16,7 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 
 @Serializable
-data class LoginFailure(
+public data class LoginFailure(
     val callId: String,
     val errorCode: Int,
     private val errorDetails: String?,
@@ -26,15 +26,15 @@ data class LoginFailure(
     val statusReason: String,
     val time: String,
 ) {
-    enum class LoginFailure {
+    public enum class LoginFailure {
         INVALID_CREDENTIALS,
         MISSING_LOGIN_ID,
         MISSING_PASSWORD,
         UNKNOWN
     }
 
-    val isValid = errorCode == 0
-    val loginFailure = when (errorDetails) {
+    public val isValid: Boolean = errorCode == 0
+    public val loginFailure: LoginFailure = when (errorDetails) {
         "invalid loginID or password" -> LoginFailure.INVALID_CREDENTIALS
         "loginID must be provided" -> LoginFailure.MISSING_LOGIN_ID
         "Missing required parameter: password" -> LoginFailure.MISSING_PASSWORD
@@ -43,7 +43,7 @@ data class LoginFailure(
 }
 
 @Serializable
-data class Profile(
+public data class Profile(
     val firstName: String,
     val lastName: String,
     val age: Int,
@@ -58,10 +58,10 @@ data class Profile(
 )
 
 @Serializable
-data class SessionInfo(@SerialName("login_token") val loginToken: String)
+public data class SessionInfo(@SerialName("login_token") val loginToken: String)
 
 @Serializable
-data class LoginResponse(
+public data class LoginResponse(
     val callId: String,
     val errorCode: Int,
     val apiVersion: Int,
@@ -100,8 +100,8 @@ internal object JsonLoginResponseMapper {
         Either.catch { Json.decodeFromString<LoginResponse>(json) }.mapLeft { Json.decodeFromString(json) }
 }
 
-interface LoginRepo {
-    suspend fun fetchLoginResponse(userName: String, password: String): Either<ApiResponse.Failure, LoginResponse>
+public interface LoginRepo {
+    public suspend fun fetchLoginResponse(userName: String, password: String): Either<ApiResponse.Failure, LoginResponse>
 }
 
 internal class HttpLoginRepo(

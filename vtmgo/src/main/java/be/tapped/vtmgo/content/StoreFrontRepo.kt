@@ -2,7 +2,7 @@ package be.tapped.vtmgo.content
 
 import arrow.core.Either
 import arrow.core.computations.either
-import be.tapped.common.executeAsync
+import be.tapped.common.internal.executeAsync
 import be.tapped.vtmgo.ApiResponse
 import be.tapped.vtmgo.ApiResponse.Failure.JsonParsingException
 import be.tapped.vtmgo.common.HeaderBuilder
@@ -13,12 +13,15 @@ import be.tapped.vtmgo.profile.VTMGOProduct
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.json.*
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.decodeFromJsonElement
+import kotlinx.serialization.json.jsonArray
 import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
 import okhttp3.Request
 
-enum class StoreFrontType(internal val id: String) {
+public enum class StoreFrontType(internal val id: String) {
     MAIN("9620cc0b-0f97-4d96-902a-827dcfd0b227"),
     SERIES("1c683de4-3fb0-4cc4-9d9c-c365eba1b155"),
     MOVIES("e3fc0750-f110-4808-ae5f-246846ff940f"),
@@ -35,9 +38,9 @@ internal class JsonStoreFrontParser {
         }.mapLeft(::JsonParsingException)
 }
 
-interface StoreFrontRepo {
+public interface StoreFrontRepo {
 
-    suspend fun fetchStoreFront(
+    public suspend fun fetchStoreFront(
         jwt: JWT,
         profile: Profile,
         storeFrontType: StoreFrontType,

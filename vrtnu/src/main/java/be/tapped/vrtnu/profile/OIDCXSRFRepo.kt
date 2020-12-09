@@ -1,8 +1,8 @@
 package be.tapped.vrtnu.profile
 
 import arrow.core.Either
-import be.tapped.common.ReadOnlyCookieJar
-import be.tapped.common.executeAsync
+import be.tapped.common.internal.ReadOnlyCookieJar
+import be.tapped.common.internal.executeAsync
 import be.tapped.vrtnu.ApiResponse
 import be.tapped.vrtnu.ApiResponse.Failure.Authentication.MissingCookieValues
 import kotlinx.coroutines.Dispatchers
@@ -11,8 +11,8 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.internal.closeQuietly
 
-interface OIDCXSRFRepo {
-    suspend fun fetchXSRFToken(): Either<MissingCookieValues, OIDCXSRF>
+public interface OIDCXSRFRepo {
+    public suspend fun fetchXSRFToken(): Either<MissingCookieValues, OIDCXSRF>
 }
 
 internal class HttpOIDCXSRFRepo(

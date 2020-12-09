@@ -9,7 +9,7 @@ import be.tapped.vtmgo.profile.JWT
 import be.tapped.vtmgo.profile.Profile
 import be.tapped.vtmgo.profile.ProfileRepo
 
-suspend fun main(args: Array<String>) {
+public suspend fun main(args: Array<String>) {
     val userName = args[0]
     val password = args[1]
 

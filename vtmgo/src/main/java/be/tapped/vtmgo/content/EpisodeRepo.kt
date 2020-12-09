@@ -2,7 +2,7 @@ package be.tapped.vtmgo.content
 
 import arrow.core.Either
 import arrow.core.computations.either
-import be.tapped.common.executeAsync
+import be.tapped.common.internal.executeAsync
 import be.tapped.vtmgo.ApiResponse
 import be.tapped.vtmgo.ApiResponse.Failure.JsonParsingException
 import be.tapped.vtmgo.common.HeaderBuilder
@@ -26,8 +26,8 @@ internal class JsonProgramParser {
             .mapLeft(::JsonParsingException)
 }
 
-interface EpisodeRepo {
-    suspend fun fetchProgram(
+public interface EpisodeRepo {
+    public suspend fun fetchProgram(
         program: TargetResponse.Target.Program,
         jwt: JWT,
         profile: Profile,

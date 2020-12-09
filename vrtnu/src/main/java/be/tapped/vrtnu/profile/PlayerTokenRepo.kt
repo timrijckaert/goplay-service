@@ -2,8 +2,7 @@ package be.tapped.vrtnu.profile
 
 import arrow.core.Either
 import arrow.core.computations.either
-import be.tapped.common.executeAsync
-import be.tapped.common.validateResponse
+import be.tapped.common.internal.executeAsync
 import be.tapped.vrtnu.ApiResponse
 import be.tapped.vrtnu.ApiResponse.Failure.JsonParsingException
 import be.tapped.vrtnu.common.safeBodyString
@@ -17,13 +16,13 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 
-class JsonVRTPlayerTokenParser {
-    suspend fun parse(json: String): Either<ApiResponse.Failure, VRTPlayerToken> =
+public class JsonVRTPlayerTokenParser {
+    public suspend fun parse(json: String): Either<ApiResponse.Failure, VRTPlayerToken> =
         Either.catch { Json.decodeFromString<VRTPlayerToken>(json) }.mapLeft(::JsonParsingException)
 }
 
-interface PlayerTokenRepo {
-    suspend fun fetchVRTPlayerToken(xVRTToken: XVRTToken): Either<ApiResponse.Failure, ApiResponse.Success.Authentication.PlayerToken>
+public interface PlayerTokenRepo {
+    public suspend fun fetchVRTPlayerToken(xVRTToken: XVRTToken): Either<ApiResponse.Failure, ApiResponse.Success.Authentication.PlayerToken>
 }
 
 internal class HttpPlayerTokenRepo(

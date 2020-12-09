@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 
-enum class TargetType {
+public enum class TargetType {
     MOVIE,
     PROGRAM,
     EPISODE,
@@ -14,18 +14,18 @@ enum class TargetType {
 }
 
 @Serializable
-data class TargetResponse(
+public data class TargetResponse(
     private val type: TargetType,
     private val id: String? = null,
     private val url: String? = null,
     private val name: String? = null,
     private val programId: String? = null,
 ) {
-    sealed class Target {
-        data class Movie(val id: String) : Target()
-        data class Program(val id: String) : Target()
-        data class Episode(val id: String) : Target()
-        data class External(val url: String) : Target()
+    public sealed class Target {
+        public data class Movie(val id: String) : Target()
+        public data class Program(val id: String) : Target()
+        public data class Episode(val id: String) : Target()
+        public data class External(val url: String) : Target()
     }
 
     val asTarget: Target
@@ -38,7 +38,7 @@ data class TargetResponse(
 }
 
 @Serializable
-data class PagedTeaserContent(
+public data class PagedTeaserContent(
     val title: String,
     val target: TargetResponse,
     val imageUrl: String,
@@ -47,16 +47,16 @@ data class PagedTeaserContent(
 )
 
 @Serializable
-data class CategoryResponse(@SerialName("catalogFilters") val categories: List<Category>)
+public data class CategoryResponse(@SerialName("catalogFilters") val categories: List<Category>)
 
 @Serializable
-data class Category(val id: String, val title: String, val active: Boolean)
+public data class Category(val id: String, val title: String, val active: Boolean)
 
 @Serializable
-data class Broadcast(val name: String, val startsAt: String, val endsAt: String)
+public data class Broadcast(val name: String, val startsAt: String, val endsAt: String)
 
 @Serializable
-data class LiveChannel(
+public data class LiveChannel(
     val name: String,
     val broadcasts: List<Broadcast>,
     val channelId: String,
@@ -66,13 +66,13 @@ data class LiveChannel(
 )
 
 @Serializable
-enum class Overlay {
+public enum class Overlay {
     TITLE,
     BUTTONS
 }
 
 @Serializable
-data class CarouselTeaser(
+public data class CarouselTeaser(
     val tagline: String? = null,
     val bannerAltText: String? = null,
     val largeImageUrl: String,
@@ -88,7 +88,7 @@ data class CarouselTeaser(
 )
 
 @Serializable
-data class DefaultSwimlaneTeaser(
+public data class DefaultSwimlaneTeaser(
     val title: String,
     val target: TargetResponse,
     val imageUrl: String,
@@ -97,7 +97,7 @@ data class DefaultSwimlaneTeaser(
 )
 
 @Serializable
-data class ContinueWatchingTeaser(
+public data class ContinueWatchingTeaser(
     val title: String,
     val label: String? = null,
     val target: TargetResponse,
@@ -110,7 +110,7 @@ data class ContinueWatchingTeaser(
 )
 
 @Serializable
-data class MyListTeaser(
+public data class MyListTeaser(
     val title: String,
     val target: TargetResponse,
     val imageUrl: String,
@@ -119,7 +119,7 @@ data class MyListTeaser(
 )
 
 @Serializable
-data class MarketingTeaser(
+public data class MarketingTeaser(
     val tagline: String? = null,
     val bannerAltText: String? = null,
     val largeImageUrl: String,
@@ -135,7 +135,7 @@ data class MarketingTeaser(
 )
 
 @Serializable
-data class Metadata(
+public data class Metadata(
     val provider: String,
     val requestId: String,
     val routingGroup: String,
@@ -143,15 +143,15 @@ data class Metadata(
 )
 
 @Serializable
-sealed class StoreFront {
-    abstract val rowType: String
-    abstract val id: String
-    abstract val metaData: Metadata
-    abstract val hasDetail: Boolean
+public sealed class StoreFront {
+    public abstract val rowType: String
+    public abstract val id: String
+    public abstract val metaData: Metadata
+    public abstract val hasDetail: Boolean
 
     @Serializable
     @SerialName("CAROUSEL")
-    data class CarouselStoreFront(
+    public data class CarouselStoreFront(
         override val id: String,
         val teasers: List<CarouselTeaser>,
         override val metaData: Metadata,
@@ -161,7 +161,7 @@ sealed class StoreFront {
 
     @Serializable
     @SerialName("SWIMLANE_DEFAULT")
-    data class DefaultSwimlaneStoreFront(
+    public data class DefaultSwimlaneStoreFront(
         override val id: String,
         override val metaData: Metadata,
         val title: String,
@@ -173,7 +173,7 @@ sealed class StoreFront {
 
     @Serializable
     @SerialName("CONTINUE_WATCHING")
-    data class ContinueWatchingStoreFront(
+    public data class ContinueWatchingStoreFront(
         override val id: String,
         override val metaData: Metadata,
         val title: String,
@@ -185,7 +185,7 @@ sealed class StoreFront {
 
     @Serializable
     @SerialName("MY_LIST")
-    data class MyListStoreFront(
+    public data class MyListStoreFront(
         override val id: String,
         override val metaData: Metadata,
         val title: String,
@@ -197,7 +197,7 @@ sealed class StoreFront {
 
     @Serializable
     @SerialName("MARKETING_BLOCK")
-    data class MarketingStoreFront(
+    public data class MarketingStoreFront(
         override val id: String,
         val teaser: MarketingTeaser,
         override val metaData: Metadata,
@@ -207,7 +207,7 @@ sealed class StoreFront {
 
     @Serializable
     @SerialName("PROFILE_SWITCHER")
-    data class ProfileSwitcherStoreFront(
+    public data class ProfileSwitcherStoreFront(
         override val id: String,
         override val metaData: Metadata,
         val title: String,
@@ -218,7 +218,7 @@ sealed class StoreFront {
 }
 
 @Serializable
-enum class SearchResultType {
+public enum class SearchResultType {
     @SerialName("related")
     RELATED,
 
@@ -230,44 +230,44 @@ enum class SearchResultType {
 }
 
 @Serializable
-data class SearchResultResponse(
+public data class SearchResultResponse(
     val title: String,
     val type: SearchResultType,
     val teasers: List<PagedTeaserContent>,
 )
 
 @Serializable
-data class Anvato(val video: String, val mcp: String, val accessKey: String, val token: String)
+public data class Anvato(val video: String, val mcp: String, val accessKey: String, val token: String)
 
 @Serializable
-data class Stream(
+public data class Stream(
     val type: String,
     val anvato: Anvato,
 )
 
 @Serializable
-data class AnvatoChannel(val id: String, val title: String)
+public data class AnvatoChannel(val id: String, val title: String)
 
 @Serializable
-data class AnvatoProgram(val id: String, val title: String)
+public data class AnvatoProgram(val id: String, val title: String)
 
 @Serializable
-data class StreamBroadcast(val id: String, val technicalFromMs: Long, val technicalToMs: Long)
+public data class StreamBroadcast(val id: String, val technicalFromMs: Long, val technicalToMs: Long)
 
 @Serializable
-data class AnvatoSynopsis(val xs: String? = null, val s: String? = null, val m: String? = null)
+public data class AnvatoSynopsis(val xs: String? = null, val s: String? = null, val m: String? = null)
 
 @Serializable
-data class AnvatoSeason(val order: Int)
+public data class AnvatoSeason(val order: Int)
 
 @Serializable
-data class AnvatoEpisode(val order: Int, val season: AnvatoSeason)
+public data class AnvatoEpisode(val order: Int, val season: AnvatoSeason)
 
 @Serializable
-data class PosterImage(val height: Int, val url: String)
+public data class PosterImage(val height: Int, val url: String)
 
 @Serializable
-data class StreamMetadata(
+public data class StreamMetadata(
     val id: String,
     val geoBlocked: Boolean,
     val availability: Int? = null,
@@ -286,7 +286,7 @@ data class StreamMetadata(
 )
 
 @Serializable
-data class Freewheel(
+public data class Freewheel(
     val assetId: String? = null,
     val serverSide: Boolean,
     val serverUrl: String,
@@ -295,13 +295,13 @@ data class Freewheel(
 )
 
 @Serializable
-data class Ads(
+public data class Ads(
     val provider: String,
     val freewheel: Freewheel,
 )
 
 @Serializable
-data class CIM(
+public data class CIM(
     val identifier: String,
     val materialId: String,
     val sourceType: String,
@@ -312,13 +312,13 @@ data class CIM(
 )
 
 @Serializable
-data class Analytics(val cim: CIM)
+public data class Analytics(val cim: CIM)
 
 @Serializable
-data class Subtitle(val language: String, val url: String)
+public data class Subtitle(val language: String, val url: String)
 
 @Serializable
-data class StreamResponse(
+public data class StreamResponse(
     val streamType: String,
     val streams: List<Stream>,
     val analytics: Analytics,
@@ -328,22 +328,22 @@ data class StreamResponse(
     val metadata: StreamMetadata,
 )
 
-data class AnvatoPublishedUrl(
+public data class AnvatoPublishedUrl(
     val embedUrl: String,
     val licenseUrl: String,
     val backupUrl: String?,
     val backupLicenseUrl: String?,
 )
 
-inline class MPDUrl(val url: String)
-inline class M3U8Url(val url: String)
-inline class LicenseUrl(val url: String)
+public inline class MPDUrl(public val url: String)
+public inline class M3U8Url(public val url: String)
+public inline class LicenseUrl(public val url: String)
 
-sealed class AnvatoStream {
-    abstract val mdpUrl: MPDUrl
-    abstract val licenseUrl: LicenseUrl
+public sealed class AnvatoStream {
+    public abstract val mdpUrl: MPDUrl
+    public abstract val licenseUrl: LicenseUrl
 
-    data class Live(
+    public data class Live(
         val rawMdpUrl: MPDUrl,
         override val mdpUrl: MPDUrl,
         val rawBackUpMdpUrl: MPDUrl,
@@ -352,11 +352,11 @@ sealed class AnvatoStream {
         val backUpLicenseUrl: LicenseUrl,
     ) : AnvatoStream()
 
-    data class Episode(override val mdpUrl: MPDUrl, override val licenseUrl: LicenseUrl) : AnvatoStream()
+    public data class Episode(override val mdpUrl: MPDUrl, override val licenseUrl: LicenseUrl) : AnvatoStream()
 }
 
 @Serializable
-data class Episode(
+public data class Episode(
     val id: String,
     val name: String,
     val description: String,
@@ -386,7 +386,7 @@ data class Episode(
 }
 
 @Serializable
-data class Season(
+public data class Season(
     val episodes: List<Episode>,
     val trailers: List<JsonElement> = emptyList(),
     val catchUpEpisode: JsonElement? = null,
@@ -395,7 +395,7 @@ data class Season(
 )
 
 @Serializable
-data class Program(
+public data class Program(
     val id: String,
     val name: String,
     val description: String,

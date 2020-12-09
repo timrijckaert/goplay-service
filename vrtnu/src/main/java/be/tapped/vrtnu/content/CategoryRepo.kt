@@ -3,7 +3,7 @@ package be.tapped.vrtnu.content
 import arrow.core.Either
 import arrow.core.computations.either
 import arrow.core.flatMap
-import be.tapped.common.executeAsync
+import be.tapped.common.internal.executeAsync
 import be.tapped.vrtnu.ApiResponse
 import be.tapped.vrtnu.ApiResponse.Failure.JsonParsingException
 import be.tapped.vrtnu.common.safeBodyString
@@ -28,8 +28,8 @@ internal class JsonCategoryParser {
             }
 }
 
-interface CategoryRepo {
-    suspend fun fetchCategories(): Either<ApiResponse.Failure, ApiResponse.Success.Content.Categories>
+public interface CategoryRepo {
+    public suspend fun fetchCategories(): Either<ApiResponse.Failure, ApiResponse.Success.Content.Categories>
 }
 
 internal class HttpCategoryRepo(

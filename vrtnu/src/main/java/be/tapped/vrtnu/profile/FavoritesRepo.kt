@@ -2,31 +2,25 @@ package be.tapped.vrtnu.profile
 
 import arrow.core.Either
 import arrow.core.computations.either
-import be.tapped.common.executeAsync
-import be.tapped.common.validateResponse
+import be.tapped.common.internal.executeAsync
 import be.tapped.vrtnu.ApiResponse
 import be.tapped.vrtnu.common.safeBodyString
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.decodeFromJsonElement
-import kotlinx.serialization.json.jsonObject
-import kotlinx.serialization.json.jsonPrimitive
-import kotlinx.serialization.json.long
+import kotlinx.serialization.json.*
 import okhttp3.OkHttpClient
 import okhttp3.Request
 
-data class FavoriteWrapper(private val favorites: Map<String, Favorite>) {
+public data class FavoriteWrapper(private val favorites: Map<String, Favorite>) {
     private val nonWordCharacterRegex = Regex("\\W")
     private fun sanitizeProgramName(rawProgramName: String) = nonWordCharacterRegex.replace(rawProgramName, "").toLowerCase()
-    operator fun get(programName: String): Favorite? = favorites["vrtnuaz${sanitizeProgramName(programName)}"]
+    public operator fun get(programName: String): Favorite? = favorites["vrtnuaz${sanitizeProgramName(programName)}"]
 }
 
 @Serializable
-data class Favorite(
+public data class Favorite(
     val created: Long = -1,
     val updated: Long = -1,
     val adobeCloudId: String? = null,
@@ -50,8 +44,8 @@ internal class JsonFavoriteParser {
         }.mapLeft(ApiResponse.Failure::JsonParsingException)
 }
 
-interface FavoritesRepo {
-    suspend fun favorites(xVRTToken: XVRTToken): Either<ApiResponse.Failure, ApiResponse.Success.Authentication.Favorites>
+public interface FavoritesRepo {
+    public suspend fun favorites(xVRTToken: XVRTToken): Either<ApiResponse.Failure, ApiResponse.Success.Authentication.Favorites>
 }
 
 internal class HttpFavoritesRepo(

@@ -2,11 +2,11 @@ package be.tapped.vtmgo.epg
 
 import arrow.core.Either
 import arrow.core.computations.either
-import be.tapped.common.executeAsync
+import be.tapped.common.internal.executeAsync
 import be.tapped.vtmgo.ApiResponse
 import be.tapped.vtmgo.ApiResponse.Failure.JsonParsingException
-import be.tapped.vtmgo.common.vtmApiDefaultOkHttpClient
 import be.tapped.vtmgo.common.safeBodyString
+import be.tapped.vtmgo.common.vtmApiDefaultOkHttpClient
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.decodeFromString
@@ -16,16 +16,16 @@ import okhttp3.Request
 import java.text.SimpleDateFormat
 import java.util.*
 
-class JsonEpgParser {
-    suspend fun parse(json: String): Either<ApiResponse.Failure, Epg> =
+public class JsonEpgParser {
+    public suspend fun parse(json: String): Either<ApiResponse.Failure, Epg> =
         Either.catch { Json.decodeFromString<Epg>(json) }.mapLeft(::JsonParsingException)
 }
 
-interface EpgRepo {
-    suspend fun epg(calendar: Calendar = Calendar.getInstance(TimeZone.getTimeZone("Europe/Brussels"))): Either<ApiResponse.Failure, ApiResponse.Success.ProgramGuide>
+public interface EpgRepo {
+    public suspend fun epg(calendar: Calendar = Calendar.getInstance(TimeZone.getTimeZone("Europe/Brussels"))): Either<ApiResponse.Failure, ApiResponse.Success.ProgramGuide>
 }
 
-class HttpEpgRepo(
+public class HttpEpgRepo(
     private val client: OkHttpClient = vtmApiDefaultOkHttpClient,
     private val jsonEpgParser: JsonEpgParser = JsonEpgParser(),
     private val dateFormatter: SimpleDateFormat = SimpleDateFormat("yyyy-MM-dd"),

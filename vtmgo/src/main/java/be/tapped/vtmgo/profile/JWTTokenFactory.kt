@@ -1,34 +1,20 @@
 package be.tapped.vtmgo.profile
 
-import arrow.core.Either
-import arrow.core.NonEmptyList
-import arrow.core.Validated
-import arrow.core.ValidatedNel
+import arrow.core.*
 import arrow.core.computations.either
 import arrow.core.extensions.nonemptylist.semigroup.semigroup
 import arrow.core.extensions.validated.applicative.applicative
 import arrow.core.extensions.validated.bifunctor.mapLeft
-import arrow.core.filterOrElse
-import arrow.core.invalidNel
-import arrow.core.left
-import arrow.core.right
-import arrow.core.rightIfNotNull
-import arrow.core.validNel
-import be.tapped.common.ReadOnlyCookieJar
-import be.tapped.common.executeAsync
+import be.tapped.common.internal.ReadOnlyCookieJar
+import be.tapped.common.internal.executeAsync
 import be.tapped.vtmgo.ApiResponse
 import be.tapped.vtmgo.ApiResponse.Failure.Authentication
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import okhttp3.FormBody
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.Response
-import okhttp3.ResponseBody
-import javax.security.auth.login.LoginException
+import okhttp3.*
 
-interface JWTTokenFactory {
-    suspend fun login(
+public interface JWTTokenFactory {
+    public suspend fun login(
         userName: String,
         password: String,
     ): Either<ApiResponse.Failure, ApiResponse.Success.Authentication.Token>

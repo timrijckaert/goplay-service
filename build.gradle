@@ -34,7 +34,10 @@ allprojects {
         kotlinOptions {
             jvmTarget = "1.8"
             freeCompilerArgs += [
-                    "-Xinline-classes"
+                    "-Xinline-classes",
+                    "-Xexplicit-api=strict",
+                    "-Xopt-in=kotlin.RequiresOptIn",
+                    "-Xopt-in=be.tapped.common.internal.InterModuleUseOnly"
             ]
         }
     }

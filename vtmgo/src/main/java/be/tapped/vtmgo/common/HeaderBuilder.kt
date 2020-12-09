@@ -4,11 +4,11 @@ import be.tapped.vtmgo.profile.JWT
 import be.tapped.vtmgo.profile.Profile
 import okhttp3.Headers
 
-interface HeaderBuilder {
+public interface HeaderBuilder {
 
-    val defaultHeaders: Headers
+    public val defaultHeaders: Headers
 
-    fun authenticationHeaders(jwt: JWT, profile: Profile? = null): Headers
+    public fun authenticationHeaders(jwt: JWT, profile: Profile? = null): Headers
 }
 
 internal class AuthorizationHeaderBuilder : HeaderBuilder {

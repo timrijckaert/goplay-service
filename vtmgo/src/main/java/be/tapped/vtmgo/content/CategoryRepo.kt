@@ -2,11 +2,10 @@ package be.tapped.vtmgo.content
 
 import arrow.core.Either
 import arrow.core.computations.either
-import be.tapped.common.executeAsync
-import be.tapped.common.validateResponse
+import be.tapped.common.internal.executeAsync
 import be.tapped.vtmgo.ApiResponse
-import be.tapped.vtmgo.common.HeaderBuilder
 import be.tapped.vtmgo.ApiResponse.Failure.JsonParsingException
+import be.tapped.vtmgo.common.HeaderBuilder
 import be.tapped.vtmgo.common.safeBodyString
 import be.tapped.vtmgo.profile.JWT
 import be.tapped.vtmgo.profile.Profile
@@ -24,8 +23,8 @@ internal class JsonCategoryParser {
         Either.catch<CategoryResponse> { Json.decodeFromString(json) }.mapLeft(::JsonParsingException)
 }
 
-interface CategoryRepo {
-    suspend fun fetchCategories(jwt: JWT, profile: Profile): Either<ApiResponse.Failure, ApiResponse.Success.Content.Categories>
+public interface CategoryRepo {
+    public suspend fun fetchCategories(jwt: JWT, profile: Profile): Either<ApiResponse.Failure, ApiResponse.Success.Content.Categories>
 }
 
 internal class HttpCategoryRepo(

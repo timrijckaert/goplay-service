@@ -4,7 +4,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class Epg(
+public data class Epg(
     @SerialName("O8")
     val een: List<EpgProgram>,
     @SerialName("1H")
@@ -14,7 +14,7 @@ data class Epg(
 )
 
 @Serializable
-data class EpgProgram(
+public data class EpgProgram(
     val start: String,
     val end: String,
     val startTime: String,

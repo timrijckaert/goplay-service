@@ -2,26 +2,26 @@ package be.tapped.vtmgo.profile
 
 import kotlinx.serialization.Serializable
 
-enum class VTMGOProduct {
+public enum class VTMGOProduct {
     VTM_GO,
     VTM_GO_KIDS;
 }
 
 @Serializable
-enum class Gender {
+public enum class Gender {
     MALE,
     FEMALE;
 }
 
 @Serializable
-data class Color(
+public data class Color(
     val id: Int,
     val start: String,
     val end: String,
 )
 
 @Serializable
-data class Profile(
+public data class Profile(
     val id: String,
     val name: String,
     val gender: Gender,
@@ -32,4 +32,4 @@ data class Profile(
     val product: VTMGOProduct,
 )
 
-inline class JWT(val token: String)
+public inline class JWT(public val token: String)

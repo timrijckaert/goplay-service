@@ -6,7 +6,7 @@ import be.tapped.vtmgo.common.anvatoDefaultOkHttpClient
 import be.tapped.vtmgo.common.vtmApiDefaultOkHttpClient
 import okhttp3.OkHttpClient
 
-class VTMApi(
+public class VTMApi(
     client: OkHttpClient = vtmApiDefaultOkHttpClient,
     headerBuilder: HeaderBuilder = AuthorizationHeaderBuilder(),
     catalogRepo: CatalogRepo = HttpCatalogRepo(client, BaseContentHttpUrlBuilder, headerBuilder, JsonPagedTeaserContentParser()),

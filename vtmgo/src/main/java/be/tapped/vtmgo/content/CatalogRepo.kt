@@ -2,7 +2,7 @@ package be.tapped.vtmgo.content
 
 import arrow.core.Either
 import arrow.core.computations.either
-import be.tapped.common.executeAsync
+import be.tapped.common.internal.executeAsync
 import be.tapped.vtmgo.ApiResponse
 import be.tapped.vtmgo.ApiResponse.Failure.JsonParsingException
 import be.tapped.vtmgo.common.HeaderBuilder
@@ -29,8 +29,8 @@ internal class JsonPagedTeaserContentParser {
         }.mapLeft(::JsonParsingException)
 }
 
-interface CatalogRepo {
-    suspend fun fetchAZ(jwt: JWT, profile: Profile): Either<ApiResponse.Failure, ApiResponse.Success.Content.Catalog>
+public interface CatalogRepo {
+    public suspend fun fetchAZ(jwt: JWT, profile: Profile): Either<ApiResponse.Failure, ApiResponse.Success.Content.Catalog>
 }
 
 internal class HttpCatalogRepo(

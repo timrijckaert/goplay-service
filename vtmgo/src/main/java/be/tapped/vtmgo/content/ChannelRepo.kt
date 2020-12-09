@@ -2,8 +2,7 @@ package be.tapped.vtmgo.content
 
 import arrow.core.Either
 import arrow.core.computations.either
-import arrow.core.right
-import be.tapped.common.executeAsync
+import be.tapped.common.internal.executeAsync
 import be.tapped.vtmgo.ApiResponse
 import be.tapped.vtmgo.ApiResponse.Failure.JsonParsingException
 import be.tapped.vtmgo.common.HeaderBuilder
@@ -22,16 +21,16 @@ import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
 import okhttp3.Request
 
-class JsonChannelParser {
-    suspend fun parse(json: String): Either<ApiResponse.Failure, List<LiveChannel>> =
+public class JsonChannelParser {
+    public suspend fun parse(json: String): Either<ApiResponse.Failure, List<LiveChannel>> =
         Either.catch {
             val jsonObject = Json.decodeFromString<JsonObject>(json)
             Json.decodeFromJsonElement<List<LiveChannel>>(jsonObject["channels"]!!.jsonArray)
         }.mapLeft(::JsonParsingException)
 }
 
-interface ChannelRepo {
-    suspend fun fetchChannels(jwt: JWT, profile: Profile): Either<ApiResponse.Failure, ApiResponse.Success.Content.LiveChannels>
+public interface ChannelRepo {
+    public suspend fun fetchChannels(jwt: JWT, profile: Profile): Either<ApiResponse.Failure, ApiResponse.Success.Content.LiveChannels>
 }
 
 internal class HttpChannelRepo(

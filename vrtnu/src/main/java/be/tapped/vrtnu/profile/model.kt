@@ -10,23 +10,23 @@ import kotlinx.serialization.encoding.Encoder
 import java.text.SimpleDateFormat
 import java.util.*
 
-inline class OIDCXSRF(val token: String)
+public inline class OIDCXSRF(public val token: String)
 
-inline class XVRTToken(val token: String)
-inline class AccessToken(val token: String)
-inline class RefreshToken(val token: String)
-inline class Expiry(val date: Long)
+public inline class XVRTToken(public val token: String)
+public inline class AccessToken(public val token: String)
+public inline class RefreshToken(public val token: String)
+public inline class Expiry(public val date: Long)
 
-data class TokenWrapper(
+public data class TokenWrapper(
     val accessToken: AccessToken,
     val refreshToken: RefreshToken,
     val expiry: Expiry,
 )
 
 @Serializable(with = DateSerializer::class)
-class DateWrapper(val date: Date)
+public class DateWrapper(public val date: Date)
 
-object DateSerializer : KSerializer<DateWrapper> {
+public object DateSerializer : KSerializer<DateWrapper> {
     private val dateTimeFormatter = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS")
     override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("java.util.Date", PrimitiveKind.STRING)
 
@@ -39,4 +39,4 @@ object DateSerializer : KSerializer<DateWrapper> {
 }
 
 @Serializable
-data class VRTPlayerToken(val vrtPlayerToken: String, val expirationDate: DateWrapper)
+public data class VRTPlayerToken(val vrtPlayerToken: String, val expirationDate: DateWrapper)

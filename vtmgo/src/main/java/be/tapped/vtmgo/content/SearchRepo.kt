@@ -2,7 +2,7 @@ package be.tapped.vtmgo.content
 
 import arrow.core.Either
 import arrow.core.computations.either
-import be.tapped.common.executeAsync
+import be.tapped.common.internal.executeAsync
 import be.tapped.vtmgo.ApiResponse
 import be.tapped.vtmgo.ApiResponse.Failure.JsonParsingException
 import be.tapped.vtmgo.common.HeaderBuilder
@@ -26,8 +26,8 @@ internal class JsonSearchResultResponseParser {
         }.mapLeft(::JsonParsingException)
 }
 
-interface SearchRepo {
-    suspend fun search(jwt: JWT, profile: Profile, query: String): Either<ApiResponse.Failure, ApiResponse.Success.Content.Search>
+public interface SearchRepo {
+    public suspend fun search(jwt: JWT, profile: Profile, query: String): Either<ApiResponse.Failure, ApiResponse.Success.Content.Search>
 }
 
 internal class HttpSearchRepo(

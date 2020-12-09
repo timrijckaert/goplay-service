@@ -2,9 +2,9 @@ package be.tapped.vrtnu.profile
 
 import arrow.core.Either
 import arrow.core.NonEmptyList
-import be.tapped.common.ReadOnlyCookieJar
-import be.tapped.common.executeAsync
-import be.tapped.common.jsonMediaType
+import be.tapped.common.internal.ReadOnlyCookieJar
+import be.tapped.common.internal.executeAsync
+import be.tapped.common.internal.jsonMediaType
 import be.tapped.vrtnu.ApiResponse
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -14,8 +14,8 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 
-interface XVRTTokenRepo {
-    suspend fun fetchXVRTToken(userName: String, loginResponse: LoginResponse): Either<ApiResponse.Failure, XVRTToken>
+public interface XVRTTokenRepo {
+    public suspend fun fetchXVRTToken(userName: String, loginResponse: LoginResponse): Either<ApiResponse.Failure, XVRTToken>
 }
 
 internal class HttpXVRTTokenRepo(

@@ -1,7 +1,7 @@
 package be.tapped.vtmgo.profile
 
-import be.tapped.common.ReadOnlyCookieJar
-import be.tapped.common.executeAsync
+import be.tapped.common.internal.ReadOnlyCookieJar
+import be.tapped.common.internal.executeAsync
 import be.tapped.vtmgo.common.AuthorizationHeaderBuilder
 import be.tapped.vtmgo.common.HeaderBuilder
 import be.tapped.vtmgo.common.defaultCookieJar
@@ -13,19 +13,19 @@ import kotlinx.serialization.json.Json
 import okhttp3.OkHttpClient
 import okhttp3.Request
 
-class ProfileRepo(
+public class ProfileRepo(
     private val cookieJar: ReadOnlyCookieJar = defaultCookieJar,
     private val client: OkHttpClient = vtmApiDefaultOkHttpClient,
     private val headerBuilder: HeaderBuilder = AuthorizationHeaderBuilder(),
     jwtTokenFactory: JWTTokenFactory = VTMGOJWTTokenFactory(client, cookieJar),
 ) : JWTTokenFactory by jwtTokenFactory {
 
-    companion object {
+    public companion object {
         private const val API_ENDPOINT = "https://lfvp-api.dpgmedia.net"
     }
 
     //TODO Use Either to make it safe
-    suspend fun getProfiles(jwtToken: JWT): List<Profile> =
+    public suspend fun getProfiles(jwtToken: JWT): List<Profile> =
         withContext(Dispatchers.IO) {
             val profiles = client.executeAsync(
                 Request.Builder()

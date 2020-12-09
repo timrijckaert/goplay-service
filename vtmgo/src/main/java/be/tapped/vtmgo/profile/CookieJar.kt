@@ -1,6 +1,6 @@
 package be.tapped.vtmgo.profile
 
-import be.tapped.common.ReadOnlyCookieJar
+import be.tapped.common.internal.ReadOnlyCookieJar
 import okhttp3.Cookie
 import okhttp3.HttpUrl
 import java.util.*

@@ -3,7 +3,7 @@ package be.tapped.vrtnu.content
 import be.tapped.vrtnu.common.defaultOkHttpClient
 import okhttp3.OkHttpClient
 
-class VRTApi(
+public class VRTApi(
     client: OkHttpClient = defaultOkHttpClient,
     programRepo: ProgramRepo = HttpProgramRepo(client, JsonProgramParser()),
     categoryRepo: CategoryRepo = HttpCategoryRepo(client, JsonCategoryParser()),

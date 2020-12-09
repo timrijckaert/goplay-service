@@ -2,10 +2,11 @@ package be.tapped.vtmgo.content
 
 import arrow.core.*
 import arrow.core.computations.either
-import be.tapped.common.executeAsync
+import be.tapped.common.internal.executeAsync
 import be.tapped.vtmgo.ApiResponse
 import be.tapped.vtmgo.ApiResponse.Failure
-import be.tapped.vtmgo.ApiResponse.Failure.Stream.*
+import be.tapped.vtmgo.ApiResponse.Failure.Stream.NoAnvatoStreamFound
+import be.tapped.vtmgo.ApiResponse.Failure.Stream.UnsupportedTargetType
 import be.tapped.vtmgo.common.HeaderBuilder
 import be.tapped.vtmgo.common.safeBodyString
 import kotlinx.coroutines.Dispatchers
@@ -28,11 +29,11 @@ internal class JsonLiveStreamResponseParser {
         }.mapLeft(Failure::JsonParsingException)
 }
 
-interface StreamRepo {
+public interface StreamRepo {
 
-    suspend fun fetchStream(liveChannel: LiveChannel): Either<Failure, ApiResponse.Success.Stream>
+    public suspend fun fetchStream(liveChannel: LiveChannel): Either<Failure, ApiResponse.Success.Stream>
 
-    suspend fun fetchStream(target: TargetResponse.Target): Either<Failure, ApiResponse.Success.Stream>
+    public suspend fun fetchStream(target: TargetResponse.Target): Either<Failure, ApiResponse.Success.Stream>
 
 }
 

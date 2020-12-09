@@ -2,7 +2,7 @@ package be.tapped.vtmgo.content
 
 import arrow.core.Either
 import arrow.core.computations.either
-import be.tapped.common.executeAsync
+import be.tapped.common.internal.executeAsync
 import be.tapped.vtmgo.ApiResponse
 import be.tapped.vtmgo.common.HeaderBuilder
 import be.tapped.vtmgo.common.safeBodyString
@@ -22,8 +22,8 @@ internal class JsonFavoritesParser {
         Either.catch { Json.decodeFromString<StoreFront.MyListStoreFront>(json) }.mapLeft(ApiResponse.Failure::JsonParsingException)
 }
 
-interface FavoritesRepo {
-    suspend fun fetchMyFavorites(jwt: JWT, profile: Profile): Either<ApiResponse.Failure, ApiResponse.Success.Content.Favorites>
+public interface FavoritesRepo {
+    public suspend fun fetchMyFavorites(jwt: JWT, profile: Profile): Either<ApiResponse.Failure, ApiResponse.Success.Content.Favorites>
 }
 
 internal class HttpFavoritesRepo(

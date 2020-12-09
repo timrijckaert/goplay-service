@@ -1,17 +1,13 @@
 package be.tapped.vrtnu.profile
 
-import arrow.core.Either
-import arrow.core.NonEmptyList
-import arrow.core.Validated
+import arrow.core.*
 import arrow.core.computations.either
 import arrow.core.extensions.nonemptylist.semigroup.semigroup
 import arrow.core.extensions.validated.applicative.applicative
 import arrow.core.extensions.validated.bifunctor.mapLeft
-import arrow.core.invalidNel
-import arrow.core.validNel
-import be.tapped.common.DefaultCookieJar
-import be.tapped.common.ReadOnlyCookieJar
-import be.tapped.common.executeAsync
+import be.tapped.common.internal.DefaultCookieJar
+import be.tapped.common.internal.ReadOnlyCookieJar
+import be.tapped.common.internal.executeAsync
 import be.tapped.vrtnu.ApiResponse
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -20,15 +16,15 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.internal.closeQuietly
 
-interface TokenRepo {
+public interface TokenRepo {
 
-    suspend fun fetchTokenWrapper(userName: String, password: String): Either<ApiResponse.Failure, ApiResponse.Success.Authentication.Token>
+    public suspend fun fetchTokenWrapper(userName: String, password: String): Either<ApiResponse.Failure, ApiResponse.Success.Authentication.Token>
 
-    suspend fun refreshTokenWrapper(refreshToken: RefreshToken): Either<ApiResponse.Failure, ApiResponse.Success.Authentication.Token>
+    public suspend fun refreshTokenWrapper(refreshToken: RefreshToken): Either<ApiResponse.Failure, ApiResponse.Success.Authentication.Token>
 
-    suspend fun fetchXVRTToken(userName: String, password: String): Either<ApiResponse.Failure, ApiResponse.Success.Authentication.VRTToken>
+    public suspend fun fetchXVRTToken(userName: String, password: String): Either<ApiResponse.Failure, ApiResponse.Success.Authentication.VRTToken>
 
-    suspend fun fetchVRTPlayerToken(xVRTToken: XVRTToken): Either<ApiResponse.Failure, ApiResponse.Success.Authentication.PlayerToken>
+    public suspend fun fetchVRTPlayerToken(xVRTToken: XVRTToken): Either<ApiResponse.Failure, ApiResponse.Success.Authentication.PlayerToken>
 
 }
 
@@ -127,5 +123,6 @@ internal class HttpTokenRepo(
         }
 }
 
+@PublishedApi
 internal fun ReadOnlyCookieJar.validateCookie(cookieName: String): Validated<NonEmptyList<String>, String> =
     this[cookieName]?.validNel() ?: cookieName.invalidNel()

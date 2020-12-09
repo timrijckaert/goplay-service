@@ -12,17 +12,17 @@ import javax.crypto.spec.SecretKeySpec
 
 // Port of
 // https://github.com/aws-samples/aws-cognito-java-desktop-app/blob/3e0ce0c1dce5f02ec4b655ec05645760d379da0b/src/main/java/com/amazonaws/sample/cognitoui/AuthenticationHelper.java
-class AuthenticationHelper {
-    fun userSrpAuthRequest(
+public class AuthenticationHelper {
+    public fun userSrpAuthRequest(
         challenge: InitiateAuthResponse,
-        password: String
+        password: String,
     ): RespondToAuthChallengeRequest {
         val userIdForSRP = challenge.challengeParameters()["USER_ID_FOR_SRP"]!!
         val usernameInternal = challenge.challengeParameters()["USERNAME"]!!
 
         val B = BigInteger(challenge.challengeParameters()["SRP_B"], 16)
         if (B.mod(N) == BigInteger.ZERO) {
-            throw SecurityException("SRP error, B cannot be zero");
+            throw SecurityException("SRP error, B cannot be zero")
         }
 
         val salt = BigInteger(challenge.challengeParameters()["SALT"]!!, 16)
@@ -106,7 +106,7 @@ class AuthenticationHelper {
         return hkdf.deriveKey(DERIVED_KEY_INFO, DERIVED_KEY_SIZE)
     }
 
-    fun initiateUserSrpAuthRequest(username: String): InitiateAuthRequest? =
+    public fun initiateUserSrpAuthRequest(username: String): InitiateAuthRequest? =
         InitiateAuthRequest.builder()
             .authFlow(AuthFlowType.USER_SRP_AUTH)
             .clientId(COGNITO_CLIENT_ID)
@@ -117,7 +117,7 @@ class AuthenticationHelper {
                 )
             ).build()
 
-    fun refreshToken(refreshToken: String): InitiateAuthRequest {
+    public fun refreshToken(refreshToken: String): InitiateAuthRequest {
         return InitiateAuthRequest.builder()
             .authFlow(AuthFlowType.REFRESH_TOKEN_AUTH)
             .authParameters(
@@ -142,17 +142,17 @@ class AuthenticationHelper {
         k = BigInteger(1, digest)
     }
 
-    companion object {
+    public companion object {
         private const val COGNITO_CLIENT_ID = "6s1h851s8uplco5h6mqh1jac8m"
         private const val COGNITO_POOL_ID = "eu-west-1_dViSsKM5Y"
 
         private const val EPHEMERAL_KEY_LENGTH = 1024
         private val SECURE_RANDOM = SecureRandom.getInstance("SHA1PRNG")
         private const val HEX_N = ("FFFFFFFFFFFFFFFFC90FDAA22168C234C4C6628B80DC1CD1"
-                + "29024E088A67CC74020BBEA63B139B22514A08798E3404DD"
-                + "EF9519B3CD3A431B302B0A6DF25F14374FE1356D6D51C245"
-                + "E485B576625E7EC6F44C42E9A637ED6B0BFF5CB6F406B7ED"
-                + "EE386BFB5A899FA5AE9F24117C4B1FE649286651ECE45B3D"
+            + "29024E088A67CC74020BBEA63B139B22514A08798E3404DD"
+            + "EF9519B3CD3A431B302B0A6DF25F14374FE1356D6D51C245"
+            + "E485B576625E7EC6F44C42E9A637ED6B0BFF5CB6F406B7ED"
+            + "EE386BFB5A899FA5AE9F24117C4B1FE649286651ECE45B3D"
                 + "C2007CB8A163BF0598DA48361C55D39A69163FA8FD24CF5F"
                 + "83655D23DCA3AD961C62F356208552BB9ED529077096966D"
                 + "670C354E4ABC9804F1746C08CA18217C32905E462E36CE3B"

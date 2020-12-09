@@ -5,44 +5,44 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonElement
 
 @Serializable
-data class Pages(
+public data class Pages(
     val total: Int,
     val current: Int,
     val size: Int,
 )
 
 @Serializable
-data class Meta(
+public data class Meta(
     @SerialName("total_results")
     val totalResults: Int,
     val pages: Pages,
 )
 
 @Serializable
-data class Bucket(
+public data class Bucket(
     val key: String,
     @SerialName("doc_count")
     val docCount: Int,
 )
 
 @Serializable
-data class Facet(
+public data class Facet(
     val name: String,
     val buckets: List<Bucket>,
 )
 
 @Serializable
-data class FacetWrapper(val facets: List<Facet>)
+public data class FacetWrapper(val facets: List<Facet>)
 
 @Serializable
-data class ElasticSearchResult<T>(
+public data class ElasticSearchResult<T>(
     val meta: Meta,
     val results: List<T>,
     val facets: FacetWrapper,
 )
 
 @Serializable
-data class Program(
+public data class Program(
     val title: String,
     val type: String,
     @SerialName("episode_count")
@@ -58,7 +58,7 @@ data class Program(
 )
 
 @Serializable
-data class Image(
+public data class Image(
     val src: String,
     val srcUriTemplate: String,
     val focalPoint: String,
@@ -70,7 +70,7 @@ data class Image(
 )
 
 @Serializable
-data class Reference(
+public data class Reference(
     val link: String,
     val modelUri: String,
     val referenceType: String,
@@ -78,7 +78,7 @@ data class Reference(
 )
 
 @Serializable
-data class Category(
+public data class Category(
     val imageStoreUrl: String,
     val name: String,
     val permalink: String? = null,
@@ -94,7 +94,7 @@ data class Category(
 )
 
 @Serializable
-data class DisplayOptions(
+public data class DisplayOptions(
     val showBroadcastDate: Boolean,
     val showEpisodeNumber: Boolean,
     val showEpisodeTitle: Boolean,
@@ -106,7 +106,7 @@ data class DisplayOptions(
 )
 
 @Serializable
-data class ProgramTag(
+public data class ProgramTag(
     val path: String,
     val name: String,
     val titlePath: String,
@@ -130,7 +130,7 @@ data class ProgramTag(
 }
 
 @Serializable
-data class Chapter(
+public data class Chapter(
     val startTime: Int,
     val endTime: Int,
     val title: String,
@@ -152,7 +152,7 @@ data class Chapter(
 }
 
 @Serializable
-data class Tag(
+public data class Tag(
     val path: String,
     val name: String,
     val titlePath: String,
@@ -176,19 +176,19 @@ data class Tag(
 }
 
 @Serializable
-enum class AssetStatus {
+public enum class AssetStatus {
     AVAILABLE,
     NOT_AVAILABLE_YET
 }
 
 @Serializable
-enum class TranscodingStatus {
+public enum class TranscodingStatus {
     AVAILABLE,
     NOT_AVAILABLE_YET
 }
 
 @Serializable
-data class Episode(
+public data class Episode(
     val allowedRegion: String,
     val assetOffTime: String,
     val assetOnTime: String,
@@ -278,7 +278,7 @@ data class Episode(
 }
 
 @Serializable
-enum class TargetUrlType {
+public enum class TargetUrlType {
     @SerialName("hls")
     HLS,
 
@@ -290,22 +290,22 @@ enum class TargetUrlType {
 }
 
 @Serializable
-data class TargetUrl(val type: TargetUrlType, val url: String)
+public data class TargetUrl(val type: TargetUrlType, val url: String)
 
 @Serializable
-data class PlaylistContent(val eventType: String, val duration: Long, val skippable: Boolean)
+public data class PlaylistContent(val eventType: String, val duration: Long, val skippable: Boolean)
 
 @Serializable
-data class PlayList(val content: List<PlaylistContent>)
+public data class PlayList(val content: List<PlaylistContent>)
 
 @Serializable
-data class ChapteringContent(val id: String, val title: String, val time: String, val imageUrl: String? = null)
+public data class ChapteringContent(val id: String, val title: String, val time: String, val imageUrl: String? = null)
 
 @Serializable
-data class Chaptering(val content: List<ChapteringContent>)
+public data class Chaptering(val content: List<ChapteringContent>)
 
 @Serializable
-data class StreamInformation(
+public data class StreamInformation(
     val duration: Long,
     val skinType: String,
     val title: String,

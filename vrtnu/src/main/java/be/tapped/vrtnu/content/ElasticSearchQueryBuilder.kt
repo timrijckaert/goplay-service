@@ -2,7 +2,7 @@ package be.tapped.vrtnu.content
 
 import okhttp3.HttpUrl
 
-object ElasticSearchQueryBuilder {
+public object ElasticSearchQueryBuilder {
 
     private const val DEFAULT_SEARCH_SIZE = 150
     private const val MAX_SEARCH_SIZE = 300
@@ -13,7 +13,7 @@ object ElasticSearchQueryBuilder {
     private val DEFAULT_TRANSCODING_STATUS = TranscodingStatus.AVAILABLE
 
     // https://github.com/add-ons/plugin.video.vrt.nu/wiki/VRT-NU-API#vrt-api-parameters
-    data class SearchQuery(
+    public data class SearchQuery(
         val size: Int = DEFAULT_SEARCH_SIZE,
         val index: Index = DEFAULT_SEARCH_QUERY_INDEX,
         val order: Order = DEFAULT_SEARCH_QUERY_ORDER,
@@ -39,12 +39,12 @@ object ElasticSearchQueryBuilder {
             }
         }
 
-        enum class Order(val queryParamName: String) {
+        public enum class Order(public val queryParamName: String) {
             ASC("asc"),
             DESC("desc");
         }
 
-        enum class Index(val queryParamName: String) {
+        public enum class Index(public val queryParamName: String) {
             // VRT NU
             VIDEO("video"),
 
@@ -57,7 +57,7 @@ object ElasticSearchQueryBuilder {
     private fun sanitizeProgramName(programName: String): String = programName.replace(nonWordCharacterRegex, "-").toLowerCase()
 
     // Only add query parameters that differ from the defaults in order to limit the URL which is capped at max. 8192 characters
-    fun HttpUrl.Builder.applySearchQuery(searchQuery: SearchQuery): HttpUrl.Builder {
+    public fun HttpUrl.Builder.applySearchQuery(searchQuery: SearchQuery): HttpUrl.Builder {
         return apply {
             with(searchQuery) {
                 if (index != DEFAULT_SEARCH_QUERY_INDEX) {

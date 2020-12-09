@@ -2,11 +2,8 @@ package be.tapped.vrtnu.content
 
 import arrow.core.Either
 import arrow.core.computations.either
-import be.tapped.common.executeAsync
-import be.tapped.common.validateResponse
-import be.tapped.vrtnu.ApiResponse
+import be.tapped.common.internal.executeAsync
 import be.tapped.vrtnu.ApiResponse.Failure
-import be.tapped.vrtnu.ApiResponse.Failure.EmptyJson
 import be.tapped.vrtnu.ApiResponse.Failure.JsonParsingException
 import be.tapped.vrtnu.ApiResponse.Success
 import be.tapped.vrtnu.common.safeBodyString
@@ -19,18 +16,18 @@ import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
 import okhttp3.Request
 
-class JsonStreamInformationParser {
-    suspend fun parse(json: String): Either<Failure, StreamInformation> =
+public class JsonStreamInformationParser {
+    public suspend fun parse(json: String): Either<Failure, StreamInformation> =
         Either.catch { Json.decodeFromString<StreamInformation>(json) }.mapLeft(::JsonParsingException)
 }
 
-interface StreamRepo {
+public interface StreamRepo {
 
     /***
      * Get stream information for a videoId and optional publication id.
      * When a video is a live stream no publication id is required.
      */
-    suspend fun getStream(
+    public suspend fun getStream(
         vrtPlayerToken: VRTPlayerToken,
         videoId: String,
         publicationId: String? = null,
@@ -45,12 +42,12 @@ interface StreamRepo {
 
 }
 
-class HttpStreamRepo(
+public class HttpStreamRepo(
     private val client: OkHttpClient,
     private val jsonStreamInformationParser: JsonStreamInformationParser,
 ) : StreamRepo {
 
-    companion object {
+    public companion object {
         private const val CLIENT = "vrtvideo@PROD"
     }
 
