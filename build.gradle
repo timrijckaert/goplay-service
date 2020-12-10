@@ -37,7 +37,8 @@ allprojects {
                     "-Xinline-classes",
                     "-Xexplicit-api=strict",
                     "-Xopt-in=kotlin.RequiresOptIn",
-                    "-Xopt-in=be.tapped.common.internal.InterModuleUseOnly"
+                    "-Xopt-in=be.tapped.common.internal.InterModuleUseOnly",
+                    "-Xuse-ir"
             ]
         }
     }
