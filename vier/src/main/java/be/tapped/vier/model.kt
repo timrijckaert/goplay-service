@@ -33,6 +33,7 @@ public sealed class ApiResponse {
         public object EmptyJson : Failure()
 
         public sealed class Authentication : Failure() {
+            public data class AWS(val statusCode: Int, val statusText: String?)
             public data class Login(val ex: Throwable) : Authentication()
             public data class Refresh(val ex: Throwable) : Authentication()
             public data class Profile(val ex: Throwable) : Authentication()

@@ -1,9 +1,14 @@
 package be.tapped.vier.profile
 
 import arrow.core.Either
+import arrow.core.Validated
+import arrow.core.computations.either
+import arrow.core.invalid
+import arrow.core.valid
 import be.tapped.vier.ApiResponse
 import be.tapped.vier.ApiResponse.Failure.Authentication.*
 import software.amazon.awssdk.auth.credentials.AnonymousCredentialsProvider
+import software.amazon.awssdk.core.SdkResponse
 import software.amazon.awssdk.regions.Region
 import software.amazon.awssdk.services.cognitoidentityprovider.CognitoIdentityProviderClient
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AttributeType
@@ -14,7 +19,7 @@ public class ProfileUserAttributeParser {
     public fun parse(userResponse: GetUserResponse): ApiResponse.Success.Authentication.Profile {
         val userAttributeMap = userResponse.userAttributes()
             .groupBy(AttributeType::name, AttributeType::value)
-            .mapValues { (_, value) -> value.first() }
+            .mapValues { (_, value) -> value.firstOrNull() }
 
         return ApiResponse.Success.Authentication.Profile(
             username = userResponse.username(),
@@ -40,6 +45,14 @@ public interface ProfileRepo {
 
 }
 
+internal val <T : SdkResponse> T.checkResult: Validated<AWS, T>
+    get() =
+        if (sdkHttpResponse().isSuccessful) {
+            valid()
+        } else {
+            AWS(sdkHttpResponse().statusCode(), sdkHttpResponse().statusText().orElse(null)).invalid()
+        }
+
 public class HttpProfileRepo(private val profileUserAttributeParser: ProfileUserAttributeParser = ProfileUserAttributeParser()) : ProfileRepo {
 
     private val cognitoIdentityProvider by lazy {
@@ -50,11 +63,14 @@ public class HttpProfileRepo(private val profileUserAttributeParser: ProfileUser
     }
 
     override suspend fun fetchTokens(username: String, password: String): Either<ApiResponse.Failure, ApiResponse.Success.Authentication.Token> =
-        Either.catch {
+        either {
             val initiateAuthRequest = AuthenticationHelper.initiateUserSrpAuthRequest(username)
-            val initAuthResult = cognitoIdentityProvider.initiateAuth(initiateAuthRequest)
+            val initAuthResult = !cognitoIdentityProvider.initiateAuth(initiateAuthRequest).checkResult.toEither()
+
             val challengeRequest = AuthenticationHelper.userSrpAuthRequest(initAuthResult, password)
-            val authenticationResult = cognitoIdentityProvider.respondToAuthChallenge(challengeRequest).authenticationResult()
+            val respondToAuthChallenge = !cognitoIdentityProvider.respondToAuthChallenge(challengeRequest).checkResult.toEither()
+            val authenticationResult = respondToAuthChallenge.authenticationResult()
+
             ApiResponse.Success.Authentication.Token(
                 accessToken = authenticationResult.accessToken(),
                 expiresIn = authenticationResult.expiresIn(),
@@ -65,21 +81,23 @@ public class HttpProfileRepo(private val profileUserAttributeParser: ProfileUser
         }.mapLeft(::Login)
 
     override suspend fun refreshTokens(refreshToken: String): Either<ApiResponse.Failure, ApiResponse.Success.Authentication.Token> =
-        Either.catch {
+        either {
             val refreshTokenRequest = AuthenticationHelper.refreshToken(refreshToken)
-            val authenticationResult = cognitoIdentityProvider.initiateAuth(refreshTokenRequest).authenticationResult()
-            ApiResponse.Success.Authentication.Token(
-                accessToken = authenticationResult.accessToken(),
-                expiresIn = authenticationResult.expiresIn(),
-                tokenType = authenticationResult.tokenType(),
-                refreshToken = authenticationResult.refreshToken() ?: refreshToken,
-                idToken = authenticationResult.idToken()
-            )
+            val authenticationResult = !cognitoIdentityProvider.initiateAuth(refreshTokenRequest).checkResult.toEither()
+            with(authenticationResult.authenticationResult()) {
+                ApiResponse.Success.Authentication.Token(
+                    accessToken = accessToken(),
+                    expiresIn = expiresIn(),
+                    tokenType = tokenType(),
+                    refreshToken = refreshToken() ?: refreshToken,
+                    idToken = idToken()
+                )
+            }
         }.mapLeft(::Refresh)
 
     override suspend fun getUserAttributes(accessToken: String): Either<ApiResponse.Failure, ApiResponse.Success.Authentication.Profile> =
-        Either.catch {
-            val userResponse = cognitoIdentityProvider.getUser(GetUserRequest.builder().accessToken(accessToken).build())
+        either {
+            val userResponse = !cognitoIdentityProvider.getUser(GetUserRequest.builder().accessToken(accessToken).build()).checkResult.toEither()
             profileUserAttributeParser.parse(userResponse)
         }.mapLeft(::Profile)
 
