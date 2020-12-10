@@ -1,5 +1,6 @@
 package be.tapped.vier
 
+import be.tapped.vier.content.Program
 import okhttp3.Request
 
 public sealed class ApiResponse {
@@ -25,18 +26,22 @@ public sealed class ApiResponse {
                 val email: String? = null,
             ) : Authentication()
         }
+
+        public sealed class Content : Success() {
+            public data class Programs(val programs: List<Program>) : Content()
+        }
     }
 
     public sealed class Failure : ApiResponse() {
         public data class NetworkFailure(val responseCode: Int, val request: Request) : Failure()
         public data class JsonParsingException(val throwable: Throwable) : Failure()
-        public object EmptyJson : Failure()
+        public object EmptyHTML : Failure()
 
         public sealed class Authentication : Failure() {
-            public data class AWS(val statusCode: Int, val statusText: String?)
-            public data class Login(val ex: Throwable) : Authentication()
-            public data class Refresh(val ex: Throwable) : Authentication()
-            public data class Profile(val ex: Throwable) : Authentication()
+            public data class AWS(val statusCode: Int, val statusText: String?) : Authentication()
+            public object Login : Authentication()
+            public object Refresh : Authentication()
+            public object Profile : Authentication()
         }
     }
 }

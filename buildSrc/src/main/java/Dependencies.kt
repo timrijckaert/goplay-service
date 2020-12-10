@@ -21,6 +21,8 @@ object Dependencies {
     const val arrowSyntax = "io.arrow-kt:arrow-syntax:${arrowVersion}"
     const val arrowMeta = "io.arrow-kt:arrow-meta:${arrowVersion}"
 
+    const val jsoup = "org.jsoup:jsoup:1.13.1"
+
     private const val coroutineVersion = "1.4.1"
     const val coroutinesCore = "org.jetbrains.kotlinx:kotlinx-coroutines-core:${coroutineVersion}"
 }

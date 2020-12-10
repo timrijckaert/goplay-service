@@ -6,6 +6,10 @@ dependencies {
     implementation Dependencies.awsCognitoProvider
 
     implementation Dependencies.okHttp3
+    implementation Dependencies.okHttpCurlInterceptor
 
     implementation Dependencies.arrowCore
+    implementation Dependencies.jsoup
+
+    api project(':common')
 }

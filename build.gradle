@@ -38,7 +38,7 @@ allprojects {
                     "-Xexplicit-api=strict",
                     "-Xopt-in=kotlin.RequiresOptIn",
                     "-Xopt-in=be.tapped.common.internal.InterModuleUseOnly",
-                    "-Xuse-ir"
+                    //"-Xuse-ir"
             ]
         }
     }
