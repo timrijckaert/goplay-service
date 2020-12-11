@@ -36,9 +36,9 @@ public interface ProfileRepo {
 
     public suspend fun fetchTokens(username: String, password: String): Either<ApiResponse.Failure, ApiResponse.Success.Authentication.Token>
 
-    public suspend fun refreshTokens(refreshToken: String): Either<ApiResponse.Failure, ApiResponse.Success.Authentication.Token>
+    public suspend fun refreshTokens(refreshToken: RefreshToken): Either<ApiResponse.Failure, ApiResponse.Success.Authentication.Token>
 
-    public suspend fun getUserAttributes(accessToken: String): Either<ApiResponse.Failure, ApiResponse.Success.Authentication.Profile>
+    public suspend fun getUserAttributes(accessToken: AccessToken): Either<ApiResponse.Failure, ApiResponse.Success.Authentication.Profile>
 
 }
 
@@ -65,32 +65,32 @@ public class HttpProfileRepo(private val profileUserAttributeParser: ProfileUser
             .map {
                 val authenticationResult = it.authenticationResult()
                 ApiResponse.Success.Authentication.Token(
-                    accessToken = authenticationResult.accessToken(),
+                    accessToken = AccessToken(authenticationResult.accessToken()),
                     expiresIn = authenticationResult.expiresIn(),
                     tokenType = authenticationResult.tokenType(),
-                    refreshToken = authenticationResult.refreshToken(),
+                    refreshToken = RefreshToken(authenticationResult.refreshToken()),
                     idToken = authenticationResult.idToken()
                 )
             }
             .mapLeft { Login }
 
-    override suspend fun refreshTokens(refreshToken: String): Either<ApiResponse.Failure, ApiResponse.Success.Authentication.Token> =
-        cognitoIdentityProvider.initiateAuth(AuthenticationHelper.refreshToken(refreshToken)).checkResult.toEither()
+    override suspend fun refreshTokens(refreshToken: RefreshToken): Either<ApiResponse.Failure, ApiResponse.Success.Authentication.Token> =
+        cognitoIdentityProvider.initiateAuth(AuthenticationHelper.refreshToken(refreshToken.token)).checkResult.toEither()
             .map {
                 with(it.authenticationResult()) {
                     ApiResponse.Success.Authentication.Token(
-                        accessToken = accessToken(),
+                        accessToken = AccessToken( accessToken()),
                         expiresIn = expiresIn(),
                         tokenType = tokenType(),
-                        refreshToken = refreshToken() ?: refreshToken,
+                        refreshToken = refreshToken()?.let(::RefreshToken) ?: refreshToken,
                         idToken = idToken()
                     )
                 }
             }
             .mapLeft { Refresh }
 
-    override suspend fun getUserAttributes(accessToken: String): Either<ApiResponse.Failure, ApiResponse.Success.Authentication.Profile> =
-        cognitoIdentityProvider.getUser(GetUserRequest.builder().accessToken(accessToken).build()).checkResult.toEither()
+    override suspend fun getUserAttributes(accessToken: AccessToken): Either<ApiResponse.Failure, ApiResponse.Success.Authentication.Profile> =
+        cognitoIdentityProvider.getUser(GetUserRequest.builder().accessToken(accessToken.token).build()).checkResult.toEither()
             .map(profileUserAttributeParser::parse)
             .mapLeft { Profile }
 

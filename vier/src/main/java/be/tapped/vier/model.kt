@@ -1,16 +1,18 @@
 package be.tapped.vier
 
 import be.tapped.vier.content.Program
+import be.tapped.vier.profile.AccessToken
+import be.tapped.vier.profile.RefreshToken
 import okhttp3.Request
 
 public sealed class ApiResponse {
     public sealed class Success : ApiResponse() {
         public sealed class Authentication : Success() {
             public data class Token(
-                val accessToken: String,
+                val accessToken: AccessToken,
                 val expiresIn: Int,
                 val tokenType: String,
-                val refreshToken: String,
+                val refreshToken: RefreshToken,
                 val idToken: String,
             ) : Authentication()
 
