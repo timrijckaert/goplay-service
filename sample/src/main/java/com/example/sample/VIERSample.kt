@@ -11,9 +11,9 @@ public suspend fun main(args: Array<String>) {
     val userName = args[0]
     val password = args[1]
 
-    val (token, profile) = authentication(userName, password)
-    println(token)
-    println(profile)
+    // val (token, profile) = authentication(userName, password)
+    // println(token)
+    // println(profile)
 
     api()
 }
