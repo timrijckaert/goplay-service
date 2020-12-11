@@ -1,7 +1,6 @@
 package be.tapped.vier.profile
 
 import arrow.core.*
-import arrow.core.computations.either
 import be.tapped.vier.ApiResponse
 import be.tapped.vier.ApiResponse.Failure.Authentication.*
 import software.amazon.awssdk.auth.credentials.AnonymousCredentialsProvider
