@@ -55,7 +55,7 @@ internal class HtmlProgramParser {
     suspend fun parse(document: Document): Flow<Either<ApiResponse.Failure.HTML, SimpleProgram>> =
         flow {
             when (val links = document.safeSelect("a.program-overview__link")) {
-                is Either.Left -> emit(links.a.left())
+                is Either.Left -> emit(links)
                 is Either.Right -> {
                     links.b.forEach { link ->
                         val path = link.attribute("href").toValidatedNel()
