@@ -1,21 +1,18 @@
 package be.tapped.vier.content
 
-import arrow.Kind
 import arrow.core.*
 import arrow.core.computations.either
 import arrow.core.extensions.list.traverse.sequence
 import arrow.core.extensions.nonemptylist.semigroup.semigroup
 import arrow.core.extensions.validated.applicative.applicative
 import arrow.core.extensions.validated.bifunctor.mapLeft
-import arrow.core.extensions.validated.functor.map
 import be.tapped.common.internal.executeAsync
 import be.tapped.common.internal.toValidateNel
-import be.tapped.vier.ApiResponse
-import be.tapped.vier.ApiResponse.*
-import be.tapped.vier.ApiResponse.Failure.*
+import be.tapped.vier.ApiResponse.Failure
+import be.tapped.vier.ApiResponse.Failure.HTML
 import be.tapped.vier.ApiResponse.Failure.HTML.*
+import be.tapped.vier.ApiResponse.Success
 import be.tapped.vier.common.safeBodyString
-import kotlinx.coroutines.flow.*
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.jsoup.Jsoup
@@ -23,9 +20,9 @@ import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
 import org.jsoup.select.Elements
 
-public data class SimpleProgram(public val name: String, public val path: String)
+internal data class SimpleProgram(public val name: String, public val path: String)
 
-internal class HtmlProgramParser {
+internal class HtmlSimpleProgramParser {
 
     private fun Element.attribute(attributeKey: String): Validated<MissingAttributeValue, String> {
         val attr = attr(attributeKey)
@@ -60,7 +57,7 @@ internal class HtmlProgramParser {
     private val applicative = Validated
         .applicative(NonEmptyList.semigroup<HTML>())
 
-    suspend fun parse(document: Document): Either<HTML, List<SimpleProgram>> =
+    internal suspend fun parse(document: Document): Either<HTML, List<SimpleProgram>> =
         document.safeSelect("a.program-overview__link").flatMap { links ->
             links.map { link ->
                 val path = link.attribute("href").toValidatedNel()
@@ -79,7 +76,7 @@ public interface ProgramRepo {
 
 internal class HttpProgramRepo(
     private val client: OkHttpClient,
-    private val htmlProgramParser: HtmlProgramParser = HtmlProgramParser(),
+    private val htmlSimpleProgramParser: HtmlSimpleProgramParser = HtmlSimpleProgramParser(),
 ) : ProgramRepo {
     override suspend fun fetchPrograms(): Either<Failure, Success.Content.Programs> {
         return either {
@@ -91,7 +88,7 @@ internal class HttpProgramRepo(
             ).safeBodyString()
 
             val htmlDocument = Jsoup.parse(html)
-            val simplePrograms = htmlProgramParser.parse(htmlDocument)
+            val simplePrograms = htmlSimpleProgramParser.parse(htmlDocument)
 
             Success.Content.Programs(emptyList())
         }
