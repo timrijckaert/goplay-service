@@ -6,6 +6,7 @@ import arrow.core.extensions.nonemptylist.semigroup.semigroup
 import arrow.core.extensions.validated.applicative.applicative
 import arrow.core.extensions.validated.functor.map
 import be.tapped.common.internal.executeAsync
+import be.tapped.common.internal.toValidateNel
 import be.tapped.vier.ApiResponse
 import be.tapped.vier.common.safeBodyString
 import kotlinx.coroutines.flow.Flow
@@ -31,8 +32,8 @@ internal class HtmlProgramParser {
         }
     }
 
-    private suspend fun Element.safeChild(index: Int): Validated<ApiResponse.Failure.HTML.NoChildAtPosition, Element> =
-        Validated.catch { child(index) }.mapLeft { ApiResponse.Failure.HTML.NoChildAtPosition(index, childrenSize()) }
+    private suspend fun Element.safeChild(index: Int): Either<ApiResponse.Failure.HTML.NoChildAtPosition, Element> =
+        Either.catch { child(index) }.mapLeft { ApiResponse.Failure.HTML.NoChildAtPosition(index, childrenSize()) }
 
     private fun Element.safeText(): Either<ApiResponse.Failure.HTML.EmptyHTML, String> {
         val text = text()
@@ -59,7 +60,7 @@ internal class HtmlProgramParser {
                 is Either.Right -> {
                     links.b.forEach { link ->
                         val path = link.attribute("href").toValidatedNel()
-                        val title = link.safeChild(0).withEither { it.flatMap { it.safeText() } }.toValidatedNel()
+                        val title = link.safeChild(0).flatMap { it.safeText() }.toValidateNel()
                         when (val program = Validated
                             .applicative(NonEmptyList.semigroup<ApiResponse.Failure.HTML>())
                             .tupledN(title, path)
