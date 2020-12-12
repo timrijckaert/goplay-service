@@ -12,5 +12,9 @@ dependencies {
     implementation Dependencies.arrowCore
     implementation Dependencies.jsoup
 
+    testImplementation Testing.kotestRunner
+    testImplementation Testing.kotestAssertionsCore
+    testImplementation Testing.kotestProperty
+
     api project(':common')
 }

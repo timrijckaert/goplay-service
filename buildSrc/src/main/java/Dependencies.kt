@@ -33,10 +33,10 @@ object Plugins {
 
 object Testing {
     private const val kotestVersion = "4.3.1"
-    const val kotestRunner4 = "io.kotest:kotest-runner-junit4:${kotestVersion}"
-    const val kotestApiJvm = "io.kotest:kotest-framework-api-jvm:${kotestVersion}"
-    const val kotestCoreAssertions = "io.kotest:kotest-assertions-core:${kotestVersion}"
-    const val kotestPropertyTesting = "io.kotest:kotest-property:${kotestVersion}"
+
+    private const val kotestRunner = "io.kotest:kotest-runner-junit5:${kotestVersion}"
+    private const val kotestAssertionsCore = "io.kotest:kotest-assertions-core:${kotestVersion}"
+    private const val kotestProperty = "io.kotest:kotest-property:${kotestVersion}"
 
     const val mockk = "io.mockk:mockk:v1.10.2"
 }
