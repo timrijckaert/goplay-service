@@ -42,7 +42,7 @@ public sealed class ApiResponse {
         public sealed class HTML : Failure() {
             public object EmptyHTML : HTML()
             public data class MissingAttributeValue(public val element: String, public val attribute: String) : HTML()
-            public data class NoChildren(public val cssQuery: String) : HTML()
+            public data class NoSelection(public val element: String, public val cssQuery: String) : HTML()
             public data class NoChildAtPosition(public val element: String, public val position: Int, public val amountOfChildren: Int) : HTML()
             public object NoInnerHTML : HTML()
             public data class Parsing(public val failures: NonEmptyList<HTML>) : HTML()

@@ -44,10 +44,10 @@ internal class HtmlProgramParser {
         )
     }
 
-    private fun Document.safeSelect(cssQuery: String): Either<ApiResponse.Failure.HTML.NoChildren, Elements> {
+    private fun Element.safeSelect(cssQuery: String): Either<ApiResponse.Failure.HTML.NoSelection, Elements> {
         val elements = select(cssQuery)
         return if (elements.isEmpty()) {
-            ApiResponse.Failure.HTML.NoChildren(cssQuery).left()
+            ApiResponse.Failure.HTML.NoSelection("$this", cssQuery).left()
         } else {
             elements.right()
         }
