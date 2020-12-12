@@ -67,8 +67,8 @@ internal class HtmlProgramParser {
                 val title = link.safeChild(0).flatMap { it.safeText() }.toValidateNel()
                 applicative.mapN(title, path) { (title, path) -> SimpleProgram(title, path) }
             }.sequence(applicative)
-                .mapLeft(::Parsing)
-                .map(Kind<ForListK, SimpleProgram>::fix)
+                .mapLeft { Parsing(it) }
+                .map { it.fix() }
                 .toEither()
         }
 }
@@ -92,6 +92,7 @@ internal class HttpProgramRepo(
 
             val htmlDocument = Jsoup.parse(html)
             val simplePrograms = htmlProgramParser.parse(htmlDocument)
+
             Success.Content.Programs(emptyList())
         }
     }
