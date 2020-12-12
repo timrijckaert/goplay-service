@@ -3,7 +3,6 @@ package com.example.sample
 import arrow.core.Tuple2
 import arrow.core.toT
 import be.tapped.vier.ApiResponse
-import be.tapped.vier.VierAPI
 import be.tapped.vier.content.VierApi
 import be.tapped.vier.profile.HttpProfileRepo
 
@@ -11,9 +10,9 @@ public suspend fun main(args: Array<String>) {
     val userName = args[0]
     val password = args[1]
 
-    // val (token, profile) = authentication(userName, password)
-    // println(token)
-    // println(profile)
+    val (token, profile) = authentication(userName, password)
+    println(token)
+    println(profile)
 
     api()
 }
