@@ -1,66 +1,48 @@
 package be.tapped.vier.content
 
-import arrow.core.*
+import arrow.core.Either
+import arrow.core.NonEmptyList
+import arrow.core.Validated
 import arrow.core.computations.either
 import arrow.core.extensions.list.traverse.sequence
 import arrow.core.extensions.nonemptylist.semigroup.semigroup
 import arrow.core.extensions.validated.applicative.applicative
 import arrow.core.extensions.validated.bifunctor.mapLeft
+import arrow.core.fix
+import arrow.core.flatMap
+import arrow.core.right
 import be.tapped.common.internal.executeAsync
 import be.tapped.common.internal.toValidateNel
 import be.tapped.vier.ApiResponse.Failure
 import be.tapped.vier.ApiResponse.Failure.HTML
-import be.tapped.vier.ApiResponse.Failure.HTML.*
+import be.tapped.vier.ApiResponse.Failure.HTML.Parsing
 import be.tapped.vier.ApiResponse.Success
+import be.tapped.vier.common.safeAttr
 import be.tapped.vier.common.safeBodyString
+import be.tapped.vier.common.safeChild
+import be.tapped.vier.common.safeSelect
+import be.tapped.vier.common.safeSelectFirst
+import be.tapped.vier.common.safeText
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.decodeFromJsonElement
+import kotlinx.serialization.json.jsonObject
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
-import org.jsoup.nodes.Element
-import org.jsoup.select.Elements
 
-internal data class SimpleProgram(public val name: String, public val path: String)
+internal data class SimpleProgram(val name: String, val path: String)
 
 internal class HtmlSimpleProgramParser {
 
-    private fun Element.attribute(attributeKey: String): Validated<MissingAttributeValue, String> {
-        val attr = attr(attributeKey)
-        return if (attr.isEmpty()) {
-            MissingAttributeValue("$this", attributeKey).invalid()
-        } else {
-            attr.valid()
-        }
-    }
-
-    private suspend fun Element.safeChild(index: Int): Either<NoChildAtPosition, Element> =
-        Either.catch { child(index) }.mapLeft { NoChildAtPosition("$this", index, childrenSize()) }
-
-    private fun Element.safeText(): Either<EmptyHTML, String> {
-        val text = text()
-        return Either.conditionally(
-            text.isNotBlank(),
-            ifFalse = { EmptyHTML },
-            ifTrue = { text }
-        )
-    }
-
-    private fun Document.safeSelect(cssQuery: String): Either<NoSelection, Elements> {
-        val elements = select(cssQuery)
-        return if (elements.isEmpty()) {
-            NoSelection("$this", cssQuery).left()
-        } else {
-            elements.right()
-        }
-    }
-
-    private val applicative = Validated
-        .applicative(NonEmptyList.semigroup<HTML>())
+    private val applicative = Validated.applicative(NonEmptyList.semigroup<HTML>())
 
     internal suspend fun parse(document: Document): Either<HTML, List<SimpleProgram>> =
         document.safeSelect("a.program-overview__link").flatMap { links ->
             links.map { link ->
-                val path = link.attribute("href").toValidatedNel()
+                val path = link.safeAttr("href").toValidatedNel()
                 val title = link.safeChild(0).flatMap { it.safeText() }.toValidateNel()
                 applicative.mapN(title, path) { (title, path) -> SimpleProgram(title, path) }
             }.sequence(applicative)
@@ -70,27 +52,70 @@ internal class HtmlSimpleProgramParser {
         }
 }
 
+internal class HtmlProgramParser {
+    private companion object {
+        private const val jsonCSSSelector = "data-hero"
+    }
+
+    suspend fun parse(document: Document): Either<Failure, Program> =
+        document
+            .safeSelectFirst("div[$jsonCSSSelector]")
+            .flatMap { it.safeAttr(jsonCSSSelector).toEither() }
+            .flatMap {
+                Either.catch {
+                    val programDataObject = Json.decodeFromString<JsonObject>(it)["data"]!!.jsonObject
+                    Json.decodeFromJsonElement<Program>(programDataObject)
+                }.mapLeft { Failure.JsonParsingException(it) }
+            }
+}
+
 public interface ProgramRepo {
     public suspend fun fetchPrograms(): Either<Failure, Success.Content.Programs>
 }
 
 internal class HttpProgramRepo(
     private val client: OkHttpClient,
-    private val htmlSimpleProgramParser: HtmlSimpleProgramParser = HtmlSimpleProgramParser(),
+    private val htmlSimpleProgramParser: HtmlSimpleProgramParser,
+    private val htmlProgramParser: HtmlProgramParser,
 ) : ProgramRepo {
+    private companion object {
+        private const val VIER_URL = "https://www.vier.be"
+    }
+
     override suspend fun fetchPrograms(): Either<Failure, Success.Content.Programs> {
         return either {
             val html = !client.executeAsync(
                 Request.Builder()
                     .get()
-                    .url("https://www.vier.be")
+                    .url(VIER_URL)
                     .build()
             ).safeBodyString()
 
             val htmlDocument = Jsoup.parse(html)
-            val simplePrograms = htmlSimpleProgramParser.parse(htmlDocument)
+            val simplePrograms = !htmlSimpleProgramParser.parse(htmlDocument)
+            val completePrograms = !fetchCompletePrograms(simplePrograms)
 
             Success.Content.Programs(emptyList())
         }
+    }
+
+    private suspend fun fetchCompletePrograms(simplePrograms: List<SimpleProgram>): Either<Failure, List<Program>> {
+
+        val a: List<Either<Failure, Program>> = simplePrograms.map {
+            client.executeAsync(
+                Request.Builder()
+                    .get()
+                    .url("$VIER_URL${it.path}")
+                    .build()
+            ).safeBodyString()
+                .flatMap { html ->
+                    val htmlDocument = Jsoup.parse(html)
+                    val program = htmlProgramParser.parse(htmlDocument)
+                    program
+                }
+
+        }
+
+        return emptyList<Program>().right()
     }
 }
