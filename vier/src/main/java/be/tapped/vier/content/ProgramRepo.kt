@@ -23,6 +23,8 @@ import be.tapped.vier.common.safeChild
 import be.tapped.vier.common.safeSelect
 import be.tapped.vier.common.safeSelectFirst
 import be.tapped.vier.common.safeText
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
@@ -64,7 +66,10 @@ internal class HtmlProgramParser {
             .flatMap {
                 Either.catch {
                     val programDataObject = Json.decodeFromString<JsonObject>(it)["data"]!!.jsonObject
-                    Json.decodeFromJsonElement<Program>(programDataObject)
+                    Json {
+                        isLenient = true
+                        ignoreUnknownKeys = true
+                    }.decodeFromJsonElement<Program>(programDataObject)
                 }.mapLeft { Failure.JsonParsingException(it) }
             }
 }
@@ -82,25 +87,28 @@ internal class HttpProgramRepo(
         private const val VIER_URL = "https://www.vier.be"
     }
 
-    override suspend fun fetchPrograms(): Either<Failure, Success.Content.Programs> {
-        return either {
-            val html = !client.executeAsync(
-                Request.Builder()
-                    .get()
-                    .url(VIER_URL)
-                    .build()
-            ).safeBodyString()
+    // curl -X GET \
+    // -H "User-Agent:okhttp/4.9.0" "https://www.vier.be/"
+    override suspend fun fetchPrograms(): Either<Failure, Success.Content.Programs> =
+        withContext(Dispatchers.IO) {
+            either {
+                val html = !client.executeAsync(
+                    Request.Builder()
+                        .get()
+                        .url(VIER_URL)
+                        .build()
+                ).safeBodyString()
 
-            val htmlDocument = Jsoup.parse(html)
-            val simplePrograms = !htmlSimpleProgramParser.parse(htmlDocument)
-            val completePrograms = !fetchCompletePrograms(simplePrograms)
-
-            Success.Content.Programs(emptyList())
+                val htmlDocument = Jsoup.parse(html)
+                val simplePrograms = !htmlSimpleProgramParser.parse(htmlDocument)
+                val programs = !fetchCompletePrograms(simplePrograms)
+                Success.Content.Programs(programs)
+            }
         }
-    }
 
+    // curl -X GET \
+    // -H "User-Agent:okhttp/4.9.0" "https://www.vier.be/de-slimste-mens-ter-wereld"
     private suspend fun fetchCompletePrograms(simplePrograms: List<SimpleProgram>): Either<Failure, List<Program>> {
-
         val a: List<Either<Failure, Program>> = simplePrograms.map {
             client.executeAsync(
                 Request.Builder()
@@ -113,7 +121,6 @@ internal class HttpProgramRepo(
                     val program = htmlProgramParser.parse(htmlDocument)
                     program
                 }
-
         }
 
         return emptyList<Program>().right()
