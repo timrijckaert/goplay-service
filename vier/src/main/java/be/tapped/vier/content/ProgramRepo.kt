@@ -8,6 +8,7 @@ import arrow.core.extensions.validated.functor.map
 import be.tapped.common.internal.executeAsync
 import be.tapped.vier.ApiResponse
 import be.tapped.vier.common.safeBodyString
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.toList
 import okhttp3.OkHttpClient
@@ -51,10 +52,10 @@ internal class HtmlProgramParser {
         }
     }
 
-    suspend fun parse(document: Document) =
+    suspend fun parse(document: Document): Flow<Either<ApiResponse.Failure.HTML, SimpleProgram>> =
         flow {
             when (val links = document.safeSelect("a.program-overview__link")) {
-                is Either.Left -> emit(links)
+                is Either.Left -> emit(links.a.left())
                 is Either.Right -> {
                     links.b.forEach { link ->
                         val path = link.attribute("href").toValidatedNel()
@@ -66,8 +67,8 @@ internal class HtmlProgramParser {
                             .mapLeft { ApiResponse.Failure.HTML.Parsing(it) }
                             .fix()
                         ) {
-                            is Validated.Valid   -> emit(program.a)
-                            is Validated.Invalid -> emit(program.e)
+                            is Validated.Valid   -> emit(program.a.right())
+                            is Validated.Invalid -> emit(program.e.left())
                         }
                     }
                 }
