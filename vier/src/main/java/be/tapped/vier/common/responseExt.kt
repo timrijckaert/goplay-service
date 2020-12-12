@@ -10,5 +10,5 @@ import okhttp3.Response
 public suspend fun Response.safeBodyString(): Either<ApiResponse.Failure, String> =
     either {
         !validateResponse { ApiResponse.Failure.NetworkFailure(code, request) }
-        !Either.fromNullable(body?.string()).mapLeft { ApiResponse.Failure.EmptyHTML }
+        !Either.fromNullable(body?.string()).mapLeft { ApiResponse.Failure.HTML.EmptyHTML }
     }
