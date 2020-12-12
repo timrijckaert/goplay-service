@@ -26,14 +26,14 @@ internal class HtmlProgramParser {
     private fun Element.attribute(attributeKey: String): Validated<ApiResponse.Failure.HTML.MissingAttributeValue, String> {
         val attr = attr(attributeKey)
         return if (attr.isEmpty()) {
-            ApiResponse.Failure.HTML.MissingAttributeValue(attributeKey).invalid()
+            ApiResponse.Failure.HTML.MissingAttributeValue("$this", attributeKey).invalid()
         } else {
             attr.valid()
         }
     }
 
     private suspend fun Element.safeChild(index: Int): Either<ApiResponse.Failure.HTML.NoChildAtPosition, Element> =
-        Either.catch { child(index) }.mapLeft { ApiResponse.Failure.HTML.NoChildAtPosition(index, childrenSize()) }
+        Either.catch { child(index) }.mapLeft { ApiResponse.Failure.HTML.NoChildAtPosition("$this", index, childrenSize()) }
 
     private fun Element.safeText(): Either<ApiResponse.Failure.HTML.EmptyHTML, String> {
         val text = text()
