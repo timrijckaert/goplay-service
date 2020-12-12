@@ -1,17 +1,21 @@
 package be.tapped.vier.content
 
+import arrow.Kind
 import arrow.core.*
 import arrow.core.computations.either
+import arrow.core.extensions.list.traverse.sequence
 import arrow.core.extensions.nonemptylist.semigroup.semigroup
 import arrow.core.extensions.validated.applicative.applicative
+import arrow.core.extensions.validated.bifunctor.mapLeft
 import arrow.core.extensions.validated.functor.map
 import be.tapped.common.internal.executeAsync
 import be.tapped.common.internal.toValidateNel
 import be.tapped.vier.ApiResponse
+import be.tapped.vier.ApiResponse.*
+import be.tapped.vier.ApiResponse.Failure.*
+import be.tapped.vier.ApiResponse.Failure.HTML.*
 import be.tapped.vier.common.safeBodyString
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.toList
+import kotlinx.coroutines.flow.*
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.jsoup.Jsoup
@@ -23,69 +27,61 @@ public data class SimpleProgram(public val name: String, public val path: String
 
 internal class HtmlProgramParser {
 
-    private fun Element.attribute(attributeKey: String): Validated<ApiResponse.Failure.HTML.MissingAttributeValue, String> {
+    private fun Element.attribute(attributeKey: String): Validated<MissingAttributeValue, String> {
         val attr = attr(attributeKey)
         return if (attr.isEmpty()) {
-            ApiResponse.Failure.HTML.MissingAttributeValue("$this", attributeKey).invalid()
+            MissingAttributeValue("$this", attributeKey).invalid()
         } else {
             attr.valid()
         }
     }
 
-    private suspend fun Element.safeChild(index: Int): Either<ApiResponse.Failure.HTML.NoChildAtPosition, Element> =
-        Either.catch { child(index) }.mapLeft { ApiResponse.Failure.HTML.NoChildAtPosition("$this", index, childrenSize()) }
+    private suspend fun Element.safeChild(index: Int): Either<NoChildAtPosition, Element> =
+        Either.catch { child(index) }.mapLeft { NoChildAtPosition("$this", index, childrenSize()) }
 
-    private fun Element.safeText(): Either<ApiResponse.Failure.HTML.EmptyHTML, String> {
+    private fun Element.safeText(): Either<EmptyHTML, String> {
         val text = text()
         return Either.conditionally(
             text.isNotBlank(),
-            ifFalse = { ApiResponse.Failure.HTML.EmptyHTML },
+            ifFalse = { EmptyHTML },
             ifTrue = { text }
         )
     }
 
-    private fun Element.safeSelect(cssQuery: String): Either<ApiResponse.Failure.HTML.NoSelection, Elements> {
+    private fun Document.safeSelect(cssQuery: String): Either<NoSelection, Elements> {
         val elements = select(cssQuery)
         return if (elements.isEmpty()) {
-            ApiResponse.Failure.HTML.NoSelection("$this", cssQuery).left()
+            NoSelection("$this", cssQuery).left()
         } else {
             elements.right()
         }
     }
 
-    suspend fun parse(document: Document): Flow<Either<ApiResponse.Failure.HTML, SimpleProgram>> =
-        flow {
-            when (val links = document.safeSelect("a.program-overview__link")) {
-                is Either.Left -> emit(links)
-                is Either.Right -> {
-                    links.b.forEach { link ->
-                        val path = link.attribute("href").toValidatedNel()
-                        val title = link.safeChild(0).flatMap { it.safeText() }.toValidateNel()
-                        when (val program = Validated
-                            .applicative(NonEmptyList.semigroup<ApiResponse.Failure.HTML>())
-                            .tupledN(title, path)
-                            .map { (title, path) -> SimpleProgram(title, path) }
-                            .mapLeft { ApiResponse.Failure.HTML.Parsing(it) }
-                            .fix()
-                        ) {
-                            is Validated.Valid   -> emit(program.a.right())
-                            is Validated.Invalid -> emit(program.e.left())
-                        }
-                    }
-                }
-            }
+    private val applicative = Validated
+        .applicative(NonEmptyList.semigroup<HTML>())
+
+    suspend fun parse(document: Document): Either<HTML, List<SimpleProgram>> =
+        document.safeSelect("a.program-overview__link").flatMap { links ->
+            links.map { link ->
+                val path = link.attribute("href").toValidatedNel()
+                val title = link.safeChild(0).flatMap { it.safeText() }.toValidateNel()
+                applicative.mapN(title, path) { (title, path) -> SimpleProgram(title, path) }
+            }.sequence(applicative)
+                .mapLeft(::Parsing)
+                .map(Kind<ForListK, SimpleProgram>::fix)
+                .toEither()
         }
 }
 
 public interface ProgramRepo {
-    public suspend fun fetchPrograms(): Either<ApiResponse.Failure, ApiResponse.Success.Content.Programs>
+    public suspend fun fetchPrograms(): Either<Failure, Success.Content.Programs>
 }
 
 internal class HttpProgramRepo(
     private val client: OkHttpClient,
     private val htmlProgramParser: HtmlProgramParser = HtmlProgramParser(),
 ) : ProgramRepo {
-    override suspend fun fetchPrograms(): Either<ApiResponse.Failure, ApiResponse.Success.Content.Programs> {
+    override suspend fun fetchPrograms(): Either<Failure, Success.Content.Programs> {
         return either {
             val html = !client.executeAsync(
                 Request.Builder()
@@ -95,8 +91,8 @@ internal class HttpProgramRepo(
             ).safeBodyString()
 
             val htmlDocument = Jsoup.parse(html)
-            val simplePrograms = htmlProgramParser.parse(htmlDocument).toList()
-            ApiResponse.Success.Content.Programs(emptyList())
+            val simplePrograms = htmlProgramParser.parse(htmlDocument)
+            Success.Content.Programs(emptyList())
         }
     }
 }
