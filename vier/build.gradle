@@ -1,6 +1,7 @@
 dependencies {
     implementation Dependencies.kotlinXSerialization
     implementation Dependencies.kotlinStdLib
+    implementation Dependencies.coroutinesCore
 
     implementation platform(Dependencies.awsBOM)
     implementation Dependencies.awsCognitoProvider

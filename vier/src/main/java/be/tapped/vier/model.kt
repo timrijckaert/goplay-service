@@ -1,5 +1,6 @@
 package be.tapped.vier
 
+import arrow.core.NonEmptyList
 import be.tapped.vier.content.Program
 import be.tapped.vier.profile.AccessToken
 import be.tapped.vier.profile.RefreshToken
@@ -38,12 +39,13 @@ public sealed class ApiResponse {
         public data class NetworkFailure(val responseCode: Int, val request: Request) : Failure()
         public data class JsonParsingException(val throwable: Throwable) : Failure()
 
-        public sealed class HTML {
+        public sealed class HTML : Failure() {
             public object EmptyHTML : HTML()
             public data class MissingAttributeValue(public val attribute: String) : HTML()
             public data class NoChildren(public val cssQuery: String) : HTML()
             public data class NoChildAtPosition(public val position: Int, public val amountOfChildren: Int) : HTML()
             public object NoInnerHTML : HTML()
+            public data class Parsing(public val failures: NonEmptyList<HTML>) : HTML()
         }
 
         public sealed class Authentication : Failure() {

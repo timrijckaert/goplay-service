@@ -2,13 +2,14 @@ package be.tapped.vier.content
 
 import arrow.core.*
 import arrow.core.computations.either
-import arrow.core.extensions.Tuple2Semigroup
-import arrow.core.extensions.applicativeNel
-import arrow.core.extensions.either.monad.flatMap
+import arrow.core.extensions.nonemptylist.semigroup.semigroup
 import arrow.core.extensions.validated.applicative.applicative
+import arrow.core.extensions.validated.functor.map
 import be.tapped.common.internal.executeAsync
 import be.tapped.vier.ApiResponse
 import be.tapped.vier.common.safeBodyString
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.toList
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.jsoup.Jsoup
@@ -29,12 +30,16 @@ internal class HtmlProgramParser {
         }
     }
 
-    private suspend fun Element.safeChild(index : Int) : Validated<ApiResponse.Failure.HTML.NoChildAtPosition, Element> =
-        Validated.catch { child(index) }.mapLeft { ApiResponse.Failure.HTML.NoChildAtPosition(index) }
+    private suspend fun Element.safeChild(index: Int): Validated<ApiResponse.Failure.HTML.NoChildAtPosition, Element> =
+        Validated.catch { child(index) }.mapLeft { ApiResponse.Failure.HTML.NoChildAtPosition(index, childrenSize()) }
 
-    private fun Element.safeText() : Either<ApiResponse.Failure.HTML.EmptyHTML, String> {
+    private fun Element.safeText(): Either<ApiResponse.Failure.HTML.EmptyHTML, String> {
         val text = text()
-        return Either.conditionally(text.isNotBlank(), ifFalse = { ApiResponse.Failure.HTML.EmptyHTML }, ifTrue = { text })
+        return Either.conditionally(
+            text.isNotBlank(),
+            ifFalse = { ApiResponse.Failure.HTML.EmptyHTML },
+            ifTrue = { text }
+        )
     }
 
     private fun Document.safeSelect(cssQuery: String): Either<ApiResponse.Failure.HTML.NoChildren, Elements> {
@@ -46,23 +51,28 @@ internal class HtmlProgramParser {
         }
     }
 
-    suspend fun parse(document: Document): List<SimpleProgram> {
-        val a = either {
-            val elements = !document.safeSelect("a.program-overview__link")
-            elements.map {
-                val path = it.attribute("href")
-                val title = it.safeChild(0).withEither { it.flatMap { it.safeText() } }
-
+    suspend fun parse(document: Document) =
+        flow {
+            when (val links = document.safeSelect("a.program-overview__link")) {
+                is Either.Left -> emit(links)
+                is Either.Right -> {
+                    links.b.forEach { link ->
+                        val path = link.attribute("href").toValidatedNel()
+                        val title = link.safeChild(0).withEither { it.flatMap { it.safeText() } }.toValidatedNel()
+                        when (val program = Validated
+                            .applicative(NonEmptyList.semigroup<ApiResponse.Failure.HTML>())
+                            .tupledN(title, path)
+                            .map { (title, path) -> SimpleProgram(title, path) }
+                            .mapLeft { ApiResponse.Failure.HTML.Parsing(it) }
+                            .fix()
+                        ) {
+                            is Validated.Valid   -> emit(program.a)
+                            is Validated.Invalid -> emit(program.e)
+                        }
+                    }
+                }
             }
-            ""
         }
-        //return elements.map {
-        //    val path = it.attr("href").valid()
-        //    val title = it.child(0).text()
-        //    SimpleProgram(title, path)
-        //}
-        return emptyList()
-    }
 }
 
 public interface ProgramRepo {
@@ -83,7 +93,7 @@ internal class HttpProgramRepo(
             ).safeBodyString()
 
             val htmlDocument = Jsoup.parse(html)
-            val simplePrograms = htmlProgramParser.parse(htmlDocument)
+            val simplePrograms = htmlProgramParser.parse(htmlDocument).toList()
             ApiResponse.Success.Content.Programs(emptyList())
         }
     }
