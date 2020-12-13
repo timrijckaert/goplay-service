@@ -36,8 +36,8 @@ private suspend fun api(token: ApiResponse.Success.Authentication.Token) {
 
     // Stream
     val s18e36 = VideoUuid("26ab85f9-3946-4e1b-8b3f-79018252acb0")
-    val deSlimsteMens_S18E36_Stream = vierApi.streamForEpisodeVideoUuid(token.idToken, s18e36)
-    println(deSlimsteMens_S18E36_Stream)
+    val deSlimsteMensS18E36Stream = vierApi.streamForEpisodeVideoUuid(token.idToken, s18e36)
+    println(deSlimsteMensS18E36Stream)
 }
 
 private suspend fun authentication(
