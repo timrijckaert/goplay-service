@@ -82,6 +82,8 @@ public interface ProgramRepo {
 
     public suspend fun fetchProgram(programSearchKey: SearchHit.Source.SearchKey.Program): Either<Failure, Success.Content.SingleProgram>
 
+    public suspend fun fetchEpisode(episodeSearchKey: SearchHit.Source.SearchKey.Episode): Either<Failure, Success.Content.SingleEpisode>
+
 }
 
 internal class HttpProgramRepo(
@@ -125,6 +127,21 @@ internal class HttpProgramRepo(
 
     override suspend fun fetchProgram(programSearchKey: SearchHit.Source.SearchKey.Program): Either<Failure, Success.Content.SingleProgram> =
         fetchProgramFromUrl(programSearchKey.url).map { Success.Content.SingleProgram(it) }
+
+    override suspend fun fetchEpisode(episodeSearchKey: SearchHit.Source.SearchKey.Episode): Either<Failure, Success.Content.SingleEpisode> =
+        either {
+            val program = !fetchProgramFromUrl(episodeSearchKey.url)
+            val episodeForSearchKey =
+                !Either
+                    .fromNullable(
+                        program
+                            .playlists
+                            .flatMap(Playlist::episodes)
+                            .firstOrNull { it.pageInfo.nodeId == episodeSearchKey.nodeId }
+                    )
+                    .mapLeft { Failure.Content.NoEpisodeFound }
+            Success.Content.SingleEpisode(episodeForSearchKey)
+        }
 
     private suspend fun fetchProgramDetails(partialPrograms: List<PartialProgram>): Either<Failure, List<Program>> =
         partialPrograms.parTraverse(Dispatchers.IO) { fetchProgramFromUrl("$VIER_URL${it.path}") }

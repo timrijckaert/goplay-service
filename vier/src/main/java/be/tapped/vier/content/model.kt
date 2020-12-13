@@ -273,14 +273,14 @@ public data class SearchHit(
 
         public sealed class SearchKey {
             public data class Program(internal val url: String) : SearchKey()
-            public data class Episode(internal val url: String) : SearchKey()
+            public data class Episode(internal val nodeId: String, internal val url: String) : SearchKey()
             public object Invalid : SearchKey()
         }
 
         val searchKey: SearchKey
             get() = when (bundle) {
                 Bundle.PROGRAM -> SearchKey.Program(url)
-                Bundle.VIDEO -> SearchKey.Episode(url)
+                Bundle.VIDEO -> SearchKey.Episode(id, url)
                 Bundle.STUB,
                 Bundle.ARTICLE,
                 -> SearchKey.Invalid

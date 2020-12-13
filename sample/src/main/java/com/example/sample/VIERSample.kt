@@ -34,6 +34,11 @@ private suspend fun api(token: ApiResponse.Success.Authentication.Token) {
     val deSlimsteMensSearchQuery = vierApi.search("de slimste mens ter wereld")
     println(deSlimsteMensSearchQuery)
 
+    // Episode by URL
+    val deSlimsteMensS18E36ByUrl = vierApi.fetchEpisode(SearchHit.Source.SearchKey.Episode("35399",
+        "https://www.vier.be/video/de-slimste-mens-ter-wereld/de-slimste-mens-ter-wereld-s18/de-slimste-mens-ter-wereld-s18-aflevering-36"))
+    println(deSlimsteMensS18E36ByUrl)
+
     // Stream
     val s18e36 = VideoUuid("26ab85f9-3946-4e1b-8b3f-79018252acb0")
     val deSlimsteMensS18E36Stream = vierApi.streamForEpisodeVideoUuid(token.idToken, s18e36)
