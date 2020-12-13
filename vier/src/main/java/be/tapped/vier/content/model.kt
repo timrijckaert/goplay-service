@@ -70,6 +70,7 @@ public object CustomHeaderVideoSerializer : KSerializer<HeaderVideo?> {
 
 }
 
+// FIXME https://github.com/Kotlin/kotlinx.serialization/issues/1253
 // Unable to delegate to generated KSerializer
 // This object is a copy of HeaderVideo and it's only purpose is to generate a KSerializer for easy mapping.
 @Serializable

@@ -75,15 +75,15 @@ Er is een `sample` module voorzien.
 
 ## Authenticatie
 - [x] Authenticatie
-- [ ] Vier Profiel ophalen
+- [x] Vier Profiel ophalen
 - [ ] Favorieten
 
 ## Content
-- [ ] Alle programma's alfabetisch
+- [x] Alle programma's alfabetisch
 - [ ] Alle categorieën
 - [ ] Favorieten
 - [ ] Zoeken
-- [ ] Ophalen van episodes
+- [x] Ophalen van episodes
 - [ ] Ophalen van streams
 - [ ] Live screen grabs
 - [ ] Live streams
