@@ -93,8 +93,7 @@ internal class HttpProgramRepo(
         private const val VIER_URL = "https://www.vier.be"
     }
 
-    // curl -X GET \
-    // -H "https://www.vier.be/"
+    // curl -X GET "https://www.vier.be/"
     override suspend fun fetchPrograms(): Either<Failure, Success.Content.Programs> =
         withContext(Dispatchers.IO) {
             either {
@@ -111,8 +110,7 @@ internal class HttpProgramRepo(
             }
         }
 
-    // curl -X GET \
-    // -H "https://www.vier.be/de-slimste-mens-ter-wereld"
+    // curl -X GET "https://www.vier.be/de-slimste-mens-ter-wereld"
     private suspend fun fetchProgramFromUrl(programUrl: String): Either<Failure, Program> =
         withContext(Dispatchers.IO) {
             client.executeAsync(
