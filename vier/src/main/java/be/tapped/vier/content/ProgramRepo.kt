@@ -110,7 +110,7 @@ internal class HttpProgramRepo(
     // curl -X GET \
     // -H "https://www.vier.be/de-slimste-mens-ter-wereld"
     private suspend fun fetchProgramDetails(partialPrograms: List<PartialProgram>): Either<Failure, List<Program>> =
-        partialPrograms.parTraverse {
+        partialPrograms.parTraverse(Dispatchers.IO) {
             client.executeAsync(
                 Request.Builder()
                     .get()
