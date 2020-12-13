@@ -6,6 +6,7 @@ import kotlinx.serialization.json.JsonObject
 import okhttp3.OkHttpClient
 import okhttp3.Request
 
+@Deprecated("Check if we need this")
 public class VierAPI {
     private val client = OkHttpClient.Builder().build()
 
