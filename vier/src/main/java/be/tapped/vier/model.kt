@@ -3,6 +3,7 @@ package be.tapped.vier
 import arrow.core.NonEmptyList
 import be.tapped.vier.content.Program
 import be.tapped.vier.profile.AccessToken
+import be.tapped.vier.profile.IdToken
 import be.tapped.vier.profile.RefreshToken
 import okhttp3.Request
 
@@ -14,7 +15,7 @@ public sealed class ApiResponse {
                 val expiresIn: Int,
                 val tokenType: String,
                 val refreshToken: RefreshToken,
-                val idToken: String,
+                val idToken: IdToken,
             ) : Authentication()
 
             public data class Profile(
@@ -33,6 +34,8 @@ public sealed class ApiResponse {
         public sealed class Content : Success() {
             public data class Programs(val programs: List<Program>) : Content()
         }
+
+        public object Stream : Success()
     }
 
     public sealed class Failure : ApiResponse() {
