@@ -35,6 +35,7 @@ public sealed class ApiResponse {
         }
 
         public sealed class Content : Success() {
+            public data class SingleProgram(val program: Program) : Content()
             public data class Programs(val programs: List<Program>) : Content()
             public data class SearchResults(val hits: List<SearchHit>) : Content()
         }

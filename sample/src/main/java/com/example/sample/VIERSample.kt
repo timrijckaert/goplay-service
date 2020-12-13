@@ -3,6 +3,7 @@ package com.example.sample
 import arrow.core.Tuple2
 import arrow.core.toT
 import be.tapped.vier.ApiResponse
+import be.tapped.vier.content.SearchHit
 import be.tapped.vier.content.VideoUuid
 import be.tapped.vier.content.VierApi
 import be.tapped.vier.profile.HttpProfileRepo
@@ -24,6 +25,10 @@ private suspend fun api(token: ApiResponse.Success.Authentication.Token) {
     // All Programs
     val programs = vierApi.fetchPrograms().orNull()!!
     println(programs)
+
+    // Program by URL
+    val deSlimsteMensTerWereldByProgramUrl = vierApi.fetchProgram(SearchHit.Source.SearchKey.Program("https://www.vier.be/de-slimste-mens-ter-wereld"))
+    println(deSlimsteMensTerWereldByProgramUrl)
 
     // Search
     val deSlimsteMensSearchQuery = vierApi.search("de slimste mens ter wereld")

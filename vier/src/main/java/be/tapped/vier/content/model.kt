@@ -256,7 +256,7 @@ public data class SearchHit(
         val id: String,
         val type: String,
         val bundle: Bundle,
-        val url: String,
+        private val url: String,
         val language: String,
         val title: String,
         val site: String,
@@ -270,6 +270,22 @@ public data class SearchHit(
         val img: String,
         val duration: Int? = null,
     ) {
+
+        public sealed class SearchKey {
+            public data class Program(internal val url: String) : SearchKey()
+            public data class Episode(internal val url: String) : SearchKey()
+            public object Invalid : SearchKey()
+        }
+
+        val searchKey: SearchKey
+            get() = when (bundle) {
+                Bundle.PROGRAM -> SearchKey.Program(url)
+                Bundle.VIDEO -> SearchKey.Episode(url)
+                Bundle.STUB,
+                Bundle.ARTICLE,
+                -> SearchKey.Invalid
+            }
+
         @Serializable
         public enum class Bundle {
             @SerialName("program")
