@@ -1,28 +1,20 @@
 package be.tapped.vier.content
 
-import arrow.core.Either
-import arrow.core.NonEmptyList
-import arrow.core.Validated
+import arrow.core.*
 import arrow.core.computations.either
+import arrow.core.extensions.either.applicative.applicative
+import arrow.core.extensions.either.traverse.map
 import arrow.core.extensions.list.traverse.sequence
 import arrow.core.extensions.nonemptylist.semigroup.semigroup
 import arrow.core.extensions.validated.applicative.applicative
 import arrow.core.extensions.validated.bifunctor.mapLeft
-import arrow.core.fix
-import arrow.core.flatMap
-import arrow.core.right
 import be.tapped.common.internal.executeAsync
 import be.tapped.common.internal.toValidateNel
 import be.tapped.vier.ApiResponse.Failure
 import be.tapped.vier.ApiResponse.Failure.HTML
 import be.tapped.vier.ApiResponse.Failure.HTML.Parsing
 import be.tapped.vier.ApiResponse.Success
-import be.tapped.vier.common.safeAttr
-import be.tapped.vier.common.safeBodyString
-import be.tapped.vier.common.safeChild
-import be.tapped.vier.common.safeSelect
-import be.tapped.vier.common.safeSelectFirst
-import be.tapped.vier.common.safeText
+import be.tapped.vier.common.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.decodeFromString
@@ -88,7 +80,7 @@ internal class HttpProgramRepo(
     }
 
     // curl -X GET \
-    // -H "User-Agent:okhttp/4.9.0" "https://www.vier.be/"
+    // -H "https://www.vier.be/"
     override suspend fun fetchPrograms(): Either<Failure, Success.Content.Programs> =
         withContext(Dispatchers.IO) {
             either {
@@ -107,22 +99,18 @@ internal class HttpProgramRepo(
         }
 
     // curl -X GET \
-    // -H "User-Agent:okhttp/4.9.0" "https://www.vier.be/de-slimste-mens-ter-wereld"
-    private suspend fun fetchCompletePrograms(simplePrograms: List<SimpleProgram>): Either<Failure, List<Program>> {
-        val a: List<Either<Failure, Program>> = simplePrograms.map {
+    // -H "https://www.vier.be/de-slimste-mens-ter-wereld"
+    private suspend fun fetchCompletePrograms(simplePrograms: List<SimpleProgram>): Either<Failure, List<Program>> =
+        simplePrograms.map {
             client.executeAsync(
                 Request.Builder()
                     .get()
                     .url("$VIER_URL${it.path}")
                     .build()
-            ).safeBodyString()
-                .flatMap { html ->
-                    val htmlDocument = Jsoup.parse(html)
-                    val program = htmlProgramParser.parse(htmlDocument)
-                    program
-                }
+            )
+                .safeBodyString()
+                .flatMap { html -> htmlProgramParser.parse(Jsoup.parse(html)) }
         }
-
-        return emptyList<Program>().right()
-    }
+            .sequence(Either.applicative())
+            .map { it.fix() }
 }
