@@ -171,6 +171,8 @@ public data class Social(
     val twitter: String,
 )
 
+public inline class VideoUuid(public val id: String)
+
 @Serializable
 public data class Episode(
     val autoplay: Boolean,
@@ -200,9 +202,11 @@ public data class Episode(
     val title: String,
     val type: String,
     val unpublishDate: String,
-    val videoUuid: String,
+    private val videoUuid: String,
     val whatsonId: String,
-)
+) {
+    val id: VideoUuid get() = VideoUuid(videoUuid)
+}
 
 @Serializable
 public data class Playlist(
