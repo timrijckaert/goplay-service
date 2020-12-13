@@ -39,7 +39,7 @@ import org.jsoup.nodes.Document
 
 internal data class PartialProgram(val name: String, val path: String)
 
-internal class HtmlSimpleProgramParser {
+internal class HtmlPartialProgramParser {
 
     private val applicative = Validated.applicative(NonEmptyList.semigroup<HTML>())
 
@@ -88,7 +88,7 @@ public interface ProgramRepo {
 
 internal class HttpProgramRepo(
     private val client: OkHttpClient,
-    private val htmlSimpleProgramParser: HtmlSimpleProgramParser,
+    private val htmlPartialProgramParser: HtmlPartialProgramParser,
     private val htmlProgramParser: HtmlProgramParser,
 ) : ProgramRepo {
     private companion object {
@@ -106,7 +106,7 @@ internal class HttpProgramRepo(
                         .build()
                 ).safeBodyString()
 
-                val partialPrograms = !htmlSimpleProgramParser.parse(Jsoup.parse(html))
+                val partialPrograms = !htmlPartialProgramParser.parse(Jsoup.parse(html))
                 val programs = !fetchProgramDetails(partialPrograms)
                 Success.Content.Programs(programs)
             }
