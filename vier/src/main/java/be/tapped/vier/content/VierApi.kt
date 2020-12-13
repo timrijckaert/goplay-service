@@ -9,5 +9,7 @@ public class VierApi(
         HtmlProgramParser(),
     ),
     private val streamRepo: StreamRepo = HttpStreamRepo(vierApiDefaultOkHttpClient, JsonStreamParser()),
+    private val searchRepo: SearchRepo = HttpSearchRepo(vierApiDefaultOkHttpClient),
 ) : ProgramRepo by programRepo,
-    StreamRepo by streamRepo
+    StreamRepo by streamRepo,
+    SearchRepo by searchRepo

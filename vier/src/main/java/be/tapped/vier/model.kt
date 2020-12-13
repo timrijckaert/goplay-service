@@ -35,6 +35,7 @@ public sealed class ApiResponse {
 
         public sealed class Content : Success() {
             public data class Programs(val programs: List<Program>) : Content()
+            public object Search : Content()
         }
 
         public data class Stream(val m3U8Stream: M3U8Stream) : Success()

@@ -82,7 +82,7 @@ Er is een `sample` module voorzien.
 - [x] Alle programma's alfabetisch
 - [ ] Alle categorieën
 - [ ] Favorieten
-- [ ] Zoeken
+- [x] Zoeken
 - [x] Ophalen van episodes
 - [x] Ophalen van streams
 - [ ] Live screen grabs

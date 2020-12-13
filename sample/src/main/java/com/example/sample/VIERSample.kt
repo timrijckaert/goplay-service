@@ -25,6 +25,10 @@ private suspend fun api(token: ApiResponse.Success.Authentication.Token) {
     val programs = vierApi.fetchPrograms().orNull()!!
     println(programs)
 
+    // Search
+    val deSlimsteMensSearchQuery = vierApi.search("de slimst")
+    println(deSlimsteMensSearchQuery)
+
     // Stream
     val s18e36 = VideoUuid("26ab85f9-3946-4e1b-8b3f-79018252acb0")
     val deSlimsteMens_S18E36_Stream = vierApi.streamForEpisodeVideoUuid(token.idToken, s18e36)
