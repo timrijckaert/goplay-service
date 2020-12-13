@@ -8,4 +8,6 @@ public class VierApi(
         HtmlSimpleProgramParser(),
         HtmlProgramParser(),
     ),
-) : ProgramRepo by programRepo
+    private val streamRepo: StreamRepo = HttpStreamRepo(vierApiDefaultOkHttpClient, JsonStreamParser()),
+) : ProgramRepo by programRepo,
+    StreamRepo by streamRepo

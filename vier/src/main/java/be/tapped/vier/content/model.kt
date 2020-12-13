@@ -232,3 +232,5 @@ public data class Program(
     val playlists: List<Playlist>,
     val social: Social,
 )
+
+public inline class M3U8Stream(public val url: String)

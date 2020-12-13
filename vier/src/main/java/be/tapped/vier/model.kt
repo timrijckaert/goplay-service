@@ -1,7 +1,9 @@
 package be.tapped.vier
 
 import arrow.core.NonEmptyList
+import be.tapped.vier.content.M3U8Stream
 import be.tapped.vier.content.Program
+import be.tapped.vier.content.VideoUuid
 import be.tapped.vier.profile.AccessToken
 import be.tapped.vier.profile.IdToken
 import be.tapped.vier.profile.RefreshToken
@@ -35,7 +37,7 @@ public sealed class ApiResponse {
             public data class Programs(val programs: List<Program>) : Content()
         }
 
-        public object Stream : Success()
+        public data class Stream(val m3U8Stream: M3U8Stream) : Success()
     }
 
     public sealed class Failure : ApiResponse() {
@@ -55,6 +57,10 @@ public sealed class ApiResponse {
             public object Login : Authentication()
             public object Refresh : Authentication()
             public object Profile : Authentication()
+        }
+
+        public sealed class Stream : Failure() {
+            public data class NoStreamFound(val videoUuid: VideoUuid) : Stream()
         }
     }
 }
