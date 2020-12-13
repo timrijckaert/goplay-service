@@ -14,6 +14,7 @@ dependencies {
     implementation Dependencies.okHttpCurlInterceptor
 
     implementation Dependencies.arrowCore
+    implementation Dependencies.arrowFxCoroutines
     implementation Dependencies.jsoup
 
     testImplementation Testing.kotestRunner

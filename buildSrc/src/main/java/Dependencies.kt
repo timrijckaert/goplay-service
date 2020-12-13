@@ -20,6 +20,8 @@ object Dependencies {
     const val arrowCore = "io.arrow-kt:arrow-core:${arrowVersion}"
     const val arrowSyntax = "io.arrow-kt:arrow-syntax:${arrowVersion}"
     const val arrowMeta = "io.arrow-kt:arrow-meta:${arrowVersion}"
+    const val arrowFx = "io.arrow-kt:arrow-fx:${arrowVersion}"
+    const val arrowFxCoroutines = "io.arrow-kt:arrow-fx-coroutines:${arrowVersion}"
 
     const val jsoup = "org.jsoup:jsoup:1.13.1"
 

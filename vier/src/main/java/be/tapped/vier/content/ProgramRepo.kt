@@ -1,6 +1,8 @@
 package be.tapped.vier.content
 
-import arrow.core.*
+import arrow.core.Either
+import arrow.core.NonEmptyList
+import arrow.core.Validated
 import arrow.core.computations.either
 import arrow.core.extensions.either.applicative.applicative
 import arrow.core.extensions.either.traverse.map
@@ -8,13 +10,21 @@ import arrow.core.extensions.list.traverse.sequence
 import arrow.core.extensions.nonemptylist.semigroup.semigroup
 import arrow.core.extensions.validated.applicative.applicative
 import arrow.core.extensions.validated.bifunctor.mapLeft
+import arrow.core.fix
+import arrow.core.flatMap
+import arrow.fx.coroutines.parTraverse
 import be.tapped.common.internal.executeAsync
 import be.tapped.common.internal.toValidateNel
 import be.tapped.vier.ApiResponse.Failure
 import be.tapped.vier.ApiResponse.Failure.HTML
 import be.tapped.vier.ApiResponse.Failure.HTML.Parsing
 import be.tapped.vier.ApiResponse.Success
-import be.tapped.vier.common.*
+import be.tapped.vier.common.safeAttr
+import be.tapped.vier.common.safeBodyString
+import be.tapped.vier.common.safeChild
+import be.tapped.vier.common.safeSelect
+import be.tapped.vier.common.safeSelectFirst
+import be.tapped.vier.common.safeText
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.decodeFromString
@@ -100,7 +110,7 @@ internal class HttpProgramRepo(
     // curl -X GET \
     // -H "https://www.vier.be/de-slimste-mens-ter-wereld"
     private suspend fun fetchProgramDetails(partialPrograms: List<PartialProgram>): Either<Failure, List<Program>> =
-        partialPrograms.map {
+        partialPrograms.parTraverse {
             client.executeAsync(
                 Request.Builder()
                     .get()
