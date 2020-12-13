@@ -68,7 +68,7 @@ public class HttpProfileRepo(private val profileUserAttributeParser: ProfileUser
                     expiresIn = authenticationResult.expiresIn(),
                     tokenType = authenticationResult.tokenType(),
                     refreshToken = RefreshToken(authenticationResult.refreshToken()),
-                    idToken = authenticationResult.idToken()
+                    idToken = IdToken(authenticationResult.idToken())
                 )
             }
             .mapLeft { Login }
@@ -82,7 +82,7 @@ public class HttpProfileRepo(private val profileUserAttributeParser: ProfileUser
                         expiresIn = expiresIn(),
                         tokenType = tokenType(),
                         refreshToken = refreshToken()?.let(::RefreshToken) ?: refreshToken,
-                        idToken = idToken()
+                        idToken = IdToken(idToken())
                     )
                 }
             }
