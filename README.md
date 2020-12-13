@@ -84,7 +84,7 @@ Er is een `sample` module voorzien.
 - [ ] Favorieten
 - [ ] Zoeken
 - [x] Ophalen van episodes
-- [ ] Ophalen van streams
+- [x] Ophalen van streams
 - [ ] Live screen grabs
 - [ ] Live streams
 
