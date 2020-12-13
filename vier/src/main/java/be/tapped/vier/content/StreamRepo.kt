@@ -5,6 +5,7 @@ import arrow.core.computations.either
 import be.tapped.common.internal.executeAsync
 import be.tapped.vier.ApiResponse
 import be.tapped.vier.common.safeBodyString
+import be.tapped.vier.common.vierBaseApiUrl
 import be.tapped.vier.profile.IdToken
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -46,7 +47,7 @@ internal class HttpStreamRepo(
                 val response = client.executeAsync(
                     Request.Builder()
                         .get()
-                        .url("https://api.viervijfzes.be/content/${videoUuid.id}")
+                        .url("$vierBaseApiUrl/content/${videoUuid.id}")
                         .header("Authorization", idToken.token)
                         .build()
                 )
