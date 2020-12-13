@@ -26,7 +26,7 @@ private suspend fun api(token: ApiResponse.Success.Authentication.Token) {
     println(programs)
 
     // Search
-    val deSlimsteMensSearchQuery = vierApi.search("de slimst")
+    val deSlimsteMensSearchQuery = vierApi.search("de slimste mens ter wereld")
     println(deSlimsteMensSearchQuery)
 
     // Stream

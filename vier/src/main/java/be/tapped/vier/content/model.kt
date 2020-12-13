@@ -1,6 +1,7 @@
 package be.tapped.vier.content
 
 import kotlinx.serialization.KSerializer
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.descriptors.buildClassSerialDescriptor
@@ -234,3 +235,62 @@ public data class Program(
 )
 
 public inline class M3U8Stream(public val url: String)
+
+//<editor-fold desc="Search">
+@Serializable
+public data class SearchHit(
+    @SerialName("_index")
+    val index: String,
+    @SerialName("_type")
+    val type: String,
+    @SerialName("_id")
+    val id: String,
+    @SerialName("_score")
+    val score: Double,
+    @SerialName("_source")
+    val source: Source,
+    val highlight: Highlight? = null,
+) {
+    @Serializable
+    public data class Source(
+        val id: String,
+        val type: String,
+        val bundle: Bundle,
+        val url: String,
+        val language: String,
+        val title: String,
+        val site: String,
+        val intro: String,
+        val created: Int,
+        val changed: Int,
+        val body: List<String>,
+        val terms: List<String>,
+        val suggest: String,
+        val program: String,
+        val img: String,
+        val duration: Int? = null,
+    ) {
+        @Serializable
+        public enum class Bundle {
+            @SerialName("program")
+            PROGRAM,
+
+            @SerialName("video")
+            VIDEO,
+
+            @SerialName("stub")
+            STUB,
+
+            @SerialName("article")
+            ARTICLE
+        }
+    }
+
+    @Serializable
+    public data class Highlight(
+        val title: List<String>,
+        val intro: List<String> = emptyList(),
+        val body: List<String> = emptyList(),
+    )
+}
+//</editor-fold>
