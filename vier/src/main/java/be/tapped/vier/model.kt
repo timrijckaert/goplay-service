@@ -3,6 +3,7 @@ package be.tapped.vier
 import arrow.core.NonEmptyList
 import be.tapped.vier.content.M3U8Stream
 import be.tapped.vier.content.Program
+import be.tapped.vier.content.SearchHit
 import be.tapped.vier.content.VideoUuid
 import be.tapped.vier.profile.AccessToken
 import be.tapped.vier.profile.IdToken
@@ -35,7 +36,7 @@ public sealed class ApiResponse {
 
         public sealed class Content : Success() {
             public data class Programs(val programs: List<Program>) : Content()
-            public object Search : Content()
+            public data class SearchResults(val hits: List<SearchHit>) : Content()
         }
 
         public data class Stream(val m3U8Stream: M3U8Stream) : Success()
