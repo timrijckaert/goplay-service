@@ -27,18 +27,18 @@ import okhttp3.Request
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 
-internal data class SimpleProgram(val name: String, val path: String)
+internal data class PartialProgram(val name: String, val path: String)
 
 internal class HtmlSimpleProgramParser {
 
     private val applicative = Validated.applicative(NonEmptyList.semigroup<HTML>())
 
-    internal suspend fun parse(document: Document): Either<HTML, List<SimpleProgram>> =
+    internal suspend fun parse(document: Document): Either<HTML, List<PartialProgram>> =
         document.safeSelect("a.program-overview__link").flatMap { links ->
             links.map { link ->
                 val path = link.safeAttr("href").toValidatedNel()
                 val title = link.safeChild(0).flatMap { it.safeText() }.toValidateNel()
-                applicative.mapN(title, path) { (title, path) -> SimpleProgram(title, path) }
+                applicative.mapN(title, path) { (title, path) -> PartialProgram(title, path) }
             }.sequence(applicative)
                 .mapLeft { Parsing(it) }
                 .map { it.fix() }
@@ -91,17 +91,16 @@ internal class HttpProgramRepo(
                         .build()
                 ).safeBodyString()
 
-                val htmlDocument = Jsoup.parse(html)
-                val simplePrograms = !htmlSimpleProgramParser.parse(htmlDocument)
-                val programs = !fetchCompletePrograms(simplePrograms)
+                val partialPrograms = !htmlSimpleProgramParser.parse(Jsoup.parse(html))
+                val programs = !fetchProgramDetails(partialPrograms)
                 Success.Content.Programs(programs)
             }
         }
 
     // curl -X GET \
     // -H "https://www.vier.be/de-slimste-mens-ter-wereld"
-    private suspend fun fetchCompletePrograms(simplePrograms: List<SimpleProgram>): Either<Failure, List<Program>> =
-        simplePrograms.map {
+    private suspend fun fetchProgramDetails(partialPrograms: List<PartialProgram>): Either<Failure, List<Program>> =
+        partialPrograms.map {
             client.executeAsync(
                 Request.Builder()
                     .get()
