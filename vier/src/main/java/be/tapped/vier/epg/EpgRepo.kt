@@ -50,7 +50,13 @@ public class HttpEpgRepo(
 
             either {
                 val epg = !jsonEpgParser.parse(!response.safeBodyString())
-                ApiResponse.Success.ProgramGuide(epg)
+                ApiResponse.Success.ProgramGuide(
+                    !Either.conditionally(
+                        epg.isEmpty(),
+                        ifTrue = { epg },
+                        ifFalse = { ApiResponse.Failure.Epg.NoEpgDataFor(calendar) }
+                    )
+                )
             }
         }
 }

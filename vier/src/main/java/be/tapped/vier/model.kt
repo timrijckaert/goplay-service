@@ -11,6 +11,7 @@ import be.tapped.vier.profile.AccessToken
 import be.tapped.vier.profile.IdToken
 import be.tapped.vier.profile.RefreshToken
 import okhttp3.Request
+import java.util.*
 
 public sealed class ApiResponse {
     public sealed class Success : ApiResponse() {
@@ -73,6 +74,10 @@ public sealed class ApiResponse {
 
         public sealed class Stream : Failure() {
             public data class NoStreamFound(val videoUuid: VideoUuid) : Stream()
+        }
+
+        public sealed class Epg : Failure() {
+            public data class NoEpgDataFor(val calendar: Calendar) : Epg()
         }
     }
 }
