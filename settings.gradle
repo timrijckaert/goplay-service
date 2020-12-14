@@ -6,4 +6,4 @@ include ':vrtnu'
 include ':vtmgo'
 include ':vier'
 
-rootProject.name = "Vlaamse Televisie Metadata Aggregator"
+rootProject.name = "Vlaamse TV Aggregator"
