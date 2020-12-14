@@ -56,7 +56,6 @@ Er is een `sample` module voorzien.
 - [x] Ophalen van streams
   - [x] Live Stream
   - [x] VOD
-- [ ] Live screen grabs (niet beschikbaar)
 - [x] Live Channel Information + EPG
 
 ## Streaming
@@ -76,20 +75,16 @@ Er is een `sample` module voorzien.
 ## Authenticatie
 - [x] Authenticatie
 - [x] Vier Profiel ophalen
-- [ ] Favorieten
 
 ## Content
 - [x] Alle programma's alfabetisch
 - [ ] Alle categorieën
-- [ ] Favorieten
 - [x] Zoeken
 - [x] Ophalen van episodes
 - [x] Ophalen van streams
-- [ ] Live screen grabs
-- [ ] Live streams
 
 ## EPG
-- [ ] EPG
+- [x] EPG
 
 </details>
 

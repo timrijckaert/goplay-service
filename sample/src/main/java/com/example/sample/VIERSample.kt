@@ -6,6 +6,7 @@ import be.tapped.vier.ApiResponse
 import be.tapped.vier.content.SearchHit
 import be.tapped.vier.content.VideoUuid
 import be.tapped.vier.content.VierApi
+import be.tapped.vier.epg.HttpEpgRepo
 import be.tapped.vier.profile.HttpProfileRepo
 
 public suspend fun main(args: Array<String>) {
@@ -17,6 +18,8 @@ public suspend fun main(args: Array<String>) {
     println(profile)
 
     api(token)
+
+    epg()
 }
 
 private suspend fun api(token: ApiResponse.Success.Authentication.Token) {
@@ -56,4 +59,10 @@ private suspend fun authentication(
 
     val profile = httpProfileRepo.getUserAttributes(token.accessToken).orNull()!!
     return token toT profile
+}
+
+private suspend fun epg() {
+    val epgRepo = HttpEpgRepo()
+    val todayEpg = epgRepo.epg()
+    println(todayEpg)
 }

@@ -25,6 +25,7 @@ import be.tapped.vier.common.safeChild
 import be.tapped.vier.common.safeSelect
 import be.tapped.vier.common.safeSelectFirst
 import be.tapped.vier.common.safeText
+import be.tapped.vier.common.vierUrl
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.decodeFromString
@@ -91,9 +92,6 @@ internal class HttpProgramRepo(
     private val htmlPartialProgramParser: HtmlPartialProgramParser,
     private val htmlProgramParser: HtmlProgramParser,
 ) : ProgramRepo {
-    private companion object {
-        private const val VIER_URL = "https://www.vier.be"
-    }
 
     // curl -X GET "https://www.vier.be/"
     override suspend fun fetchPrograms(): Either<Failure, Success.Content.Programs> =
@@ -102,7 +100,7 @@ internal class HttpProgramRepo(
                 val html = !client.executeAsync(
                     Request.Builder()
                         .get()
-                        .url(VIER_URL)
+                        .url(vierUrl)
                         .build()
                 ).safeBodyString()
 
@@ -144,7 +142,7 @@ internal class HttpProgramRepo(
         }
 
     private suspend fun fetchProgramDetails(partialPrograms: List<PartialProgram>): Either<Failure, List<Program>> =
-        partialPrograms.parTraverse(Dispatchers.IO) { fetchProgramFromUrl("$VIER_URL${it.path}") }
+        partialPrograms.parTraverse(Dispatchers.IO) { fetchProgramFromUrl("$vierUrl${it.path}") }
             .sequence(Either.applicative())
             .map { it.fix() }
 }

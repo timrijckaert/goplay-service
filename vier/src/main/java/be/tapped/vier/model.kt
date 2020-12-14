@@ -6,6 +6,7 @@ import be.tapped.vier.content.M3U8Stream
 import be.tapped.vier.content.Program
 import be.tapped.vier.content.SearchHit
 import be.tapped.vier.content.VideoUuid
+import be.tapped.vier.epg.EpgProgram
 import be.tapped.vier.profile.AccessToken
 import be.tapped.vier.profile.IdToken
 import be.tapped.vier.profile.RefreshToken
@@ -43,6 +44,8 @@ public sealed class ApiResponse {
         }
 
         public data class Stream(val m3U8Stream: M3U8Stream) : Success()
+
+        public data class ProgramGuide(val epg: List<EpgProgram>) : Success()
     }
 
     public sealed class Failure : ApiResponse() {
