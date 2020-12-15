@@ -14,4 +14,8 @@ dependencies {
     implementation Dependencies.okHttpCurlInterceptor
 
     implementation project(':common')
+
+    testImplementation Testing.kotestRunner
+    testImplementation Testing.kotestAssertionsCore
+    testImplementation Testing.kotestProperty
 }
