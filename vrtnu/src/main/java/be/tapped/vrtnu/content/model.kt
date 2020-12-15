@@ -89,6 +89,7 @@ public data class Category(
     val image: Image,
     val reference: Reference,
     val description: String? = null,
+    val actions: List<String>,
     @SerialName(":type")
     val type: String,
 )
