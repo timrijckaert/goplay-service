@@ -17,5 +17,6 @@ dependencies {
 
     testImplementation Testing.kotestRunner
     testImplementation Testing.kotestAssertionsCore
+    testImplementation Testing.kotestAssertionsArrow
     testImplementation Testing.kotestProperty
 }

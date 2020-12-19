@@ -38,6 +38,7 @@ object Testing {
 
     private const val kotestRunner = "io.kotest:kotest-runner-junit5:${kotestVersion}"
     private const val kotestAssertionsCore = "io.kotest:kotest-assertions-core:${kotestVersion}"
+    private const val kotestAssertionsArrow = "io.kotest:kotest-assertions-arrow:${kotestVersion}"
     private const val kotestProperty = "io.kotest:kotest-property:${kotestVersion}"
 
     const val mockk = "io.mockk:mockk:v1.10.2"
