@@ -16,7 +16,7 @@ object Dependencies {
     const val okHttp3 = "com.squareup.okhttp3:okhttp:4.9.0"
     const val okHttpCurlInterceptor = "com.github.mrmike:ok2curl:0.6.0"
 
-    private const val arrowVersion = "0.11.0"
+    private const val arrowVersion = "0.12.0-SNAPSHOT"
     const val arrowCore = "io.arrow-kt:arrow-core:${arrowVersion}"
     const val arrowSyntax = "io.arrow-kt:arrow-syntax:${arrowVersion}"
     const val arrowMeta = "io.arrow-kt:arrow-meta:${arrowVersion}"
