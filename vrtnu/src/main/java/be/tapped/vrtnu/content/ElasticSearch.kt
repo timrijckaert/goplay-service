@@ -50,7 +50,7 @@ internal class HttpEpisodeRepo(
                 )
 
                 val searchResultEpisodes = !jsonEpisodeParser.parse(!episodeByCategoryResponse.safeBodyString())
-                if (index > searchResultEpisodes.meta.pages.total) null
+                if (index != searchQuery.pageIndex && index >= searchResultEpisodes.meta.pages.total) null
                 else Pair(index + 1, ApiResponse.Success.Content.Episodes(searchResultEpisodes.results))
             }
         }

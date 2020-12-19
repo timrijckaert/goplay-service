@@ -8,7 +8,7 @@ dependencies {
     implementation Dependencies.coroutinesCore
 
     implementation Dependencies.arrowCore
-    implementation Dependencies.arrowSyntax
+    implementation Dependencies.arrowFxCoroutines
 
     implementation Dependencies.okHttp3
     implementation Dependencies.okHttpCurlInterceptor

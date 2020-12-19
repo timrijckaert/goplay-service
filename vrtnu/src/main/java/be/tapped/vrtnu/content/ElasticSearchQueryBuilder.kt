@@ -126,6 +126,7 @@ public object ElasticSearchQueryBuilder {
                             addQueryParameter("facets[programName]", sanitizeProgramName(it))
                         }
 
+                        // In the form of "//www.vrt.be/vrtnu/a-z/terzake/"
                         programUrl?.let {
                             addEncodedQueryParameter("facets[programUrl]", it)
                         }
