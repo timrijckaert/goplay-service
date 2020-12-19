@@ -2,6 +2,7 @@ package be.tapped.vier.content
 
 import arrow.core.Either
 import arrow.core.computations.either
+import arrow.core.flatMap
 import be.tapped.common.internal.executeAsync
 import be.tapped.vier.ApiResponse
 import be.tapped.vier.common.safeBodyString
@@ -19,14 +20,13 @@ import okhttp3.Request
 
 internal class JsonStreamParser {
     suspend fun parse(videoUuid: VideoUuid, json: String): Either<ApiResponse.Failure, M3U8Stream> =
-        either {
-            val jsonObj = !Either.catch { Json.decodeFromString<JsonObject>(json) }
-                .mapLeft { ApiResponse.Failure.Stream.NoStreamFound(videoUuid) }
-
-            !Either
-                .catch { M3U8Stream(jsonObj["video"]!!.jsonObject["S"]!!.jsonPrimitive.content) }
-                .mapLeft { ApiResponse.Failure.JsonParsingException(it) }
-        }
+        Either.catch { Json.decodeFromString<JsonObject>(json) }
+            .mapLeft { ApiResponse.Failure.Stream.NoStreamFound(videoUuid) }
+            .flatMap {
+                Either
+                    .catch { M3U8Stream(it["video"]!!.jsonObject["S"]!!.jsonPrimitive.content) }
+                    .mapLeft { ApiResponse.Failure.JsonParsingException(it) }
+            }
 }
 
 public interface StreamRepo {
