@@ -23,6 +23,7 @@ allprojects {
 
     apply plugin: 'java-library'
     apply plugin: 'kotlin'
+    apply from: "${rootDir}/credentials.gradle"
     //apply plugin: 'kotlin-kapt'
 
     java {
@@ -31,6 +32,7 @@ allprojects {
     }
 
     test {
+        addAuthenticationTokensToSystemEnv(it)
         useJUnitPlatform()
     }
 
