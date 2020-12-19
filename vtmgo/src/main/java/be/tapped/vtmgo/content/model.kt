@@ -398,7 +398,7 @@ public data class Season(
 public data class Program(
     val id: String,
     val name: String,
-    val description: String,
+    val description: String? = null,
     val bigPhotoUrl: String,
     val mediumPhotoUrl: String,
     val smallPhotoUrl: String,
@@ -417,7 +417,6 @@ public data class Program(
     init {
         require(id.isNotEmpty()) { "id is not empty" }
         require(name.isNotEmpty()) { "name is not empty" }
-        require(description.isNotEmpty()) { "description is not empty" }
         require(bigPhotoUrl.isNotEmpty()) { "bigPhotoUrl is not empty" }
         require(mediumPhotoUrl.isNotEmpty()) { "mediumPhotoUrl is not empty" }
         require(smallPhotoUrl.isNotEmpty()) { "smallPhotoUrl is not empty" }
