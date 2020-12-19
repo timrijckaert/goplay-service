@@ -2,6 +2,7 @@ package be.tapped.vtmgo.content
 
 import arrow.core.Either
 import arrow.core.computations.either
+import arrow.core.flatMap
 import arrow.core.handleErrorWith
 import arrow.core.right
 import be.tapped.common.internal.executeAsync
@@ -10,10 +11,18 @@ import be.tapped.vtmgo.common.safeBodyString
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.json.*
-import okhttp3.*
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.jsonArray
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 import okhttp3.Headers.Companion.toHeaders
+import okhttp3.HttpUrl
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
+import okhttp3.Response
 
 internal class AnvatoJsonJavascriptFunctionExtractor {
     private val jsJsonExtractionRegex = Regex("anvatoVideoJSONLoaded\\((.*)\\)")
@@ -42,15 +51,14 @@ internal class AnvatoVideoJsonParser(
 ) {
 
     suspend fun getFirstPublishedUrl(jsFunction: String): Either<ApiResponse.Failure, AnvatoPublishedUrl> =
-        either {
-            val json = !anvatoJsonJavascriptFunctionExtractor.getJSONFromJavascript(jsFunction)
-            val firstPublishedJsonObj = !Either.fromNullable(
-                !Either.catch {
-                    Json.decodeFromString<JsonObject>(json)["published_urls"]?.jsonArray?.get(0)?.jsonObject
+        anvatoJsonJavascriptFunctionExtractor.getJSONFromJavascript(jsFunction)
+            .flatMap {
+                Either.catch {
+                    Json.decodeFromString<JsonObject>(it)["published_urls"]?.jsonArray?.get(0)?.jsonObject
                 }.mapLeft(ApiResponse.Failure::JsonParsingException)
-            ).mapLeft { ApiResponse.Failure.Stream.NoPublishedEmbedUrlFound }
-            !anvatoPublishedUrlParser.parse(firstPublishedJsonObj)
-        }
+            }
+            .flatMap { Either.fromNullable(it).mapLeft { ApiResponse.Failure.Stream.NoPublishedEmbedUrlFound } }
+            .flatMap { anvatoPublishedUrlParser.parse(it) }
 }
 
 internal class AnvatoMasterM3U8JsonParser {
