@@ -23,7 +23,7 @@ public class TokenRepoTest : StringSpec({
         tokenRepo.fetchXVRTToken(username, password).shouldBeRight()
     }
 
-    "fetch VRT Playe rToken" {
+    "fetch VRT Player Token" {
         tokenRepo.fetchVRTPlayerToken(tokenRepo.fetchXVRTToken(username, password).orNull()!!.xVRTToken).shouldBeRight()
     }
 })
