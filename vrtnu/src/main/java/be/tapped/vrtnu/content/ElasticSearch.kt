@@ -1,9 +1,8 @@
 package be.tapped.vrtnu.content
 
 import arrow.core.Either
-import arrow.core.EitherPartialOf
+import arrow.core.computations.EitherEffect
 import arrow.core.computations.either
-import arrow.typeclasses.suspended.BindSyntax
 import be.tapped.common.internal.executeAsync
 import be.tapped.vrtnu.ApiResponse
 import be.tapped.vrtnu.ApiResponse.Failure.JsonParsingException
@@ -46,7 +45,7 @@ internal class HttpEpisodeRepo(
                 val episodeByCategoryResponse = client.executeAsync(
                     Request.Builder()
                         .get()
-                        .url(constructUrl(searchQuery.copy(pageIndex = index)))
+                        .url(!constructUrl(searchQuery.copy(pageIndex = index)))
                         .build()
                 )
 
@@ -62,9 +61,9 @@ internal class HttpEpisodeRepo(
             .host("vrtnu-api.vrt.be")
             .addPathSegment("search")
             .applySearchQuery(searchQuery)
-            .build()
+            .map(HttpUrl.Builder::build)
 
-    private fun <A, B, E> unfoldFlow(initialA: A, next: suspend BindSyntax<EitherPartialOf<E>>.(A) -> Pair<A, B>?): Flow<Either<E, B>> =
+    private fun <A, B, E> unfoldFlow(initialA: A, next: suspend EitherEffect<E, *>.(A) -> Pair<A, B>?): Flow<Either<E, B>> =
         flow {
             var initial: A? = initialA
             val res: Either<E, Unit> = either {

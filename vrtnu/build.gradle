@@ -18,6 +18,4 @@ dependencies {
     testImplementation Testing.kotestRunner
     testImplementation Testing.kotestAssertionsCore
     testImplementation Testing.kotestProperty
-    testImplementation 'app.cash.turbine:turbine:0.3.0'
-
 }

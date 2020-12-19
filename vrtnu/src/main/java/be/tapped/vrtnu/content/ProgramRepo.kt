@@ -35,45 +35,45 @@ internal class HttpProgramRepo(
 
     override suspend fun fetchAZPrograms(): Either<ApiResponse.Failure, ApiResponse.Success.Content.Programs> =
         withContext(Dispatchers.IO) {
-            val programsAZSorted = client.executeAsync(
-                Request.Builder()
-                    .get()
-                    .url(constructUrl(ElasticSearchQueryBuilder.SearchQuery(transcodingStatus = TranscodingStatus.AVAILABLE)))
-                    .build()
-            )
-
             either {
+                val programsAZSorted = client.executeAsync(
+                    Request.Builder()
+                        .get()
+                        .url(!constructUrl(ElasticSearchQueryBuilder.SearchQuery(transcodingStatus = TranscodingStatus.AVAILABLE)))
+                        .build()
+                )
+
                 ApiResponse.Success.Content.Programs(!jsonProgramParser.parse(!programsAZSorted.safeBodyString()))
             }
         }
 
     override suspend fun fetchProgramByName(programName: String): Either<ApiResponse.Failure, ApiResponse.Success.Content.SingleProgram> =
         withContext(Dispatchers.IO) {
-            val fetchSingleProgram = client.executeAsync(
-                Request.Builder()
-                    .get()
-                    .url(
-                        constructUrl(
-                            ElasticSearchQueryBuilder.SearchQuery(
-                                transcodingStatus = TranscodingStatus.AVAILABLE,
-                                programName = programName,
-                                size = 1
+            either {
+                val fetchSingleProgram = client.executeAsync(
+                    Request.Builder()
+                        .get()
+                        .url(
+                            !constructUrl(
+                                ElasticSearchQueryBuilder.SearchQuery(
+                                    transcodingStatus = TranscodingStatus.AVAILABLE,
+                                    programName = programName,
+                                    size = 1
+                                )
                             )
                         )
-                    )
-                    .build()
-            )
+                        .build()
+                )
 
-            either {
                 ApiResponse.Success.Content.SingleProgram((!jsonProgramParser.parse(!fetchSingleProgram.safeBodyString())).firstOrNull())
             }
         }
 
-    private fun constructUrl(searchQuery: ElasticSearchQueryBuilder.SearchQuery): HttpUrl =
+    private fun constructUrl(searchQuery: ElasticSearchQueryBuilder.SearchQuery) =
         HttpUrl.Builder()
             .scheme("https")
             .host("vrtnu-api.vrt.be")
             .addPathSegment("suggest")
             .applySearchQuery(searchQuery)
-            .build()
+            .map(HttpUrl.Builder::build)
 }

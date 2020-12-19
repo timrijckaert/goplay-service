@@ -6,7 +6,11 @@ import be.tapped.vrtnu.content.Episode
 import be.tapped.vrtnu.content.Program
 import be.tapped.vrtnu.content.StreamInformation
 import be.tapped.vrtnu.epg.Epg
-import be.tapped.vrtnu.profile.*
+import be.tapped.vrtnu.profile.FavoriteWrapper
+import be.tapped.vrtnu.profile.LoginFailure
+import be.tapped.vrtnu.profile.TokenWrapper
+import be.tapped.vrtnu.profile.VRTPlayerToken
+import be.tapped.vrtnu.profile.XVRTToken
 import okhttp3.Request
 
 public sealed class ApiResponse {
@@ -37,6 +41,10 @@ public sealed class ApiResponse {
         public sealed class Authentication : Failure() {
             public data class FailedToLogin(val loginResponseFailure: LoginFailure) : Authentication()
             public data class MissingCookieValues(val cookieValues: NonEmptyList<String>) : Authentication()
+        }
+
+        public sealed class Content : Failure() {
+            public data class SearchQuery(val messages: List<String>) : Content()
         }
     }
 }
