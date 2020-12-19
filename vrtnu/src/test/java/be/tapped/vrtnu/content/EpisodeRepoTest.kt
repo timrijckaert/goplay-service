@@ -1,15 +1,13 @@
 package be.tapped.vrtnu.content
 
-import arrow.core.Either
 import arrow.fx.coroutines.parTraverse
-import be.tapped.vrtnu.ApiResponse
 import be.tapped.vrtnu.common.defaultOkHttpClient
 import be.tapped.vrtnu.content.ElasticSearchQueryBuilder.SearchQuery
+import io.kotest.assertions.arrow.either.shouldBeLeft
+import io.kotest.assertions.arrow.either.shouldBeRight
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.collections.shouldNotBeEmpty
-import io.kotest.matchers.shouldBe
-import io.kotest.matchers.types.beOfType
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.toList
 
@@ -19,13 +17,13 @@ public class EpisodeRepoTest : StringSpec({
 
     "should not make a search call if the requested size is bigger than the max allowed" {
         episodeRepo.episodes(SearchQuery(size = 301)).collect {
-            it shouldBe beOfType<Either.Left<ApiResponse.Failure.Content.SearchQuery>>()
+            it.shouldBeLeft()
         }
     }
 
     "should not make a search call if the result window is exceeded" {
         episodeRepo.episodes(SearchQuery(size = 10_001)).collect {
-            it shouldBe beOfType<Either.Left<ApiResponse.Failure.Content.SearchQuery>>()
+            it.shouldBeLeft()
         }
     }
 
@@ -55,7 +53,7 @@ public class EpisodeRepoTest : StringSpec({
                 println("Found ${program.programName}")
                 val episodesForProgram = episodeRepo.episodesForProgram(program)
                 episodesForProgram.collect { episodes ->
-                    episodes shouldBe beOfType<Either.Right<ApiResponse.Success.Content.Episodes>>()
+                    episodes.shouldBeRight()
                 }
             }
         }
