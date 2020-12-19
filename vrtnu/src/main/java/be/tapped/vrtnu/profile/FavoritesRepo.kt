@@ -9,11 +9,20 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.json.*
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.decodeFromJsonElement
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
+import kotlinx.serialization.json.long
 import okhttp3.OkHttpClient
 import okhttp3.Request
 
 public data class FavoriteWrapper(private val favorites: Map<String, Favorite>) {
+    public val size: Int = favorites.size
+    public val programs: Set<String> = favorites.keys
+    public val currentFavorites: List<Favorite> = favorites.values.filter(Favorite::isFavorite)
+    public val nonFavorites: List<Favorite> = favorites.values.filterNot(Favorite::isFavorite)
     private val nonWordCharacterRegex = Regex("\\W")
     private fun sanitizeProgramName(rawProgramName: String) = nonWordCharacterRegex.replace(rawProgramName, "").toLowerCase()
     public operator fun get(programName: String): Favorite? = favorites["vrtnuaz${sanitizeProgramName(programName)}"]
