@@ -3,8 +3,14 @@ package com.example.sample
 import arrow.core.Tuple6
 import be.tapped.vrtnu.content.ElasticSearchQueryBuilder
 import be.tapped.vrtnu.content.VRTApi
+import be.tapped.vrtnu.content.VideoId
 import be.tapped.vrtnu.epg.HttpEpgRepo
-import be.tapped.vrtnu.profile.*
+import be.tapped.vrtnu.profile.FavoriteWrapper
+import be.tapped.vrtnu.profile.ProfileRepo
+import be.tapped.vrtnu.profile.RefreshToken
+import be.tapped.vrtnu.profile.TokenWrapper
+import be.tapped.vrtnu.profile.VRTPlayerToken
+import be.tapped.vrtnu.profile.XVRTToken
 import kotlinx.coroutines.flow.toList
 import okhttp3.OkHttpClient
 import java.util.*
@@ -91,7 +97,7 @@ private suspend fun apiSamples(tokenTuple: Tuple6<TokenWrapper, RefreshToken, To
     println(latestAiredEpisodeStreamInfo)
 
     // Fetch Live Stream Video
-    val vrtNWSLiveStreamInfo = vrtApi.getStream(vrtPlayerToken, "vualto_een_geo")
+    val vrtNWSLiveStreamInfo = vrtApi.getStream(vrtPlayerToken, VideoId("vualto_een_geo"))
     println(vrtNWSLiveStreamInfo)
 }
 

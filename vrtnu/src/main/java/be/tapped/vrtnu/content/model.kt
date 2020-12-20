@@ -188,6 +188,8 @@ public enum class TranscodingStatus {
     NOT_AVAILABLE_YET
 }
 
+public inline class VideoId(public val id: String)
+
 @Serializable
 public data class Episode(
     val allowedRegion: String,
@@ -220,7 +222,8 @@ public data class Episode(
     val title: String,
     val transcodingStatus: TranscodingStatus,
     val url: String,
-    val videoId: String,
+    @SerialName("videoId")
+    private val vidId: String,
     val videoThumbnailUrl: String,
     val whatsonId: String,
     val instigator: String,
@@ -270,7 +273,7 @@ public data class Episode(
         require(seasonTitle.isNotEmpty()) { "Episode: seasonTitle can not be empty" }
         require(title.isNotEmpty()) { "Episode: title can not be empty" }
         require(url.isNotEmpty()) { "Episode: url can not be empty" }
-        require(videoId.isNotEmpty()) { "Episode: videoId can not be empty" }
+        require(vidId.isNotEmpty()) { "Episode: videoId can not be empty" }
         require(videoThumbnailUrl.isNotEmpty()) { "Episode: videoThumbnailUrl can not be empty" }
         require(whatsonId.isNotEmpty()) { "Episode: whatsonId can not be empty" }
         require(instigator.isNotEmpty()) { "Episode: instigator can not be empty" }
@@ -278,6 +281,8 @@ public data class Episode(
         require(id.isNotEmpty()) { "Episode: id can not be empty" }
         require(type.isNotEmpty()) { "Episode: type can not be empty" }
     }
+
+    val videoId: VideoId get() = VideoId(vidId)
 }
 
 @Serializable

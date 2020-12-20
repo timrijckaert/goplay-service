@@ -29,7 +29,7 @@ public interface StreamRepo {
      */
     public suspend fun getStream(
         vrtPlayerToken: VRTPlayerToken,
-        videoId: String,
+        videoId: VideoId,
         publicationId: String? = null,
     ): Either<Failure, Success.Content.StreamInfo>
 
@@ -51,16 +51,17 @@ public class HttpStreamRepo(
         private const val CLIENT = "vrtvideo@PROD"
     }
 
-    private fun constructVideoStreamUrl(vrtPlayerToken: VRTPlayerToken, videoId: String, publicationId: String? = null): HttpUrl =
+    private fun constructVideoStreamUrl(vrtPlayerToken: VRTPlayerToken, videoId: VideoId, publicationId: String? = null): HttpUrl =
         HttpUrl.Builder()
             .scheme("https")
             .host("media-services-public.vrt.be")
             .addPathSegments("vualto-video-aggregator-web/rest/external/v1")
             .addPathSegment("videos")
             .apply {
+                val vId = videoId.id
                 publicationId?.let {
-                    addEncodedPathSegment("${publicationId}$${videoId}")
-                } ?: addEncodedPathSegment(videoId)
+                    addEncodedPathSegment("${publicationId}$${vId}")
+                } ?: addEncodedPathSegment(vId)
             }
             .addQueryParameter("vrtPlayerToken", vrtPlayerToken.vrtPlayerToken)
             .addQueryParameter("client", CLIENT)
@@ -68,7 +69,7 @@ public class HttpStreamRepo(
 
     override suspend fun getStream(
         vrtPlayerToken: VRTPlayerToken,
-        videoId: String,
+        videoId: VideoId,
         publicationId: String?,
     ): Either<Failure, Success.Content.StreamInfo> =
         withContext(Dispatchers.IO) {
