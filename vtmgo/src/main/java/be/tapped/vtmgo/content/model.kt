@@ -282,7 +282,7 @@ public data class StreamMetadata(
     val episode: AnvatoEpisode? = null,
     val legalTags: List<String>? = null,
     val createdAt: String? = null,
-    val posterImages: List<PosterImage>,
+    val posterImages: List<PosterImage>? = null,
 )
 
 @Serializable
