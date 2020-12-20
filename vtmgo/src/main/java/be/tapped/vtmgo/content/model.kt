@@ -280,7 +280,7 @@ public data class StreamMetadata(
     val broadcast: StreamBroadcast? = null,
     val synopsis: AnvatoSynopsis? = null,
     val episode: AnvatoEpisode? = null,
-    val legalTags: List<String>,
+    val legalTags: List<String>? = null,
     val createdAt: String? = null,
     val posterImages: List<PosterImage>,
 )
