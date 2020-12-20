@@ -359,14 +359,14 @@ public sealed class AnvatoStream {
 public data class Episode(
     val id: String,
     val name: String,
-    val description: String,
+    val description: String? = null,
     val index: Int,
     val bigPhotoUrl: String,
     val mediumPhotoUrl: String,
     val smallPhotoUrl: String,
     val userProgressPercentage: Int,
     val playerPositionSeconds: Int,
-    val durationSeconds: Int,
+    val durationSeconds: Int? = null,
     val remainingDaysAvailable: Int,
     val broadcastTimestamp: String? = null,
     val doneWatching: Boolean,
@@ -378,7 +378,6 @@ public data class Episode(
     init {
         require(id.isNotEmpty()) { "id is not empty" }
         require(name.isNotEmpty()) { "name is not empty" }
-        require(description.isNotEmpty()) { "description is not empty" }
         require(bigPhotoUrl.isNotEmpty()) { "bigPhotoUrl is not empty" }
         require(mediumPhotoUrl.isNotEmpty()) { "mediumPhotoUrl is not empty" }
         require(smallPhotoUrl.isNotEmpty()) { "smallPhotoUrl is not empty" }
