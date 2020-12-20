@@ -2,6 +2,7 @@ package be.tapped.vtmgo.content
 
 import arrow.core.Either
 import arrow.core.computations.either
+import arrow.core.right
 import be.tapped.common.internal.executeAsync
 import be.tapped.vtmgo.ApiResponse
 import be.tapped.vtmgo.common.HeaderBuilder
@@ -64,7 +65,9 @@ internal class HttpFavoritesRepo(
             )
 
             either {
-                ApiResponse.Success.Content.Favorites(!jsonFavoritesParser.parse(!response.safeBodyString()))
+                val json = !response.safeBodyString()
+                !if (json.isBlank()) ApiResponse.Success.Content.Favorites(null).right()
+                else !jsonFavoritesParser.parse(json).map { ApiResponse.Success.Content.Favorites(it).right() }
             }
         }
     }

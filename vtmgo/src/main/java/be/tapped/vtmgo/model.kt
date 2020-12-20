@@ -1,7 +1,14 @@
 package be.tapped.vtmgo
 
 import arrow.core.NonEmptyList
-import be.tapped.vtmgo.content.*
+import be.tapped.vtmgo.content.AnvatoStream
+import be.tapped.vtmgo.content.Category
+import be.tapped.vtmgo.content.LiveChannel
+import be.tapped.vtmgo.content.PagedTeaserContent
+import be.tapped.vtmgo.content.Program
+import be.tapped.vtmgo.content.SearchResultResponse
+import be.tapped.vtmgo.content.StoreFront
+import be.tapped.vtmgo.content.TargetResponse
 import be.tapped.vtmgo.epg.Epg
 import be.tapped.vtmgo.profile.JWT
 import be.tapped.vtmgo.profile.Profile
@@ -15,7 +22,7 @@ public sealed class ApiResponse {
             public data class LiveChannels(val channels: List<LiveChannel>) : Content()
             public data class StoreFrontRows(val rows: List<StoreFront>) : Content()
             public data class Programs(val program: Program) : Content()
-            public data class Favorites(val favorites: StoreFront.MyListStoreFront) : Content()
+            public data class Favorites(val favorites: StoreFront.MyListStoreFront?) : Content()
             public data class Search(val search: List<SearchResultResponse>) : Content()
         }
 
