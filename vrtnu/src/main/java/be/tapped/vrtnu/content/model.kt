@@ -2,7 +2,6 @@ package be.tapped.vrtnu.content
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.JsonElement
 
 @Serializable
 public data class Pages(
@@ -323,7 +322,7 @@ public data class StreamInformation(
     val aspectRatio: String? = null,
     val targetUrls: List<TargetUrl>,
     val posterImageUrl: String? = null,
-    val channelId: JsonElement? = null,
+    val channelId: String? = null,
     val playlist: PlayList,
     val chaptering: Chaptering,
 ) {

@@ -1,0 +1,31 @@
+{
+  "duration": 0,
+  "skinType": "live",
+  "title": "Eén LIVE",
+  "shortDescription": null,
+  "drm": "drmString",
+  "drmExpired": "2020-12-20T18:13:07.840Z",
+  "aspectRatio": null,
+  "targetUrls": [
+    {
+      "type": "mpeg_dash",
+      "url": "mpeg_dash_url"
+    },
+    {
+      "type": "hls",
+      "url": "hls_url"
+    },
+    {
+      "type": "hls_aes",
+      "url": "hls_aes_url"
+    }
+  ],
+  "posterImageUrl": null,
+  "channelId": "vualto_een_geo",
+  "playlist": {
+    "content": []
+  },
+  "chaptering": {
+    "content": []
+  }
+}
