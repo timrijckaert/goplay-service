@@ -1,0 +1,52 @@
+{
+  "video": {
+    "streamType": "live",
+    "streams": [
+      {
+        "type": "anvato",
+        "anvato": {
+          "video": "vtm-loop",
+          "mcp": "ONEMCP1",
+          "accessKey": "AXEL7Dl0ier8BzuW913WfObM08UgOkW3",
+          "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ2aWQiOiJ2dG0tbG9vcCIsInVzZXJfcGFycyI6eyJhY2Nlc3NfcnVsZSI6IjEwMDAwMDYxIiwiZHZyX3BvbGljeV9pZCI6IjciLCJyZXR1cm5fZm9ybWF0IjoianNvbnAifSwiaWF0IjoxNjA4NDkzNjM3LCJleHAiOjE2MDg0OTcyMzcsImlzcyI6IkFYRUw3RGwwaWVyOEJ6dVc5MTNXZk9iTTA4VWdPa1czIn0.NebPux0_YcU8fk1mcSqNNepueYRhsao5MWP98VF7lUQ"
+        }
+      }
+    ],
+    "analytics": {
+      "cim": {
+        "identifier": "zUBFza8qGU9r1Oril70XvsV3.h3NNobQxe79BTAvPDb.P7",
+        "materialId": "221eac7e-f92c-4df0-98e0-e0808d49ccda",
+        "sourceType": "vid.tvi.live.free",
+        "contentType": "ce/tv",
+        "name": "VTM Nieuws loop for popup channel",
+        "linkTv": "12345678910",
+        "channel": "VTM Nieuws"
+      }
+    },
+    "ads": {
+      "provider": "freewheel",
+      "freewheel": {
+        "serverSide": true,
+        "serverUrl": "https://5e124.v.fwmrm.net/ad/g/1",
+        "profileId": "385316:medialaan_VTMGO_SSAI_android",
+        "networkId": "385316"
+      }
+    },
+    "metadata": {
+      "id": "7f47fed4-8c26-4dd9-a19a-08d1b412ba8b",
+      "geoBlocked": false,
+      "assetType": "broadcast",
+      "title": "VTM Nieuws loop for popup channel",
+      "channel": {
+        "id": "221eac7e-f92c-4df0-98e0-e0808d49ccda",
+        "title": "VTM Nieuws"
+      },
+      "videoType": "oneoff",
+      "broadcast": {
+        "id": "d10475e9-b271-4270-8b4d-47d1317c6622",
+        "technicalFromMs": 1608422400000,
+        "technicalToMs": 1608508800000
+      }
+    }
+  }
+}

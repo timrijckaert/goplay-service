@@ -105,7 +105,7 @@ public class VRTApiE2ETest : BehaviorSpec({
                                         val stream = vrtApi.getStream(vrtPlayerToken.orNull()!!.vrtPlayerToken,
                                             it.videoId,
                                             it.publicationId)
-                                        then("it should successful. ${program.programName}: ${it.publicationId}-${it.videoId}") {
+                                        then("it should successful. ${it.id}-${program.programName}: ${it.publicationId}-${it.videoId}") {
                                             stream.shouldBeRight()
                                         }
                                     }

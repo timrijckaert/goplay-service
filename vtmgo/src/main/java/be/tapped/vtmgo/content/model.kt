@@ -41,7 +41,7 @@ public data class TargetResponse(
 public data class PagedTeaserContent(
     val title: String,
     val target: TargetResponse,
-    val imageUrl: String,
+    val imageUrl: String? = null,
     val geoBlocked: Boolean,
     val blockedFor: String? = null,
 )
@@ -91,7 +91,7 @@ public data class CarouselTeaser(
 public data class DefaultSwimlaneTeaser(
     val title: String,
     val target: TargetResponse,
-    val imageUrl: String,
+    val imageUrl: String? = null,
     val geoBlocked: Boolean,
     val blockedFor: String? = null,
 )
@@ -398,10 +398,10 @@ public data class Program(
     val id: String,
     val name: String,
     val description: String? = null,
-    val bigPhotoUrl: String,
-    val mediumPhotoUrl: String,
-    val smallPhotoUrl: String,
-    val teaserImageUrl: String,
+    val bigPhotoUrl: String? = null,
+    val mediumPhotoUrl: String? = null,
+    val smallPhotoUrl: String? = null,
+    val teaserImageUrl: String? = null,
     val activeSeasonIndex: Int,
     val activeEpisodeId: String,
     val watching: Boolean,
@@ -416,10 +416,6 @@ public data class Program(
     init {
         require(id.isNotEmpty()) { "id is not empty" }
         require(name.isNotEmpty()) { "name is not empty" }
-        require(bigPhotoUrl.isNotEmpty()) { "bigPhotoUrl is not empty" }
-        require(mediumPhotoUrl.isNotEmpty()) { "mediumPhotoUrl is not empty" }
-        require(smallPhotoUrl.isNotEmpty()) { "smallPhotoUrl is not empty" }
-        require(teaserImageUrl.isNotEmpty()) { "teaserImageUrl is not empty" }
         require(activeEpisodeId.isNotEmpty()) { "activeEpisodeId is not empty" }
         require(seasons.isNotEmpty()) { "seasons is not empty" }
     }
