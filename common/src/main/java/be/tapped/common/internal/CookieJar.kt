@@ -3,6 +3,7 @@ package be.tapped.common.internal
 import okhttp3.Cookie
 import okhttp3.CookieJar
 import okhttp3.HttpUrl
+import java.util.*
 
 public interface ReadOnlyCookieJar : CookieJar {
     public operator fun get(name: String): String?
@@ -13,11 +14,27 @@ public interface ReadOnlyCookieJar : CookieJar {
  * Matching cookies are returned based on the host name of the requested host.
  */
 @InterModuleUseOnly
-public class DefaultCookieJar : ReadOnlyCookieJar {
-    private val cookieCache: MutableList<Cookie> = mutableListOf()
+public class DefaultCookieJar(private val maxCachedCookies: Int = MAX_COOKIES) : ReadOnlyCookieJar {
+
+    private companion object {
+        private const val MAX_COOKIES: Int = 100
+    }
+
+    private val c by lazy {
+        object : LinkedHashMap<HttpUrl, List<Cookie>>() {
+            override fun removeEldestEntry(p0: MutableMap.MutableEntry<HttpUrl, List<Cookie>>?): Boolean {
+                return this.size > maxCachedCookies;
+            }
+        }
+    }
+
+    private val cookieCache: MutableMap<HttpUrl, List<Cookie>> = Collections.synchronizedMap(c)
+
+    internal val fullCookieList: List<Cookie>
+        get() = cookieCache.values.flatten()
 
     override fun loadForRequest(url: HttpUrl): List<Cookie> =
-        cookieCache
+        fullCookieList
             .filter { it.matches(url) }
             .fold(mutableListOf<Cookie>()) { cookieAcc, cookie ->
                 cookieAcc.removeAll { it.name == cookie.name }
@@ -27,10 +44,10 @@ public class DefaultCookieJar : ReadOnlyCookieJar {
             .toList()
 
     override fun saveFromResponse(url: HttpUrl, cookies: List<Cookie>) {
-        cookieCache += cookies
+        cookieCache[url] = cookies
     }
 
-    override operator fun get(name: String): String? = cookieCache.firstOrNull { it.name == name }?.value
+    override operator fun get(name: String): String? = fullCookieList.firstOrNull { it.name == name }?.value
 
-    override fun toString(): String = cookieCache.joinToString("\r\n")
+    override fun toString(): String = fullCookieList.joinToString("\r\n")
 }
