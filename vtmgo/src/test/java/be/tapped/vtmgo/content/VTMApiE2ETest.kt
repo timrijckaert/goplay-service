@@ -1,5 +1,6 @@
 package be.tapped.vtmgo.content
 
+import arrow.fx.coroutines.parTraverse
 import be.tapped.vtmgo.CredentialsProvider
 import be.tapped.vtmgo.profile.HttpProfileRepo
 import io.kotest.assertions.arrow.either.shouldBeLeft
@@ -38,7 +39,7 @@ public class VTMApiE2ETest : FreeSpec() {
                             profiles.orNull()!!.profiles.shouldHaveAtLeastSize(1)
                         }
 
-                        profiles.orNull()!!.profiles.forEach { profile ->
+                        profiles.orNull()!!.profiles.parTraverse { profile ->
                             "fetching favorites for $profile" - {
                                 val favorites = vtmApi.fetchMyFavorites(jwtToken, profile)
 
@@ -73,7 +74,7 @@ public class VTMApiE2ETest : FreeSpec() {
                                 liveChannels.shouldBeRight()
                             }
 
-                            liveChannels.orNull()!!.channels.forEach {
+                            liveChannels.orNull()!!.channels.parTraverse {
                                 "fetching the stream for $it" - {
                                     val liveStream = vtmApi.fetchStream(it)
 
@@ -88,7 +89,7 @@ public class VTMApiE2ETest : FreeSpec() {
                             }
                         }
 
-                        StoreFrontType.values().forEach {
+                        StoreFrontType.values().toList().parTraverse {
                             "and fetching the $it storefront" - {
                                 val storeFronts = vtmApi.fetchStoreFront(jwtToken, profile, it)
 
@@ -107,9 +108,9 @@ public class VTMApiE2ETest : FreeSpec() {
                                     }
                                 }
                                     .shuffled()
-                                    .take(50)
-                                    .forEachIndexed { index, target ->
-                                        "when fetching video streams for $index: $target" - {
+                                    .take(100)
+                                    .parTraverse { target ->
+                                        "when fetching video streams for $target" - {
                                             val t = target.asTarget
                                             val streams = vtmApi.fetchStream(t)
                                             when (t) {
