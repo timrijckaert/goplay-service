@@ -23,6 +23,10 @@ public class VTMApiE2ETest : FreeSpec() {
                 "when we are logged in" - {
                     val token = profileRepo.login(username, password)
 
+                    "it should be successful" {
+                        token.shouldBeRight()
+                    }
+
                     "and fetch the profiles" - {
                         "then it should have a non null JWT token" {
                             token.orNull()?.jwt.shouldNotBeNull()
@@ -160,10 +164,6 @@ public class VTMApiE2ETest : FreeSpec() {
                                     }
                                 }
                         }
-                    }
-
-                    "it should be successful" {
-                        token.shouldBeRight()
                     }
                 }
             }
