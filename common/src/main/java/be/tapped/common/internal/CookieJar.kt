@@ -14,23 +14,23 @@ public interface ReadOnlyCookieJar : CookieJar {
  */
 @InterModuleUseOnly
 public class DefaultCookieJar : ReadOnlyCookieJar {
-    private val cookieCache: MutableMap<HttpUrl, List<Cookie>> = mutableMapOf()
-
-    private val fullCookieList: List<Cookie>
-        get() = cookieCache.values.flatten()
+    private val cookieCache: MutableList<Cookie> = mutableListOf()
 
     override fun loadForRequest(url: HttpUrl): List<Cookie> =
-        cookieCache.entries
-            .filter { it.key.host == url.host }
-            .flatMap(MutableMap.MutableEntry<HttpUrl, List<Cookie>>::value)
-            .toSet()
+        cookieCache
+            .filter { it.matches(url) }
+            .fold(mutableListOf<Cookie>()) { cookieAcc, cookie ->
+                cookieAcc.removeAll { it.name == cookie.name }
+                cookieAcc.add(cookie)
+                cookieAcc
+            }
             .toList()
 
     override fun saveFromResponse(url: HttpUrl, cookies: List<Cookie>) {
-        cookieCache[url] = cookies
+        cookieCache += cookies
     }
 
-    override operator fun get(name: String): String? = fullCookieList.firstOrNull { it.name == name }?.value
+    override operator fun get(name: String): String? = cookieCache.firstOrNull { it.name == name }?.value
 
-    override fun toString(): String = fullCookieList.joinToString("\r\n")
+    override fun toString(): String = cookieCache.joinToString("\r\n")
 }

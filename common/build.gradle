@@ -3,4 +3,9 @@ dependencies {
     implementation Dependencies.arrowCore
     implementation Dependencies.okHttp3
     implementation Dependencies.coroutinesCore
+
+    testImplementation Testing.kotestRunner
+    testImplementation Testing.kotestAssertionsCore
+    testImplementation Testing.kotestAssertionsArrow
+    testImplementation Testing.kotestProperty
 }
