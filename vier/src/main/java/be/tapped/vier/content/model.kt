@@ -9,7 +9,6 @@ import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.json.JsonDecoder
 import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.JsonPrimitive
 
 @Serializable
 public data class Images(
@@ -81,7 +80,7 @@ public data class HeaderVideo2(
     val createdDate: Int,
     val description: String,
     val duration: Int,
-    val embedCta: JsonPrimitive?,
+    val embedCta: EmbedCta?,
     val enablePreroll: Boolean,
     val episodeNumber: String,
     val episodeTitle: String?,
@@ -107,6 +106,22 @@ public data class HeaderVideo2(
     val badge: String? = null,
 )
 
+@Serializable
+public data class Link(
+    val url: String,
+    val text: String,
+    val external: Boolean,
+)
+
+@Serializable
+public data class EmbedCta(
+    val label: String,
+    val title: String,
+    val description: String,
+    val link: Link,
+    val image: String,
+)
+
 @Serializable(with = CustomHeaderVideoSerializer::class)
 public data class HeaderVideo(
     val autoplay: Boolean,
@@ -114,7 +129,7 @@ public data class HeaderVideo(
     val createdDate: Int,
     val description: String,
     val duration: Int,
-    val embedCta: JsonPrimitive?,
+    val embedCta: EmbedCta?,
     val enablePreroll: Boolean,
     val episodeNumber: String,
     val episodeTitle: String?,
@@ -183,7 +198,7 @@ public data class Episode(
     val createdDate: Int,
     val description: String,
     val duration: Int,
-    val embedCta: JsonPrimitive?,
+    val embedCta: EmbedCta?,
     val enablePreroll: Boolean,
     val episodeNumber: String,
     val episodeTitle: String,
@@ -304,7 +319,7 @@ public data class SearchHit(
 
     @Serializable
     public data class Highlight(
-        val title: List<String>,
+        val title: List<String> = emptyList(),
         val intro: List<String> = emptyList(),
         val body: List<String> = emptyList(),
     )
