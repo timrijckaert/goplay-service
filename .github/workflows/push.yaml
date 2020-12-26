@@ -15,6 +15,7 @@ jobs:
       - name: Inject credentials
         run: |
           echo $CREDENTIALS > local.properties
+          ls -la
           echo "Hello World"
           cat local.properties
       - name: Build with Gradle
