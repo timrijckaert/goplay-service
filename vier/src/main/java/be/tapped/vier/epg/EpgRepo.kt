@@ -2,6 +2,8 @@ package be.tapped.vier.epg
 
 import arrow.core.Either
 import arrow.core.computations.either
+import arrow.core.left
+import arrow.core.right
 import be.tapped.common.internal.executeAsync
 import be.tapped.vier.ApiResponse
 import be.tapped.vier.common.safeBodyString
@@ -49,14 +51,14 @@ public class HttpEpgRepo(
             )
 
             either {
-                val epg = !jsonEpgParser.parse(!response.safeBodyString())
-                ApiResponse.Success.ProgramGuide(
-                    !Either.conditionally(
-                        epg.isEmpty(),
-                        ifTrue = { epg },
-                        ifFalse = { ApiResponse.Failure.Epg.NoEpgDataFor(calendar) }
-                    )
-                )
+                val json = !response.safeBodyString()
+                val epg = !jsonEpgParser.parse(json)
+
+                !if (epg.isEmpty()) {
+                    ApiResponse.Failure.Epg.NoEpgDataFor(calendar).left()
+                } else {
+                    ApiResponse.Success.ProgramGuide(epg).right()
+                }
             }
         }
 }
