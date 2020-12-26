@@ -12,7 +12,7 @@ public data class EpgProgram(
     @SerialName("original_title")
     val originalTitle: String? = null,
     @SerialName("episode_nr")
-    val episodeNr: String,
+    val episodeNr: String? = null,
     @SerialName("season")
     val season: String? = null,
     @SerialName("genre")
@@ -26,7 +26,7 @@ public data class EpgProgram(
     @SerialName("won_id")
     val wonId: String,
     @SerialName("won_program_id")
-    val wonProgramId: String,
+    val wonProgramId: String? = null,
     @SerialName("program_concept")
     val programConcept: String? = null,
     @SerialName("content_episode")
