@@ -14,12 +14,12 @@ jobs:
           java-version: 1.8
       - name: Inject credentials
         run: |
-          echo "$SECRETS" >> local.properties
+          echo "$CREDENTIALS" >> local.properties
           ls -la
           cat local.properties
         shell: bash
         env:
-         SECRETS : ${{CREDENTIALS}}
+         CREDENTIALS : ${{ secrets.CREDENTIALS }}
       - name: Build with Gradle
         run: ./gradlew test
       - uses: actions/upload-artifact@v2
