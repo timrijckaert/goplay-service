@@ -36,7 +36,6 @@ import kotlinx.serialization.json.jsonObject
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.jsoup.Jsoup
-import org.jsoup.nodes.Document
 
 internal data class PartialProgram(val name: String, val path: String)
 
@@ -44,8 +43,8 @@ internal class HtmlPartialProgramParser {
 
     private val applicative = Validated.applicative(NonEmptyList.semigroup<HTML>())
 
-    internal suspend fun parse(document: Document): Either<HTML, List<PartialProgram>> =
-        document.safeSelect("a.program-overview__link").flatMap { links ->
+    internal suspend fun parse(html: String): Either<HTML, List<PartialProgram>> =
+        Jsoup.parse(html).safeSelect("a.program-overview__link").flatMap { links ->
             links.map { link ->
                 val path = link.safeAttr("href").toValidatedNel()
                 val title = link.safeChild(0).flatMap { it.safeText() }.toValidateNel()
@@ -62,8 +61,8 @@ internal class HtmlProgramParser {
         private const val jsonCSSSelector = "data-hero"
     }
 
-    suspend fun parse(document: Document): Either<Failure, Program> =
-        document
+    suspend fun parse(html: String): Either<Failure, Program> =
+        Jsoup.parse(html)
             .safeSelectFirst("div[$jsonCSSSelector]")
             .flatMap { it.safeAttr(jsonCSSSelector).toEither() }
             .flatMap {
@@ -104,7 +103,7 @@ internal class HttpProgramRepo(
                         .build()
                 ).safeBodyString()
 
-                val partialPrograms = !htmlPartialProgramParser.parse(Jsoup.parse(html))
+                val partialPrograms = !htmlPartialProgramParser.parse(html)
                 val programs = !fetchProgramDetails(partialPrograms)
                 Success.Content.Programs(programs)
             }
@@ -120,7 +119,7 @@ internal class HttpProgramRepo(
                     .build()
             )
                 .safeBodyString()
-                .flatMap { html -> htmlProgramParser.parse(Jsoup.parse(html)) }
+                .flatMap { html -> htmlProgramParser.parse(html) }
         }
 
     override suspend fun fetchProgram(programSearchKey: SearchHit.Source.SearchKey.Program): Either<Failure, Success.Content.SingleProgram> =
