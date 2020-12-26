@@ -61,6 +61,12 @@ internal class HtmlProgramParser {
         private const val jsonCSSSelector = "data-hero"
     }
 
+    public fun parseJsonObject(programDataObject: JsonObject): Program =
+        Json {
+            isLenient = true
+            ignoreUnknownKeys = true
+        }.decodeFromJsonElement(programDataObject)
+
     suspend fun parse(html: String): Either<Failure, Program> =
         Jsoup.parse(html)
             .safeSelectFirst("div[$jsonCSSSelector]")
@@ -68,11 +74,8 @@ internal class HtmlProgramParser {
             .flatMap {
                 Either.catch {
                     val programDataObject = Json.decodeFromString<JsonObject>(it)["data"]!!.jsonObject
-                    Json {
-                        isLenient = true
-                        ignoreUnknownKeys = true
-                    }.decodeFromJsonElement<Program>(programDataObject)
-                }.mapLeft { Failure.JsonParsingException(it) }
+                    parseJsonObject(programDataObject)
+                }.mapLeft(Failure::JsonParsingException)
             }
 }
 

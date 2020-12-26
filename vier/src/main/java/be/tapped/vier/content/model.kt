@@ -1,14 +1,11 @@
 package be.tapped.vier.content
 
-import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.descriptors.SerialDescriptor
-import kotlinx.serialization.descriptors.buildClassSerialDescriptor
-import kotlinx.serialization.encoding.Decoder
-import kotlinx.serialization.encoding.Encoder
-import kotlinx.serialization.json.JsonDecoder
-import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.builtins.ListSerializer
+import kotlinx.serialization.json.JsonArray
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonTransformingSerializer
 
 @Serializable
 public data class Images(
@@ -18,93 +15,14 @@ public data class Images(
     val teaser: String,
 )
 
-public object CustomHeaderVideoSerializer : KSerializer<HeaderVideo?> {
-    override val descriptor: SerialDescriptor = buildClassSerialDescriptor("HeaderVideo")
-
-    override fun deserialize(decoder: Decoder): HeaderVideo? {
-        val input = decoder as JsonDecoder
-        val json = input.decodeJsonElement()
-        return if (json is JsonObject) {
-            try {
-                val h = decoder.decodeSerializableValue(HeaderVideo2.serializer())
-                HeaderVideo(
-                    autoplay = h.autoplay,
-                    cimTag = h.cimTag,
-                    createdDate = h.createdDate,
-                    description = h.description,
-                    duration = h.duration,
-                    embedCta = h.embedCta,
-                    enablePreroll = h.enablePreroll,
-                    episodeNumber = h.episodeNumber,
-                    episodeTitle = h.episodeTitle,
-                    hasProductPlacement = h.hasProductPlacement,
-                    image = h.image,
-                    isProtected = h.isProtected,
-                    isSeekable = h.isSeekable,
-                    isStreaming = h.isStreaming,
-                    link = h.link,
-                    midrollOffsets = h.midrollOffsets,
-                    pageInfo = h.pageInfo,
-                    pageUuid = h.pageUuid,
-                    parentalRating = h.parentalRating,
-                    path = h.path,
-                    seasonNumber = h.seasonNumber,
-                    seekableFrom = h.seekableFrom,
-                    title = h.title,
-                    type = h.type,
-                    unpublishDate = h.unpublishDate,
-                    videoUuid = h.videoUuid,
-                    whatsonId = h.whatsonId,
-                    needs16PlusLabel = h.needs16PlusLabel,
-                    badge = h.badge,
-                )
-            } catch (e: Exception) {
-                null
-            }
+public object HeaderVideoSerializer : JsonTransformingSerializer<List<HeaderVideo>>(ListSerializer(HeaderVideo.serializer())) {
+    override fun transformDeserialize(element: JsonElement): JsonElement =
+        if (element is JsonArray) {
+            element
         } else {
-            null
+            JsonArray(listOf(element))
         }
-    }
-
-    override fun serialize(encoder: Encoder, value: HeaderVideo?) {}
-
 }
-
-// FIXME https://github.com/Kotlin/kotlinx.serialization/issues/1253
-// Unable to delegate to generated KSerializer
-// This object is a copy of HeaderVideo and it's only purpose is to generate a KSerializer for easy mapping.
-@Serializable
-public data class HeaderVideo2(
-    val autoplay: Boolean,
-    val cimTag: String,
-    val createdDate: Int,
-    val description: String,
-    val duration: Int,
-    val embedCta: EmbedCta?,
-    val enablePreroll: Boolean,
-    val episodeNumber: String,
-    val episodeTitle: String?,
-    val hasProductPlacement: Boolean,
-    val image: String,
-    val isProtected: Boolean,
-    val isSeekable: Boolean,
-    val isStreaming: Boolean,
-    val link: String,
-    val midrollOffsets: List<Int>,
-    val pageInfo: PageInfo,
-    val pageUuid: String,
-    val parentalRating: String,
-    val path: String,
-    val seasonNumber: String,
-    val seekableFrom: Int,
-    val title: String,
-    val type: String,
-    val unpublishDate: String,
-    val videoUuid: String,
-    val whatsonId: String?,
-    val needs16PlusLabel: Boolean? = null,
-    val badge: String? = null,
-)
 
 @Serializable
 public data class Link(
@@ -122,7 +40,7 @@ public data class EmbedCta(
     val image: String,
 )
 
-@Serializable(with = CustomHeaderVideoSerializer::class)
+@Serializable
 public data class HeaderVideo(
     val autoplay: Boolean,
     val cimTag: String,
@@ -158,7 +76,8 @@ public data class HeaderVideo(
 @Serializable
 public data class Header(
     val title: String,
-    val video: HeaderVideo? = null,
+    @Serializable(with = HeaderVideoSerializer::class)
+    val video: List<HeaderVideo> = emptyList(),
 )
 
 @Serializable
