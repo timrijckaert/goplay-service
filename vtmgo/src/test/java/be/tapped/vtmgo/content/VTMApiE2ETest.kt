@@ -11,6 +11,7 @@ import io.kotest.matchers.collections.shouldNotBeEmpty
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.should
 import io.kotest.matchers.types.beOfType
+import kotlin.random.Random
 
 public class VTMApiE2ETest : FreeSpec() {
 
@@ -114,7 +115,7 @@ public class VTMApiE2ETest : FreeSpec() {
                                     .shuffled()
                                     .take(100)
                                     .parTraverse { target ->
-                                        "when fetching video streams for $target" - {
+                                        "${Random.nextInt()} when fetching video streams for $target" - {
                                             val t = target.asTarget
                                             val streams = vtmApi.fetchStream(t)
                                             when (t) {

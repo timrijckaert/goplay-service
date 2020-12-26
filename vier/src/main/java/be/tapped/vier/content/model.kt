@@ -7,15 +7,10 @@ import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonTransformingSerializer
 
-@Serializable
-public data class Images(
-    val hero: String,
-    val mobile: String,
-    val poster: String,
-    val teaser: String,
-)
+public inline class VideoUuid(public val id: String)
+public inline class M3U8Stream(public val url: String)
 
-public object HeaderVideoSerializer : JsonTransformingSerializer<List<HeaderVideo>>(ListSerializer(HeaderVideo.serializer())) {
+public object HeaderVideoSerializer : JsonTransformingSerializer<List<Program.HeaderVideo>>(ListSerializer(Program.HeaderVideo.serializer())) {
     override fun transformDeserialize(element: JsonElement): JsonElement =
         if (element is JsonArray) {
             element
@@ -23,62 +18,6 @@ public object HeaderVideoSerializer : JsonTransformingSerializer<List<HeaderVide
             JsonArray(listOf(element))
         }
 }
-
-@Serializable
-public data class Link(
-    val url: String,
-    val text: String,
-    val external: Boolean,
-)
-
-@Serializable
-public data class EmbedCta(
-    val label: String,
-    val title: String,
-    val description: String,
-    val link: Link,
-    val image: String,
-)
-
-@Serializable
-public data class HeaderVideo(
-    val autoplay: Boolean,
-    val cimTag: String,
-    val createdDate: Int,
-    val description: String,
-    val duration: Int,
-    val embedCta: EmbedCta?,
-    val enablePreroll: Boolean,
-    val episodeNumber: String,
-    val episodeTitle: String?,
-    val hasProductPlacement: Boolean,
-    val image: String,
-    val isProtected: Boolean,
-    val isSeekable: Boolean,
-    val isStreaming: Boolean,
-    val link: String,
-    val midrollOffsets: List<Int>,
-    val pageInfo: PageInfo,
-    val pageUuid: String,
-    val parentalRating: String,
-    val path: String,
-    val seasonNumber: String,
-    val seekableFrom: Int,
-    val title: String,
-    val type: String,
-    val unpublishDate: String,
-    val videoUuid: String,
-    val whatsonId: String?,
-    val needs16PlusLabel: Boolean? = null,
-    val badge: String? = null,
-)
-
-@Serializable
-public data class Header(
-    val title: String,
-    @Serializable(with = HeaderVideoSerializer::class)
-    val video: List<HeaderVideo> = emptyList(),
-)
 
 @Serializable
 public data class PageInfo(
@@ -100,60 +39,6 @@ public data class PageInfo(
 )
 
 @Serializable
-public data class Social(
-    val facebook: String,
-    val hashtag: String,
-    val instagram: String,
-    val twitter: String,
-)
-
-public inline class VideoUuid(public val id: String)
-
-@Serializable
-public data class Episode(
-    val autoplay: Boolean,
-    val badge: String? = null,
-    val cimTag: String,
-    val createdDate: Int,
-    val description: String,
-    val duration: Int,
-    val embedCta: EmbedCta?,
-    val enablePreroll: Boolean,
-    val episodeNumber: String,
-    val episodeTitle: String,
-    val hasProductPlacement: Boolean,
-    val image: String,
-    val isProtected: Boolean,
-    val isSeekable: Boolean,
-    val isStreaming: Boolean,
-    val link: String,
-    val midrollOffsets: List<Int>,
-    val needs16PlusLabel: Boolean? = null,
-    val pageInfo: PageInfo,
-    val pageUuid: String,
-    val parentalRating: String,
-    val path: String,
-    val seasonNumber: String,
-    val seekableFrom: Int,
-    val title: String,
-    val type: String,
-    val unpublishDate: String,
-    private val videoUuid: String,
-    val whatsonId: String,
-) {
-    val id: VideoUuid get() = VideoUuid(videoUuid)
-}
-
-@Serializable
-public data class Playlist(
-    val episodes: List<Episode>,
-    val id: String,
-    val link: String,
-    val pageInfo: PageInfo,
-    val title: String,
-)
-
-@Serializable
 public data class Program(
     val id: String,
     val title: String,
@@ -166,9 +51,123 @@ public data class Program(
     val pageInfo: PageInfo,
     val playlists: List<Playlist>,
     val social: Social,
-)
+) {
+    @Serializable
+    public data class Social(
+        val facebook: String,
+        val hashtag: String,
+        val instagram: String,
+        val twitter: String,
+    )
 
-public inline class M3U8Stream(public val url: String)
+    @Serializable
+    public data class Images(
+        val hero: String,
+        val mobile: String,
+        val poster: String,
+        val teaser: String,
+    )
+
+    @Serializable
+    public data class HeaderVideo(
+        val autoplay: Boolean,
+        val cimTag: String,
+        val createdDate: Int,
+        val description: String,
+        val duration: Int,
+        val embedCta: EmbedCta?,
+        val enablePreroll: Boolean,
+        val episodeNumber: String,
+        val episodeTitle: String?,
+        val hasProductPlacement: Boolean,
+        val image: String,
+        val isProtected: Boolean,
+        val isSeekable: Boolean,
+        val isStreaming: Boolean,
+        val link: String,
+        val midrollOffsets: List<Int>,
+        val pageInfo: PageInfo,
+        val pageUuid: String,
+        val parentalRating: String,
+        val path: String,
+        val seasonNumber: String,
+        val seekableFrom: Int,
+        val title: String,
+        val type: String,
+        val unpublishDate: String,
+        val videoUuid: String,
+        val whatsonId: String?,
+        val needs16PlusLabel: Boolean? = null,
+        val badge: String? = null,
+    )
+
+    @Serializable
+    public data class EmbedCta(
+        val label: String,
+        val title: String,
+        val description: String,
+        val link: Link,
+        val image: String,
+    ) {
+        @Serializable
+        public data class Link(
+            val url: String,
+            val text: String,
+            val external: Boolean,
+        )
+    }
+
+    @Serializable
+    public data class Header(
+        val title: String,
+        @Serializable(with = HeaderVideoSerializer::class)
+        val video: List<HeaderVideo> = emptyList(),
+    )
+
+    @Serializable
+    public data class Playlist(
+        val episodes: List<Episode>,
+        val id: String,
+        val link: String,
+        val pageInfo: PageInfo,
+        val title: String,
+    ) {
+        @Serializable
+        public data class Episode(
+            val autoplay: Boolean,
+            val badge: String? = null,
+            val cimTag: String,
+            val createdDate: Int,
+            val description: String,
+            val duration: Int,
+            val embedCta: EmbedCta?,
+            val enablePreroll: Boolean,
+            val episodeNumber: String,
+            val episodeTitle: String,
+            val hasProductPlacement: Boolean,
+            val image: String,
+            val isProtected: Boolean,
+            val isSeekable: Boolean,
+            val isStreaming: Boolean,
+            val link: String,
+            val midrollOffsets: List<Int>,
+            val needs16PlusLabel: Boolean? = null,
+            val pageInfo: PageInfo,
+            val pageUuid: String,
+            val parentalRating: String,
+            val path: String,
+            val seasonNumber: String,
+            val seekableFrom: Int,
+            val title: String,
+            val type: String,
+            val unpublishDate: String,
+            private val videoUuid: String,
+            val whatsonId: String,
+        ) {
+            val id: VideoUuid get() = VideoUuid(videoUuid)
+        }
+    }
+}
 
 //<editor-fold desc="Search">
 @Serializable

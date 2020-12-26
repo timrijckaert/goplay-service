@@ -1,7 +1,6 @@
 package be.tapped.vier
 
 import arrow.core.NonEmptyList
-import be.tapped.vier.content.Episode
 import be.tapped.vier.content.M3U8Stream
 import be.tapped.vier.content.Program
 import be.tapped.vier.content.SearchHit
@@ -38,7 +37,7 @@ public sealed class ApiResponse {
         }
 
         public sealed class Content : Success() {
-            public data class SingleEpisode(val episode: Episode) : Content()
+            public data class SingleEpisode(val episode: Program.Playlist.Episode) : Content()
             public data class SingleProgram(val program: Program) : Content()
             public data class Programs(val programs: List<Program>) : Content()
             public data class SearchResults(val hits: List<SearchHit>) : Content()

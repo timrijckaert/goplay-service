@@ -136,7 +136,7 @@ internal class HttpProgramRepo(
                     .fromNullable(
                         program
                             .playlists
-                            .flatMap(Playlist::episodes)
+                            .flatMap(Program.Playlist::episodes)
                             .firstOrNull { it.pageInfo.nodeId == episodeSearchKey.nodeId }
                     )
                     .mapLeft { Failure.Content.NoEpisodeFound }
