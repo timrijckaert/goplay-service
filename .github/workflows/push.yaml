@@ -14,7 +14,7 @@ jobs:
           java-version: 1.8
       - name: Inject credentials
         run: |
-          echo $SECRETS >> local.properties
+          echo "$SECRETS" >> local.properties
           ls -la
           cat local.properties
         shell: bash
