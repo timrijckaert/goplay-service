@@ -51,7 +51,7 @@ public class VierApiE2ETest : FreeSpec({
                     programs.orNull()!!
                         .programs
                         .flatMap(Program::playlists)
-                        .flatMap(Playlist::episodes)
+                        .flatMap(Program.Playlist::episodes)
                         .shuffled()
                         .take(100).parTraverse {
                             val streams = vierApi.streamForEpisodeVideoUuid(idToken, it.id)
