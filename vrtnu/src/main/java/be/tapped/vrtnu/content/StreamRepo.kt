@@ -33,13 +33,6 @@ public interface StreamRepo {
         publicationId: String? = null,
     ): Either<Failure, Success.Content.StreamInfo>
 
-    //TODO("This will need web scraping")
-    //suspend fun getStreamByUrl(
-    //    vrtPlayerToken: VRTPlayerToken,
-    //    videoId: String?,
-    //    url: String,
-    //): Either<Failure, Success.Content.StreamInfo>
-
 }
 
 public class HttpStreamRepo(
