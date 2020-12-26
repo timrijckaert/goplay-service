@@ -19,7 +19,7 @@ jobs:
           cat local.properties
         shell: bash
         env:
-         SECRETS : ${{secrets.CREDENTIALS}}
+         SECRETS : ${{CREDENTIALS}}
       - name: Build with Gradle
         run: ./gradlew test
       - uses: actions/upload-artifact@v2
