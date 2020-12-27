@@ -54,7 +54,7 @@ public class VierApiE2ETest : FreeSpec({
                         .flatMap(Program.Playlist::episodes)
                         .shuffled()
                         .take(100).parTraverse {
-                            val streams = vierApi.streamForEpisodeVideoUuid(idToken, it.id)
+                            val streams = vierApi.streamByVideoUuid(idToken, it.id)
 
                             "it should have found a stream $streams" {
                                 streams.shouldBeRight()
@@ -178,7 +178,7 @@ public class VierApiE2ETest : FreeSpec({
                 "zo-man-zo-vrouw",
                 "zout-op-het-vuur"
             ).parTraverse {
-                val programSearchKey = SearchHit.Source.SearchKey.Program(it)
+                val programSearchKey = SearchHit.Source.SearchKey.Program("https://www.vier.be/$it")
                 val program = vierApi.fetchProgram(programSearchKey)
 
                 "$it should be successful" {
@@ -202,20 +202,20 @@ public class VierApiE2ETest : FreeSpec({
                 .map { it.source.searchKey }
 
             searchKeys
-                .filterIsInstance<SearchHit.Source.SearchKey.Episode>()
-                .parTraverse(vierApi::fetchEpisode)
-                .forEach {
-                    "api returned an episode: $it" {
-                        it.shouldBeRight()
+                .filterIsInstance<SearchHit.Source.SearchKey.EpisodeByNodeId>()
+                .parTraverse { episodeSearchKey ->
+                    val episode = vierApi.fetchEpisode(episodeSearchKey)
+                    "api returned an episode: $episode for $episodeSearchKey" {
+                        episode.shouldBeRight()
                     }
                 }
 
             searchKeys
                 .filterIsInstance<SearchHit.Source.SearchKey.Program>()
-                .parTraverse(vierApi::fetchProgram)
-                .forEach {
-                    "api returned a program: $it" {
-                        it.shouldBeRight()
+                .parTraverse { programSearchKey ->
+                    val program = vierApi.fetchProgram(programSearchKey)
+                    "api returned a program: $program for $programSearchKey" {
+                        program.shouldBeRight()
                     }
                 }
         }
