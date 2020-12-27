@@ -2,3 +2,4 @@ package be.tapped.vier.common
 
 internal const val vierBaseApiUrl = "https://api.viervijfzes.be"
 internal const val vierUrl = "https://www.vier.be"
+internal const val vierApiUrl = "$vierUrl/api"

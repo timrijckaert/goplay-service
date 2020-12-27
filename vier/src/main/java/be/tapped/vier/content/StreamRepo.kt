@@ -30,7 +30,7 @@ internal class JsonStreamParser {
 }
 
 public interface StreamRepo {
-    public suspend fun streamForEpisodeVideoUuid(idToken: IdToken, videoUuid: VideoUuid): Either<ApiResponse.Failure, ApiResponse.Success.Stream>
+    public suspend fun streamByVideoUuid(idToken: IdToken, videoUuid: VideoUuid): Either<ApiResponse.Failure, ApiResponse.Success.Stream>
 }
 
 internal class HttpStreamRepo(
@@ -41,7 +41,7 @@ internal class HttpStreamRepo(
     // curl -X GET \
     // -H "Authorization: <IdToken>" \
     // -H "https://api.viervijfzes.be/content/<VideoUuid>"
-    override suspend fun streamForEpisodeVideoUuid(idToken: IdToken, videoUuid: VideoUuid): Either<ApiResponse.Failure, ApiResponse.Success.Stream> =
+    override suspend fun streamByVideoUuid(idToken: IdToken, videoUuid: VideoUuid): Either<ApiResponse.Failure, ApiResponse.Success.Stream> =
         withContext(Dispatchers.IO) {
             either {
                 val response = client.executeAsync(

@@ -7,6 +7,7 @@ import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonTransformingSerializer
 
+public inline class EpisodeUuid(public val id: String)
 public inline class VideoUuid(public val id: String)
 public inline class M3U8Stream(public val url: String)
 
@@ -143,7 +144,7 @@ public data class Program(
             val embedCta: EmbedCta?,
             val enablePreroll: Boolean,
             val episodeNumber: String,
-            val episodeTitle: String,
+            val episodeTitle: String? = null,
             val hasProductPlacement: Boolean,
             val image: String,
             val isProtected: Boolean,
@@ -163,8 +164,12 @@ public data class Program(
             val unpublishDate: String,
             private val videoUuid: String,
             val whatsonId: String,
+            val program: Program? = null,
         ) {
             val id: VideoUuid get() = VideoUuid(videoUuid)
+
+            @Serializable
+            public data class Program(val title: String, val poster: String)
         }
     }
 }
@@ -206,14 +211,14 @@ public data class SearchHit(
 
         public sealed class SearchKey {
             public data class Program(internal val url: String) : SearchKey()
-            public data class Episode(internal val nodeId: String, internal val url: String) : SearchKey()
+            public data class EpisodeByNodeId(internal val nodeId: String, internal val url: String) : SearchKey()
             public object Invalid : SearchKey()
         }
 
         val searchKey: SearchKey
             get() = when (bundle) {
                 Bundle.PROGRAM -> SearchKey.Program(url)
-                Bundle.VIDEO -> SearchKey.Episode(id, url)
+                Bundle.VIDEO -> SearchKey.EpisodeByNodeId(id, url)
                 Bundle.STUB,
                 Bundle.ARTICLE,
                 -> SearchKey.Invalid

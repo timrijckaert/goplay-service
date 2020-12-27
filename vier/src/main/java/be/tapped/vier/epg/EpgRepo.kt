@@ -8,7 +8,7 @@ import be.tapped.common.internal.executeAsync
 import be.tapped.vier.ApiResponse
 import be.tapped.vier.common.safeBodyString
 import be.tapped.vier.common.vierApiDefaultOkHttpClient
-import be.tapped.vier.common.vierUrl
+import be.tapped.vier.common.vierApiUrl
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.decodeFromString
@@ -46,7 +46,7 @@ public class HttpEpgRepo(
             val response = client.executeAsync(
                 Request.Builder()
                     .get()
-                    .url("$vierUrl/api/epg/${dateFormatter.format(calendar.time)}")
+                    .url("$vierApiUrl/epg/${dateFormatter.format(calendar.time)}")
                     .build()
             )
 

@@ -3,6 +3,7 @@ package com.example.sample
 import arrow.core.Tuple2
 import arrow.core.toT
 import be.tapped.vier.ApiResponse
+import be.tapped.vier.content.EpisodeUuid
 import be.tapped.vier.content.SearchHit
 import be.tapped.vier.content.VideoUuid
 import be.tapped.vier.content.VierApi
@@ -38,13 +39,21 @@ private suspend fun api(token: ApiResponse.Success.Authentication.Token) {
     println(deSlimsteMensSearchQuery)
 
     // Episode by URL
-    val deSlimsteMensS18E36ByUrl = vierApi.fetchEpisode(SearchHit.Source.SearchKey.Episode("35399",
-        "https://www.vier.be/video/de-slimste-mens-ter-wereld/de-slimste-mens-ter-wereld-s18/de-slimste-mens-ter-wereld-s18-aflevering-36"))
+    val deSlimsteMensS18E36ByUrl = vierApi.fetchEpisode(
+        SearchHit.Source.SearchKey.EpisodeByNodeId(
+            "35399",
+            "https://www.vier.be/video/de-slimste-mens-ter-wereld/de-slimste-mens-ter-wereld-s18/de-slimste-mens-ter-wereld-s18-aflevering-36"
+        )
+    )
     println(deSlimsteMensS18E36ByUrl)
+
+    // Episode by Episode UUID
+    val episode = vierApi.fetchEpisode(EpisodeUuid("c4e8d653-224a-4985-95ac-c8360074c518"))
+    println(episode)
 
     // Stream
     val s18e36 = VideoUuid("26ab85f9-3946-4e1b-8b3f-79018252acb0")
-    val deSlimsteMensS18E36Stream = vierApi.streamForEpisodeVideoUuid(token.idToken, s18e36)
+    val deSlimsteMensS18E36Stream = vierApi.streamByVideoUuid(token.idToken, s18e36)
     println(deSlimsteMensS18E36Stream)
 }
 
