@@ -19,7 +19,7 @@ jobs:
       - uses: actions/upload-artifact@v2
         with:
           name: local-properties
-          path: local.properties
+          path: ./local.properties
   VRT_NU:
     needs: [setup]
     runs-on: ubuntu-latest
@@ -28,7 +28,7 @@ jobs:
       - uses: actions/download-artifact@v2
         with:
           name: local-properties
-          path: local.properties
+          path: ./local.properties
       - name: E2E VRT NU
         run: ./gradlew :vrtnu:test
   VTM_GO:
@@ -39,7 +39,7 @@ jobs:
       - uses: actions/download-artifact@v2
         with:
           name: local-properties
-          path: local.properties
+          path: ./local.properties
       - name: E2E VTM GO
         run: ./gradlew :vtmgo:test
   VIER:
@@ -50,7 +50,7 @@ jobs:
       - uses: actions/download-artifact@v2
         with:
           name: local-properties
-          path: local.properties
+          path: ./local.properties
       - name: E2E Vier
         run: ./gradlew :vier:test
   Upload:
