@@ -11,7 +11,6 @@ dependencies {
     implementation Dependencies.arrowFxCoroutines
 
     implementation Dependencies.okHttp3
-    implementation Dependencies.okHttpCurlInterceptor
 
     implementation project(':common')
 
