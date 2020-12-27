@@ -25,7 +25,7 @@ jobs:
           name: local-properties
           path: "local.properties"
   download_credentials:
-    needs: [checkout]
+    needs: [credentials]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/download-artifact@v2
