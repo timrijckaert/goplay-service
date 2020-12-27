@@ -22,7 +22,7 @@ public class EpgRepoTest : StringSpec() {
             }
         }
 
-        (1..13).forEach { days ->
+        (1..12).forEach { days ->
             "should be able to retrieve EPG for $days days in the future" {
                 val dateInThePast = today.apply {
                     add(Calendar.DAY_OF_MONTH, days)
