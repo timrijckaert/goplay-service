@@ -6,7 +6,8 @@ public class VierApi(
     private val programRepo: ProgramRepo = HttpProgramRepo(
         vierApiDefaultOkHttpClient,
         HtmlPartialProgramParser(JsoupParser()),
-        HtmlProgramParser(JsoupParser()),
+        HtmlFullProgramParser(JsoupParser()),
+        HtmlClipEpisodeParser(JsoupParser()),
         EpisodeParser()
     ),
     private val streamRepo: StreamRepo = HttpStreamRepo(vierApiDefaultOkHttpClient, JsonStreamParser()),

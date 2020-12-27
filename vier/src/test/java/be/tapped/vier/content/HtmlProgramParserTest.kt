@@ -8,7 +8,7 @@ public class HtmlProgramParserTest : StringSpec({
 
     "should be able to parse" {
         val dancingWithTheStars = javaClass.classLoader?.getResourceAsStream("dancing-with-the-stars.html")!!.reader().readText()
-        val dancingWithTheStarsProgram = HtmlProgramParser(JsoupParser()).parse(dancingWithTheStars).orNull()!!
+        val dancingWithTheStarsProgram = HtmlFullProgramParser(JsoupParser()).parse(dancingWithTheStars).orNull()!!
         dancingWithTheStarsProgram.id shouldBe "7460292d-5e0c-4792-a6a4-cc2825b124c4"
         dancingWithTheStarsProgram.playlists shouldHaveSize 5
     }
