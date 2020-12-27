@@ -3,7 +3,7 @@ name: Pipeline
 on: [push]
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
 
     steps:
@@ -20,8 +20,15 @@ jobs:
         shell: bash
         env:
          CREDENTIALS : ${{ secrets.CREDENTIALS }}
-      - name: Build with Gradle
-        run: ./gradlew test
+      - name: E2E VRT NU
+        run: ./gradlew :vier:test
+        if: always()
+      - name: E2E VTM GO
+        run: ./gradlew :vtmgo:test
+        if: always()
+      - name: E2E Vier
+        run: ./gradlew :vier:test
+        if: always()
       - uses: actions/upload-artifact@v2
         with:
           name: Package
