@@ -11,6 +11,7 @@ public enum class LegalIcon {
     PP,
     PG_12,
     PG_16,
+    PG6
 }
 
 @Serializable
