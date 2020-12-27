@@ -16,22 +16,38 @@ jobs:
         shell: bash
         env:
          CREDENTIALS : ${{ secrets.CREDENTIALS }} 
+      - uses: actions/upload-artifact@v2
+        with:
+          name: root
+          path: '.'
   VRT_NU:
     needs: [setup]
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/download-artifact@v2
+        with:
+          name: root
+          path: '.'
       - name: E2E VRT NU
         run: ./gradlew :vrtnu:test
   VTM_GO:
     needs: [setup]
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/download-artifact@v2
+        with:
+          name: root
+          path: '.'
       - name: E2E VTM GO
         run: ./gradlew :vtmgo:test
   VIER:
     needs: [setup]
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/download-artifact@v2
+        with:
+          name: root
+          path: '.'
       - name: E2E Vier
         run: ./gradlew :vier:test
   Upload:
