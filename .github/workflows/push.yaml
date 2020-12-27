@@ -3,56 +3,24 @@ name: Pipeline
 on: [push]
 
 jobs:
-  checkout:
+  tests:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        brand: ['vrtnu', 'vtmgo', 'vier']
     steps:
       - uses: actions/checkout@v2
       - name: Set up JDK 1.8 
         uses: actions/setup-java@v1
         with:
           java-version: 1.8
-  credentials:
-    needs: [checkout]
-    runs-on: ubuntu-latest
-    steps:
       - name: Inject credentials
         run: echo "$CREDENTIALS" >> local.properties
         shell: bash
         env:
          CREDENTIALS : ${{ secrets.CREDENTIALS }} 
-      - uses: actions/upload-artifact@v2
-        with:
-          name: local-properties
-          path: "local.properties"
-  download_credentials:
-    needs: [credentials]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/download-artifact@v2
-        with:
-          name: local-properties
-  VRT_NU:
-    needs: [checkout, download_credentials]
-    runs-on: ubuntu-latest
-    steps:
       - name: E2E VRT NU
-        run: ./gradlew :vrtnu:test
-  VTM_GO:
-    needs: [checkout, download_credentials]
-    runs-on: ubuntu-latest
-    steps:
-      - name: E2E VTM GO
-        run: ./gradlew :vtmgo:test
-  VIER:
-    needs: [checkout, download_credentials]
-    runs-on: ubuntu-latest
-    steps:
-      - name: E2E Vier
-        run: ./gradlew :vier:test
-  Upload:
-    needs: [VRT_NU, VTM_GO, VIER]
-    runs-on: ubuntu-latest
-    steps:
+        run: ./gradlew :${{ matrix.brand }}:test
       - uses: actions/upload-artifact@v2
         with:
           name: Package
