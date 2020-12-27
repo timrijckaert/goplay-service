@@ -13,14 +13,14 @@ import org.jsoup.select.Elements
 internal fun Element.safeAttr(attributeKey: String): Validated<ApiResponse.Failure.HTML.MissingAttributeValue, String> {
     val attr = attr(attributeKey)
     return if (attr.isEmpty()) {
-        ApiResponse.Failure.HTML.MissingAttributeValue("$this", attributeKey).invalid()
+        ApiResponse.Failure.HTML.MissingAttributeValue(attributeKey).invalid()
     } else {
         attr.valid()
     }
 }
 
 internal suspend fun Element.safeChild(index: Int): Either<ApiResponse.Failure.HTML.NoChildAtPosition, Element> =
-    Either.catch { child(index) }.mapLeft { ApiResponse.Failure.HTML.NoChildAtPosition("$this", index, childrenSize()) }
+    Either.catch { child(index) }.mapLeft { ApiResponse.Failure.HTML.NoChildAtPosition(index, childrenSize()) }
 
 internal fun Element.safeText(): Either<ApiResponse.Failure.HTML.EmptyHTML, String> {
     val text = text()
@@ -34,11 +34,11 @@ internal fun Element.safeText(): Either<ApiResponse.Failure.HTML.EmptyHTML, Stri
 internal fun Element.safeSelect(cssQuery: String): Either<ApiResponse.Failure.HTML.NoSelection, Elements> {
     val elements = select(cssQuery)
     return if (elements.isEmpty()) {
-        ApiResponse.Failure.HTML.NoSelection("$this", cssQuery).left()
+        ApiResponse.Failure.HTML.NoSelection(cssQuery).left()
     } else {
         elements.right()
     }
 }
 
 internal fun Element.safeSelectFirst(cssQuery: String) : Either<ApiResponse.Failure.HTML.NoSelection, Element> =
-    selectFirst(cssQuery)?.right() ?: ApiResponse.Failure.HTML.NoSelection("$this", cssQuery).left()
+    selectFirst(cssQuery)?.right() ?: ApiResponse.Failure.HTML.NoSelection(cssQuery).left()
