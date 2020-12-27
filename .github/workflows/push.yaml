@@ -3,9 +3,8 @@ name: Pipeline
 on: [push]
 
 jobs:
-  test:
+  setup:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v2
       - name: Set up JDK 1.8
@@ -16,16 +15,29 @@ jobs:
         run: echo "$CREDENTIALS" >> local.properties
         shell: bash
         env:
-         CREDENTIALS : ${{ secrets.CREDENTIALS }}
+         CREDENTIALS : ${{ secrets.CREDENTIALS }} 
+  VRT NU:
+    needs: [setup]
+    runs-on: ubuntu-latest
+    steps:
       - name: E2E VRT NU
         run: ./gradlew :vrtnu:test
-        if: always()
+  VTM GO:
+    needs: [setup]
+    runs-on: ubuntu-latest
+    steps:
       - name: E2E VTM GO
         run: ./gradlew :vtmgo:test
-        if: always()
+  VIER:
+    needs: [setup]
+    runs-on: ubuntu-latest
+    steps:
       - name: E2E Vier
         run: ./gradlew :vier:test
-        if: always()
+  Upload:
+    needs: [VRT NU, VTM GO, VIER]
+    runs-on: ubuntu-latest
+    steps:
       - uses: actions/upload-artifact@v2
         with:
           name: Package
