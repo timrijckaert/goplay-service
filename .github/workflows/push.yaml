@@ -19,7 +19,7 @@ jobs:
         shell: bash
         env:
          CREDENTIALS : ${{ secrets.CREDENTIALS }} 
-      - name: E2E VRT NU
+      - name: E2E ${{ matrix.brand }}
         run: ./gradlew :${{ matrix.brand }}:test
       - uses: actions/upload-artifact@v2
         with:
