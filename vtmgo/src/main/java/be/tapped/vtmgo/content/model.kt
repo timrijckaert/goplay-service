@@ -352,7 +352,7 @@ public sealed class AnvatoStream {
         val backUpLicenseUrl: LicenseUrl,
     ) : AnvatoStream()
 
-    public data class Episode(override val mdpUrl: MPDUrl, override val licenseUrl: LicenseUrl) : AnvatoStream()
+    public data class Episode(override val mdpUrl: MPDUrl, override val licenseUrl: LicenseUrl, val subtitle: List<Subtitle>) : AnvatoStream()
 }
 
 @Serializable

@@ -57,7 +57,7 @@ Er is een `sample` module voorzien.
   - [x] Live Stream
   - [x] VOD
 - [x] Live Channel Information + EPG
-- [ ] Subtitles
+- [x] Subtitles
 
 ## Streaming
 - [x] Live Streams
