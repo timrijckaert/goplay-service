@@ -21,7 +21,7 @@ jobs:
         env:
          CREDENTIALS : ${{ secrets.CREDENTIALS }} 
       - name: E2E ${{ matrix.brand }}
-        run: ./gradlew :${{ matrix.brand }}:test
+        run: ./gradlew :${{ matrix.brand }}:test -i
       - uses: actions/upload-artifact@v2
         with:
           name: Package
