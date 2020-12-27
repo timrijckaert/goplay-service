@@ -18,7 +18,7 @@ jobs:
         env:
          CREDENTIALS : ${{ secrets.CREDENTIALS }}
       - name: E2E VRT NU
-        run: ./gradlew :vier:test
+        run: ./gradlew :vrtnu:test
         if: always()
       - name: E2E VTM GO
         run: ./gradlew :vtmgo:test
