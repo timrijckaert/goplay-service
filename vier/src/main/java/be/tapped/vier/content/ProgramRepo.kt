@@ -75,7 +75,6 @@ internal class HtmlProgramParser {
                 }.mapLeft(Failure::JsonParsingException)
             }
 }
-}
 
 public interface ProgramRepo {
 
