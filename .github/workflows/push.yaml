@@ -32,19 +32,19 @@ jobs:
         with:
           name: local-properties
   VRT_NU:
-    needs: [download_credentials]
+    needs: [checkout, download_credentials]
     runs-on: ubuntu-latest
     steps:
       - name: E2E VRT NU
         run: ./gradlew :vrtnu:test
   VTM_GO:
-    needs: [download_credentials]
+    needs: [checkout, download_credentials]
     runs-on: ubuntu-latest
     steps:
       - name: E2E VTM GO
         run: ./gradlew :vtmgo:test
   VIER:
-    needs: [download_credentials]
+    needs: [checkout, download_credentials]
     runs-on: ubuntu-latest
     steps:
       - name: E2E Vier
