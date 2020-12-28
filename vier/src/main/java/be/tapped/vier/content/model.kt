@@ -234,6 +234,7 @@ public data class SearchHit(
                 Bundle.VIDEO -> SearchKey.EpisodeByNodeId(id, url)
                 Bundle.STUB,
                 Bundle.ARTICLE,
+                Bundle.PLAYLIST,
                 -> SearchKey.Invalid
             }
 
@@ -249,7 +250,10 @@ public data class SearchHit(
             STUB,
 
             @SerialName("article")
-            ARTICLE
+            ARTICLE,
+
+            @SerialName("playlist")
+            PLAYLIST
         }
     }
 
