@@ -5,6 +5,8 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonNull
+import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonTransformingSerializer
 
 public inline class EpisodeUuid(public val id: String)
@@ -17,6 +19,15 @@ public object HeaderVideoSerializer : JsonTransformingSerializer<List<Program.He
             element
         } else {
             JsonArray(listOf(element))
+        }
+}
+
+public object ProgramSerializer : JsonTransformingSerializer<Program.Playlist.Episode.Program>(Program.Playlist.Episode.Program.serializer()) {
+    override fun transformDeserialize(element: JsonElement): JsonElement =
+        if (element is JsonObject) {
+            element
+        } else {
+            JsonNull
         }
 }
 
@@ -164,7 +175,9 @@ public data class Program(
             val unpublishDate: String,
             private val videoUuid: String,
             val whatsonId: String,
-            val program: Program? = null,
+            // https://github.com/Kotlin/kotlinx.serialization/issues/1253
+            // @Serializable(with = ProgramSerializer::class)
+            // val program: Program? = null,
         ) {
             val id: VideoUuid get() = VideoUuid(videoUuid)
 
