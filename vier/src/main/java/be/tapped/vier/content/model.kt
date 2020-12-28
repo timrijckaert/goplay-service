@@ -219,6 +219,7 @@ public data class SearchHit(
         val suggest: String,
         val program: String,
         val img: String,
+        val videos: Int? = null,
         val duration: Int? = null,
     ) {
 
