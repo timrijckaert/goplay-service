@@ -70,18 +70,18 @@ internal class DashStreamParser {
     fun parse(
         dashStream: Stream,
         subtitles: List<Subtitle>,
-    ): Either<Failure.Stream.NoDashStreamNotFound, ApiResponse.Success.Stream.Dash> =
+    ): Either<Failure.Stream.NoDashStreamFound, ApiResponse.Success.Stream.Dash> =
         Either.catch {
             ApiResponse.Success.Stream.Dash(
                 MPDUrl(dashStream.url!!),
                 LicenseUrl(dashStream.drm!!.licenseUrl),
                 subtitles
             )
-        }.mapLeft { Failure.Stream.NoDashStreamNotFound }
+        }.mapLeft { Failure.Stream.NoDashStreamFound }
 }
 
 internal class HlsStreamParser {
-    fun parse(hlsStream: Stream, subtitles: List<Subtitle>): Either<Failure.Stream.NoHlsStreamNotFound, ApiResponse.Success.Stream.Hls> =
+    fun parse(hlsStream: Stream, subtitles: List<Subtitle>): Either<Failure.Stream.NoHlsStreamFound, ApiResponse.Success.Stream.Hls> =
         Either.catch {
             ApiResponse.Success.Stream.Hls(
                 HlsUrl(hlsStream.url!!),
@@ -89,7 +89,7 @@ internal class HlsStreamParser {
                 HlsCertificate(hlsStream.drm.certificate!!),
                 subtitles
             )
-        }.mapLeft { Failure.Stream.NoHlsStreamNotFound }
+        }.mapLeft { Failure.Stream.NoHlsStreamFound }
 }
 
 internal class AnvatoStreamParser(private val anvatoRepo: AnvatoRepo) {
@@ -97,18 +97,18 @@ internal class AnvatoStreamParser(private val anvatoRepo: AnvatoRepo) {
         Either.fromNullable(stream.anvato)
             .flatMap { anvatoRepo.f(it) }
             .map(ApiResponse.Success.Stream::Anvato)
-            .mapLeft { Failure.Stream.NoAnvatoStreamNotFound }
+            .mapLeft { Failure.Stream.NoAnvatoStreamFound }
 
     suspend fun fetchLiveStream(
         stream: Stream,
         streamResponse: StreamResponse,
-    ): Either<Failure.Stream.NoAnvatoStreamNotFound, ApiResponse.Success.Stream.Anvato> =
+    ): Either<Failure.Stream.NoAnvatoStreamFound, ApiResponse.Success.Stream.Anvato> =
         fetch(stream) { anvatoRepo.fetchLiveStream(it, streamResponse) }
 
     suspend fun fetchEpisodeStream(
         stream: Stream,
         streamResponse: StreamResponse,
-    ): Either<Failure.Stream.NoAnvatoStreamNotFound, ApiResponse.Success.Stream.Anvato> =
+    ): Either<Failure.Stream.NoAnvatoStreamFound, ApiResponse.Success.Stream.Anvato> =
         fetch(stream) { anvatoRepo.fetchEpisodeStream(it, streamResponse) }
 }
 
