@@ -19,7 +19,7 @@ public class VTMApi(
     streamRepo: StreamRepo = HttpStreamRepo(
         client,
         headerBuilder,
-        JsonLiveStreamResponseParser(),
+        JsonStreamResponseParser(),
         StreamResponseParser(
             DashStreamParser(),
             HlsStreamParser(),

@@ -26,7 +26,7 @@ import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
 import okhttp3.Request
 
-internal class JsonLiveStreamResponseParser {
+internal class JsonStreamResponseParser {
     fun parse(json: String): Either<Failure, StreamResponse> =
         Either.catch {
             val videoObject = Json.decodeFromString<JsonObject>(json)["video"]!!.jsonObject
@@ -126,7 +126,7 @@ public interface StreamRepo {
 internal class HttpStreamRepo(
     private val client: OkHttpClient,
     private val headerBuilder: HeaderBuilder,
-    private val jsonLiveStreamResponseParser: JsonLiveStreamResponseParser,
+    private val jsonStreamResponseParser: JsonStreamResponseParser,
     private val streamResponseParser: StreamResponseParser,
 ) : StreamRepo {
 
@@ -183,7 +183,7 @@ internal class HttpStreamRepo(
                     .build()
             )
 
-            either { !jsonLiveStreamResponseParser.parse(!response.safeBodyString()) }
+            either { !jsonStreamResponseParser.parse(!response.safeBodyString()) }
         }
 
 }
