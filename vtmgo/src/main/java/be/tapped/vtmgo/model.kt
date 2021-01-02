@@ -62,9 +62,9 @@ public sealed class ApiResponse {
             public data class UnsupportedTargetType(val targetType: TargetResponse.Target) : Stream()
             public data class NoStreamFoundForType(val streamType: String) : Stream()
             public object NoJSONFoundInAnvatoJavascriptFunction : Stream()
-            public object NoDashStreamNotFound : Stream()
-            public object NoHlsStreamNotFound : Stream()
-            public object NoAnvatoStreamNotFound : Stream()
+            public object NoDashStreamFound : Stream()
+            public object NoHlsStreamFound : Stream()
+            public object NoAnvatoStreamFound : Stream()
             public object NoPublishedEmbedUrlFound : Stream()
             public object NoMPDManifestUrlFound : Stream()
         }
