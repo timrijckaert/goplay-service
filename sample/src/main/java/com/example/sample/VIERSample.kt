@@ -27,7 +27,8 @@ private suspend fun api(token: ApiResponse.Success.Authentication.Token) {
     val vierApi = VierApi()
 
     // All Programs
-    val programs = vierApi.fetchPrograms().orNull()!!
+    val fetchPrograms = vierApi.fetchPrograms()
+    val programs = fetchPrograms.orNull()!!
     println(programs)
 
     // Program by URL
