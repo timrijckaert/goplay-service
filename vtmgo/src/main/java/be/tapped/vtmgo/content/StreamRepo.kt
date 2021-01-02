@@ -42,8 +42,9 @@ internal class StreamResponseParser(
 
     private fun rawStreamTypeFromStreamType(streamType: StreamType) =
         when (streamType) {
-            StreamType.ANVATO_LIVE -> "anvato"
-            StreamType.ANVATO_VOD -> "anvato"
+            StreamType.ANVATO_LIVE,
+            StreamType.ANVATO_VOD,
+            -> "anvato"
             StreamType.DASH -> "dash"
             StreamType.HLS -> "hls"
         }
@@ -51,8 +52,8 @@ internal class StreamResponseParser(
     suspend fun streamForStreamType(
         streamType: StreamType,
         streamResponse: StreamResponse,
-    ): Either<Failure.Stream, ApiResponse.Success.Stream> {
-        return either {
+    ): Either<Failure.Stream, ApiResponse.Success.Stream> =
+        either {
             val rawStreamType = rawStreamTypeFromStreamType(streamType)
             val rawStream = !Either.fromNullable(streamResponse.streams.firstOrNull { it.type == rawStreamType })
                 .mapLeft { Failure.Stream.NoStreamFoundForType(rawStreamType) }
@@ -63,7 +64,6 @@ internal class StreamResponseParser(
                 StreamType.HLS -> hlsStreamParser.parse(rawStream, streamResponse.subtitles)
             }
         }
-    }
 }
 
 internal class DashStreamParser {

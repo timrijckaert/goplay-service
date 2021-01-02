@@ -69,7 +69,9 @@ private suspend fun api(jwtToken: JWT, profile: Profile) {
     val series = vtmApi.fetchStoreFront(jwtToken, profile, StoreFrontType.MAIN)
     println(series)
     //// The Hunger Games: Catching Fire
-    val theHungerGamesCatchingFire = TargetResponse.Target.Movie("2322020d-e6df-44fd-865c-a121b94f2e91")
+    val movies = vtmApi.fetchStoreFront(jwtToken, profile, StoreFrontType.MOVIES)
+    println(movies)
+    val theHungerGamesCatchingFire = TargetResponse.Target.Movie("efdfc864-ec7e-4893-a04a-b27d95de5b57")
     val theHungerGamesCatchingFireStream = vtmApi.fetchStream(theHungerGamesCatchingFire)
     println(theHungerGamesCatchingFireStream)
 
@@ -78,7 +80,7 @@ private suspend fun api(jwtToken: JWT, profile: Profile) {
     println(myFavorites)
 
     // Search
-    val searchResult = vtmApi.search(jwtToken, profile, "Code van Coppens")
+    val searchResult = vtmApi.search(jwtToken, profile, "RIP 2020")
     val firstExactSearchResultProgramTarget = (searchResult.orNull()!!.search.first { it.type == SearchResultType.EXACT }.teasers.first().target.asTarget as TargetResponse.Target.Program)
     val firstExactProgram = vtmApi.fetchProgram(firstExactSearchResultProgramTarget, jwtToken, profile)
     val streamOfActiveEpisodeOfSearchedProgram = vtmApi.fetchStream(TargetResponse.Target.Episode(firstExactProgram.orNull()!!.program.seasons.first().episodes.last().id))
