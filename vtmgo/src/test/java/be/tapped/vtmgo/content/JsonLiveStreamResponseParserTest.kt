@@ -7,8 +7,8 @@ public class JsonLiveStreamResponseParserTest : StringSpec() {
     init {
         "should be able to parse" {
             val liveStreamJson = javaClass.classLoader?.getResourceAsStream("live-stream.json")!!.reader().readText()
-            val streamResponse = JsonLiveStreamResponseParser().parse(liveStreamJson).orNull()!!
-            streamResponse shouldNotBe null
+            val streamResponse = JsonLiveStreamResponseParser().parse(liveStreamJson)
+            streamResponse.orNull() shouldNotBe null
         }
     }
 }

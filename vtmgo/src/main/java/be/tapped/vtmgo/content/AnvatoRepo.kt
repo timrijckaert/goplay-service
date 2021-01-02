@@ -76,7 +76,7 @@ public interface AnvatoRepo {
 
 }
 
-internal class HttpAnvatoResponse(
+internal class HttpAnvatoRepo(
     private val client: OkHttpClient,
     private val anvatoVideoJsonParser: AnvatoVideoJsonParser,
     private val anvatoMasterM3U8JsonParser: AnvatoMasterM3U8JsonParser,
@@ -131,7 +131,7 @@ internal class HttpAnvatoResponse(
                 AnvatoStream.Episode(
                     MPDUrl((!anvatoMasterM3U8JsonParser.parse(!response.safeBodyString())).url),
                     LicenseUrl(firstPublishedUrl.licenseUrl),
-                    streamResponse.subtitles ?: emptyList()
+                    streamResponse.subtitles
                 )
             }
         }

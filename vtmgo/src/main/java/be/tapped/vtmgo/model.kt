@@ -3,11 +3,16 @@ package be.tapped.vtmgo
 import arrow.core.NonEmptyList
 import be.tapped.vtmgo.content.AnvatoStream
 import be.tapped.vtmgo.content.Category
+import be.tapped.vtmgo.content.HlsCertificate
+import be.tapped.vtmgo.content.HlsUrl
+import be.tapped.vtmgo.content.LicenseUrl
 import be.tapped.vtmgo.content.LiveChannel
+import be.tapped.vtmgo.content.MPDUrl
 import be.tapped.vtmgo.content.PagedTeaserContent
 import be.tapped.vtmgo.content.Program
 import be.tapped.vtmgo.content.SearchResultResponse
 import be.tapped.vtmgo.content.StoreFront
+import be.tapped.vtmgo.content.Subtitle
 import be.tapped.vtmgo.content.TargetResponse
 import be.tapped.vtmgo.epg.Epg
 import be.tapped.vtmgo.profile.JWT
@@ -33,7 +38,12 @@ public sealed class ApiResponse {
             public data class Profiles(val profiles: List<Profile>) : Authentication()
         }
 
-        public data class Stream(val stream: AnvatoStream) : Success()
+        public sealed class Stream : ApiResponse() {
+            public data class Anvato(val stream: AnvatoStream) : Stream()
+            public data class Dash(val url: MPDUrl, val licenseUrl: LicenseUrl, val subtitle: List<Subtitle>) : Stream()
+            public data class Hls(val url: HlsUrl, val licenseUrl: LicenseUrl, val hlsCertificate: HlsCertificate, val subtitle: List<Subtitle>) :
+                Stream()
+        }
     }
 
     public sealed class Failure : ApiResponse() {
@@ -50,8 +60,11 @@ public sealed class ApiResponse {
 
         public sealed class Stream : Failure() {
             public data class UnsupportedTargetType(val targetType: TargetResponse.Target) : Stream()
-            public object NoAnvatoStreamFound : Stream()
+            public data class NoStreamFoundForType(val streamType: String) : Stream()
             public object NoJSONFoundInAnvatoJavascriptFunction : Stream()
+            public object NoDashStreamNotFound : Stream()
+            public object NoHlsStreamNotFound : Stream()
+            public object NoAnvatoStreamNotFound : Stream()
             public object NoPublishedEmbedUrlFound : Stream()
             public object NoMPDManifestUrlFound : Stream()
         }
