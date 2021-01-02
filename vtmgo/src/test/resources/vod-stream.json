@@ -1,0 +1,105 @@
+{
+  "video": {
+    "streamType": "vod",
+    "streams": [
+      {
+        "type": "hls",
+        "url": "https://dcs-vod.apis.anvato.net/vod/p/master.m3u8?encp=neRcUQH5JFt5F43nDxZ_zw:cUrSkMAtVjQKXRb9ysci8Yw-NfsqC3Jx_zCzvjE2CfH4ojAAFBaXKKXnSsutbU-K7mnHRSz-7BXMVjQw7UUbwFCSvMQ69WlH-nq1xIzkqJXSVhe69-9Kgn-3DsPxBmuvcFHGld6sTXSAYsT1Q1OIODkG3u3-qLyek0T74IfNcr4rFDcrCpxLgsUyxSRXxLPCyUeXu3P1XIK8vPm6WGHdRJqmO6GRwQkK9iHxgWlK0d18ih01l40FdfsKDH4Ywc4uBRbcXJlB9ea36u-scQUIsHFDE-hTNpiFIy1ATMqIPan2GN3nt3-VWTAyCR5lvUdE8OPRRxPm5BxoPIZGUMZIDQnogRpzNVkZRvcqeQqiT3s_HSXQyTaSCuXnADpc7-uR3HToxDpjDqIz4eYnM1ZF6dLpVFB96ug3I0yawo55vaFtVOq4gyvVCOetbafoJlCWgqc_-i4qeLcQZ9KxHm-_vwzKy2nIJJx9SoazXmPvfL5SPHY33jpEOYVjWRZ8N4SOVeCOljPb1BI1e0DxB4pTcWyaxBNo3hvCL7rAven0CnCzlBVl7sAIS5jUm9D8aL8rsnwjheswMwS4kd1QgpfLBounjlWYr_H82iDv232ri2VHqS_E9IQPVwkIHGJWA6fwreKPN4fj6V-WU7Ol-NaBSENA3nYuaiNqCEKyZpoPIqG34ePtNjNXFcd4v7Szq5jPOPdcPtSWWf8rwxZtw_y5Lw_eqR9LUzVU-7_NqeUYhfkVVzCGmZqSlVqV7bTCifZW77PeczNwMA043ryZsaBBvgsnTmPj2y2wEk9CT-psYF_O-C-aSCEYvDph-zUqZA1r7wW1lFHgAZUGskhOmzP9_ksG3Dh7R1xrsCGA0eHarzmWZUArOvLjbddk510QukeHV1xRaYGDAjE2v6YFMS_vCVJjcKJexEfr7toUB-JYmaWuo7cogYwvHJgk0a-jNngZgtFwg1WIbb09m3v_UKDuzWIOcVUy0fjWNCTCgjcHR6aJt0bSQrP8Q_SByUrL6-EPiYLhz7wXQReh9JPqNmmSTwSCymxtBrlukFE1wRSDIUyGhoAQsO5iDo22DGbBCEcgfxeSGKwEkMBkIDRVzrYCn6NJuyDunq3gU0GFlK6NEbzhkIT6zKF0G07Iemiw3O1SzwBL20eUkeDRFZ2YUYxjLvbRGSsruxjyYPwHWHUmPxRlQDSSKVwP8ckd3ywdZAT96zSVK-1_67_cpwKwRfskQZC04ILnD0UYeJ3qOR6cl3R3_dNF74HKXFNdPujbZzbAXaaEJUUDDwbhE1ky8dG7CAfMrj6AhwzSVhQ0bt0WLQAloJBjafwOm-LP36VAIW4vToF3obgrbyeVbQFk_DPPdgV8vZvBwT4w4bGq_qf2DvfFt9xQdECiRI1syBQvyXtf3rU3HNvvpqLfv4mlhPlKfLM8zVFcrBsCzrN0Hs_xo_1Sunht_mdjSOfik2JrNm37bv1ym3GGcnFBYBw9Ym5aONNKMSrHnZKfzD1sip2mG9Z63sfyLZp21Wiswsy2s2w18luoRG_fq5rMxVvBIX-pWtd3fP55ZpgebcmiS7oe0SYbFMx1upyBtMgVVW2NaMw8A3d9HnJjyfwRziF--Anhhr69PSPsxgsRzI7tTc57huO5mDcOgRw0HuVmOFcb-AAzKn220RWqbTkbB7Y9CXjdUFodAsezy34V2Thl6JlN09bEP_xH6GPfCT5Xv56SHC-dtABA6jG95pawc6lOL2MkP1Bvo8W_0-6CL5O8vNIvYOxYkrSnQcdptfi8Sj43lqtHs4GRlofWi0UBfqutXkBnts761Sg05jXiH3FQZZDddi8s6c_2caH0q4jrJlAV6P4_Rwr8mJeNT9gUywJKcMd_JA&anvtrid=0d658a1e8ecb15feae240a92fe47ec4a&anvauth=tb=0~te=1609517336~sgn=06dd58ae94bd9c31c49116d7d80f406b07cd73975c909be75f91a6fb1879b0ca&t=1609517246",
+        "drm": {
+          "com.apple.fps.1_0": {
+            "provider": "anvato",
+            "licenseUrl": "https://drm.apis.anvato.net/fp?eqp=v6JvyjlRjedP9x_RC_J4GeDRrLB_HYsb9DIIfx4OkLlfPdBDY7nSU3G4A2TP7v9gQ7uhwVqO2rCiec4WEDOFaAm-4695MTJaWYHJeWP3ijbNmN0A83EripLykOSU1qltcG9jrpnJvOrnfvsiAMLn5EoVTT8SSUwHbBTLTXGE-POCJF_7eD_Be66sgo6_HHezJc1_KshFAvEJjDFZq7urIyVdd7nV35FbMT38tqM1qCunhEhEamda4BMLuzap8pVrdnTjVwaXJ4G2wUTF72ADIaPjZpRlmSviVovSrsTPOVYIYCsm2GQ9EYftRNzwFrTd&anvauth=tb=0~te=1609528046~sgn=78458b06d281f04d8237d12a2775ecd6de6cd8729813a1727b560b68a322e14a&t=1609517246",
+            "certificate": "MIIE1TCCA72gAwIBAgIIEh+kXTuDeHQwDQYJKoZIhvcNAQEFBQAwfzELMAkGA1UEBhMCVVMxEzARBgNVBAoMCkFwcGxlIEluYy4xJjAkBgNVBAsMHUFwcGxlIENlcnRpZmljYXRpb24gQXV0aG9yaXR5MTMwMQYDVQQDDCpBcHBsZSBLZXkgU2VydmljZXMgQ2VydGlmaWNhdGlvbiBBdXRob3JpdHkwHhcNMTgwMzI2MDkxMTQyWhcNMjAwMzI2MDkxMTQyWjBeMQswCQYDVQQGEwJVUzESMBAGA1UECgwJTUVESUFMQUFOMRMwEQYDVQQLDAoyQ0Y5NVRHOFQ2MSYwJAYDVQQDDB1GYWlyUGxheSBTdHJlYW1pbmc6IE1FRElBTEFBTjCBnzANBgkqhkiG9w0BAQEFAAOBjQAwgYkCgYEAwPkucTF2ke3vp2zsCeMzHk02hpOhp6OOXH9FV8hyqdFlXVDKFIFEeZfc0+kMIG+vq1vY2BQBjFM6PWrr7gexJwgOzNdAd5p3HDv8pf8ovj+7pRzVH8MEOraUAnPNde69n9c67vfzTz03xYeVehFXLa0h7DYhQWjhwDgyNSLrdU8CAwEAAaOCAfgwggH0MB0GA1UdDgQWBBSCuLG6j5EfqI88P9ow0JuZz6Z3rjAMBgNVHRMBAf8EAjAAMB8GA1UdIwQYMBaAFGPkR1TLhXFZRiyDrMxEMWRnAyy+MIHiBgNVHSAEgdowgdcwgdQGCSqGSIb3Y2QFATCBxjCBwwYIKwYBBQUHAgIwgbYMgbNSZWxpYW5jZSBvbiB0aGlzIGNlcnRpZmljYXRlIGJ5IGFueSBwYXJ0eSBhc3N1bWVzIGFjY2VwdGFuY2Ugb2YgdGhlIHRoZW4gYXBwbGljYWJsZSBzdGFuZGFyZCB0ZXJtcyBhbmQgY29uZGl0aW9ucyBvZiB1c2UsIGNlcnRpZmljYXRlIHBvbGljeSBhbmQgY2VydGlmaWNhdGlvbiBwcmFjdGljZSBzdGF0ZW1lbnRzLjA1BgNVHR8ELjAsMCqgKKAmhiRodHRwOi8vY3JsLmFwcGxlLmNvbS9rZXlzZXJ2aWNlcy5jcmwwDgYDVR0PAQH/BAQDAgUgMDYGCyqGSIb3Y2QGDQEDAQH/BCQBYWp0dmx0eHJ1c3F3bW16Z21tYmhocXg5MGM2cXRsNnNpdHkwQAYLKoZIhvdjZAYNAQQBAf8ELgExc2ljenprb293eDlnZHhhajhveWZpeXR3M3NwMmQya2doY2FsYTBiMnhyNGEwDQYJKoZIhvcNAQEFBQADggEBALgMVAN9WrguL1feaNzUB8YxPhUDnYaS9LVWrlWq1q6GtmB8iWDk1yvzLD2ZDK4KdBMf2XgoGXOUu2n7QjxPATETDpYhlo5S2NGJEbjdsYNZzhMDHDtUYdUb0MouUjipvBCpqjLpD6anJxVAN1VrqaK01oyeTGEkNNcrNlQzyIQ24M7mo7vTwDSRCPq7I/rGA8Idavhs/zEKQF489EfsKxQaPE+O1wjwa9rItmdZdjwmMOhzxxVtuN8gBYMuXkHGBct5FEO+J+WZwTiBBYmGn6g9OxnwM42QOZQUdkINWXEs31X4SadgXaUZy5k2V75OcAS9wWY1TZVaEzHaBAlXjtk="
+          }
+        }
+      },
+      {
+        "type": "dash",
+        "url": "https://dcs-vod.apis.anvato.net/vod/p/manifest.mpd?encp=2UZ7l6kssGwdhXK0gl00iQ:1Tp2ZMzbrv0ls7OrgSbaJ8HSdfSjRXC4StKG-rvAuYe6lbC84nxx_a0V8ZX5yvOSji28JiGpW_awrhllLojH_t970hKtXoz3jGD8kIHJZ6EKGg5Q5_mbhxtUdAA34UYh55ulxwqimp0O7-fGwB8imvgbL92jEoPTbB6bX1X9lxychsN220wQb1kpi24RFQB4OysUEMxG1Nduuco_Cma5AhqzwUfeZscpFVyv8DLKrzCjxsR-ILnZeA6U5B65J7QA6b5hxCX3AVKl8dS7dVrTHW9MV-sMduscMzJrOs1vFVZ_t7L10C3X7lyo42FI463lcM4-B24e_kFhFTqTxo4uRzcY8oFfiXq3C_SBzpY4rABAuCIaiSKxL4p3ftdy4Lk3pofU_fsdsXtMLQOoKB5jBA6p2U1Y8EtA-4bUFT5uJzVuPv_pruHP0r0pBiaa8-Eac4ESdyJEExM6KoZand-XRhqOw87_MQ_UUOZYyH0c0fuF_iZQeg5OtLRof47NURM0rk5puCKgBvvc3maDiuVC8aNNqtDAC-AfvMt7kGcpifRdX_HwSYpKqF3eJegPsw50akY-Z0OlzeMdPRj36HcUsRKkk4wl4K7Z0cfGuTIcsMkC7f6sWwvUWBKvYoHJJh21cO426o5WRWnEM5Q7H8kLYdEfZR6GlzohQnWs4xbS0cgdldEZFjtQxHopflKlqz-NnbC5JhkX7guBmzg-YROycZHL14dVdJ151hYessfGBO1z1kidFazxnkyj9pdi_skDFePdDgnPYrvOmT4Hj901JAmuYAZ3PXD_-MDC5WqBcU5phUHlBeQNJaaNk81ztXFpYMdVmj4RejkoY_w_VTle0VMg1qWo1nEmsTtr3L-NNEK40VUk2b_QeZAN2HaZAwcTzE6awyQFGSQVcWRJvS63J5C2MkRJUPJSWkl-xOyVGsNMbT0D9QCRWuXMHBgmu_AVmbhh6C4-PQprbyyrDzzkUPHkVyiokk2a0-4b66cqgzyDxexAfTPeeMrD1m0MHcW_yEvBb9GPQvgRvDYvlnVf_fmpK5jYtx61BizZSU6cKx5AJq7LWkkpDHHstIz9SyfVFpdqUbNRjhWZrLPE_a2Bx2wM6W7Q7SAJ6gdzKbIvid8hTCKSEBgM8JabFvhPH2E-YwLVKkYfLiMUHi8D0Zb5PuyBeVQZmS0f-zI61BuWYW4EgvFW2guBDpsBs_4nQ7CZAgob1DgBKrG14IJ3D1aSNw&anvtrid=0d658a1e8ecb15feae240a92fe47ec4a&anvauth=tb=0~te=1609517336~sgn=f00d94c523c4ca7fd55e6941738bacd2b1e50bf5e5f6abd14fa34367c74b2f38&t=1609517246",
+        "drm": {
+          "com.widevine.alpha": {
+            "provider": "anvato",
+            "licenseUrl": "https://drm.apis.anvato.net/cenc?eqp=2_64vzdMdm6a60wM4b89B180CGP4h8UHPJvrCtcD8SHZob7MmXzNm0prPSWMonXuL4Gg3IR4F01VZpfrTzIcYuvIL7GfIN4ciV3OBsjZ9dBN79K3bZ_hzDBaZHf-x-jAEYgrwXliSxDFHX0n5owclNCVg1PGqCha9KXyRzACw0LccLywEldlpkVZzpobsdJu46iIhAMxnmAPsOlVkHUdGQoRQLuh7cfd6u-LEcKpOdnj02_JRkepglGuX7wHJlrpS2tUS3QLEU4wsQkpTVQ8B4gkSI8oI1R4KO1DvR101jGtiY99xN_O7imPfKJGaLXO&anvauth=tb=0~te=1609528046~sgn=227f280b31a603454b6c325d6bbbf4fc4df355d20632f75012c4f519359889ef&t=1609517246"
+          },
+          "com.microsoft.playready": {
+            "provider": "anvato",
+            "licenseUrl": "https://drm.apis.anvato.net/cenc?eqp=2_64vzdMdm6a60wM4b89B180CGP4h8UHPJvrCtcD8SHZob7MmXzNm0prPSWMonXuL4Gg3IR4F01VZpfrTzIcYuvIL7GfIN4ciV3OBsjZ9dBN79K3bZ_hzDBaZHf-x-jAEYgrwXliSxDFHX0n5owclNCVg1PGqCha9KXyRzACw0LccLywEldlpkVZzpobsdJu46iIhAMxnmAPsOlVkHUdGQoRQLuh7cfd6u-LEcKpOdnj02_JRkepglGuX7wHJlrpS2tUS3QLEU4wsQkpTVQ8B4gkSI8oI1R4KO1DvR101jGtiY99xN_O7imPfKJGaLXO&anvauth=tb=0~te=1609528046~sgn=227f280b31a603454b6c325d6bbbf4fc4df355d20632f75012c4f519359889ef&t=1609517246"
+          }
+        }
+      },
+      {
+        "type": "anvato",
+        "anvato": {
+          "video": "10178831",
+          "mcp": "ONEMCP1",
+          "accessKey": "4e5Wrjw6flaqmLfJYWmzC5gxBlTKXr8x",
+          "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ2aWQiOiIxMDE3ODgzMSIsInVzZXJfcGFycyI6eyJkdnJfcG9saWN5X2lkIjoiNyIsInJldHVybl9mb3JtYXQiOiJqc29ucCJ9LCJpYXQiOjE2MDk1MTcyNDYsImV4cCI6MTYwOTUyMDg0NiwiaXNzIjoiNGU1V3JqdzZmbGFxbUxmSllXbXpDNWd4QmxUS1hyOHgifQ.vsRvRo8yKCnhA6aLCbiAjLODLGUVGJ3Py66aFBBOgXg"
+        }
+      }
+    ],
+    "analytics": {
+      "cim": {
+        "identifier": "zUBFza8qGU9r1Oril70XvsV3.h3NNobQxe79BTAvPDb.P7",
+        "materialId": "ce7313fc-6582-4477-bdb6-71a5d84f3f8e",
+        "sourceType": "vid.tvi.ep.vod.free",
+        "contentType": "ce/tv",
+        "name": "'t Zit in de Familie",
+        "linkTv": "259039686396527"
+      }
+    },
+    "ads": {
+      "provider": "freewheel",
+      "freewheel": {
+        "assetId": "ce7313fc-6582-4477-bdb6-71a5d84f3f8e_vod",
+        "clientSide": true,
+        "serverUrl": "https://5e124.v.fwmrm.net/ad/g/1",
+        "profileId": "385316:medialaan_html5_live",
+        "networkId": "385316"
+      },
+      "spott": {
+        "id": "ce7313fc-6582-4477-bdb6-71a5d84f3f8e",
+        "trackedTags": true,
+        "showInteractiveInstructions": true
+      }
+    },
+    "subtitles": [
+      {
+        "language": "nl",
+        "url": "https://dvt-subtitles.persgroep.be/TZITINDEF17_1F712940_12b5fdb3-b5bb-49c0-8e29-0a46b9525f0c_vtt_nl.vtt"
+      }
+    ],
+    "duration": 528,
+    "metadata": {
+      "id": "ce7313fc-6582-4477-bdb6-71a5d84f3f8e",
+      "geoBlocked": false,
+      "availability": 28855,
+      "assetType": "video",
+      "title": "Aflevering 17",
+      "creator": "whatson import service",
+      "videoType": "episode",
+      "program": {
+        "id": "848e83d8-f600-4441-aace-b975259b5e1d",
+        "title": "'t Zit in de Familie"
+      },
+      "episode": {
+        "order": 17,
+        "season": {
+          "order": 1
+        }
+      },
+      "createdAt": "2020-08-07T15:32:03.115Z",
+      "legalTags": [
+        "PG_ALL"
+      ],
+      "synopsis": {
+        "m": "Werner De Smedt heeft het over de blunders die de afgelopen jaren zijn opgedoken in Familie."
+      },
+      "posterImages": [
+        {
+          "height": 480,
+          "url": "https://images3.persgroep.net/rcs/6Fuy0mZhz7uibZDK3oLkLG8JdPA/diocontent/176990777/_fitheight/480?appId=9cd8f8ad85847bdd1f55f72558a588b5"
+        }
+      ]
+    }
+  }
+}
