@@ -20,10 +20,16 @@ public class VTMApi(
         client,
         headerBuilder,
         JsonLiveStreamResponseParser(),
-        HttpAnvatoResponse(
-            anvatoDefaultOkHttpClient,
-            AnvatoVideoJsonParser(AnvatoJsonJavascriptFunctionExtractor(), AnvatoPublishedUrlParser()),
-            AnvatoMasterM3U8JsonParser()
+        StreamResponseParser(
+            DashStreamParser(),
+            HlsStreamParser(),
+            AnvatoStreamParser(
+                HttpAnvatoRepo(
+                    anvatoDefaultOkHttpClient,
+                    AnvatoVideoJsonParser(AnvatoJsonJavascriptFunctionExtractor(), AnvatoPublishedUrlParser()),
+                    AnvatoMasterM3U8JsonParser()
+                )
+            )
         )
     ),
 ) : CatalogRepo by catalogRepo,

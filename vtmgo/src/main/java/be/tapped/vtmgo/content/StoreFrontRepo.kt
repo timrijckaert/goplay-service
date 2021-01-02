@@ -59,7 +59,7 @@ internal class HttpStoreFrontRepo(
     // -H "x-app-version:8" \
     // -H "x-persgroep-mobile-app:true" \
     // -H "x-persgroep-os:android" \
-    // -H "x-persgroep-os-version:23" \
+    // -H "x-persgroep-os-version:25" \
     // -H "x-dpp-jwt: <jwt-token>" \
     // -H "x-dpp-profile: <profile-id>" \
     // -H "Host:lfvp-api.dpgmedia.net" \

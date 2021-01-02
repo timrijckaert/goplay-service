@@ -6,7 +6,11 @@ import be.tapped.common.internal.ReadOnlyCookieJar
 import be.tapped.common.internal.executeAsync
 import be.tapped.vtmgo.ApiResponse
 import be.tapped.vtmgo.ApiResponse.Failure.JsonParsingException
-import be.tapped.vtmgo.common.*
+import be.tapped.vtmgo.common.AuthorizationHeaderBuilder
+import be.tapped.vtmgo.common.HeaderBuilder
+import be.tapped.vtmgo.common.defaultCookieJar
+import be.tapped.vtmgo.common.safeBodyString
+import be.tapped.vtmgo.common.vtmApiDefaultOkHttpClient
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.decodeFromString
@@ -40,7 +44,7 @@ public class HttpProfileRepo(
     // -H "x-app-version:8" \
     // -H "x-persgroep-mobile-app:true" \
     // -H "x-persgroep-os:android" \
-    // -H "x-persgroep-os-version:23" \
+    // -H "x-persgroep-os-version:25" \
     // -H "x-dpp-jwt: <jwt-token>" \
     // -H "Cookie:authId=<authId>" \
     // -H "User-Agent:okhttp/4.9.0" "https://lfvp-api.dpgmedia.net/profiles?products=VTM_GO,VTM_GO_KIDS"

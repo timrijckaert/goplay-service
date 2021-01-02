@@ -5,6 +5,23 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonTransformingSerializer
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.jsonPrimitive
+import kotlinx.serialization.json.put
+
+internal object DrmSerializer : JsonTransformingSerializer<Drm>(Drm.serializer()) {
+
+    override fun transformDeserialize(element: JsonElement): JsonElement {
+        val jsonObj = (element as JsonObject)
+        val drmObj = (jsonObj["com.apple.fps.1_0"] ?: jsonObj["com.widevine.alpha"] ?: jsonObj["com.microsoft.playready"]) as JsonObject
+        return buildJsonObject {
+            put("provider", drmObj["provider"]?.jsonPrimitive?.content)
+            put("licenseUrl", drmObj["licenseUrl"]?.jsonPrimitive?.content)
+            put("certificate", drmObj["certificate"]?.jsonPrimitive?.content)
+        }
+    }
+}
 
 public enum class TargetType {
     MOVIE,
@@ -236,13 +253,26 @@ public data class SearchResultResponse(
     val teasers: List<PagedTeaserContent>,
 )
 
+public enum class StreamType {
+    ANVATO_VOD,
+    ANVATO_LIVE,
+    DASH,
+    HLS
+}
+
 @Serializable
 public data class Anvato(val video: String, val mcp: String, val accessKey: String, val token: String)
 
 @Serializable
+public data class Drm(val provider: String, val licenseUrl: String, val certificate: String? = null)
+
+@Serializable
 public data class Stream(
     val type: String,
-    val anvato: Anvato,
+    val anvato: Anvato? = null,
+    val url: String? = null,
+    @Serializable(with = DrmSerializer::class)
+    val drm: Drm? = null,
 )
 
 @Serializable
@@ -286,9 +316,17 @@ public data class StreamMetadata(
 )
 
 @Serializable
+public data class Spott(
+    val id: String,
+    val trackedTags: Boolean,
+    val showInteractiveInstructions: Boolean,
+)
+
+@Serializable
 public data class Freewheel(
     val assetId: String? = null,
-    val serverSide: Boolean,
+    val serverSide: Boolean? = null,
+    val clientSide: Boolean? = null,
     val serverUrl: String,
     val profileId: String,
     val networkId: String,
@@ -298,6 +336,7 @@ public data class Freewheel(
 public data class Ads(
     val provider: String,
     val freewheel: Freewheel,
+    val spott: Spott? = null,
 )
 
 @Serializable
@@ -323,7 +362,7 @@ public data class StreamResponse(
     val streams: List<Stream>,
     val analytics: Analytics,
     val ads: Ads,
-    val subtitles: List<Subtitle>? = null,
+    val subtitles: List<Subtitle> = emptyList(),
     val duration: Int? = null,
     val metadata: StreamMetadata,
 )
@@ -336,8 +375,11 @@ public data class AnvatoPublishedUrl(
 )
 
 public inline class MPDUrl(public val url: String)
+public inline class HlsUrl(public val url: String)
 public inline class M3U8Url(public val url: String)
+
 public inline class LicenseUrl(public val url: String)
+public inline class HlsCertificate(public val certificate: String)
 
 public sealed class AnvatoStream {
     public abstract val mdpUrl: MPDUrl
