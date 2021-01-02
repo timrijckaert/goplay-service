@@ -15,6 +15,10 @@
     <inspection_tool class="ConflictingExtensionProperty" enabled="true" level="ERROR" enabled_by_default="true" />
     <inspection_tool class="ConstPropertyName" enabled="true" level="ERROR" enabled_by_default="true" />
     <inspection_tool class="ConstantConditionIf" enabled="true" level="ERROR" enabled_by_default="true" />
+    <inspection_tool class="ConstantConditions" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="SUGGEST_NULLABLE_ANNOTATIONS" value="false" />
+      <option name="DONT_REPORT_TRUE_ASSERT_STATEMENTS" value="false" />
+    </inspection_tool>
     <inspection_tool class="ControlFlowWithEmptyBody" enabled="true" level="ERROR" enabled_by_default="true" />
     <inspection_tool class="ConvertCallChainIntoSequence" enabled="true" level="ERROR" enabled_by_default="true" />
     <inspection_tool class="ConvertLambdaToReference" enabled="true" level="WEAK WARNING" enabled_by_default="true" />
@@ -129,7 +133,7 @@
     <inspection_tool class="RedundantUnitReturnType" enabled="true" level="ERROR" enabled_by_default="true" />
     <inspection_tool class="RedundantVisibilityModifier" enabled="true" level="ERROR" enabled_by_default="true" />
     <inspection_tool class="RedundantWith" enabled="true" level="ERROR" enabled_by_default="true" />
-    <inspection_tool class="Reformat" enabled="true" level="ERROR" enabled_by_default="true" />
+    <inspection_tool class="Reformat" enabled="true" level="WEAK WARNING" enabled_by_default="true" />
     <inspection_tool class="RemoveCurlyBracesFromTemplate" enabled="true" level="ERROR" enabled_by_default="true" />
     <inspection_tool class="RemoveEmptyClassBody" enabled="true" level="ERROR" enabled_by_default="true" />
     <inspection_tool class="RemoveEmptyParenthesesFromAnnotationEntry" enabled="true" level="ERROR" enabled_by_default="true" />
