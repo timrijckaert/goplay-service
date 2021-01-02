@@ -3,7 +3,6 @@ package be.tapped.vtmgo.content
 import arrow.fx.coroutines.parTraverse
 import be.tapped.vtmgo.CredentialsProvider
 import be.tapped.vtmgo.profile.HttpProfileRepo
-import io.kotest.assertions.arrow.either.shouldBeLeft
 import io.kotest.assertions.arrow.either.shouldBeRight
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.matchers.collections.shouldHaveAtLeastSize
@@ -112,27 +111,22 @@ public class VTMApiE2ETest : FreeSpec() {
                                         is StoreFront.ProfileSwitcherStoreFront -> emptyList()
                                     }
                                 }
+                                    .filter { resp ->
+                                        val target = resp.asTarget
+                                        target is TargetResponse.Target.Movie || target is TargetResponse.Target.Episode
+                                    }
                                     .shuffled()
                                     .take(100)
                                     .parTraverse { target ->
                                         "${Random.nextInt()} when fetching video streams for $target" - {
-                                            val t = target.asTarget
-                                            val streams = vtmApi.fetchStream(t)
-                                            when (t) {
-                                                is TargetResponse.Target.Movie,
-                                                is TargetResponse.Target.Episode,
-                                                -> {
-                                                    "it should be successful" {
-                                                        streams.shouldBeRight()
-                                                    }
-                                                }
-                                                is TargetResponse.Target.Program,
-                                                is TargetResponse.Target.External,
-                                                -> {
-                                                    "it should not be successful" {
-                                                        streams.shouldBeLeft()
-                                                    }
-                                                }
+                                            val streams = when (val t = target.asTarget) {
+                                                is TargetResponse.Target.Movie -> vtmApi.fetchStream(t)
+                                                is TargetResponse.Target.Episode -> vtmApi.fetchStream(t)
+                                                else                             -> throw IllegalStateException("Can never happen but compiler is not smart enough")
+                                            }
+
+                                            "it should be successful" {
+                                                streams.shouldBeRight()
                                             }
                                         }
                                     }
