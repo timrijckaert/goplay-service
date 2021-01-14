@@ -1,16 +1,21 @@
 package be.tapped.vrtnu.profile
 
-import arrow.core.*
+import arrow.core.Either
+import arrow.core.NonEmptyList
+import arrow.core.Validated
 import arrow.core.computations.either
 import arrow.core.extensions.nonemptylist.semigroup.semigroup
 import arrow.core.extensions.validated.applicative.applicative
 import arrow.core.extensions.validated.bifunctor.mapLeft
+import arrow.core.invalidNel
+import arrow.core.validNel
 import be.tapped.common.internal.DefaultCookieJar
 import be.tapped.common.internal.ReadOnlyCookieJar
 import be.tapped.common.internal.executeAsync
 import be.tapped.vrtnu.ApiResponse
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import okhttp3.Cookie
 import okhttp3.FormBody
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -106,9 +111,9 @@ internal class HttpTokenRepo(
         either {
             val (accessToken, newRefreshToken, expiry) = !Validated.applicative(NonEmptyList.semigroup<String>())
                 .tupledN(
-                    cookieJar.validateCookie(COOKIE_VRT_LOGIN_AT).map(::AccessToken),
-                    cookieJar.validateCookie(COOKIE_VRT_LOGIN_RT).map(::RefreshToken),
-                    cookieJar.validateCookie(COOKIE_VRT_LOGIN_EXPIRY).map { Expiry(it.toLong()) }
+                    cookieJar.validateCookie(COOKIE_VRT_LOGIN_AT).map { AccessToken(it.value) },
+                    cookieJar.validateCookie(COOKIE_VRT_LOGIN_RT).map { RefreshToken(it.value) },
+                    cookieJar.validateCookie(COOKIE_VRT_LOGIN_EXPIRY).map { Expiry(it.value.toLong()) }
                 )
                 .mapLeft(ApiResponse.Failure.Authentication::MissingCookieValues)
                 .toEither()
@@ -124,5 +129,5 @@ internal class HttpTokenRepo(
 }
 
 @PublishedApi
-internal fun ReadOnlyCookieJar.validateCookie(cookieName: String): Validated<NonEmptyList<String>, String> =
+internal fun ReadOnlyCookieJar.validateCookie(cookieName: String): Validated<NonEmptyList<String>, Cookie> =
     this[cookieName]?.validNel() ?: cookieName.invalidNel()

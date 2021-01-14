@@ -65,6 +65,7 @@ public class VierApiE2ETest : FreeSpec({
         }
 
         "when fetching a single program by url" - {
+            // Array.from(document.querySelectorAll(".program-overview__link")).map(e => e.href).join(", ");
             listOf(
                 "corona2020",
                 "hetisingewikkeld",
@@ -135,7 +136,6 @@ public class VierApiE2ETest : FreeSpec({
                 "ja-chef",
                 "jani-gaat",
                 "jeroom-in-lockdown",
-                "junior-bake-off",
                 "junior-bake-off-vlaanderen",
                 "justice-for-all",
                 "komen-eten",
@@ -164,6 +164,7 @@ public class VierApiE2ETest : FreeSpec({
                 "topdokters",
                 "topdokters-corona",
                 "trafiek-axel",
+                "trio",
                 "tweedehands-deluxe",
                 "uefa-champions-league",
                 "van-rossem",
@@ -176,7 +177,7 @@ public class VierApiE2ETest : FreeSpec({
                 "young-sheldon",
                 "zeg-eens-euh",
                 "zo-man-zo-vrouw",
-                "zout-op-het-vuur"
+                "zout-op-het-vuur",
             ).parTraverse {
                 val programSearchKey = SearchHit.Source.SearchKey.Program("https://www.vier.be/$it")
                 val program = vierApi.fetchProgram(programSearchKey)

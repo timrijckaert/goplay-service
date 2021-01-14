@@ -48,7 +48,7 @@ internal class HttpXVRTTokenRepo(
             )
 
             cookieJar.validateCookie(COOKIE_X_VRT_TOKEN)
-                .map(::XVRTToken)
+                .map { XVRTToken(it.value) }
                 .toEither()
                 .mapLeft { ApiResponse.Failure.Authentication.MissingCookieValues(NonEmptyList(COOKIE_X_VRT_TOKEN)) }
         }

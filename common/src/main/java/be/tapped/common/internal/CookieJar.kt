@@ -6,7 +6,7 @@ import okhttp3.HttpUrl
 import java.util.*
 
 public interface ReadOnlyCookieJar : CookieJar {
-    public operator fun get(name: String): String?
+    public operator fun get(name: String): Cookie?
 }
 
 /**
@@ -20,15 +20,13 @@ public class DefaultCookieJar(private val maxCachedCookies: Int = MAX_COOKIES) :
         private const val MAX_COOKIES: Int = 100
     }
 
-    private val c by lazy {
+    private val rollingCookieCache by lazy {
         object : LinkedHashMap<HttpUrl, List<Cookie>>() {
-            override fun removeEldestEntry(p0: MutableMap.MutableEntry<HttpUrl, List<Cookie>>?): Boolean {
-                return this.size > maxCachedCookies;
-            }
+            override fun removeEldestEntry(p0: MutableMap.MutableEntry<HttpUrl, List<Cookie>>?): Boolean = size > maxCachedCookies
         }
     }
 
-    private val cookieCache: MutableMap<HttpUrl, List<Cookie>> = Collections.synchronizedMap(c)
+    private val cookieCache: MutableMap<HttpUrl, List<Cookie>> = Collections.synchronizedMap(rollingCookieCache)
 
     internal val fullCookieList: List<Cookie>
         get() = cookieCache.values.flatten()
@@ -47,7 +45,7 @@ public class DefaultCookieJar(private val maxCachedCookies: Int = MAX_COOKIES) :
         cookieCache[url] = cookies
     }
 
-    override operator fun get(name: String): String? = fullCookieList.firstOrNull { it.name == name }?.value
+    override operator fun get(name: String): Cookie? = fullCookieList.firstOrNull { it.name == name }
 
     override fun toString(): String = fullCookieList.joinToString("\r\n")
 }

@@ -1,17 +1,30 @@
 package be.tapped.vtmgo.profile
 
-import arrow.core.*
+import arrow.core.Either
+import arrow.core.NonEmptyList
+import arrow.core.Validated
+import arrow.core.ValidatedNel
 import arrow.core.computations.either
 import arrow.core.extensions.nonemptylist.semigroup.semigroup
 import arrow.core.extensions.validated.applicative.applicative
 import arrow.core.extensions.validated.bifunctor.mapLeft
+import arrow.core.invalidNel
+import arrow.core.left
+import arrow.core.right
+import arrow.core.rightIfNotNull
+import arrow.core.validNel
 import be.tapped.common.internal.ReadOnlyCookieJar
 import be.tapped.common.internal.executeAsync
 import be.tapped.vtmgo.ApiResponse
 import be.tapped.vtmgo.ApiResponse.Failure.Authentication
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import okhttp3.*
+import okhttp3.Cookie
+import okhttp3.FormBody
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.Response
+import okhttp3.ResponseBody
 
 public interface JWTTokenFactory {
     public suspend fun login(
@@ -143,11 +156,11 @@ internal class VTMGOJWTTokenFactory(
         }
 
     private fun getJWT(): Either<Authentication, JWT> =
-        vtmCookieJar[COOKIE_LFVP_AUTH]?.let(::JWT)
+        vtmCookieJar[COOKIE_LFVP_AUTH]?.let { JWT(it.value) }
             .rightIfNotNull { Authentication.MissingCookieValues(NonEmptyList(COOKIE_LFVP_AUTH)) }
 
-    private fun validateCookie(cookieName: String): ValidatedNel<String, String> =
-        vtmCookieJar[cookieName]?.let { it.validNel() } ?: cookieName.invalidNel()
+    private fun validateCookie(cookieName: String): ValidatedNel<String, Cookie> =
+        vtmCookieJar[cookieName]?.validNel() ?: cookieName.invalidNel()
 
     private fun Response.toNetworkException(): Either<ApiResponse.Failure, Nothing> =
         ApiResponse.Failure.NetworkFailure(code, request).left()

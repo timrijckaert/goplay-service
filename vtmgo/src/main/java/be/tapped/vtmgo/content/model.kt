@@ -313,7 +313,11 @@ public data class StreamMetadata(
     val legalTags: List<String>? = null,
     val createdAt: String? = null,
     val posterImages: List<PosterImage>? = null,
-)
+    val markers: List<Marker>? = null,
+) {
+    @Serializable
+    public data class Marker(val type: String, val start: Int, val end: Int, val countdown: Int? = null, val skipTo: Int? = null)
+}
 
 @Serializable
 public data class Spott(

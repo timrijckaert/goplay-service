@@ -21,7 +21,11 @@ import okhttp3.Request
 
 internal class EpisodeParser {
     fun parse(json: String): Either<ApiResponse.Failure, Program.Playlist.Episode> =
-        Either.catch { Json.decodeFromString<Program.Playlist.Episode>(json) }.mapLeft(ApiResponse.Failure::JsonParsingException)
+        Either.catch {
+            Json {
+                ignoreUnknownKeys = true
+            }.decodeFromString<Program.Playlist.Episode>(json)
+        }.mapLeft(ApiResponse.Failure::JsonParsingException)
 }
 
 internal class HtmlClipEpisodeParser(private val jsoupParser: JsoupParser) {

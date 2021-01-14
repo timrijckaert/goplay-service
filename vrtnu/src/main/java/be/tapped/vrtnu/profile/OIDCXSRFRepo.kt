@@ -34,6 +34,9 @@ internal class HttpOIDCXSRFRepo(
                     .build()
             ).closeQuietly()
 
-            cookieJar.validateCookie(COOKIE_XSRF).map(::OIDCXSRF).mapLeft(ApiResponse.Failure.Authentication::MissingCookieValues).toEither()
+            cookieJar.validateCookie(COOKIE_XSRF)
+                .map { OIDCXSRF(it.value) }
+                .mapLeft(ApiResponse.Failure.Authentication::MissingCookieValues)
+                .toEither()
         }
 }

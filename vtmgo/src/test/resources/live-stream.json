@@ -7,8 +7,8 @@
         "anvato": {
           "video": "vtm-loop",
           "mcp": "ONEMCP1",
-          "accessKey": "AXEL7Dl0ier8BzuW913WfObM08UgOkW3",
-          "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ2aWQiOiJ2dG0tbG9vcCIsInVzZXJfcGFycyI6eyJhY2Nlc3NfcnVsZSI6IjEwMDAwMDYxIiwiZHZyX3BvbGljeV9pZCI6IjciLCJyZXR1cm5fZm9ybWF0IjoianNvbnAifSwiaWF0IjoxNjA4NDkzNjM3LCJleHAiOjE2MDg0OTcyMzcsImlzcyI6IkFYRUw3RGwwaWVyOEJ6dVc5MTNXZk9iTTA4VWdPa1czIn0.NebPux0_YcU8fk1mcSqNNepueYRhsao5MWP98VF7lUQ"
+          "accessKey": "",
+          "token": ""
         }
       }
     ],

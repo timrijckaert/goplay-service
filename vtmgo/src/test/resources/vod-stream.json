@@ -32,8 +32,8 @@
         "anvato": {
           "video": "10178831",
           "mcp": "ONEMCP1",
-          "accessKey": "4e5Wrjw6flaqmLfJYWmzC5gxBlTKXr8x",
-          "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ2aWQiOiIxMDE3ODgzMSIsInVzZXJfcGFycyI6eyJkdnJfcG9saWN5X2lkIjoiNyIsInJldHVybl9mb3JtYXQiOiJqc29ucCJ9LCJpYXQiOjE2MDk1MTcyNDYsImV4cCI6MTYwOTUyMDg0NiwiaXNzIjoiNGU1V3JqdzZmbGFxbUxmSllXbXpDNWd4QmxUS1hyOHgifQ.vsRvRo8yKCnhA6aLCbiAjLODLGUVGJ3Py66aFBBOgXg"
+          "accessKey": "",
+          "token": ""
         }
       }
     ],
