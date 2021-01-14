@@ -38,4 +38,4 @@ public data class TokenWrapper(
 )
 
 public inline class JWT(public val token: String)
-public inline class Expiry(public val date: Long)
+public inline class Expiry(public val dateInMillis: Long)

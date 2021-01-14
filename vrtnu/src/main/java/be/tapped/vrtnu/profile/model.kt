@@ -15,7 +15,7 @@ public inline class OIDCXSRF(public val token: String)
 public inline class XVRTToken(public val token: String)
 public inline class AccessToken(public val token: String)
 public inline class RefreshToken(public val token: String)
-public inline class Expiry(public val date: Long)
+public inline class Expiry(public val dateInMillis: Long)
 
 public data class TokenWrapper(
     val accessToken: AccessToken,

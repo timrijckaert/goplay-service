@@ -7,6 +7,7 @@ import be.tapped.vier.content.SearchHit
 import be.tapped.vier.content.VideoUuid
 import be.tapped.vier.epg.EpgProgram
 import be.tapped.vier.profile.AccessToken
+import be.tapped.vier.profile.Expiry
 import be.tapped.vier.profile.IdToken
 import be.tapped.vier.profile.RefreshToken
 import okhttp3.Request
@@ -17,7 +18,7 @@ public sealed class ApiResponse {
         public sealed class Authentication : Success() {
             public data class Token(
                 val accessToken: AccessToken,
-                val expiresIn: Int,
+                val expiry: Expiry,
                 val tokenType: String,
                 val refreshToken: RefreshToken,
                 val idToken: IdToken,

@@ -1,8 +1,15 @@
 package be.tapped.vier.profile
 
-import arrow.core.*
+import arrow.core.Either
+import arrow.core.Validated
+import arrow.core.flatMap
+import arrow.core.invalid
+import arrow.core.valid
 import be.tapped.vier.ApiResponse
-import be.tapped.vier.ApiResponse.Failure.Authentication.*
+import be.tapped.vier.ApiResponse.Failure.Authentication.AWS
+import be.tapped.vier.ApiResponse.Failure.Authentication.Login
+import be.tapped.vier.ApiResponse.Failure.Authentication.Profile
+import be.tapped.vier.ApiResponse.Failure.Authentication.Refresh
 import software.amazon.awssdk.auth.credentials.AnonymousCredentialsProvider
 import software.amazon.awssdk.core.SdkResponse
 import software.amazon.awssdk.regions.Region
@@ -65,7 +72,7 @@ public class HttpProfileRepo(private val profileUserAttributeParser: ProfileUser
                 val authenticationResult = it.authenticationResult()
                 ApiResponse.Success.Authentication.Token(
                     accessToken = AccessToken(authenticationResult.accessToken()),
-                    expiresIn = authenticationResult.expiresIn(),
+                    expiry = Expiry(System.currentTimeMillis() + (authenticationResult.expiresIn() * 1000)),
                     tokenType = authenticationResult.tokenType(),
                     refreshToken = RefreshToken(authenticationResult.refreshToken()),
                     idToken = IdToken(authenticationResult.idToken())
@@ -78,8 +85,8 @@ public class HttpProfileRepo(private val profileUserAttributeParser: ProfileUser
             .map {
                 with(it.authenticationResult()) {
                     ApiResponse.Success.Authentication.Token(
-                        accessToken = AccessToken( accessToken()),
-                        expiresIn = expiresIn(),
+                        accessToken = AccessToken(accessToken()),
+                        expiry = Expiry(System.currentTimeMillis() + (expiresIn() * 1000)),
                         tokenType = tokenType(),
                         refreshToken = refreshToken()?.let(::RefreshToken) ?: refreshToken,
                         idToken = IdToken(idToken())
