@@ -1,10 +1,21 @@
 package be.tapped.vtmgo
 
 import arrow.core.NonEmptyList
-import be.tapped.vtmgo.content.*
+import be.tapped.vtmgo.content.AnvatoStream
+import be.tapped.vtmgo.content.Category
+import be.tapped.vtmgo.content.HlsCertificate
+import be.tapped.vtmgo.content.HlsUrl
+import be.tapped.vtmgo.content.LicenseUrl
+import be.tapped.vtmgo.content.LiveChannel
+import be.tapped.vtmgo.content.MPDUrl
+import be.tapped.vtmgo.content.PagedTeaserContent
+import be.tapped.vtmgo.content.Program
+import be.tapped.vtmgo.content.SearchResultResponse
+import be.tapped.vtmgo.content.StoreFront
+import be.tapped.vtmgo.content.Subtitle
 import be.tapped.vtmgo.epg.Epg
-import be.tapped.vtmgo.profile.JWT
 import be.tapped.vtmgo.profile.Profile
+import be.tapped.vtmgo.profile.TokenWrapper
 import okhttp3.Request
 
 public sealed class ApiResponse {
@@ -22,7 +33,7 @@ public sealed class ApiResponse {
         public data class ProgramGuide(val epg: Epg) : Success()
 
         public sealed class Authentication : ApiResponse() {
-            public data class Token(val jwt: JWT) : Authentication()
+            public data class Token(val token: TokenWrapper) : Authentication()
             public data class Profiles(val profiles: List<Profile>) : Authentication()
         }
 

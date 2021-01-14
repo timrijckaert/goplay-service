@@ -74,7 +74,7 @@ internal class VTMGOJWTTokenFactory(
             val state = !findState(authorizeHtmlResponse)
 
             !logInCallback(state, code)
-            ApiResponse.Success.Authentication.Token(!getJWT())
+            ApiResponse.Success.Authentication.Token(!jwt())
         }
 
     private suspend fun initLogin(): Either<ApiResponse.Failure, Unit> =
@@ -155,8 +155,8 @@ internal class VTMGOJWTTokenFactory(
             }
         }
 
-    private fun getJWT(): Either<Authentication, JWT> =
-        vtmCookieJar[COOKIE_LFVP_AUTH]?.let { JWT(it.value) }
+    private fun jwt(): Either<Authentication, TokenWrapper> =
+        vtmCookieJar[COOKIE_LFVP_AUTH]?.let { TokenWrapper(JWT(it.value), Expiry(it.expiresAt)) }
             .rightIfNotNull { Authentication.MissingCookieValues(NonEmptyList(COOKIE_LFVP_AUTH)) }
 
     private fun validateCookie(cookieName: String): ValidatedNel<String, Cookie> =

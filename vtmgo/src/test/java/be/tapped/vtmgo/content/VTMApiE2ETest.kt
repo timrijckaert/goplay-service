@@ -29,10 +29,10 @@ public class VTMApiE2ETest : FreeSpec() {
 
                     "and fetch the profiles" - {
                         "then it should have a non null JWT token" {
-                            token.orNull()?.jwt.shouldNotBeNull()
+                            token.orNull()?.token?.jwt.shouldNotBeNull()
                         }
 
-                        val jwtToken = token.orNull()!!.jwt
+                        val jwtToken = token.orNull()!!.token.jwt
                         val profiles = profileRepo.getProfiles(jwtToken)
 
                         "then it should be successful" {
