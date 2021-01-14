@@ -29,7 +29,7 @@ private suspend fun auth(userName: String, password: String): Pair<JWT, Profile>
     val jwtToken = profileRepo.login(userName, password)
     println(jwtToken)
 
-    val token = jwtToken.orNull()!!.jwt
+    val token = jwtToken.orNull()!!.token.jwt
     val profiles = profileRepo.getProfiles(token)
     println("Fetched profiles=$profiles")
 
