@@ -22,7 +22,7 @@ public class VierApiE2ETest : FreeSpec({
                 tokens.shouldBeRight()
             }
 
-            val refreshTokens = tokens.orNull()!!.refreshToken
+            val refreshTokens = tokens.orNull()!!.token.refreshToken
             "it should be able to refresh the tokens" - {
                 val newTokens = profileRepo.refreshTokens(refreshTokens)
 
@@ -31,7 +31,7 @@ public class VierApiE2ETest : FreeSpec({
                 }
             }
 
-            val accessToken = tokens.orNull()!!.accessToken
+            val accessToken = tokens.orNull()!!.token.accessToken
             "it should be able to fetch the user attributes" - {
                 val profile = profileRepo.getUserAttributes(accessToken)
 
@@ -46,7 +46,7 @@ public class VierApiE2ETest : FreeSpec({
                     programs.shouldBeRight()
                 }
 
-                val idToken = tokens.orNull()!!.idToken
+                val idToken = tokens.orNull()!!.token.idToken
                 "when fetching episodes" - {
                     programs.orNull()!!
                         .programs

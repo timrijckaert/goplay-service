@@ -6,35 +6,15 @@ import be.tapped.vier.content.Program
 import be.tapped.vier.content.SearchHit
 import be.tapped.vier.content.VideoUuid
 import be.tapped.vier.epg.EpgProgram
-import be.tapped.vier.profile.AccessToken
-import be.tapped.vier.profile.Expiry
-import be.tapped.vier.profile.IdToken
-import be.tapped.vier.profile.RefreshToken
+import be.tapped.vier.profile.TokenWrapper
 import okhttp3.Request
 import java.util.*
 
 public sealed class ApiResponse {
     public sealed class Success : ApiResponse() {
         public sealed class Authentication : Success() {
-            public data class Token(
-                val accessToken: AccessToken,
-                val expiry: Expiry,
-                val tokenType: String,
-                val refreshToken: RefreshToken,
-                val idToken: IdToken,
-            ) : Authentication()
-
-            public data class Profile(
-                val username: String,
-                val sub: String? = null,
-                val birthDate: String? = null,
-                val gender: String? = null,
-                val postalCode: String? = null,
-                val selligentId: String? = null,
-                val name: String? = null,
-                val familyName: String? = null,
-                val email: String? = null,
-            ) : Authentication()
+            public data class Token(val token: TokenWrapper) : Authentication()
+            public data class Profile(val profile: be.tapped.vier.profile.Profile) : Authentication()
         }
 
         public sealed class Content : Success() {

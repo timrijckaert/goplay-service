@@ -54,7 +54,7 @@ private suspend fun api(token: ApiResponse.Success.Authentication.Token) {
 
     // Stream
     val s18e36 = VideoUuid("26ab85f9-3946-4e1b-8b3f-79018252acb0")
-    val deSlimsteMensS18E36Stream = vierApi.streamByVideoUuid(token.idToken, s18e36)
+    val deSlimsteMensS18E36Stream = vierApi.streamByVideoUuid(token.token.idToken, s18e36)
     println(deSlimsteMensS18E36Stream)
 }
 
@@ -65,9 +65,9 @@ private suspend fun authentication(
     val httpProfileRepo = HttpProfileRepo()
     val token = httpProfileRepo.fetchTokens(userName, password).orNull()!!
     // Assert that the new tokens are able to be fetched
-    httpProfileRepo.refreshTokens(token.refreshToken).orNull()!!
+    httpProfileRepo.refreshTokens(token.token.refreshToken).orNull()!!
 
-    val profile = httpProfileRepo.getUserAttributes(token.accessToken).orNull()!!
+    val profile = httpProfileRepo.getUserAttributes(token.token.accessToken).orNull()!!
     return token toT profile
 }
 

@@ -6,10 +6,8 @@ import arrow.core.flatMap
 import arrow.core.invalid
 import arrow.core.valid
 import be.tapped.vier.ApiResponse
-import be.tapped.vier.ApiResponse.Failure.Authentication.AWS
-import be.tapped.vier.ApiResponse.Failure.Authentication.Login
+import be.tapped.vier.ApiResponse.Failure.Authentication.*
 import be.tapped.vier.ApiResponse.Failure.Authentication.Profile
-import be.tapped.vier.ApiResponse.Failure.Authentication.Refresh
 import software.amazon.awssdk.auth.credentials.AnonymousCredentialsProvider
 import software.amazon.awssdk.core.SdkResponse
 import software.amazon.awssdk.regions.Region
@@ -25,15 +23,17 @@ public class ProfileUserAttributeParser {
             .mapValues { (_, value) -> value.firstOrNull() }
 
         return ApiResponse.Success.Authentication.Profile(
-            username = userResponse.username(),
-            sub = userAttributeMap["sub"],
-            birthDate = userAttributeMap["birthdate"],
-            gender = userAttributeMap["gender"],
-            postalCode = userAttributeMap["custom:postal_code"],
-            selligentId = userAttributeMap["custom:selligentId"],
-            name = userAttributeMap["name"],
-            familyName = userAttributeMap["family_name"],
-            email = userAttributeMap["email"]
+            Profile(
+                username = userResponse.username(),
+                sub = userAttributeMap["sub"],
+                birthDate = userAttributeMap["birthdate"],
+                gender = userAttributeMap["gender"],
+                postalCode = userAttributeMap["custom:postal_code"],
+                selligentId = userAttributeMap["custom:selligentId"],
+                name = userAttributeMap["name"],
+                familyName = userAttributeMap["family_name"],
+                email = userAttributeMap["email"]
+            )
         )
     }
 }
@@ -71,11 +71,13 @@ public class HttpProfileRepo(private val profileUserAttributeParser: ProfileUser
             .map {
                 val authenticationResult = it.authenticationResult()
                 ApiResponse.Success.Authentication.Token(
-                    accessToken = AccessToken(authenticationResult.accessToken()),
-                    expiry = Expiry(System.currentTimeMillis() + (authenticationResult.expiresIn() * 1000)),
-                    tokenType = authenticationResult.tokenType(),
-                    refreshToken = RefreshToken(authenticationResult.refreshToken()),
-                    idToken = IdToken(authenticationResult.idToken())
+                    TokenWrapper(
+                        accessToken = AccessToken(authenticationResult.accessToken()),
+                        expiry = Expiry(System.currentTimeMillis() + (authenticationResult.expiresIn() * 1000)),
+                        tokenType = authenticationResult.tokenType(),
+                        refreshToken = RefreshToken(authenticationResult.refreshToken()),
+                        idToken = IdToken(authenticationResult.idToken())
+                    )
                 )
             }
             .mapLeft { Login }
@@ -85,11 +87,13 @@ public class HttpProfileRepo(private val profileUserAttributeParser: ProfileUser
             .map {
                 with(it.authenticationResult()) {
                     ApiResponse.Success.Authentication.Token(
-                        accessToken = AccessToken(accessToken()),
-                        expiry = Expiry(System.currentTimeMillis() + (expiresIn() * 1000)),
-                        tokenType = tokenType(),
-                        refreshToken = refreshToken()?.let(::RefreshToken) ?: refreshToken,
-                        idToken = IdToken(idToken())
+                        TokenWrapper(
+                            accessToken = AccessToken(accessToken()),
+                            expiry = Expiry(System.currentTimeMillis() + (expiresIn() * 1000)),
+                            tokenType = tokenType(),
+                            refreshToken = refreshToken()?.let(::RefreshToken) ?: refreshToken,
+                            idToken = IdToken(idToken())
+                        )
                     )
                 }
             }
