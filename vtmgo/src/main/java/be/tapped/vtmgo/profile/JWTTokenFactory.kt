@@ -26,17 +26,17 @@ import okhttp3.Request
 import okhttp3.Response
 import okhttp3.ResponseBody
 
-public interface JWTTokenFactory {
+public interface JWTTokenRepo {
     public suspend fun login(
         userName: String,
         password: String,
     ): Either<ApiResponse.Failure, ApiResponse.Success.Authentication.Token>
 }
 
-internal class VTMGOJWTTokenFactory(
+internal class HttpJWTTokenRepo(
     private val client: OkHttpClient,
     private val vtmCookieJar: ReadOnlyCookieJar,
-) : JWTTokenFactory {
+) : JWTTokenRepo {
 
     companion object {
         private const val COOKIE_LFVP_AUTH = "lfvp_auth"

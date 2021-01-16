@@ -2,11 +2,13 @@ package be.tapped.vtmgo.profile
 
 import arrow.core.Either
 import arrow.core.computations.either
-import be.tapped.common.internal.ReadOnlyCookieJar
 import be.tapped.common.internal.executeAsync
 import be.tapped.vtmgo.ApiResponse
 import be.tapped.vtmgo.ApiResponse.Failure.JsonParsingException
-import be.tapped.vtmgo.common.*
+import be.tapped.vtmgo.common.AuthorizationHeaderBuilder
+import be.tapped.vtmgo.common.HeaderBuilder
+import be.tapped.vtmgo.common.safeBodyString
+import be.tapped.vtmgo.common.vtmApiDefaultOkHttpClient
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.decodeFromString
@@ -23,15 +25,11 @@ public interface ProfileRepo {
     public suspend fun getProfiles(jwtToken: JWT): Either<ApiResponse.Failure, ApiResponse.Success.Authentication.Profiles>
 }
 
-// TODO this is not behind an interface
-public class HttpProfileRepo(
-    private val cookieJar: ReadOnlyCookieJar = defaultCookieJar,
+internal class HttpProfileRepo(
     private val client: OkHttpClient = vtmApiDefaultOkHttpClient,
     private val headerBuilder: HeaderBuilder = AuthorizationHeaderBuilder(),
     private val jsonProfileParser: JsonProfileParser = JsonProfileParser(),
-    jwtTokenFactory: JWTTokenFactory = VTMGOJWTTokenFactory(client, cookieJar),
-) : ProfileRepo,
-    JWTTokenFactory by jwtTokenFactory {
+) : ProfileRepo {
 
     private companion object {
         private const val API_ENDPOINT = "https://lfvp-api.dpgmedia.net"
