@@ -6,11 +6,7 @@ import be.tapped.common.internal.ReadOnlyCookieJar
 import be.tapped.common.internal.executeAsync
 import be.tapped.vtmgo.ApiResponse
 import be.tapped.vtmgo.ApiResponse.Failure.JsonParsingException
-import be.tapped.vtmgo.common.AuthorizationHeaderBuilder
-import be.tapped.vtmgo.common.HeaderBuilder
-import be.tapped.vtmgo.common.defaultCookieJar
-import be.tapped.vtmgo.common.safeBodyString
-import be.tapped.vtmgo.common.vtmApiDefaultOkHttpClient
+import be.tapped.vtmgo.common.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.decodeFromString
@@ -27,6 +23,7 @@ public interface ProfileRepo {
     public suspend fun getProfiles(jwtToken: JWT): Either<ApiResponse.Failure, ApiResponse.Success.Authentication.Profiles>
 }
 
+// TODO this is not behind an interface
 public class HttpProfileRepo(
     private val cookieJar: ReadOnlyCookieJar = defaultCookieJar,
     private val client: OkHttpClient = vtmApiDefaultOkHttpClient,
