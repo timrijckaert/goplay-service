@@ -2,7 +2,7 @@ package be.tapped.vtmgo.content
 
 import arrow.fx.coroutines.parTraverse
 import be.tapped.vtmgo.CredentialsProvider
-import be.tapped.vtmgo.profile.HttpProfileRepo
+import be.tapped.vtmgo.profile.HttpAuthenticationRepo
 import io.kotest.assertions.arrow.either.shouldBeRight
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.matchers.collections.shouldHaveAtLeastSize
@@ -19,7 +19,7 @@ public class VTMApiE2ETest : FreeSpec() {
         "A VTM Api" - {
             val vtmApi = VTMApi()
             "and a ProfileRepo" - {
-                val profileRepo = HttpProfileRepo()
+                val profileRepo = HttpAuthenticationRepo()
                 "when we are logged in" - {
                     val token = profileRepo.login(username, password)
 
