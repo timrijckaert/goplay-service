@@ -85,10 +85,14 @@ public class VRTApiE2ETest : FreeSpec({
                                 vrtPlayerToken.shouldBeRight()
                             }
 
-                            "fetching a live stream" - {
-                                val liveStream = vrtApi.getStream(vrtPlayerToken.orNull()!!.vrtPlayerToken, VideoId("vualto_een_geo"))
-                                "it should be successful" {
-                                    liveStream.shouldBeRight()
+                            "fetching a live streams" - {
+                                LiveStreams.allLiveStreams.parTraverse {
+                                    "fetching live stream $it" - {
+                                        val liveStream = vrtApi.getStream(vrtPlayerToken.orNull()!!.vrtPlayerToken, it)
+                                        "it should be successful" {
+                                            liveStream.shouldBeRight()
+                                        }
+                                    }
                                 }
                             }
 
@@ -103,9 +107,7 @@ public class VRTApiE2ETest : FreeSpec({
                                     }
 
                                     episodes.orNull()!!.episodes.shuffled().take(50).parTraverse {
-                                        val stream = vrtApi.getStream(vrtPlayerToken.orNull()!!.vrtPlayerToken,
-                                            it.videoId,
-                                            it.publicationId)
+                                        val stream = vrtApi.getStream(vrtPlayerToken.orNull()!!.vrtPlayerToken, it.videoId, it.publicationId)
                                         "${Random().nextInt()}: it should successful. ${it.id}-${program.programName}: ${it.publicationId}-${it.videoId}" {
                                             stream.shouldBeRight()
                                         }

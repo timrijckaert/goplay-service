@@ -9,11 +9,11 @@ internal object CredentialsProvider {
         val password = System.getProperty(PASSWORD_SYSTEM_ENV_KEY) ?: System.getenv(PASSWORD_SYSTEM_ENV_KEY)
 
         checkNotNull(username) {
-            "No VRT username found. Be sure to add it to the System environments. $USERNAME_SYSTEM_ENV_KEY"
+            "No VIER username found. Be sure to add it to the System environments. $USERNAME_SYSTEM_ENV_KEY"
         }
 
         checkNotNull(password) {
-            "No VRT password found. Be sure to add it to the System environments. $PASSWORD_SYSTEM_ENV_KEY"
+            "No VIER password found. Be sure to add it to the System environments. $PASSWORD_SYSTEM_ENV_KEY"
         }
 
         TestCredentials(username, password)

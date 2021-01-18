@@ -2,6 +2,7 @@ package com.example.sample
 
 import arrow.core.Tuple6
 import be.tapped.vrtnu.content.ElasticSearchQueryBuilder
+import be.tapped.vrtnu.content.LiveStreams
 import be.tapped.vrtnu.content.VRTApi
 import be.tapped.vrtnu.content.VideoId
 import be.tapped.vrtnu.epg.HttpEpgRepo
@@ -97,7 +98,7 @@ private suspend fun apiSamples(tokenTuple: Tuple6<TokenWrapper, RefreshToken, To
     println(latestAiredEpisodeStreamInfo)
 
     // Fetch Live Stream Video
-    val vrtNWSLiveStreamInfo = vrtApi.getStream(vrtPlayerToken, VideoId("vualto_een_geo"))
+    val vrtNWSLiveStreamInfo = vrtApi.getStream(vrtPlayerToken, LiveStreams.een)
     println(vrtNWSLiveStreamInfo)
 }
 
