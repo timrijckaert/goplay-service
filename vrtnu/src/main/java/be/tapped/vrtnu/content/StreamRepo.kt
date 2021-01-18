@@ -44,38 +44,33 @@ public class HttpStreamRepo(
         private const val CLIENT = "vrtvideo@PROD"
     }
 
-    private fun constructVideoStreamUrl(vrtPlayerToken: VRTPlayerToken, videoId: VideoId, publicationId: String? = null): HttpUrl =
-        HttpUrl.Builder()
-            .scheme("https")
-            .host("media-services-public.vrt.be")
-            .addPathSegments("vualto-video-aggregator-web/rest/external/v1")
-            .addPathSegment("videos")
-            .apply {
-                val vId = videoId.id
-                publicationId?.let {
-                    addEncodedPathSegment("${publicationId}$${vId}")
-                } ?: addEncodedPathSegment(vId)
-            }
-            .addQueryParameter("vrtPlayerToken", vrtPlayerToken.vrtPlayerToken)
-            .addQueryParameter("client", CLIENT)
-            .build()
+    private fun constructVideoStreamUrl(vrtPlayerToken: VRTPlayerToken, videoId: VideoId, publicationId: String? = null): HttpUrl = HttpUrl
+        .Builder()
+        .scheme("https")
+        .host("media-services-public.vrt.be")
+        .addPathSegments("vualto-video-aggregator-web/rest/external/v1")
+        .addPathSegment("videos")
+        .apply {
+            val vId = videoId.id
+            publicationId?.let {
+                addEncodedPathSegment("${publicationId}$${vId}")
+            } ?: addEncodedPathSegment(vId)
+        }
+        .addQueryParameter("vrtPlayerToken", vrtPlayerToken.vrtPlayerToken)
+        .addQueryParameter("client", CLIENT)
+        .build()
 
     override suspend fun getStream(
         vrtPlayerToken: VRTPlayerToken,
         videoId: VideoId,
         publicationId: String?,
-    ): Either<Failure, Success.Content.StreamInfo> =
-        withContext(Dispatchers.IO) {
-            val videoStreamResponse = client.executeAsync(
-                Request.Builder()
-                    .get()
-                    .url(constructVideoStreamUrl(vrtPlayerToken, videoId, publicationId))
-                    .build()
-            )
+    ): Either<Failure, Success.Content.StreamInfo> = withContext(Dispatchers.IO) {
+        val videoStreamResponse =
+            client.executeAsync(Request.Builder().get().url(constructVideoStreamUrl(vrtPlayerToken, videoId, publicationId)).build())
 
-            either {
-                Success.Content.StreamInfo(!jsonStreamInformationParser.parse(!videoStreamResponse.safeBodyString()))
-            }
+        either {
+            Success.Content.StreamInfo(!jsonStreamInformationParser.parse(!videoStreamResponse.safeBodyString()))
         }
+    }
 
 }

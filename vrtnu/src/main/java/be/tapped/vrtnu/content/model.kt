@@ -12,16 +12,14 @@ public data class Pages(
 
 @Serializable
 public data class Meta(
-    @SerialName("total_results")
-    val totalResults: Int,
+    @SerialName("total_results") val totalResults: Int,
     val pages: Pages,
 )
 
 @Serializable
 public data class Bucket(
     val key: String,
-    @SerialName("doc_count")
-    val docCount: Int,
+    @SerialName("doc_count") val docCount: Int,
 )
 
 @Serializable
@@ -44,8 +42,7 @@ public data class ElasticSearchResult<T>(
 public data class Program(
     val title: String,
     val type: String,
-    @SerialName("episode_count")
-    val episodeCount: Int,
+    @SerialName("episode_count") val episodeCount: Int,
     val score: Double,
     val programUrl: String,
     val targetUrl: String,
@@ -63,8 +60,7 @@ public data class Image(
     val focalPoint: String,
     val id: String,
     val hiddenInApp: Boolean,
-    @SerialName(":type")
-    val type: String,
+    @SerialName(":type") val type: String,
     val alt: String? = null,
 )
 
@@ -89,8 +85,7 @@ public data class Category(
     val reference: Reference,
     val description: String? = null,
     val actions: List<String>,
-    @SerialName(":type")
-    val type: String,
+    @SerialName(":type") val type: String,
 )
 
 @Serializable
@@ -221,8 +216,7 @@ public data class Episode(
     val title: String,
     val transcodingStatus: TranscodingStatus,
     val url: String,
-    @SerialName("videoId")
-    private val vidId: String,
+    @SerialName("videoId") private val vidId: String,
     val videoThumbnailUrl: String,
     val whatsonId: String,
     val instigator: String,
@@ -315,7 +309,7 @@ public data class Chaptering(val content: List<ChapteringContent>)
 public data class StreamInformation(
     val duration: Long,
     val skinType: String,
-    val title: String,
+    val title: String? = null,
     val shortDescription: String? = null,
     val drm: String? = null,
     val drmExpired: String? = null,
@@ -328,7 +322,6 @@ public data class StreamInformation(
 ) {
     init {
         require(skinType.isNotEmpty()) { "skinType should not be empty" }
-        require(title.isNotEmpty()) { "title should not be empty" }
         require(targetUrls.isNotEmpty()) { "targetUrls should not be empty" }
     }
 }

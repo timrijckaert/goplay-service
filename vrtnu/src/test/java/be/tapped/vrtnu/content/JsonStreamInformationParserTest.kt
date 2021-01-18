@@ -18,12 +18,12 @@ public class JsonStreamInformationParserTest : StringSpec({
             targetUrls = listOf(
                 TargetUrl(type = TargetUrlType.MPEG_DASH, url = "mpeg_dash_url"),
                 TargetUrl(type = TargetUrlType.HLS, url = "hls_url"),
-                TargetUrl(type = TargetUrlType.HLS_AES, url = "hls_aes_url")
+                TargetUrl(type = TargetUrlType.HLS_AES, url = "hls_aes_url"),
             ),
             posterImageUrl = null,
             channelId = "vualto_een_geo",
             playlist = PlayList(content = emptyList()),
-            chaptering = Chaptering(content = emptyList())
+            chaptering = Chaptering(content = emptyList()),
         )
     }
 
@@ -40,12 +40,12 @@ public class JsonStreamInformationParserTest : StringSpec({
             aspectRatio = "16:9",
             targetUrls = listOf(
                 TargetUrl(type = TargetUrlType.HLS, url = "hls_url"),
-                TargetUrl(type = TargetUrlType.MPEG_DASH, url = "mpeg_dash_url")
+                TargetUrl(type = TargetUrlType.MPEG_DASH, url = "mpeg_dash_url"),
             ),
             posterImageUrl = "https://images.vrt.be/orig/2020/12/19/bdd8cad3-41a6-11eb-aae0-02b7b76bf47f.jpg",
             channelId = null,
             playlist = PlayList(content = emptyList()),
-            chaptering = Chaptering(content = emptyList())
+            chaptering = Chaptering(content = emptyList()),
         )
     }
 })

@@ -173,9 +173,8 @@ public class VRTApiE2ETest : FreeSpec({
         }
 
         "fetching episodes by whatsonId" - {
-            val whatsonId = "932626788527"
+            val whatsonId = "963170543527"
             val episodes = vrtApi.episodes(ElasticSearchQueryBuilder.SearchQuery(whatsonId = whatsonId)).toList()
-
 
             "it should have found one match" {
                 episodes.shouldHaveSize(1)

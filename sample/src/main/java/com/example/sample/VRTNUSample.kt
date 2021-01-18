@@ -94,6 +94,7 @@ private suspend fun apiSamples(tokenTuple: Tuple6<TokenWrapper, RefreshToken, To
 
     // Fetch Video on Demand Streams
     val latestAiredEpisode = episodes.first()
+    println(latestAiredEpisode)
     val latestAiredEpisodeStreamInfo = vrtApi.getStream(vrtPlayerToken, latestAiredEpisode.videoId, latestAiredEpisode.publicationId)
     println(latestAiredEpisodeStreamInfo)
 

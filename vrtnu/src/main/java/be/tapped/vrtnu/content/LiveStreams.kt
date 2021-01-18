@@ -14,7 +14,7 @@ public object LiveStreams {
     public val mnm: VideoId = VideoId("vualto_mnm")
     public val vrtEvents1: VideoId = VideoId("vualto_events1_geo")
     public val vrtEvents2: VideoId = VideoId("vualto_events2_geo")
-    public val vrtEvents3: VideoId = VideoId("vualto_events2_geo")
+    public val vrtEvents3: VideoId = VideoId("vualto_events3_geo")
 
     public val allLiveStreams: List<VideoId>
         get() = listOf(
