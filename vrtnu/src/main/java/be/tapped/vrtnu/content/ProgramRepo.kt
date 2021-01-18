@@ -15,9 +15,10 @@ import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
 import okhttp3.Request
 
-internal class JsonProgramParser {
-    suspend fun parse(json: String): Either<ApiResponse.Failure, List<Program>> =
-        Either.catch { Json.decodeFromString<List<Program>>(json) }.mapLeft(::JsonParsingException)
+internal class JsonProgramParser(private val programSanitizer: ProgramSanitizer) {
+    suspend fun parse(json: String): Either<ApiResponse.Failure, List<Program>> = Either.catch {
+        Json.decodeFromString<List<Program>>(json).map(programSanitizer::sanitizeProgram)
+    }.mapLeft(::JsonParsingException)
 }
 
 public interface ProgramRepo {

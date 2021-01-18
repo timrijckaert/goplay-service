@@ -5,7 +5,7 @@ import okhttp3.OkHttpClient
 
 public class VRTApi(
     client: OkHttpClient = defaultOkHttpClient,
-    programRepo: ProgramRepo = HttpProgramRepo(client, JsonProgramParser()),
+    programRepo: ProgramRepo = HttpProgramRepo(client, JsonProgramParser(ProgramSanitizer())),
     categoryRepo: CategoryRepo = HttpCategoryRepo(client, JsonCategoryParser()),
     episodeRepo: EpisodeRepo = HttpEpisodeRepo(client, JsonEpisodeParser()),
     streamRepo: StreamRepo = HttpStreamRepo(client, JsonStreamInformationParser()),
