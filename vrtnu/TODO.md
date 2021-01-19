@@ -3,6 +3,7 @@ These calls should be investigated and see if we can integrate them in the lib.
 
 
 ## Home page
+No authorization required
 
 ```
 curl -H 'Host: www.vrt.be' -H 'accept: application/json' -H 'user-agent: okhttp/3.14.6' -H 'if-modified-since: Tue, 19 Jan 2021 19:53:34 GMT' --compressed 'https://www.vrt.be/vrtnu/jcr:content.model.json'
