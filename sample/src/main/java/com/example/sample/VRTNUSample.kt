@@ -4,7 +4,6 @@ import arrow.core.Tuple6
 import be.tapped.vrtnu.content.ElasticSearchQueryBuilder
 import be.tapped.vrtnu.content.LiveStreams
 import be.tapped.vrtnu.content.VRTApi
-import be.tapped.vrtnu.content.VideoId
 import be.tapped.vrtnu.epg.HttpEpgRepo
 import be.tapped.vrtnu.profile.FavoriteWrapper
 import be.tapped.vrtnu.profile.ProfileRepo
@@ -99,7 +98,7 @@ private suspend fun apiSamples(tokenTuple: Tuple6<TokenWrapper, RefreshToken, To
     println(latestAiredEpisodeStreamInfo)
 
     // Fetch Live Stream Video
-    val vrtNWSLiveStreamInfo = vrtApi.getStream(vrtPlayerToken, LiveStreams.een)
+    val vrtNWSLiveStreamInfo = vrtApi.getStream(vrtPlayerToken, LiveStreams.een.videoId)
     println(vrtNWSLiveStreamInfo)
 }
 

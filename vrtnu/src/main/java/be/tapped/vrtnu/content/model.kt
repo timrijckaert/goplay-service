@@ -32,7 +32,7 @@ public data class Facet(
 public data class FacetWrapper(val facets: List<Facet>)
 
 @Serializable
-public data class ElasticSearchResult<T>(
+public data class ElasticSearchResult<out T>(
     val meta: Meta,
     val results: List<T>,
     val facets: FacetWrapper,
@@ -51,17 +51,6 @@ public data class Program(
     val alternativeImage: String,
     val brands: List<String>,
     val description: String,
-)
-
-@Serializable
-public data class Image(
-    val src: String,
-    val srcUriTemplate: String,
-    val focalPoint: String,
-    val id: String,
-    val hiddenInApp: Boolean,
-    @SerialName(":type") val type: String,
-    val alt: String? = null,
 )
 
 @Serializable
@@ -86,7 +75,18 @@ public data class Category(
     val description: String? = null,
     val actions: List<String>,
     @SerialName(":type") val type: String,
-)
+) {
+    @Serializable
+    public data class Image(
+        val src: String,
+        val srcUriTemplate: String,
+        val focalPoint: String,
+        val id: String,
+        val hiddenInApp: Boolean,
+        @SerialName(":type") val type: String,
+        val alt: String? = null,
+    )
+}
 
 @Serializable
 public data class DisplayOptions(
@@ -300,7 +300,12 @@ public data class PlaylistContent(val eventType: String, val duration: Long, val
 public data class PlayList(val content: List<PlaylistContent>)
 
 @Serializable
-public data class ChapteringContent(val id: String, val title: String, val time: String, val imageUrl: String? = null)
+public data class ChapteringContent(
+    val id: String,
+    val title: String,
+    val time: String,
+    val imageUrl: String? = null
+)
 
 @Serializable
 public data class Chaptering(val content: List<ChapteringContent>)
