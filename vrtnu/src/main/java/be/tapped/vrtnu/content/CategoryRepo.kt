@@ -18,7 +18,7 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 
 internal class ImageSanitizer(private val urlPrefixMapper: UrlPrefixMapper) {
-    internal fun sanitizeImage(image: Category.Image) =
+    internal fun sanitizeImage(image: Category.Image): Category.Image =
         image.copy(
             src = urlPrefixMapper.toHttpsUrl(image.src),
             srcUriTemplate = urlPrefixMapper.toHttpsUrl(image.srcUriTemplate)
@@ -43,6 +43,7 @@ internal class JsonCategoryParser(private val categorySanitizer: CategorySanitiz
             .flatMap {
                 Either.catch {
                     Json.decodeFromJsonElement<List<Category>>(it)
+                        .map(categorySanitizer::sanitizeCategory)
                 }.mapLeft(::JsonParsingException)
             }
 }
