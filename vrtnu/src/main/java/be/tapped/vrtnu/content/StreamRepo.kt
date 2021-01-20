@@ -18,21 +18,22 @@ import okhttp3.Request
 
 public class JsonStreamInformationParser {
     public suspend fun parse(json: String): Either<Failure, StreamInformation> =
-        Either.catch { Json.decodeFromString<StreamInformation>(json) }.mapLeft(::JsonParsingException)
+        Either.catch { Json.decodeFromString<StreamInformation>(json) }
+            .mapLeft(::JsonParsingException)
 }
 
 public interface StreamRepo {
 
-    /***
-     * Get stream information for a videoId and optional publication id.
-     * When a video is a live stream no publication id is required.
-     */
-    public suspend fun getStream(
+    public suspend fun getVODStream(
         vrtPlayerToken: VRTPlayerToken,
         videoId: VideoId,
-        publicationId: String? = null,
+        publicationId: String
     ): Either<Failure, Success.Content.StreamInfo>
 
+    public suspend fun getLiveStream(
+        vrtPlayerToken: VRTPlayerToken,
+        videoId: VideoId
+    ): Either<Failure, Success.Content.StreamInfo>
 }
 
 public class HttpStreamRepo(
@@ -44,7 +45,11 @@ public class HttpStreamRepo(
         private const val CLIENT = "vrtvideo@PROD"
     }
 
-    private fun constructVideoStreamUrl(vrtPlayerToken: VRTPlayerToken, videoId: VideoId, publicationId: String? = null): HttpUrl = HttpUrl
+    private fun constructVideoStreamUrl(
+        vrtPlayerToken: VRTPlayerToken,
+        videoId: VideoId,
+        publicationId: String?
+    ): HttpUrl = HttpUrl
         .Builder()
         .scheme("https")
         .host("media-services-public.vrt.be")
@@ -60,17 +65,44 @@ public class HttpStreamRepo(
         .addQueryParameter("client", CLIENT)
         .build()
 
-    override suspend fun getStream(
+    override suspend fun getLiveStream(
+        vrtPlayerToken: VRTPlayerToken,
+        videoId: VideoId
+    ): Either<Failure, Success.Content.StreamInfo> =
+        getStream(
+            constructVideoStreamUrl(
+                vrtPlayerToken,
+                videoId,
+                null
+            )
+        )
+
+    override suspend fun getVODStream(
         vrtPlayerToken: VRTPlayerToken,
         videoId: VideoId,
-        publicationId: String?,
-    ): Either<Failure, Success.Content.StreamInfo> = withContext(Dispatchers.IO) {
-        val videoStreamResponse =
-            client.executeAsync(Request.Builder().get().url(constructVideoStreamUrl(vrtPlayerToken, videoId, publicationId)).build())
+        publicationId: String,
+    ): Either<Failure, Success.Content.StreamInfo> =
+        getStream(
+            constructVideoStreamUrl(
+                vrtPlayerToken,
+                videoId,
+                publicationId
+            )
+        )
 
-        either {
-            Success.Content.StreamInfo(!jsonStreamInformationParser.parse(!videoStreamResponse.safeBodyString()))
+    private suspend fun getStream(httpUrl: HttpUrl): Either<Failure, Success.Content.StreamInfo> =
+        withContext(Dispatchers.IO) {
+            val videoStreamResponse =
+                client.executeAsync(
+                    Request.Builder()
+                        .get()
+                        .url(httpUrl)
+                        .build()
+                )
+
+            either {
+                Success.Content.StreamInfo(!jsonStreamInformationParser.parse(!videoStreamResponse.safeBodyString()))
+            }
         }
-    }
 
 }
