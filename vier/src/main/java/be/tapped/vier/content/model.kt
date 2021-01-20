@@ -174,7 +174,7 @@ public data class Program(
             val type: String,
             val unpublishDate: String,
             private val videoUuid: String,
-            val whatsonId: String,
+            val whatsonId: String? = null,
             // https://github.com/Kotlin/kotlinx.serialization/issues/1253
             // @Serializable(with = ProgramSerializer::class)
             // val program: Program? = null,
