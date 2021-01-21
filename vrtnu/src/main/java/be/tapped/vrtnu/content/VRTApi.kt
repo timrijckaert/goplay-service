@@ -7,18 +7,10 @@ public class VRTApi(
     client: OkHttpClient = defaultOkHttpClient,
     programRepo: ProgramRepo = HttpProgramRepo(
         client,
-        JsonProgramParser(ProgramSanitizer(UrlPrefixMapper()))
-    ),
-    categoryRepo: CategoryRepo = HttpCategoryRepo(
-        client,
-        JsonCategoryParser(
-            CategorySanitizer(
-                UrlPrefixMapper(),
-                ImageSanitizer(UrlPrefixMapper())
-            )
-        )
-    ),
-    episodeRepo: EpisodeRepo = HttpEpisodeRepo(client, JsonEpisodeParser()),
+        JsonProgramParser(ProgramSanitizer(UrlPrefixMapper()))),
+    categoryRepo: CategoryRepo = HttpCategoryRepo(client,
+        JsonCategoryParser(CategorySanitizer(UrlPrefixMapper(), ImageSanitizer(UrlPrefixMapper())))),
+    episodeRepo: EpisodeRepo = HttpEpisodeRepo(client, JsonEpisodeParser(UrlPrefixMapper())),
     streamRepo: StreamRepo = HttpStreamRepo(client, JsonStreamInformationParser()),
     screenshotRepo: ScreenshotRepo = DefaultScreenshotRepo,
 ) : ProgramRepo by programRepo,

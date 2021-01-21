@@ -18,11 +18,17 @@ import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
 import okhttp3.Request
 
-internal class JsonEpisodeParser {
-    suspend fun parse(json: String): Either<ApiResponse.Failure, ElasticSearchResult<Episode>> =
-        Either
-            .catch { Json.decodeFromString<ElasticSearchResult<Episode>>(json) }
-            .mapLeft(::JsonParsingException)
+internal class JsonEpisodeParser(private val urlPrefixMapper: UrlPrefixMapper) {
+    suspend fun parse(json: String): Either<ApiResponse.Failure, ElasticSearchResult<Episode>> {
+        return Either.catch { Json.decodeFromString<ElasticSearchResult<Episode>>(json) }.map { elasticSearch ->
+            elasticSearch.copy(results = elasticSearch.results.map {
+                it.copy(
+                    programImageUrl = urlPrefixMapper.toHttpsUrl(it.programImageUrl),
+                    videoThumbnailUrl = urlPrefixMapper.toHttpsUrl(it.videoThumbnailUrl),
+                )
+            })
+        }.mapLeft(::JsonParsingException)
+    }
 }
 
 public interface EpisodeRepo {
@@ -32,6 +38,11 @@ public interface EpisodeRepo {
     public fun episodesForProgram(program: Program): Flow<Either<ApiResponse.Failure, ApiResponse.Success.Content.Episodes>> =
         episodes(ElasticSearchQueryBuilder.SearchQuery(programName = program.programName))
 
+    public fun fetchMostRecent(): Flow<Either<ApiResponse.Failure, ApiResponse.Success.Content.Episodes>> =
+        episodes(ElasticSearchQueryBuilder.SearchQuery(
+            size = 25,
+            custom = mapOf("allowedRegion" to "BE,WORLD", "brands" to "een,canvas,klara,mnm,radio1,radio2,sporza,stubru,vrtnws,vrtnu,vrtnxt"),
+        ))
 }
 
 internal class HttpEpisodeRepo(
@@ -42,12 +53,8 @@ internal class HttpEpisodeRepo(
     override fun episodes(searchQuery: ElasticSearchQueryBuilder.SearchQuery): Flow<Either<ApiResponse.Failure, ApiResponse.Success.Content.Episodes>> =
         unfoldFlow(searchQuery.pageIndex) { index ->
             withContext(Dispatchers.IO) {
-                val episodeByCategoryResponse = client.executeAsync(
-                    Request.Builder()
-                        .get()
-                        .url(!constructUrl(searchQuery.copy(pageIndex = index)))
-                        .build()
-                )
+                val episodeByCategoryResponse =
+                    client.executeAsync(Request.Builder().get().url(!constructUrl(searchQuery.copy(pageIndex = index))).build())
 
                 val searchResultEpisodes = !jsonEpisodeParser.parse(!episodeByCategoryResponse.safeBodyString())
                 if (index != searchQuery.pageIndex && index >= searchResultEpisodes.meta.pages.total) null
@@ -56,29 +63,23 @@ internal class HttpEpisodeRepo(
         }
 
     private fun constructUrl(searchQuery: ElasticSearchQueryBuilder.SearchQuery) =
-        HttpUrl.Builder()
-            .scheme("https")
-            .host("vrtnu-api.vrt.be")
-            .addPathSegment("search")
-            .applySearchQuery(searchQuery)
-            .map(HttpUrl.Builder::build)
+        HttpUrl.Builder().scheme("https").host("vrtnu-api.vrt.be").addPathSegment("search").applySearchQuery(searchQuery).map(HttpUrl.Builder::build)
 
-    private fun <A, B, E> unfoldFlow(initialA: A, next: suspend EitherEffect<E, *>.(A) -> Pair<A, B>?): Flow<Either<E, B>> =
-        flow {
-            var initial: A? = initialA
-            val res: Either<E, Unit> = either {
-                do {
-                    val nextEither: Pair<A, B>? = next(this@either, initial!!)
+    private fun <A, B, E> unfoldFlow(initialA: A, next: suspend EitherEffect<E, *>.(A) -> Pair<A, B>?): Flow<Either<E, B>> = flow {
+        var initial: A? = initialA
+        val res: Either<E, Unit> = either {
+            do {
+                val nextEither: Pair<A, B>? = next(this@either, initial!!)
 
-                    initial = if (nextEither != null) {
-                        emit(Either.Right(nextEither.second))
-                        nextEither.first
-                    } else null
-                } while (initial != null)
-            }
-            when (res) {
-                is Either.Left -> emit(res)
-                is Either.Right -> Unit
-            }
+                initial = if (nextEither != null) {
+                    emit(Either.Right(nextEither.second))
+                    nextEither.first
+                } else null
+            } while (initial != null)
         }
+        when (res) {
+            is Either.Left -> emit(res)
+            is Either.Right -> Unit
+        }
+    }
 }
