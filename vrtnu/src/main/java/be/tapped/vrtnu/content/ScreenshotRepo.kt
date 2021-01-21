@@ -12,7 +12,7 @@ public interface ScreenshotRepo {
 
 public object DefaultScreenshotRepo : ScreenshotRepo {
 
-    private const val BASE_SCREENSHOT_URL = "https://www.vrt.be/vrtnu-static/screenshots/"
+    private const val BASE_SCREENSHOT_URL = "https://www.vrt.be/vrtnu-static/screenshots"
 
     private fun convertBrandToUrlPath(brand: ScreenshotRepo.Brand): String =
         when (brand) {
