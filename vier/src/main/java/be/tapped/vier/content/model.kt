@@ -31,7 +31,7 @@ public object ProgramSerializer : JsonTransformingSerializer<Program.Playlist.Ep
 
 @Serializable
 public data class PageInfo(
-    val site: String,
+    val site: String? = null,
     val url: String,
     val nodeId: String,
     val title: String,

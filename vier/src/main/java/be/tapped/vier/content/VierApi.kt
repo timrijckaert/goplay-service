@@ -4,7 +4,7 @@ import be.tapped.vier.common.vierApiDefaultOkHttpClient
 
 public class VierApi(
     private val programRepo: ProgramRepo = HttpProgramRepo(
-        vierApiDefaultOkHttpClient, HtmlPartialProgramParser(JsoupParser()), HtmlFullProgramParser(JsoupParser())
+        vierApiDefaultOkHttpClient, HtmlProgramParser(JsoupParser()), HtmlFullProgramParser(JsoupParser())
     ),
     episodeRepo: EpisodeRepo = HttpEpisodeRepo(
         vierApiDefaultOkHttpClient, HtmlFullProgramParser(JsoupParser()), HtmlClipEpisodeParser(JsoupParser()), EpisodeParser()

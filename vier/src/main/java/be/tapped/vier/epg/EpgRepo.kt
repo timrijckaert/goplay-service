@@ -8,7 +8,7 @@ import be.tapped.common.internal.executeAsync
 import be.tapped.vier.ApiResponse
 import be.tapped.vier.common.safeBodyString
 import be.tapped.vier.common.vierApiDefaultOkHttpClient
-import be.tapped.vier.common.vierApiUrl
+import be.tapped.vier.common.apiGoPlay
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.decodeFromString
@@ -40,7 +40,7 @@ public class HttpEpgRepo(
     // curl -X GET "https://www.vier.be/api/epg/2020-12-13"
     override suspend fun epg(calendar: Calendar): Either<ApiResponse.Failure, ApiResponse.Success.ProgramGuide> = withContext(Dispatchers.IO) {
         val response = client.executeAsync(
-            Request.Builder().get().url("$vierApiUrl/epg/${dateFormatter.format(calendar.time)}").build()
+            Request.Builder().get().url("$apiGoPlay/epg/${dateFormatter.format(calendar.time)}").build()
         )
 
         either {

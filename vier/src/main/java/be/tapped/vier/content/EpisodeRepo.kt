@@ -9,7 +9,7 @@ import be.tapped.vier.ApiResponse
 import be.tapped.vier.common.safeAttr
 import be.tapped.vier.common.safeBodyString
 import be.tapped.vier.common.safeSelectFirst
-import be.tapped.vier.common.vierApiUrl
+import be.tapped.vier.common.apiGoPlay
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.decodeFromString
@@ -57,11 +57,8 @@ internal class HttpEpisodeRepo(
     private val episodeParser: EpisodeParser,
 ) : EpisodeRepo {
 
-    private suspend fun fetchRawResponse(programUrl: String): Either<ApiResponse.Failure, String> = withContext(Dispatchers.IO) {
-        client.executeAsync(
-            Request.Builder().get().url(programUrl).build()
-        ).safeBodyString()
-    }
+    private suspend fun fetchRawResponse(programUrl: String): Either<ApiResponse.Failure, String> =
+        withContext(Dispatchers.IO) { client.executeAsync(Request.Builder().get().url(programUrl).build()).safeBodyString() }
 
     enum class EpisodeType {
         CLIP,
@@ -102,7 +99,7 @@ internal class HttpEpisodeRepo(
         withContext(Dispatchers.IO) {
             either {
                 val episode = !client.executeAsync(
-                    Request.Builder().get().url("$vierApiUrl/video/${episodeVideoUuid.id}").build()
+                    Request.Builder().get().url("$apiGoPlay/video/${episodeVideoUuid.id}").build()
                 ).safeBodyString()
 
                 ApiResponse.Success.Content.SingleEpisode(!episodeParser.parse(episode))

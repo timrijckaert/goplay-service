@@ -6,7 +6,7 @@ import arrow.core.flatMap
 import be.tapped.common.internal.executeAsync
 import be.tapped.vier.ApiResponse
 import be.tapped.vier.common.safeBodyString
-import be.tapped.vier.common.vierBaseApiUrl
+import be.tapped.vier.common.vierVijfZesApi
 import be.tapped.vier.profile.IdToken
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -42,7 +42,7 @@ internal class HttpStreamRepo(
         withContext(Dispatchers.IO) {
             either {
                 val response = client.executeAsync(
-                    Request.Builder().get().url("$vierBaseApiUrl/content/${videoUuid.id}").header("Authorization", idToken.token).build()
+                    Request.Builder().get().url("$vierVijfZesApi/content/${videoUuid.id}").header("Authorization", idToken.token).build()
                 )
                 ApiResponse.Success.Stream(!jsonStreamParser.parse(videoUuid, !response.safeBodyString()))
             }

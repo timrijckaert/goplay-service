@@ -5,7 +5,7 @@ import arrow.core.computations.either
 import be.tapped.common.internal.executeAsync
 import be.tapped.vier.ApiResponse
 import be.tapped.vier.common.safeBodyString
-import be.tapped.vier.common.vierBaseApiUrl
+import be.tapped.vier.common.vierVijfZesApi
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.*
 import okhttp3.OkHttpClient
@@ -44,7 +44,7 @@ internal class HttpSearchRepo(
                     put("page", 0)
                     put("mode", "byDate")
                 }.toString().toRequestBody()
-            ).url("$vierBaseApiUrl/search").build()
+            ).url("$vierVijfZesApi/search").build()
         )
 
         val searchResults = !jsonSearchResultsParser.parse(!searchResponse.safeBodyString())

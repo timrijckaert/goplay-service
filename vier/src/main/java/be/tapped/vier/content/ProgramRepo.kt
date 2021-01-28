@@ -24,8 +24,7 @@ import be.tapped.vier.common.safeBodyString
 import be.tapped.vier.common.safeChild
 import be.tapped.vier.common.safeSelect
 import be.tapped.vier.common.safeSelectFirst
-import be.tapped.vier.common.safeText
-import be.tapped.vier.common.vierUrl
+import be.tapped.vier.common.siteUrl
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.decodeFromString
@@ -38,20 +37,18 @@ import okhttp3.Request
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 
-internal data class PartialProgram(val name: String, val path: String)
-
-internal class HtmlPartialProgramParser(private val jsoupParser: JsoupParser) {
-
-    private val applicative = Validated.applicative(NonEmptyList.semigroup<HTML>())
-
-    internal suspend fun parse(html: String): Either<HTML, List<PartialProgram>> =
-        jsoupParser.parse(html).safeSelect("a.program-overview__link").flatMap { links ->
-            links.map { link ->
-                val path = link.safeAttr("href").toValidatedNel()
-                val title = link.safeChild(0).flatMap { it.safeText() }.toValidateNel()
-                applicative.mapN(title, path) { (title, path) -> PartialProgram(title, path) }
-            }.sequence(applicative).mapLeft { Parsing(it) }.map { it.fix() }.toEither()
+internal class HtmlProgramParser(private val jsoupParser: JsoupParser) {
+    internal suspend fun parse(html: String): Either<HTML, List<Program>> = either {
+        println(html)
+        val htmlPrograms = !jsoupParser.parse(html).safeSelect("a[data-program]")
+        val jsons = htmlPrograms.map { !it.safeAttr("data-program").toEither() }
+        jsons.map {
+            Json {
+                isLenient = true
+                ignoreUnknownKeys = true
+            }.decodeFromString(it)
         }
+    }
 }
 
 internal class JsoupParser {
@@ -88,25 +85,16 @@ public interface ProgramRepo {
 
 internal class HttpProgramRepo(
     private val client: OkHttpClient,
-    private val htmlPartialProgramParser: HtmlPartialProgramParser,
+    private val htmlProgramParser: HtmlProgramParser,
     private val htmlFullProgramParser: HtmlFullProgramParser,
 ) : ProgramRepo {
 
-    // curl -X GET "https://www.vier.be/"
-    override suspend fun fetchPrograms(): Either<Failure, Success.Content.Programs> {
-        suspend fun fetchProgramDetails(partialPrograms: List<PartialProgram>): Either<Failure, List<Program>> =
-            partialPrograms.parTraverse(Dispatchers.IO) { fetchProgramFromUrl("$vierUrl${it.path}") }.sequence(Either.applicative()).map { it.fix() }
-
-        return withContext(Dispatchers.IO) {
-            either {
-                val html = !client.executeAsync(
-                    Request.Builder().get().url(vierUrl).build()
-                ).safeBodyString()
-
-                val partialPrograms = !htmlPartialProgramParser.parse(html)
-                val programs = !fetchProgramDetails(partialPrograms)
-                Success.Content.Programs(programs)
-            }
+    // curl -X GET "https://www.goplay.be/"
+    override suspend fun fetchPrograms(): Either<Failure, Success.Content.Programs> = withContext(Dispatchers.IO) {
+        either {
+            val html = !client.executeAsync(Request.Builder().get().url("$siteUrl/programmas").build()).safeBodyString()
+            val programs = !htmlProgramParser.parse(html)
+            Success.Content.Programs(programs)
         }
     }
 
