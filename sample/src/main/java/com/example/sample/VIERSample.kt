@@ -32,7 +32,8 @@ private suspend fun api(token: ApiResponse.Success.Authentication.Token) {
     println(programs)
 
     // Program by URL
-    val deSlimsteMensTerWereldByProgramUrl = vierApi.fetchProgram(SearchHit.Source.SearchKey.Program("https://www.vier.be/de-slimste-mens-ter-wereld"))
+    val deSlimsteMensTerWereldByProgramUrl =
+        vierApi.fetchProgram(SearchHit.Source.SearchKey.Program("https://www.vier.be/de-slimste-mens-ter-wereld"))
     println(deSlimsteMensTerWereldByProgramUrl)
 
     // Search

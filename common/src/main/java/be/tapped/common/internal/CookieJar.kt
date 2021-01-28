@@ -32,14 +32,11 @@ public class DefaultCookieJar(private val maxCachedCookies: Int = MAX_COOKIES) :
         get() = cookieCache.values.flatten()
 
     override fun loadForRequest(url: HttpUrl): List<Cookie> =
-        fullCookieList
-            .filter { it.matches(url) }
-            .fold(mutableListOf<Cookie>()) { cookieAcc, cookie ->
-                cookieAcc.removeAll { it.name == cookie.name }
-                cookieAcc.add(cookie)
-                cookieAcc
-            }
-            .toList()
+        fullCookieList.filter { it.matches(url) }.fold(mutableListOf<Cookie>()) { cookieAcc, cookie ->
+            cookieAcc.removeAll { it.name == cookie.name }
+            cookieAcc.add(cookie)
+            cookieAcc
+        }.toList()
 
     override fun saveFromResponse(url: HttpUrl, cookies: List<Cookie>) {
         cookieCache[url] = cookies

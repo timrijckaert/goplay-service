@@ -14,21 +14,19 @@ public inline class VideoUuid(public val id: String)
 public inline class M3U8Stream(public val url: String)
 
 public object HeaderVideoSerializer : JsonTransformingSerializer<List<Program.HeaderVideo>>(ListSerializer(Program.HeaderVideo.serializer())) {
-    override fun transformDeserialize(element: JsonElement): JsonElement =
-        if (element is JsonArray) {
-            element
-        } else {
-            JsonArray(listOf(element))
-        }
+    override fun transformDeserialize(element: JsonElement): JsonElement = if (element is JsonArray) {
+        element
+    } else {
+        JsonArray(listOf(element))
+    }
 }
 
 public object ProgramSerializer : JsonTransformingSerializer<Program.Playlist.Episode.Program>(Program.Playlist.Episode.Program.serializer()) {
-    override fun transformDeserialize(element: JsonElement): JsonElement =
-        if (element is JsonObject) {
-            element
-        } else {
-            JsonNull
-        }
+    override fun transformDeserialize(element: JsonElement): JsonElement = if (element is JsonObject) {
+        element
+    } else {
+        JsonNull
+    }
 }
 
 @Serializable
@@ -132,8 +130,7 @@ public data class Program(
     @Serializable
     public data class Header(
         val title: String,
-        @Serializable(with = HeaderVideoSerializer::class)
-        val video: List<HeaderVideo> = emptyList(),
+        @Serializable(with = HeaderVideoSerializer::class) val video: List<HeaderVideo> = emptyList(),
     )
 
     @Serializable
@@ -190,16 +187,11 @@ public data class Program(
 //<editor-fold desc="Search">
 @Serializable
 public data class SearchHit(
-    @SerialName("_index")
-    val index: String,
-    @SerialName("_type")
-    val type: String,
-    @SerialName("_id")
-    val id: String,
-    @SerialName("_score")
-    val score: Double,
-    @SerialName("_source")
-    val source: Source,
+    @SerialName("_index") val index: String,
+    @SerialName("_type") val type: String,
+    @SerialName("_id") val id: String,
+    @SerialName("_score") val score: Double,
+    @SerialName("_source") val source: Source,
     val highlight: Highlight? = null,
 ) {
     @Serializable

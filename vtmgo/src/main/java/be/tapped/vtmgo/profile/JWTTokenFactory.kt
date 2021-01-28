@@ -58,111 +58,80 @@ internal class HttpJWTTokenRepo(
     override suspend fun login(
         userName: String,
         password: String,
-    ): Either<ApiResponse.Failure, ApiResponse.Success.Authentication.Token> =
-        either {
-            !initLogin()
+    ): Either<ApiResponse.Failure, ApiResponse.Success.Authentication.Token> = either {
+        !initLogin()
 
-            !Validated.applicative(NonEmptyList.semigroup<String>())
-                .tupledN(authState, debugId, ticket)
-                .mapLeft(Authentication::MissingCookieValues)
-                .toEither()
+        !Validated.applicative(NonEmptyList.semigroup<String>()).tupledN(authState, debugId, ticket).mapLeft(Authentication::MissingCookieValues)
+            .toEither()
 
-            !webLogin(userName, password)
+        !webLogin(userName, password)
 
-            val authorizeHtmlResponse = !authorize()
-            val code = !findCode(authorizeHtmlResponse)
-            val state = !findState(authorizeHtmlResponse)
+        val authorizeHtmlResponse = !authorize()
+        val code = !findCode(authorizeHtmlResponse)
+        val state = !findState(authorizeHtmlResponse)
 
-            !logInCallback(state, code)
-            ApiResponse.Success.Authentication.Token(!jwt())
+        !logInCallback(state, code)
+        ApiResponse.Success.Authentication.Token(!jwt())
+    }
+
+    private suspend fun initLogin(): Either<ApiResponse.Failure, Unit> = withContext(Dispatchers.IO) {
+        client.executeAsync(
+            Request.Builder().get().url("https://vtm.be/vtmgo/aanmelden?redirectUrl=https://vtm.be/vtmgo").build()
+        ).use { response ->
+            if (!response.isSuccessful) response.toNetworkException()
+            else Unit.right()
         }
-
-    private suspend fun initLogin(): Either<ApiResponse.Failure, Unit> =
-        withContext(Dispatchers.IO) {
-            client.executeAsync(
-                Request.Builder()
-                    .get()
-                    .url("https://vtm.be/vtmgo/aanmelden?redirectUrl=https://vtm.be/vtmgo")
-                    .build()
-            ).use { response ->
-                if (!response.isSuccessful) response.toNetworkException()
-                else Unit.right()
-            }
-        }
+    }
 
     private suspend fun webLogin(
         userName: String,
         password: String,
-    ): Either<ApiResponse.Failure, Unit> =
-        withContext(Dispatchers.IO) {
-            client.executeAsync(
-                Request.Builder()
-                    .url("https://login2.vtm.be/login?client_id=vtm-go-web")
-                    .post(
-                        FormBody.Builder()
-                            .addEncoded("userName", userName)
-                            .addEncoded("password", password)
-                            .add("jsEnabled", "true")
-                            .build()
-                    )
-                    .build()
-            ).use { response ->
-                if (!response.isSuccessful) response.toNetworkException()
-                else Unit.right()
-            }
+    ): Either<ApiResponse.Failure, Unit> = withContext(Dispatchers.IO) {
+        client.executeAsync(
+            Request.Builder().url("https://login2.vtm.be/login?client_id=vtm-go-web").post(
+                FormBody.Builder().addEncoded("userName", userName).addEncoded("password", password).add("jsEnabled", "true").build()
+            ).build()
+        ).use { response ->
+            if (!response.isSuccessful) response.toNetworkException()
+            else Unit.right()
         }
+    }
 
-    private suspend fun authorize(): Either<ApiResponse.Failure, String> =
-        withContext(Dispatchers.IO) {
-            client.executeAsync(
-                Request.Builder()
-                    .get()
-                    .url("https://login2.vtm.be/authorize/continue?client_id=vtm-go-web")
-                    .build()
-            ).use { authorizeResponse ->
-                if (!authorizeResponse.isSuccessful) authorizeResponse.toNetworkException()
-                else authorizeResponse.body?.let(ResponseBody::string)?.right()
-                    ?: Authentication.NoAuthorizeResponse.left()
-            }
+    private suspend fun authorize(): Either<ApiResponse.Failure, String> = withContext(Dispatchers.IO) {
+        client.executeAsync(
+            Request.Builder().get().url("https://login2.vtm.be/authorize/continue?client_id=vtm-go-web").build()
+        ).use { authorizeResponse ->
+            if (!authorizeResponse.isSuccessful) authorizeResponse.toNetworkException()
+            else authorizeResponse.body?.let(ResponseBody::string)?.right() ?: Authentication.NoAuthorizeResponse.left()
         }
+    }
 
     private fun findCode(authorizeHtmlResponse: String): Either<Authentication, String> =
-        codeRegex.find(authorizeHtmlResponse)?.let { it.groups[1]?.value }?.right()
-            ?: Authentication.NoCodeFound.left()
+        codeRegex.find(authorizeHtmlResponse)?.let { it.groups[1]?.value }?.right() ?: Authentication.NoCodeFound.left()
 
     private fun findState(authorizeHtmlResponse: String): Either<Authentication, String> =
-        stateRegex.find(authorizeHtmlResponse)?.let { it.groups[1]?.value }?.right()
-            ?: Authentication.NoStateFound.left()
+        stateRegex.find(authorizeHtmlResponse)?.let { it.groups[1]?.value }?.right() ?: Authentication.NoStateFound.left()
 
     private suspend fun logInCallback(
         state: String,
         code: String,
-    ): Either<ApiResponse.Failure, Unit> =
-        withContext(Dispatchers.IO) {
-            client.executeAsync(
-                Request.Builder()
-                    .url("https://vtm.be/vtmgo/login-callback")
-                    .post(
-                        FormBody.Builder()
-                            .add("state", state)
-                            .add("code", code)
-                            .build()
-                    )
-                    .build()
-            ).use { loginCallbackResponse ->
-                if (!loginCallbackResponse.isSuccessful) loginCallbackResponse.toNetworkException()
-                else Unit.right()
-            }
+    ): Either<ApiResponse.Failure, Unit> = withContext(Dispatchers.IO) {
+        client.executeAsync(
+            Request.Builder().url("https://vtm.be/vtmgo/login-callback").post(
+                FormBody.Builder().add("state", state).add("code", code).build()
+            ).build()
+        ).use { loginCallbackResponse ->
+            if (!loginCallbackResponse.isSuccessful) loginCallbackResponse.toNetworkException()
+            else Unit.right()
         }
+    }
 
     private fun jwt(): Either<Authentication, TokenWrapper> =
         vtmCookieJar[COOKIE_LFVP_AUTH]?.let { TokenWrapper(JWT(it.value), Expiry(it.expiresAt)) }
             .rightIfNotNull { Authentication.MissingCookieValues(NonEmptyList(COOKIE_LFVP_AUTH)) }
 
-    private fun validateCookie(cookieName: String): ValidatedNel<String, Cookie> =
-        vtmCookieJar[cookieName]?.validNel() ?: cookieName.invalidNel()
+    private fun validateCookie(cookieName: String): ValidatedNel<String, Cookie> = vtmCookieJar[cookieName]?.validNel() ?: cookieName.invalidNel()
 
-    private fun Response.toNetworkException(): Either<ApiResponse.Failure, Nothing> =
-        ApiResponse.Failure.NetworkFailure(code, request).left()
+    private fun Response.toNetworkException(): Either<ApiResponse.Failure, Nothing> = ApiResponse.Failure.NetworkFailure(code, request).left()
 
 }

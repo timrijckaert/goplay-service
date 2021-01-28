@@ -51,17 +51,11 @@ internal class HttpFavoritesRepo(
         profile: Profile,
     ): Either<ApiResponse.Failure, ApiResponse.Success.Content.Favorites> {
         fun constructUrl(product: VTMGOProduct): HttpUrl =
-            baseContentHttpUrlBuilder.constructBaseContentUrl(product)
-                .addPathSegments("main/swimlane/my-list")
-                .build()
+            baseContentHttpUrlBuilder.constructBaseContentUrl(product).addPathSegments("main/swimlane/my-list").build()
 
         return withContext(Dispatchers.IO) {
             val response = client.executeAsync(
-                Request.Builder()
-                    .headers(headerBuilder.authenticationHeaders(jwt, profile))
-                    .get()
-                    .url(constructUrl(profile.product))
-                    .build()
+                Request.Builder().headers(headerBuilder.authenticationHeaders(jwt, profile)).get().url(constructUrl(profile.product)).build()
             )
 
             either {

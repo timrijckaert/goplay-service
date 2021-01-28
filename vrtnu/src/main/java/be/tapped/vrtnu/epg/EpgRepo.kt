@@ -34,25 +34,17 @@ public class HttpEpgRepo(
 
     // curl 'https://www.vrt.be/bin/epg/schedule.2020-11-21.json'
     private fun constructUrl(calendar: Calendar): HttpUrl {
-        return HttpUrl.Builder()
-            .scheme("https")
-            .host("vrt.be")
-            .addPathSegments("bin/epg")
-            .addPathSegment("schedule.${dateFormatter.format(calendar.time)}.json")
-            .build()
+        return HttpUrl.Builder().scheme("https").host("vrt.be").addPathSegments("bin/epg")
+            .addPathSegment("schedule.${dateFormatter.format(calendar.time)}.json").build()
     }
 
-    override suspend fun epg(calendar: Calendar): Either<ApiResponse.Failure, ApiResponse.Success.ProgramGuide> =
-        withContext(Dispatchers.IO) {
-            val epgResponse = client.executeAsync(
-                Request.Builder()
-                    .get()
-                    .url(constructUrl(calendar))
-                    .build()
-            )
+    override suspend fun epg(calendar: Calendar): Either<ApiResponse.Failure, ApiResponse.Success.ProgramGuide> = withContext(Dispatchers.IO) {
+        val epgResponse = client.executeAsync(
+            Request.Builder().get().url(constructUrl(calendar)).build()
+        )
 
-            either {
-                ApiResponse.Success.ProgramGuide(!jsonEpgParser.parse(!epgResponse.safeBodyString()))
-            }
+        either {
+            ApiResponse.Success.ProgramGuide(!jsonEpgParser.parse(!epgResponse.safeBodyString()))
         }
+    }
 }

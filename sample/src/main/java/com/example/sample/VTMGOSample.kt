@@ -58,7 +58,8 @@ private suspend fun api(jwtToken: JWT, profile: Profile) {
     val programDetailsForFirstProgram = vtmApi.fetchProgram(programTarget, jwtToken, profile)
     println(programDetailsForFirstProgram)
     //// Episode
-    val streamsForFirstEpisodeOfFirstSeasonOfFirstProgram = vtmApi.fetchStream(TargetResponse.Target.Episode(programDetailsForFirstProgram.orNull()!!.program.seasons.first().episodes.first().id))
+    val streamsForFirstEpisodeOfFirstSeasonOfFirstProgram =
+        vtmApi.fetchStream(TargetResponse.Target.Episode(programDetailsForFirstProgram.orNull()!!.program.seasons.first().episodes.first().id))
     println(streamsForFirstEpisodeOfFirstSeasonOfFirstProgram)
 
     // Categories
@@ -79,9 +80,11 @@ private suspend fun api(jwtToken: JWT, profile: Profile) {
 
     // Search
     val searchResult = vtmApi.search(jwtToken, profile, "Code van Coppens")
-    val firstExactSearchResultProgramTarget = (searchResult.orNull()!!.search.first { it.type == SearchResultType.EXACT }.teasers.first().target.asTarget as TargetResponse.Target.Program)
+    val firstExactSearchResultProgramTarget =
+        (searchResult.orNull()!!.search.first { it.type == SearchResultType.EXACT }.teasers.first().target.asTarget as TargetResponse.Target.Program)
     val firstExactProgram = vtmApi.fetchProgram(firstExactSearchResultProgramTarget, jwtToken, profile)
-    val streamOfActiveEpisodeOfSearchedProgram = vtmApi.fetchStream(TargetResponse.Target.Episode(firstExactProgram.orNull()!!.program.seasons.first().episodes.last().id))
+    val streamOfActiveEpisodeOfSearchedProgram =
+        vtmApi.fetchStream(TargetResponse.Target.Episode(firstExactProgram.orNull()!!.program.seasons.first().episodes.last().id))
     println(streamOfActiveEpisodeOfSearchedProgram)
 }
 

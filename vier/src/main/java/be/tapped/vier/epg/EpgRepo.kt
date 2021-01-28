@@ -19,15 +19,12 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 public class JsonEpgParser {
-    public suspend fun parse(json: String): Either<ApiResponse.Failure, List<EpgProgram>> =
-        Either
-            .catch {
-                Json {
-                    isLenient = true
-                    ignoreUnknownKeys = true
-                }.decodeFromString<List<EpgProgram>>(json)
-            }
-            .mapLeft(ApiResponse.Failure::JsonParsingException)
+    public suspend fun parse(json: String): Either<ApiResponse.Failure, List<EpgProgram>> = Either.catch {
+        Json {
+            isLenient = true
+            ignoreUnknownKeys = true
+        }.decodeFromString<List<EpgProgram>>(json)
+    }.mapLeft(ApiResponse.Failure::JsonParsingException)
 }
 
 public interface EpgRepo {
@@ -41,24 +38,20 @@ public class HttpEpgRepo(
 ) : EpgRepo {
 
     // curl -X GET "https://www.vier.be/api/epg/2020-12-13"
-    override suspend fun epg(calendar: Calendar): Either<ApiResponse.Failure, ApiResponse.Success.ProgramGuide> =
-        withContext(Dispatchers.IO) {
-            val response = client.executeAsync(
-                Request.Builder()
-                    .get()
-                    .url("$vierApiUrl/epg/${dateFormatter.format(calendar.time)}")
-                    .build()
-            )
+    override suspend fun epg(calendar: Calendar): Either<ApiResponse.Failure, ApiResponse.Success.ProgramGuide> = withContext(Dispatchers.IO) {
+        val response = client.executeAsync(
+            Request.Builder().get().url("$vierApiUrl/epg/${dateFormatter.format(calendar.time)}").build()
+        )
 
-            either {
-                val json = !response.safeBodyString()
-                val epg = !jsonEpgParser.parse(json)
+        either {
+            val json = !response.safeBodyString()
+            val epg = !jsonEpgParser.parse(json)
 
-                !if (epg.isEmpty()) {
-                    ApiResponse.Failure.Epg.NoEpgDataFor(calendar).left()
-                } else {
-                    ApiResponse.Success.ProgramGuide(epg).right()
-                }
+            !if (epg.isEmpty()) {
+                ApiResponse.Failure.Epg.NoEpgDataFor(calendar).left()
+            } else {
+                ApiResponse.Success.ProgramGuide(epg).right()
             }
         }
+    }
 }

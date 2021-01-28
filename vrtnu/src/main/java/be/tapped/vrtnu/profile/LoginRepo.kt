@@ -69,10 +69,8 @@ public data class LoginResponse(
     val statusReason: String,
     val time: String,
     val registeredTimestamp: Long,
-    @SerialName("UID")
-    val uid: String,
-    @SerialName("UIDSignature")
-    val uidSignature: String,
+    @SerialName("UID") val uid: String,
+    @SerialName("UIDSignature") val uidSignature: String,
     val signatureTimestamp: String,
     val created: String,
     val createdTimestamp: Long,
@@ -116,24 +114,14 @@ internal class HttpLoginRepo(
     override suspend fun fetchLoginResponse(userName: String, password: String): Either<ApiResponse.Failure, LoginResponse> =
         withContext(Dispatchers.IO) {
             val loginResponse = client.executeAsync(
-                Request.Builder()
-                    .url(LOGIN_URL)
-                    .post(
-                        FormBody.Builder()
-                            .add("loginID", userName)
-                            .add("password", password)
-                            .add("sessionExpiration", "-2")
-                            .add("APIKey", API_KEY)
-                            .add("targetEnv", "jssdk")
-                            .build()
-                    )
-                    .build()
+                Request.Builder().url(LOGIN_URL).post(
+                    FormBody.Builder().add("loginID", userName).add("password", password).add("sessionExpiration", "-2").add("APIKey", API_KEY)
+                        .add("targetEnv", "jssdk").build()
+                ).build()
             )
 
             either {
-                !jsonLoginResponseMapper
-                    .parse(!loginResponse.safeBodyString())
-                    .mapLeft(ApiResponse.Failure.Authentication::FailedToLogin)
+                !jsonLoginResponseMapper.parse(!loginResponse.safeBodyString()).mapLeft(ApiResponse.Failure.Authentication::FailedToLogin)
             }
         }
 }

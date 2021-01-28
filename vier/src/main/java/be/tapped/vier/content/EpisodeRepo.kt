@@ -20,12 +20,11 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 
 internal class EpisodeParser {
-    fun parse(json: String): Either<ApiResponse.Failure, Program.Playlist.Episode> =
-        Either.catch {
-            Json {
-                ignoreUnknownKeys = true
-            }.decodeFromString<Program.Playlist.Episode>(json)
-        }.mapLeft(ApiResponse.Failure::JsonParsingException)
+    fun parse(json: String): Either<ApiResponse.Failure, Program.Playlist.Episode> = Either.catch {
+        Json {
+            ignoreUnknownKeys = true
+        }.decodeFromString<Program.Playlist.Episode>(json)
+    }.mapLeft(ApiResponse.Failure::JsonParsingException)
 }
 
 internal class HtmlClipEpisodeParser(private val jsoupParser: JsoupParser) {
@@ -37,13 +36,10 @@ internal class HtmlClipEpisodeParser(private val jsoupParser: JsoupParser) {
     fun canParse(html: String): Boolean = jsoupParser.parse(html).safeSelectFirst(CSSSelector).isRight()
 
     fun parse(html: String): Either<ApiResponse.Failure, EpisodeUuid> =
-        jsoupParser.parse(html)
-            .safeSelectFirst(CSSSelector)
-            .flatMap { it.safeAttr(datasetName).toEither() }
-            .flatMap {
-                Either.catch { EpisodeUuid(Json.decodeFromString<JsonObject>(it)["id"]!!.jsonPrimitive.content) }
-                    .mapLeft(ApiResponse.Failure::JsonParsingException)
-            }
+        jsoupParser.parse(html).safeSelectFirst(CSSSelector).flatMap { it.safeAttr(datasetName).toEither() }.flatMap {
+            Either.catch { EpisodeUuid(Json.decodeFromString<JsonObject>(it)["id"]!!.jsonPrimitive.content) }
+                .mapLeft(ApiResponse.Failure::JsonParsingException)
+        }
 }
 
 public interface EpisodeRepo {
@@ -61,15 +57,11 @@ internal class HttpEpisodeRepo(
     private val episodeParser: EpisodeParser,
 ) : EpisodeRepo {
 
-    private suspend fun fetchRawResponse(programUrl: String): Either<ApiResponse.Failure, String> =
-        withContext(Dispatchers.IO) {
-            client.executeAsync(
-                Request.Builder()
-                    .get()
-                    .url(programUrl)
-                    .build()
-            ).safeBodyString()
-        }
+    private suspend fun fetchRawResponse(programUrl: String): Either<ApiResponse.Failure, String> = withContext(Dispatchers.IO) {
+        client.executeAsync(
+            Request.Builder().get().url(programUrl).build()
+        ).safeBodyString()
+    }
 
     enum class EpisodeType {
         CLIP,
@@ -77,39 +69,31 @@ internal class HttpEpisodeRepo(
         UNKNOWN
     }
 
-    private fun determineEpisodeType(html: String): EpisodeType =
-        when {
-            htmlFullProgramParser.canParse(html) -> EpisodeType.FULL_EPISODE
-            htmlClipEpisodeParser.canParse(html) -> EpisodeType.CLIP
-            else                                 -> EpisodeType.UNKNOWN
-        }
+    private fun determineEpisodeType(html: String): EpisodeType = when {
+        htmlFullProgramParser.canParse(html) -> EpisodeType.FULL_EPISODE
+        htmlClipEpisodeParser.canParse(html) -> EpisodeType.CLIP
+        else                                 -> EpisodeType.UNKNOWN
+    }
 
     private suspend fun fetchEpisodeFromProgramHtml(
         nodeId: String,
         programHtml: String,
-    ): Either<ApiResponse.Failure, ApiResponse.Success.Content.SingleEpisode> =
-        either {
-            val program = !htmlFullProgramParser.parse(programHtml)
-            val episodeForSearchKey =
-                !Either
-                    .fromNullable(
-                        program
-                            .playlists
-                            .flatMap(Program.Playlist::episodes)
-                            .firstOrNull { it.pageInfo.nodeId == nodeId }
-                    )
-                    .mapLeft { ApiResponse.Failure.Content.NoEpisodeFound }
-            ApiResponse.Success.Content.SingleEpisode(episodeForSearchKey)
-        }
+    ): Either<ApiResponse.Failure, ApiResponse.Success.Content.SingleEpisode> = either {
+        val program = !htmlFullProgramParser.parse(programHtml)
+        val episodeForSearchKey =
+            !Either.fromNullable(program.playlists.flatMap(Program.Playlist::episodes).firstOrNull { it.pageInfo.nodeId == nodeId })
+                .mapLeft { ApiResponse.Failure.Content.NoEpisodeFound }
+        ApiResponse.Success.Content.SingleEpisode(episodeForSearchKey)
+    }
 
     // Vier API does not make a distinction between clips and video's. However the strategy for fetching the Episode data from the HTML differs.
     override suspend fun fetchEpisode(episodeByNodeIdSearchKey: SearchHit.Source.SearchKey.EpisodeByNodeId): Either<ApiResponse.Failure, ApiResponse.Success.Content.SingleEpisode> {
         return either {
             val html = !fetchRawResponse(episodeByNodeIdSearchKey.url)
             !when (determineEpisodeType(html)) {
-                EpisodeType.CLIP         -> fetchEpisode(!htmlClipEpisodeParser.parse(html))
+                EpisodeType.CLIP -> fetchEpisode(!htmlClipEpisodeParser.parse(html))
                 EpisodeType.FULL_EPISODE -> fetchEpisodeFromProgramHtml(episodeByNodeIdSearchKey.nodeId, html)
-                EpisodeType.UNKNOWN      -> ApiResponse.Failure.Content.NoEpisodeFound.left()
+                EpisodeType.UNKNOWN -> ApiResponse.Failure.Content.NoEpisodeFound.left()
             }
         }
     }
@@ -118,10 +102,7 @@ internal class HttpEpisodeRepo(
         withContext(Dispatchers.IO) {
             either {
                 val episode = !client.executeAsync(
-                    Request.Builder()
-                        .get()
-                        .url("$vierApiUrl/video/${episodeVideoUuid.id}")
-                        .build()
+                    Request.Builder().get().url("$vierApiUrl/video/${episodeVideoUuid.id}").build()
                 ).safeBodyString()
 
                 ApiResponse.Success.Content.SingleEpisode(!episodeParser.parse(episode))

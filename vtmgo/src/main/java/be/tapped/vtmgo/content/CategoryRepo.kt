@@ -48,11 +48,7 @@ internal class HttpCategoryRepo(
     override suspend fun fetchCategories(jwt: JWT, profile: Profile): Either<ApiResponse.Failure, ApiResponse.Success.Content.Categories> =
         withContext(Dispatchers.IO) {
             val response = client.executeAsync(
-                Request.Builder()
-                    .headers(headerBuilder.authenticationHeaders(jwt, profile))
-                    .get()
-                    .url(constructUrl(profile.product))
-                    .build()
+                Request.Builder().headers(headerBuilder.authenticationHeaders(jwt, profile)).get().url(constructUrl(profile.product)).build()
             )
 
             either {
@@ -62,8 +58,6 @@ internal class HttpCategoryRepo(
         }
 
     private fun constructUrl(vtmGoProduct: VTMGOProduct): HttpUrl =
-        baseContentHttpUrlBuilder.constructBaseContentUrl(vtmGoProduct)
-            .addPathSegments("catalog/filters")
-            .addQueryParameter("pageSize", "2000")
+        baseContentHttpUrlBuilder.constructBaseContentUrl(vtmGoProduct).addPathSegments("catalog/filters").addQueryParameter("pageSize", "2000")
             .build()
 }

@@ -20,13 +20,10 @@ import okhttp3.Request
 
 internal class JsonStreamParser {
     suspend fun parse(videoUuid: VideoUuid, json: String): Either<ApiResponse.Failure, M3U8Stream> =
-        Either.catch { Json.decodeFromString<JsonObject>(json) }
-            .mapLeft { ApiResponse.Failure.Stream.NoStreamFound(videoUuid) }
-            .flatMap {
-                Either
-                    .catch { M3U8Stream(it["video"]!!.jsonObject["S"]!!.jsonPrimitive.content) }
-                    .mapLeft { ApiResponse.Failure.JsonParsingException(it) }
-            }
+        Either.catch { Json.decodeFromString<JsonObject>(json) }.mapLeft { ApiResponse.Failure.Stream.NoStreamFound(videoUuid) }.flatMap {
+            Either.catch { M3U8Stream(it["video"]!!.jsonObject["S"]!!.jsonPrimitive.content) }
+                .mapLeft { ApiResponse.Failure.JsonParsingException(it) }
+        }
 }
 
 public interface StreamRepo {
@@ -45,11 +42,7 @@ internal class HttpStreamRepo(
         withContext(Dispatchers.IO) {
             either {
                 val response = client.executeAsync(
-                    Request.Builder()
-                        .get()
-                        .url("$vierBaseApiUrl/content/${videoUuid.id}")
-                        .header("Authorization", idToken.token)
-                        .build()
+                    Request.Builder().get().url("$vierBaseApiUrl/content/${videoUuid.id}").header("Authorization", idToken.token).build()
                 )
                 ApiResponse.Success.Stream(!jsonStreamParser.parse(videoUuid, !response.safeBodyString()))
             }

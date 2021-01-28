@@ -48,18 +48,13 @@ public class VierApiE2ETest : FreeSpec({
 
                 val idToken = tokens.orNull()!!.token.idToken
                 "when fetching episodes" - {
-                    programs.orNull()!!
-                        .programs
-                        .flatMap(Program::playlists)
-                        .flatMap(Program.Playlist::episodes)
-                        .shuffled()
-                        .take(100).parTraverse {
-                            val streams = vierApi.streamByVideoUuid(idToken, it.id)
+                    programs.orNull()!!.programs.flatMap(Program::playlists).flatMap(Program.Playlist::episodes).shuffled().take(100).parTraverse {
+                        val streams = vierApi.streamByVideoUuid(idToken, it.id)
 
-                            "it should have found a stream $streams" {
-                                streams.shouldBeRight()
-                            }
+                        "it should have found a stream $streams" {
+                            streams.shouldBeRight()
                         }
+                    }
                 }
             }
         }
@@ -199,26 +194,21 @@ public class VierApiE2ETest : FreeSpec({
                 searchResult.orNull()!!.hits.shouldNotBeEmpty()
             }
 
-            val searchKeys = searchResult.orNull()!!.hits
-                .map { it.source.searchKey }
+            val searchKeys = searchResult.orNull()!!.hits.map { it.source.searchKey }
 
-            searchKeys
-                .filterIsInstance<SearchHit.Source.SearchKey.EpisodeByNodeId>()
-                .parTraverse { episodeSearchKey ->
-                    val episode = vierApi.fetchEpisode(episodeSearchKey)
-                    "api returned an episode: $episode for $episodeSearchKey" {
-                        episode.shouldBeRight()
-                    }
+            searchKeys.filterIsInstance<SearchHit.Source.SearchKey.EpisodeByNodeId>().parTraverse { episodeSearchKey ->
+                val episode = vierApi.fetchEpisode(episodeSearchKey)
+                "api returned an episode: $episode for $episodeSearchKey" {
+                    episode.shouldBeRight()
                 }
+            }
 
-            searchKeys
-                .filterIsInstance<SearchHit.Source.SearchKey.Program>()
-                .parTraverse { programSearchKey ->
-                    val program = vierApi.fetchProgram(programSearchKey)
-                    "api returned a program: $program for $programSearchKey" {
-                        program.shouldBeRight()
-                    }
+            searchKeys.filterIsInstance<SearchHit.Source.SearchKey.Program>().parTraverse { programSearchKey ->
+                val program = vierApi.fetchProgram(programSearchKey)
+                "api returned a program: $program for $programSearchKey" {
+                    program.shouldBeRight()
                 }
+            }
         }
     }
 })

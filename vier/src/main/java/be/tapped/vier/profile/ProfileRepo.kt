@@ -18,9 +18,8 @@ import software.amazon.awssdk.services.cognitoidentityprovider.model.GetUserResp
 
 public class ProfileUserAttributeParser {
     public fun parse(userResponse: GetUserResponse): ApiResponse.Success.Authentication.Profile {
-        val userAttributeMap = userResponse.userAttributes()
-            .groupBy(AttributeType::name, AttributeType::value)
-            .mapValues { (_, value) -> value.firstOrNull() }
+        val userAttributeMap =
+            userResponse.userAttributes().groupBy(AttributeType::name, AttributeType::value).mapValues { (_, value) -> value.firstOrNull() }
 
         return ApiResponse.Success.Authentication.Profile(
             Profile(
@@ -49,20 +48,16 @@ public interface ProfileRepo {
 }
 
 internal val <T : SdkResponse> T.checkResult: Validated<ApiResponse.Failure, T>
-    get() =
-        if (sdkHttpResponse().isSuccessful) {
-            valid()
-        } else {
-            AWS(sdkHttpResponse().statusCode(), sdkHttpResponse().statusText().orElse(null)).invalid()
-        }
+    get() = if (sdkHttpResponse().isSuccessful) {
+        valid()
+    } else {
+        AWS(sdkHttpResponse().statusCode(), sdkHttpResponse().statusText().orElse(null)).invalid()
+    }
 
 public class HttpProfileRepo(private val profileUserAttributeParser: ProfileUserAttributeParser = ProfileUserAttributeParser()) : ProfileRepo {
 
     private val cognitoIdentityProvider by lazy {
-        CognitoIdentityProviderClient.builder()
-            .credentialsProvider(AnonymousCredentialsProvider.create())
-            .region(Region.EU_WEST_1)
-            .build()
+        CognitoIdentityProviderClient.builder().credentialsProvider(AnonymousCredentialsProvider.create()).region(Region.EU_WEST_1).build()
     }
 
     override suspend fun fetchTokens(username: String, password: String): Either<ApiResponse.Failure, ApiResponse.Success.Authentication.Token> =
@@ -79,29 +74,25 @@ public class HttpProfileRepo(private val profileUserAttributeParser: ProfileUser
                         idToken = IdToken(authenticationResult.idToken())
                     )
                 )
-            }
-            .mapLeft { Login }
+            }.mapLeft { Login }
 
     override suspend fun refreshTokens(refreshToken: RefreshToken): Either<ApiResponse.Failure, ApiResponse.Success.Authentication.Token> =
-        cognitoIdentityProvider.initiateAuth(AuthenticationHelper.refreshToken(refreshToken.token)).checkResult.toEither()
-            .map {
-                with(it.authenticationResult()) {
-                    ApiResponse.Success.Authentication.Token(
-                        TokenWrapper(
-                            accessToken = AccessToken(accessToken()),
-                            expiry = Expiry(System.currentTimeMillis() + (expiresIn() * 1000)),
-                            tokenType = tokenType(),
-                            refreshToken = refreshToken()?.let(::RefreshToken) ?: refreshToken,
-                            idToken = IdToken(idToken())
-                        )
+        cognitoIdentityProvider.initiateAuth(AuthenticationHelper.refreshToken(refreshToken.token)).checkResult.toEither().map {
+            with(it.authenticationResult()) {
+                ApiResponse.Success.Authentication.Token(
+                    TokenWrapper(
+                        accessToken = AccessToken(accessToken()),
+                        expiry = Expiry(System.currentTimeMillis() + (expiresIn() * 1000)),
+                        tokenType = tokenType(),
+                        refreshToken = refreshToken()?.let(::RefreshToken) ?: refreshToken,
+                        idToken = IdToken(idToken())
                     )
-                }
+                )
             }
-            .mapLeft { Refresh }
+        }.mapLeft { Refresh }
 
     override suspend fun getUserAttributes(accessToken: AccessToken): Either<ApiResponse.Failure, ApiResponse.Success.Authentication.Profile> =
         cognitoIdentityProvider.getUser(GetUserRequest.builder().accessToken(accessToken.token).build()).checkResult.toEither()
-            .map(profileUserAttributeParser::parse)
-            .mapLeft { Profile }
+            .map(profileUserAttributeParser::parse).mapLeft { Profile }
 
 }

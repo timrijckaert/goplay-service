@@ -20,10 +20,9 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 
 internal class JsonSearchResultResponseParser {
-    suspend fun parse(json: String): Either<ApiResponse.Failure, List<SearchResultResponse>> =
-        Either.catch {
-            Json.decodeFromJsonElement<List<SearchResultResponse>>(Json.decodeFromString<JsonObject>(json)["results"]!!.jsonArray)
-        }.mapLeft(::JsonParsingException)
+    suspend fun parse(json: String): Either<ApiResponse.Failure, List<SearchResultResponse>> = Either.catch {
+        Json.decodeFromJsonElement<List<SearchResultResponse>>(Json.decodeFromString<JsonObject>(json)["results"]!!.jsonArray)
+    }.mapLeft(::JsonParsingException)
 }
 
 public interface SearchRepo {
@@ -39,17 +38,12 @@ internal class HttpSearchRepo(
 
     override suspend fun search(jwt: JWT, profile: Profile, query: String): Either<ApiResponse.Failure, ApiResponse.Success.Content.Search> =
         withContext(Dispatchers.IO) {
-            val searchResponse = client.executeAsync(Request.Builder()
-                .get()
-                .headers(headerBuilder.authenticationHeaders(jwt, profile))
-                .url(
-                    baseContentHttpUrlBuilder
-                        .constructBaseContentUrl(profile.product)
-                        .addPathSegment("search")
-                        .addEncodedQueryParameter("query", query)
-                        .build()
-                )
-                .build())
+            val searchResponse = client.executeAsync(
+                Request.Builder().get().headers(headerBuilder.authenticationHeaders(jwt, profile)).url(
+                    baseContentHttpUrlBuilder.constructBaseContentUrl(profile.product).addPathSegment("search")
+                        .addEncodedQueryParameter("query", query).build()
+                ).build()
+            )
 
             either {
                 ApiResponse.Success.Content.Search(!jsonSearchResultResponseParser.parse(!searchResponse.safeBodyString()))

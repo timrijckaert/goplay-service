@@ -17,13 +17,8 @@ public class VTMApi(
     favoritesRepo: FavoritesRepo = HttpFavoritesRepo(client, BaseContentHttpUrlBuilder, headerBuilder, JsonFavoritesParser()),
     searchRepo: SearchRepo = HttpSearchRepo(client, BaseContentHttpUrlBuilder, headerBuilder, JsonSearchResultResponseParser()),
     streamRepo: StreamRepo = HttpStreamRepo(
-        client,
-        headerBuilder,
-        JsonStreamResponseParser(),
-        StreamResponseParser(
-            DashStreamParser(),
-            HlsStreamParser(),
-            AnvatoStreamParser(
+        client, headerBuilder, JsonStreamResponseParser(), StreamResponseParser(
+            DashStreamParser(), HlsStreamParser(), AnvatoStreamParser(
                 HttpAnvatoRepo(
                     anvatoDefaultOkHttpClient,
                     AnvatoVideoJsonParser(AnvatoJsonJavascriptFunctionExtractor(), AnvatoPublishedUrlParser()),
@@ -32,11 +27,5 @@ public class VTMApi(
             )
         )
     ),
-) : CatalogRepo by catalogRepo,
-    EpisodeRepo by episodeRepo,
-    CategoryRepo by categoryRepo,
-    ChannelRepo by channelRepo,
-    StoreFrontRepo by storeFrontRepo,
-    FavoritesRepo by favoritesRepo,
-    SearchRepo by searchRepo,
-    StreamRepo by streamRepo
+) : CatalogRepo by catalogRepo, EpisodeRepo by episodeRepo, CategoryRepo by categoryRepo, ChannelRepo by channelRepo,
+    StoreFrontRepo by storeFrontRepo, FavoritesRepo by favoritesRepo, SearchRepo by searchRepo, StreamRepo by streamRepo

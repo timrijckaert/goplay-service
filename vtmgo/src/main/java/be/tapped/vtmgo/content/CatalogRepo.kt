@@ -22,11 +22,10 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 
 internal class JsonPagedTeaserContentParser {
-    suspend fun parse(json: String): Either<ApiResponse.Failure, List<PagedTeaserContent>> =
-        Either.catch {
-            val pagedTeasers = Json.decodeFromString<JsonObject>(json)["pagedTeasers"]!!.jsonObject["content"]!!
-            Json.decodeFromJsonElement<List<PagedTeaserContent>>(pagedTeasers)
-        }.mapLeft(::JsonParsingException)
+    suspend fun parse(json: String): Either<ApiResponse.Failure, List<PagedTeaserContent>> = Either.catch {
+        val pagedTeasers = Json.decodeFromString<JsonObject>(json)["pagedTeasers"]!!.jsonObject["content"]!!
+        Json.decodeFromJsonElement<List<PagedTeaserContent>>(pagedTeasers)
+    }.mapLeft(::JsonParsingException)
 }
 
 public interface CatalogRepo {
@@ -55,11 +54,7 @@ internal class HttpCatalogRepo(
         withContext(Dispatchers.IO) {
             either {
                 val response = client.executeAsync(
-                    Request.Builder()
-                        .headers(headerBuilder.authenticationHeaders(jwt, profile))
-                        .get()
-                        .url(constructUrl(profile.product))
-                        .build()
+                    Request.Builder().headers(headerBuilder.authenticationHeaders(jwt, profile)).get().url(constructUrl(profile.product)).build()
                 )
 
                 ApiResponse.Success.Content.Catalog(!jsonPagedTeaserContentParser.parse(!response.safeBodyString()))
@@ -67,14 +62,10 @@ internal class HttpCatalogRepo(
         }
 
     private fun constructUrl(vtmGoProduct: VTMGOProduct, filter: String? = null): HttpUrl =
-        baseContentHttpUrlBuilder.constructBaseContentUrl(vtmGoProduct)
-            .addPathSegments("catalog")
-            .addQueryParameter("pageSize", "2000")
-            .apply {
-                filter?.let {
-                    //Category Filter
-                    addEncodedQueryParameter("filter", it)
-                }
+        baseContentHttpUrlBuilder.constructBaseContentUrl(vtmGoProduct).addPathSegments("catalog").addQueryParameter("pageSize", "2000").apply {
+            filter?.let {
+                //Category Filter
+                addEncodedQueryParameter("filter", it)
             }
-            .build()
+        }.build()
 }

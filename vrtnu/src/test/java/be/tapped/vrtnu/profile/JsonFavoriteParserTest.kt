@@ -155,13 +155,7 @@ public class JsonFavoriteParserTest : StringSpec({
 
         val favorite = favoriteWrapper["16"]
         favorite shouldBe Favorite(
-            1514115647355,
-            1514115647355,
-            null,
-            true,
-            "/vrtnu/a-z/16-/",
-            "16+",
-            "0"
+            1514115647355, 1514115647355, null, true, "/vrtnu/a-z/16-/", "16+", "0"
         )
 
         favoriteWrapper.currentFavorites shouldHaveSize 103

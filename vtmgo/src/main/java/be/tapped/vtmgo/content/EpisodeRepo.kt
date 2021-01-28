@@ -21,8 +21,7 @@ import okhttp3.Request
 
 internal class JsonProgramParser {
     suspend fun parse(json: String): Either<ApiResponse.Failure, Program> =
-        Either
-            .catch<Program> { Json.decodeFromJsonElement(Json.decodeFromString<JsonObject>(json)["program"]!!.jsonObject) }
+        Either.catch<Program> { Json.decodeFromJsonElement(Json.decodeFromString<JsonObject>(json)["program"]!!.jsonObject) }
             .mapLeft(::JsonParsingException)
 }
 
@@ -45,25 +44,16 @@ internal class HttpEpisodeRepo(
         program: TargetResponse.Target.Program,
         jwt: JWT,
         profile: Profile,
-    ): Either<ApiResponse.Failure, ApiResponse.Success.Content.Programs> =
-        withContext(Dispatchers.IO) {
-            val response = client.executeAsync(
-                Request.Builder()
-                    .get()
-                    .headers(headerBuilder.authenticationHeaders(jwt, profile))
-                    .url(constructUrl(profile, program))
-                    .build()
-            )
+    ): Either<ApiResponse.Failure, ApiResponse.Success.Content.Programs> = withContext(Dispatchers.IO) {
+        val response = client.executeAsync(
+            Request.Builder().get().headers(headerBuilder.authenticationHeaders(jwt, profile)).url(constructUrl(profile, program)).build()
+        )
 
-            either {
-                ApiResponse.Success.Content.Programs(!jsonProgramParser.parse(!response.safeBodyString()))
-            }
+        either {
+            ApiResponse.Success.Content.Programs(!jsonProgramParser.parse(!response.safeBodyString()))
         }
+    }
 
     private fun constructUrl(profile: Profile, program: TargetResponse.Target.Program) =
-        baseContentHttpUrlBuilder
-            .constructBaseContentUrl(profile.product)
-            .addPathSegment("programs")
-            .addPathSegment(program.id)
-            .build()
+        baseContentHttpUrlBuilder.constructBaseContentUrl(profile.product).addPathSegment("programs").addPathSegment(program.id).build()
 }

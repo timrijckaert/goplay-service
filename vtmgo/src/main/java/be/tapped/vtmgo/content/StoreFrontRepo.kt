@@ -31,11 +31,10 @@ public enum class StoreFrontType(internal val id: String) {
 internal class JsonStoreFrontParser {
     private val jsonParser: Json = Json { classDiscriminator = "rowType" }
 
-    suspend fun parseListOfStoreFront(json: String): Either<ApiResponse.Failure, List<StoreFront>> =
-        Either.catch {
-            val rows = jsonParser.decodeFromString<JsonObject>(json)["rows"]!!.jsonArray
-            jsonParser.decodeFromJsonElement<List<StoreFront>>(rows)
-        }.mapLeft(::JsonParsingException)
+    suspend fun parseListOfStoreFront(json: String): Either<ApiResponse.Failure, List<StoreFront>> = Either.catch {
+        val rows = jsonParser.decodeFromString<JsonObject>(json)["rows"]!!.jsonArray
+        jsonParser.decodeFromJsonElement<List<StoreFront>>(rows)
+    }.mapLeft(::JsonParsingException)
 }
 
 public interface StoreFrontRepo {
@@ -72,17 +71,11 @@ internal class HttpStoreFrontRepo(
         storeFrontType: StoreFrontType,
     ): Either<ApiResponse.Failure, ApiResponse.Success.Content.StoreFrontRows> {
         fun constructUrl(product: VTMGOProduct, storeFrontType: StoreFrontType): HttpUrl =
-            baseContentHttpUrlBuilder.constructBaseContentUrl(product)
-                .addPathSegment("storefronts")
-                .addPathSegment(storeFrontType.id)
-                .build()
+            baseContentHttpUrlBuilder.constructBaseContentUrl(product).addPathSegment("storefronts").addPathSegment(storeFrontType.id).build()
 
         return withContext(Dispatchers.IO) {
             val response = client.executeAsync(
-                Request.Builder()
-                    .headers(headerBuilder.authenticationHeaders(jwt, profile))
-                    .get()
-                    .url(constructUrl(profile.product, storeFrontType))
+                Request.Builder().headers(headerBuilder.authenticationHeaders(jwt, profile)).get().url(constructUrl(profile.product, storeFrontType))
                     .build()
             )
 
