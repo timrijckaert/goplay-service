@@ -301,10 +301,7 @@ public data class PlayList(val content: List<PlaylistContent>)
 
 @Serializable
 public data class ChapteringContent(
-    val id: String,
-    val title: String,
-    val time: String,
-    val imageUrl: String? = null
+    val id: String, val title: String, val time: String, val imageUrl: String? = null
 )
 
 @Serializable

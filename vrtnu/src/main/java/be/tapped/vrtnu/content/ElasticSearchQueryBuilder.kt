@@ -64,18 +64,14 @@ public object ElasticSearchQueryBuilder {
             }
         }
 
-        private fun validateMaxSearchSize(): ValidatedNel<String, Unit> =
-            when (size > MAX_SEARCH_SIZE) {
-                true -> "Search size can not be bigger than: $MAX_SEARCH_SIZE but was $size".invalidNel()
-                false -> Unit.validNel()
-            }
+        private fun validateMaxSearchSize(): ValidatedNel<String, Unit> = when (size > MAX_SEARCH_SIZE) {
+            true -> "Search size can not be bigger than: $MAX_SEARCH_SIZE but was $size".invalidNel()
+            false -> Unit.validNel()
+        }
 
-        internal fun validate(): Validated<NonEmptyList<String>, SearchQuery> =
-            Validated.mapN(
-                NonEmptyList.semigroup(),
-                validateMaxSearchSize(),
-                validateResultWindow()
-            ) { _, _ -> this }
+        internal fun validate(): Validated<NonEmptyList<String>, SearchQuery> = Validated.mapN(
+            NonEmptyList.semigroup(), validateMaxSearchSize(), validateResultWindow()
+        ) { _, _ -> this }
     }
 
     private val nonWordCharacterRegex = Regex("\\W")
@@ -83,20 +79,17 @@ public object ElasticSearchQueryBuilder {
 
     // Only add query parameters that differ from the defaults in order to limit the URL which is capped at max. 8192 characters
     public fun HttpUrl.Builder.applySearchQuery(searchQuery: SearchQuery): Either<ApiResponse.Failure.Content.SearchQuery, HttpUrl.Builder> {
-        return searchQuery
-            .validate().toEither()
-            .mapLeft(::SearchQuery)
-            .map {
-                apply {
-                    with(searchQuery) {
-                        if (index != DEFAULT_SEARCH_QUERY_INDEX) {
-                            addQueryParameter("i", index.queryParamName)
-                        }
+        return searchQuery.validate().toEither().mapLeft(::SearchQuery).map {
+            apply {
+                with(searchQuery) {
+                    if (index != DEFAULT_SEARCH_QUERY_INDEX) {
+                        addQueryParameter("i", index.queryParamName)
+                    }
 
-                        addQueryParameter("size", "$size")
+                    addQueryParameter("size", "$size")
 
-                        if (order != DEFAULT_SEARCH_QUERY_ORDER) {
-                            addQueryParameter("order", order.queryParamName)
+                    if (order != DEFAULT_SEARCH_QUERY_ORDER) {
+                        addQueryParameter("order", order.queryParamName)
                         }
 
                         addQueryParameter("facets[transcodingStatus]", transcodingStatus.name)

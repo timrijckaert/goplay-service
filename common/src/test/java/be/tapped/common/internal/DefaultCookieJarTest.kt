@@ -7,17 +7,10 @@ import okhttp3.HttpUrl
 
 public class DefaultCookieJarTest : BehaviorSpec({
     val buildCookie: (Int) -> Cookie = {
-        Cookie.Builder()
-            .domain("host")
-            .name("name")
-            .value("value$it")
-            .build()
+        Cookie.Builder().domain("host").name("name").value("value$it").build()
     }
 
-    val url = HttpUrl.Builder()
-        .scheme("https")
-        .host("host")
-        .build()
+    val url = HttpUrl.Builder().scheme("https").host("host").build()
 
     given("A default cookie jar") {
         val sut = DefaultCookieJar()

@@ -25,18 +25,11 @@ internal class HttpOIDCXSRFRepo(
         private const val COOKIE_XSRF = "OIDCXSRF"
     }
 
-    override suspend fun fetchXSRFToken(): Either<MissingCookieValues, OIDCXSRF> =
-        withContext(Dispatchers.IO) {
-            client.executeAsync(
-                Request.Builder()
-                    .get()
-                    .url(USER_TOKEN_GATEWAY_URL)
-                    .build()
-            ).closeQuietly()
+    override suspend fun fetchXSRFToken(): Either<MissingCookieValues, OIDCXSRF> = withContext(Dispatchers.IO) {
+        client.executeAsync(
+            Request.Builder().get().url(USER_TOKEN_GATEWAY_URL).build()
+        ).closeQuietly()
 
-            cookieJar.validateCookie(COOKIE_XSRF)
-                .map { OIDCXSRF(it.value) }
-                .mapLeft(ApiResponse.Failure.Authentication::MissingCookieValues)
-                .toEither()
-        }
+        cookieJar.validateCookie(COOKIE_XSRF).map { OIDCXSRF(it.value) }.mapLeft(ApiResponse.Failure.Authentication::MissingCookieValues).toEither()
+    }
 }

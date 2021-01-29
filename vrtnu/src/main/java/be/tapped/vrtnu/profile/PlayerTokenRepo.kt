@@ -32,17 +32,11 @@ internal class HttpPlayerTokenRepo(
     override suspend fun fetchVRTPlayerToken(xVRTToken: XVRTToken): Either<ApiResponse.Failure, ApiResponse.Success.Authentication.PlayerToken> =
         with(Dispatchers.IO) {
             val vrtPlayerTokenResponse = client.executeAsync(
-                Request.Builder()
-                    .header("Content-Type", "application/json")
-                    .post(buildJsonObject { put("identityToken", xVRTToken.token) }.toString().toRequestBody())
-                    .url(HttpUrl.Builder()
-                        .scheme("https")
-                        .host("media-services-public.vrt.be")
-                        .addPathSegments("vualto-video-aggregator-web/rest/external/v1")
-                        .addPathSegment("tokens")
-                        .build()
-                    )
-                    .build()
+                Request.Builder().header("Content-Type", "application/json")
+                    .post(buildJsonObject { put("identityToken", xVRTToken.token) }.toString().toRequestBody()).url(
+                        HttpUrl.Builder().scheme("https").host("media-services-public.vrt.be")
+                            .addPathSegments("vualto-video-aggregator-web/rest/external/v1").addPathSegment("tokens").build()
+                    ).build()
             )
 
             either {

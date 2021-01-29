@@ -40,16 +40,10 @@ internal class HttpXVRTTokenRepo(
 
         return withContext(Dispatchers.IO) {
             client.executeAsync(
-                Request.Builder()
-                    .url(TOKEN_GATEWAY_URL)
-                    .addHeader("Cookie", loginCookie)
-                    .post(json.toRequestBody(jsonMediaType))
-                    .build()
+                Request.Builder().url(TOKEN_GATEWAY_URL).addHeader("Cookie", loginCookie).post(json.toRequestBody(jsonMediaType)).build()
             )
 
-            cookieJar.validateCookie(COOKIE_X_VRT_TOKEN)
-                .map { XVRTToken(it.value) }
-                .toEither()
+            cookieJar.validateCookie(COOKIE_X_VRT_TOKEN).map { XVRTToken(it.value) }.toEither()
                 .mapLeft { ApiResponse.Failure.Authentication.MissingCookieValues(NonEmptyList(COOKIE_X_VRT_TOKEN)) }
         }
     }

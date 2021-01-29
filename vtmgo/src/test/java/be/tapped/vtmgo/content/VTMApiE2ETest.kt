@@ -110,24 +110,20 @@ public class VTMApiE2ETest : FreeSpec() {
                                         is StoreFront.MarketingStoreFront -> listOf(storeFront.teaser.target)
                                         is StoreFront.ProfileSwitcherStoreFront -> emptyList()
                                     }
-                                }
-                                    .filter { resp ->
-                                        val target = resp.asTarget
-                                        target is TargetResponse.Target.Movie || target is TargetResponse.Target.Episode
-                                    }
-                                    .shuffled()
-                                    .take(100)
-                                    .parTraverse { target ->
-                                        "${Random.nextInt()} when fetching video streams for $target" - {
-                                            val streams = when (val t = target.asTarget) {
-                                                is TargetResponse.Target.Movie -> vtmApi.fetchStream(t)
-                                                is TargetResponse.Target.Episode -> vtmApi.fetchStream(t)
-                                                else                             -> throw IllegalStateException("Can never happen but compiler is not smart enough")
-                                            }
+                                }.filter { resp ->
+                                    val target = resp.asTarget
+                                    target is TargetResponse.Target.Movie || target is TargetResponse.Target.Episode
+                                }.shuffled().take(100).parTraverse { target ->
+                                    "${Random.nextInt()} when fetching video streams for $target" - {
+                                        val streams = when (val t = target.asTarget) {
+                                            is TargetResponse.Target.Movie -> vtmApi.fetchStream(t)
+                                            is TargetResponse.Target.Episode -> vtmApi.fetchStream(t)
+                                            else                             -> throw IllegalStateException("Can never happen but compiler is not smart enough")
+                                        }
 
-                                            "it should be successful" {
-                                                streams.shouldBeRight()
-                                            }
+                                        "it should be successful" {
+                                            streams.shouldBeRight()
+                                        }
                                         }
                                     }
                             }
@@ -144,12 +140,8 @@ public class VTMApiE2ETest : FreeSpec() {
                                 azPrograms.orNull()!!.catalog.shouldNotBeEmpty()
                             }
 
-                            azPrograms.orNull()!!.catalog
-                                .map { it.target.asTarget }
-                                .filterIsInstance<TargetResponse.Target.Program>()
-                                .shuffled()
-                                .take(100)
-                                .forEach { program ->
+                            azPrograms.orNull()!!.catalog.map { it.target.asTarget }.filterIsInstance<TargetResponse.Target.Program>().shuffled()
+                                .take(100).forEach { program ->
                                     "fetching program details with id ${program.id}" - {
                                         val programDetails = vtmApi.fetchProgram(program, jwtToken, profile)
 

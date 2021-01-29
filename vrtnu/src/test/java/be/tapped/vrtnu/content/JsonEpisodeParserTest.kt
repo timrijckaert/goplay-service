@@ -11,15 +11,14 @@ public class JsonEpisodeParserTest : StringSpec({
         val searchResult = JsonEpisodeParser().parse(episodeJson).orNull()!!
         searchResult.results shouldHaveSize 22
         searchResult.meta shouldBe Meta(22, Pages(1, 1, 150))
-        searchResult.facets shouldBe
-            FacetWrapper(
-                listOf(
-                    Facet("seasons", listOf(Bucket("2020", 22))),
-                    Facet("brands", listOf(Bucket("canvas", 22))),
-                    Facet("programs", listOf(Bucket("Terzake", 22))),
-                    Facet("categories", listOf(Bucket("nieuws-en-actua", 22), Bucket("talkshows", 22))),
-                )
+        searchResult.facets shouldBe FacetWrapper(
+            listOf(
+                Facet("seasons", listOf(Bucket("2020", 22))),
+                Facet("brands", listOf(Bucket("canvas", 22))),
+                Facet("programs", listOf(Bucket("Terzake", 22))),
+                Facet("categories", listOf(Bucket("nieuws-en-actua", 22), Bucket("talkshows", 22))),
             )
+        )
     }
 
 })

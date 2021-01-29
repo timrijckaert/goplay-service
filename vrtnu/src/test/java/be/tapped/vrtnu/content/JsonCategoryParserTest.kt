@@ -8,15 +8,13 @@ public class JsonCategoryParserTest : StringSpec() {
 
     private val jsonCategoryParser = JsonCategoryParser(
         CategorySanitizer(
-            UrlPrefixMapper(),
-            ImageSanitizer(UrlPrefixMapper())
+            UrlPrefixMapper(), ImageSanitizer(UrlPrefixMapper())
         )
     )
 
     init {
         "should be able to parse" {
-            val categoriesJson =
-                javaClass.classLoader?.getResourceAsStream("categories.json")!!.reader().readText()
+            val categoriesJson = javaClass.classLoader?.getResourceAsStream("categories.json")!!.reader().readText()
             val categories = jsonCategoryParser.parse(categoriesJson).orNull()!!
             categories shouldHaveSize 19
             categories.map(Category::name) shouldBe listOf(

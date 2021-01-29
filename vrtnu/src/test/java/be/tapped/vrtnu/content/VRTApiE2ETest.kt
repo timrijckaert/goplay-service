@@ -57,8 +57,7 @@ public class VRTApiE2ETest : FreeSpec({
                     }
 
                     "refreshing the tokens by refresh token" - {
-                        val newTokens =
-                            profileRepo.refreshTokenWrapper(tokens.orNull()!!.tokenWrapper.refreshToken)
+                        val newTokens = profileRepo.refreshTokenWrapper(tokens.orNull()!!.tokenWrapper.refreshToken)
                         "it should be successful" {
                             newTokens.shouldBeRight()
                         }
@@ -80,8 +79,7 @@ public class VRTApiE2ETest : FreeSpec({
                         }
 
                         "fetching a VRT-Player-Token" - {
-                            val vrtPlayerToken =
-                                profileRepo.fetchVRTPlayerToken(xVRTToken.orNull()!!.xVRTToken)
+                            val vrtPlayerToken = profileRepo.fetchVRTPlayerToken(xVRTToken.orNull()!!.xVRTToken)
 
                             "it should be successful" {
                                 vrtPlayerToken.shouldBeRight()
@@ -91,8 +89,7 @@ public class VRTApiE2ETest : FreeSpec({
                                 LiveStreams.allLiveStreams.parTraverse {
                                     "fetching live stream $it" - {
                                         val liveStream = vrtApi.getLiveStream(
-                                            vrtPlayerToken.orNull()!!.vrtPlayerToken,
-                                            it.videoId
+                                            vrtPlayerToken.orNull()!!.vrtPlayerToken, it.videoId
                                         )
                                         "it should be successful" {
                                             liveStream.shouldBeRight()
@@ -101,30 +98,26 @@ public class VRTApiE2ETest : FreeSpec({
                                 }
                             }
 
-                            azPrograms.orNull()!!.programs.shuffled().take(50)
-                                .parTraverse { program ->
-                                    vrtApi.episodesForProgram(program).collect { episodes ->
-                                        "${Random().nextInt()}: it should have found episodes for $program successful" {
-                                            episodes.shouldBeRight()
-                                        }
+                            azPrograms.orNull()!!.programs.shuffled().take(50).parTraverse { program ->
+                                vrtApi.episodesForProgram(program).collect { episodes ->
+                                    "${Random().nextInt()}: it should have found episodes for $program successful" {
+                                        episodes.shouldBeRight()
+                                    }
 
-                                        "${Random().nextInt()}:it should have episodes for ${program.programName}" {
-                                            episodes.orNull()?.episodes.shouldNotBeNull()
-                                        }
+                                    "${Random().nextInt()}:it should have episodes for ${program.programName}" {
+                                        episodes.orNull()?.episodes.shouldNotBeNull()
+                                    }
 
-                                        episodes.orNull()!!.episodes.shuffled().take(50)
-                                            .parTraverse {
-                                                val stream = vrtApi.getVODStream(
-                                                    vrtPlayerToken.orNull()!!.vrtPlayerToken,
-                                                    it.videoId,
-                                                    it.publicationId
-                                                )
-                                                "${Random().nextInt()}: it should successful. ${it.id}-${program.programName}: ${it.publicationId}-${it.videoId}" {
-                                                    stream.shouldBeRight()
-                                                }
-                                            }
+                                    episodes.orNull()!!.episodes.shuffled().take(50).parTraverse {
+                                        val stream = vrtApi.getVODStream(
+                                            vrtPlayerToken.orNull()!!.vrtPlayerToken, it.videoId, it.publicationId
+                                        )
+                                        "${Random().nextInt()}: it should successful. ${it.id}-${program.programName}: ${it.publicationId}-${it.videoId}" {
+                                            stream.shouldBeRight()
+                                        }
                                     }
                                 }
+                            }
                         }
                     }
                 }
@@ -172,8 +165,7 @@ public class VRTApiE2ETest : FreeSpec({
         }
 
         "fetching episodes by query" - {
-            val episodes =
-                vrtApi.episodes(ElasticSearchQueryBuilder.SearchQuery(query = "Terzake")).toList()
+            val episodes = vrtApi.episodes(ElasticSearchQueryBuilder.SearchQuery(query = "Terzake")).toList()
 
             "it should have found one match" {
                 episodes.shouldHaveSize(1)
@@ -186,9 +178,7 @@ public class VRTApiE2ETest : FreeSpec({
 
         "fetching episodes by whatsonId" - {
             val whatsonId = "963170543527"
-            val episodes =
-                vrtApi.episodes(ElasticSearchQueryBuilder.SearchQuery(whatsonId = whatsonId))
-                    .toList()
+            val episodes = vrtApi.episodes(ElasticSearchQueryBuilder.SearchQuery(whatsonId = whatsonId)).toList()
 
             "it should have found one match" {
                 episodes.shouldHaveSize(1)

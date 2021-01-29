@@ -46,11 +46,8 @@ internal class HttpProfileRepo(
     override suspend fun getProfiles(jwtToken: JWT): Either<ApiResponse.Failure, ApiResponse.Success.Authentication.Profiles> =
         withContext(Dispatchers.IO) {
             val response = client.executeAsync(
-                Request.Builder()
-                    .get()
-                    .headers(headerBuilder.authenticationHeaders(jwtToken))
-                    .url("$API_ENDPOINT/profiles?products=VTM_GO,VTM_GO_KIDS")
-                    .build()
+                Request.Builder().get().headers(headerBuilder.authenticationHeaders(jwtToken))
+                    .url("$API_ENDPOINT/profiles?products=VTM_GO,VTM_GO_KIDS").build()
             )
 
             either {

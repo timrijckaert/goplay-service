@@ -5,12 +5,9 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 public data class Epg(
-    @SerialName("O8")
-    val een: List<EpgProgram>,
-    @SerialName("1H")
-    val canvas: List<EpgProgram>,
-    @SerialName("O9")
-    val ketnet: List<EpgProgram>,
+    @SerialName("O8") val een: List<EpgProgram>,
+    @SerialName("1H") val canvas: List<EpgProgram>,
+    @SerialName("O9") val ketnet: List<EpgProgram>,
 )
 
 @Serializable
@@ -20,8 +17,7 @@ public data class EpgProgram(
     val startTime: String,
     val endTime: String,
     val title: String,
-    @SerialName("vrt.whatson-id")
-    val whatsonId: String? = null,
+    @SerialName("vrt.whatson-id") val whatsonId: String? = null,
     val image: String? = null,
     val programWhatsonId: String? = null,
     val featured: Boolean? = null,

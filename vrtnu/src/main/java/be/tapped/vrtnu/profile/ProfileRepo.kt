@@ -10,5 +10,4 @@ public class ProfileRepo(
     client: OkHttpClient = defaultOkHttpClient.newBuilder().cookieJar(cookieJar).build(),
     tokenRepo: TokenRepo = HttpTokenRepo(client, cookieJar),
     favoritesRepo: FavoritesRepo = HttpFavoritesRepo(client, JsonFavoriteParser()),
-) : TokenRepo by tokenRepo,
-    FavoritesRepo by favoritesRepo
+) : TokenRepo by tokenRepo, FavoritesRepo by favoritesRepo

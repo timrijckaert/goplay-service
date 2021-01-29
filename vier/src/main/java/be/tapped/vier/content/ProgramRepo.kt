@@ -50,10 +50,7 @@ internal class HtmlPartialProgramParser(private val jsoupParser: JsoupParser) {
                 val path = link.safeAttr("href").toValidatedNel()
                 val title = link.safeChild(0).flatMap { it.safeText() }.toValidateNel()
                 applicative.mapN(title, path) { (title, path) -> PartialProgram(title, path) }
-            }.sequence(applicative)
-                .mapLeft { Parsing(it) }
-                .map { it.fix() }
-                .toEither()
+            }.sequence(applicative).mapLeft { Parsing(it) }.map { it.fix() }.toEither()
         }
 }
 
@@ -70,18 +67,15 @@ internal class HtmlFullProgramParser(private val jsoupParser: JsoupParser) {
     fun canParse(html: String): Boolean = jsoupParser.parse(html).safeSelectFirst(CSSSelector).isRight()
 
     fun parse(html: String): Either<Failure, Program> =
-        jsoupParser.parse(html)
-            .safeSelectFirst(CSSSelector)
-            .flatMap { it.safeAttr(datasetName).toEither() }
-            .flatMap {
-                Either.catch {
-                    val programDataObject = Json.decodeFromString<JsonObject>(it)["data"]!!.jsonObject
-                    Json {
-                        isLenient = true
-                        ignoreUnknownKeys = true
-                    }.decodeFromJsonElement<Program>(programDataObject)
-                }.mapLeft(Failure::JsonParsingException)
-            }
+        jsoupParser.parse(html).safeSelectFirst(CSSSelector).flatMap { it.safeAttr(datasetName).toEither() }.flatMap {
+            Either.catch {
+                val programDataObject = Json.decodeFromString<JsonObject>(it)["data"]!!.jsonObject
+                Json {
+                    isLenient = true
+                    ignoreUnknownKeys = true
+                }.decodeFromJsonElement<Program>(programDataObject)
+            }.mapLeft(Failure::JsonParsingException)
+        }
 }
 
 public interface ProgramRepo {
@@ -101,17 +95,12 @@ internal class HttpProgramRepo(
     // curl -X GET "https://www.vier.be/"
     override suspend fun fetchPrograms(): Either<Failure, Success.Content.Programs> {
         suspend fun fetchProgramDetails(partialPrograms: List<PartialProgram>): Either<Failure, List<Program>> =
-            partialPrograms.parTraverse(Dispatchers.IO) { fetchProgramFromUrl("$vierUrl${it.path}") }
-                .sequence(Either.applicative())
-                .map { it.fix() }
+            partialPrograms.parTraverse(Dispatchers.IO) { fetchProgramFromUrl("$vierUrl${it.path}") }.sequence(Either.applicative()).map { it.fix() }
 
         return withContext(Dispatchers.IO) {
             either {
                 val html = !client.executeAsync(
-                    Request.Builder()
-                        .get()
-                        .url(vierUrl)
-                        .build()
+                    Request.Builder().get().url(vierUrl).build()
                 ).safeBodyString()
 
                 val partialPrograms = !htmlPartialProgramParser.parse(html)
@@ -124,16 +113,12 @@ internal class HttpProgramRepo(
     override suspend fun fetchProgram(programSearchKey: SearchHit.Source.SearchKey.Program): Either<Failure, Success.Content.SingleProgram> =
         fetchProgramFromUrl(programSearchKey.url).map(Success.Content::SingleProgram)
 
-    private suspend fun fetchProgramFromUrl(programUrl: String): Either<Failure, Program> =
-        either {
-            val html = !withContext(Dispatchers.IO) {
-                client.executeAsync(
-                    Request.Builder()
-                        .get()
-                        .url(programUrl)
-                        .build()
-                ).safeBodyString()
-            }
-            !htmlFullProgramParser.parse(html)
+    private suspend fun fetchProgramFromUrl(programUrl: String): Either<Failure, Program> = either {
+        val html = !withContext(Dispatchers.IO) {
+            client.executeAsync(
+                Request.Builder().get().url(programUrl).build()
+            ).safeBodyString()
         }
+        !htmlFullProgramParser.parse(html)
+    }
 }

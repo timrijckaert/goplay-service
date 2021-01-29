@@ -38,11 +38,12 @@ public interface EpisodeRepo {
     public fun episodesForProgram(program: Program): Flow<Either<ApiResponse.Failure, ApiResponse.Success.Content.Episodes>> =
         episodes(ElasticSearchQueryBuilder.SearchQuery(programName = program.programName))
 
-    public fun fetchMostRecent(): Flow<Either<ApiResponse.Failure, ApiResponse.Success.Content.Episodes>> =
-        episodes(ElasticSearchQueryBuilder.SearchQuery(
+    public fun fetchMostRecent(): Flow<Either<ApiResponse.Failure, ApiResponse.Success.Content.Episodes>> = episodes(
+        ElasticSearchQueryBuilder.SearchQuery(
             size = 25,
             custom = mapOf("allowedRegion" to "BE,WORLD", "brands" to "een,canvas,klara,mnm,radio1,radio2,sporza,stubru,vrtnws,vrtnu,vrtnxt"),
-        ))
+        )
+    )
 }
 
 internal class HttpEpisodeRepo(

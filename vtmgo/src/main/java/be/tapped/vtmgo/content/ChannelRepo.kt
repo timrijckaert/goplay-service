@@ -22,11 +22,10 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 
 public class JsonChannelParser {
-    public suspend fun parse(json: String): Either<ApiResponse.Failure, List<LiveChannel>> =
-        Either.catch {
-            val jsonObject = Json.decodeFromString<JsonObject>(json)
-            Json.decodeFromJsonElement<List<LiveChannel>>(jsonObject["channels"]!!.jsonArray)
-        }.mapLeft(::JsonParsingException)
+    public suspend fun parse(json: String): Either<ApiResponse.Failure, List<LiveChannel>> = Either.catch {
+        val jsonObject = Json.decodeFromString<JsonObject>(json)
+        Json.decodeFromJsonElement<List<LiveChannel>>(jsonObject["channels"]!!.jsonArray)
+    }.mapLeft(::JsonParsingException)
 }
 
 public interface ChannelRepo {
@@ -43,11 +42,7 @@ internal class HttpChannelRepo(
     override suspend fun fetchChannels(jwt: JWT, profile: Profile): Either<ApiResponse.Failure, ApiResponse.Success.Content.LiveChannels> =
         withContext(Dispatchers.IO) {
             val response = client.executeAsync(
-                Request.Builder()
-                    .get()
-                    .headers(headerBuilder.authenticationHeaders(jwt, profile))
-                    .url(constructUrl(profile.product))
-                    .build()
+                Request.Builder().get().headers(headerBuilder.authenticationHeaders(jwt, profile)).url(constructUrl(profile.product)).build()
             )
 
             either {
@@ -56,8 +51,6 @@ internal class HttpChannelRepo(
         }
 
     private fun constructUrl(product: VTMGOProduct): HttpUrl =
-        baseContentHttpUrlBuilder.constructBaseContentUrl(product)
-            .addPathSegments("live")
-            .build()
+        baseContentHttpUrlBuilder.constructBaseContentUrl(product).addPathSegments("live").build()
 }
 

@@ -9,9 +9,6 @@ internal object BaseContentHttpUrlBuilder {
             VTMGOProduct.VTM_GO -> "vtmgo"
             VTMGOProduct.VTM_GO_KIDS -> "vtmgo-kids"
         }
-        return HttpUrl.Builder()
-            .scheme("https")
-            .host("lfvp-api.dpgmedia.net")
-            .addPathSegments(vtmGoProductToUrlPath)
+        return HttpUrl.Builder().scheme("https").host("lfvp-api.dpgmedia.net").addPathSegments(vtmGoProductToUrlPath)
     }
 }

@@ -40,17 +40,16 @@ public data class Favorite(
 )
 
 internal class JsonFavoriteParser {
-    suspend fun parse(json: String): Either<ApiResponse.Failure, FavoriteWrapper> =
-        Either.catch {
-            val rootJsonObject = Json.decodeFromString<JsonObject>(json)
-            FavoriteWrapper(rootJsonObject.keys.associateWith {
-                val favoriteJson = rootJsonObject[it]!!.jsonObject
-                val created = favoriteJson["created"]!!.jsonPrimitive.long
-                val updated = favoriteJson["updated"]!!.jsonPrimitive.long
-                val valueJsonObject = favoriteJson["value"]!!.jsonObject
-                Json.decodeFromJsonElement<Favorite>(valueJsonObject).copy(created = created, updated = updated)
-            })
-        }.mapLeft(ApiResponse.Failure::JsonParsingException)
+    suspend fun parse(json: String): Either<ApiResponse.Failure, FavoriteWrapper> = Either.catch {
+        val rootJsonObject = Json.decodeFromString<JsonObject>(json)
+        FavoriteWrapper(rootJsonObject.keys.associateWith {
+            val favoriteJson = rootJsonObject[it]!!.jsonObject
+            val created = favoriteJson["created"]!!.jsonPrimitive.long
+            val updated = favoriteJson["updated"]!!.jsonPrimitive.long
+            val valueJsonObject = favoriteJson["value"]!!.jsonObject
+            Json.decodeFromJsonElement<Favorite>(valueJsonObject).copy(created = created, updated = updated)
+        })
+    }.mapLeft(ApiResponse.Failure::JsonParsingException)
 }
 
 public interface FavoritesRepo {
@@ -74,11 +73,7 @@ internal class HttpFavoritesRepo(
     override suspend fun favorites(xVRTToken: XVRTToken): Either<ApiResponse.Failure, ApiResponse.Success.Authentication.Favorites> =
         withContext(Dispatchers.IO) {
             val favoritesResponse = client.executeAsync(
-                Request.Builder()
-                    .get()
-                    .header("Authorization", "Bearer ${xVRTToken.token}")
-                    .url(FAVORITES_URL)
-                    .build()
+                Request.Builder().get().header("Authorization", "Bearer ${xVRTToken.token}").url(FAVORITES_URL).build()
             )
 
             either {

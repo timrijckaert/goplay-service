@@ -271,8 +271,7 @@ public data class Stream(
     val type: String,
     val anvato: Anvato? = null,
     val url: String? = null,
-    @Serializable(with = DrmSerializer::class)
-    val drm: Drm? = null,
+    @Serializable(with = DrmSerializer::class) val drm: Drm? = null,
 )
 
 @Serializable
