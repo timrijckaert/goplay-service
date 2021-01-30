@@ -2,13 +2,13 @@ package com.example.sample
 
 import arrow.core.Tuple2
 import arrow.core.toT
-import be.tapped.vier.ApiResponse
-import be.tapped.vier.content.EpisodeUuid
-import be.tapped.vier.content.SearchHit
-import be.tapped.vier.content.VideoUuid
-import be.tapped.vier.content.VierApi
-import be.tapped.vier.epg.HttpEpgRepo
-import be.tapped.vier.profile.HttpProfileRepo
+import be.tapped.goplay.ApiResponse
+import be.tapped.goplay.content.EpisodeUuid
+import be.tapped.goplay.content.SearchHit
+import be.tapped.goplay.content.VideoUuid
+import be.tapped.goplay.content.GoPlayApi
+import be.tapped.goplay.epg.HttpEpgRepo
+import be.tapped.goplay.profile.HttpProfileRepo
 
 public suspend fun main(args: Array<String>) {
     val userName = args[0]
@@ -24,7 +24,7 @@ public suspend fun main(args: Array<String>) {
 }
 
 private suspend fun api(token: ApiResponse.Success.Authentication.Token) {
-    val vierApi = VierApi()
+    val vierApi = GoPlayApi()
 
     // All Programs
     val fetchPrograms = vierApi.fetchPrograms()

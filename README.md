@@ -69,13 +69,13 @@ Er is een `sample` module voorzien.
 </details>
 
 <details>
-<summary>VIER</summary>
+<summary>GoPlay</summary>
 
-# VIER
+# GoPlay
 
 ## Authenticatie
 - [x] Authenticatie
-- [x] Vier Profiel ophalen
+- [x] GoPlay Profiel ophalen
 
 ## Content
 - [x] Alle programma's alfabetisch

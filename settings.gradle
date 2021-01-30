@@ -4,6 +4,6 @@ include ':sample'
 
 include ':vrtnu'
 include ':vtmgo'
-include ':vier'
+include ':goplay'
 
 rootProject.name = "Vlaamse TV Aggregator"

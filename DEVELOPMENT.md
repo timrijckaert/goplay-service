@@ -11,8 +11,8 @@ vrtnu.password=
 vtmgo.username=
 vtmgo.password=
 
-vier.username=
-vier.password=
+goplay.username=
+goplay.password=
 ```
 
 Afterwards you can run tests like normal.
