@@ -3,11 +3,12 @@ dependencies {
     implementation Dependencies.kotlinXSerialization
     implementation Dependencies.coroutinesCore
     implementation Dependencies.arrowCore
+    implementation Dependencies.arrowFxCoroutines
     implementation platform(Dependencies.awsBOM)
     implementation Dependencies.awsCognitoProvider
     implementation Dependencies.okHttp3
 
-    implementation project(':vier')
+    implementation project(':goplay')
     implementation project(':vrtnu')
     implementation project(':vtmgo')
 }

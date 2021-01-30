@@ -1,0 +1,738 @@
+{
+  "took": 9,
+  "timed_out": false,
+  "_shards": {
+    "total": 1,
+    "successful": 1,
+    "failed": 0
+  },
+  "hits": {
+    "total": 7627,
+    "max_score": 29.356363,
+    "hits": [
+      {
+        "_index": "production",
+        "_type": "page",
+        "_id": "vier:node:en:31097",
+        "_score": 29.356363,
+        "_source": {
+          "id": "31097",
+          "type": "node",
+          "bundle": "program",
+          "url": "https://www.vier.be/de-slimste-mens-in-huis",
+          "language": "en",
+          "title": "De Slimste Mens in Huis",
+          "site": "vier",
+          "intro": "Erik Van Looy presenteert vanuit zijn eigen kot 'De Slimste Mens van het Huis', een miniquiz voor bij jou thuis. ",
+          "created": 1608850840,
+          "changed": 1587151694,
+          "body": [],
+          "terms": [
+            "erik van looy",
+            "De Slimste Mens ter Wereld"
+          ],
+          "suggest": "De Slimste Mens in Huis",
+          "program": "",
+          "img": "https://images.viervijfzes.be/www.vier.be/production/meta/tnepg3840x2160slimstemensinhuis-q7v127.jpg?auto=format&fit=crop&h=452&ixlib=php-1.1.0&q=65&w=682&s=4e84a4c11f015f3fafb217c0be8c8495"
+        },
+        "highlight": {
+          "intro": [
+            "Erik Van Looy presenteert vanuit zijn eigen kot '<em>De</em> <em>Slimste</em> <em>Mens</em> van het Huis', een miniquiz voor bij jou thuis. "
+          ],
+          "title": [
+            "<em>De</em> <em>Slimste</em> <em>Mens</em> in Huis"
+          ]
+        }
+      },
+      {
+        "_index": "production",
+        "_type": "page",
+        "_id": "vier:node:en:189",
+        "_score": 29.356245,
+        "_source": {
+          "id": "189",
+          "type": "node",
+          "bundle": "program",
+          "url": "https://www.vier.be/de-slimste-mens-ter-wereld",
+          "language": "en",
+          "title": "De Slimste Mens ter Wereld",
+          "site": "vier",
+          "intro": "Het nieuwe seizoen van De Slimste Mens ter Wereld start op 12 oktober! ",
+          "created": 1608850835,
+          "changed": 1602569960,
+          "body": [
+            "<p>De leukste quiz ter wereld brengt&nbsp;oneindig veel weetjes, de grappigste filmpjes en een flinke portie spanning naar de Vlaamse huiskamers. Dat alles met de steun van een ontzettend toegewijde jury.</p>\r\n"
+          ],
+          "terms": [
+            "De Slimste Mens ter Wereld",
+            "Quiz",
+            "erik van looy",
+            "Jeroom",
+            "Maaike Cafmeyer",
+            "Bart Cannaerts",
+            "Gilles Van Bouwel",
+            "Philippe Geubels",
+            "Marc-Marie Huijbregts",
+            "Sam Gooris",
+            "jonas geirnaert",
+            "Jan-Jaap Van der Wal",
+            "Herman Brusselmans",
+            "Karen Damen",
+            "Stefaan Degand",
+            "Wim Helsen"
+          ],
+          "suggest": "De Slimste Mens ter Wereld",
+          "program": "",
+          "img": "https://images.viervijfzes.be/www.vier.be/production/meta/dsmtws183840x2160wallpaper-qh3sr2.jpg?auto=format&fit=crop&h=452&ixlib=php-1.1.0&q=65&w=682&s=559b7c2ae29aa7b0cd433a4eb3a772cd"
+        },
+        "highlight": {
+          "intro": [
+            "Het nieuwe seizoen van <em>De</em> <em>Slimste</em> <em>Mens</em> ter Wereld start op 12 oktober! "
+          ],
+          "title": [
+            "<em>De</em> <em>Slimste</em> <em>Mens</em> ter Wereld"
+          ],
+          "body": [
+            "<p><em>De</em> leukste quiz ter wereld brengt&nbsp;oneindig veel weetjes, <em>de</em> grappigste filmpjes en een flinke portie spanning"
+          ]
+        }
+      },
+      {
+        "_index": "production",
+        "_type": "page",
+        "_id": "vier:node:en:24497",
+        "_score": 14.998157,
+        "_source": {
+          "id": "24497",
+          "type": "node",
+          "bundle": "program",
+          "url": "https://www.vier.be/schatten-van-mensen",
+          "language": "en",
+          "title": "Schatten van Mensen",
+          "site": "vier",
+          "intro": "Schatten van Mensen geeft een inkijk in het leven, maar vooral het werk van dealers Bie, Boris, Patrick en Paul uit Stukken van Mensen. De vier zijn bevlogen met een passie voor opmerkelijke objecten.",
+          "created": 1608850838,
+          "changed": 1581328337,
+          "body": [
+            "<p>Schatten van Mensen geeft een inkijk in het leven, maar vooral het werk van dealers Bie, Boris, Patrick en Paul uit Stukken van Mensen. De vier zijn bevlogen met een passie voor opmerkelijke objecten.</p>\r\n"
+          ],
+          "terms": [
+            "Schatten van Mensen"
+          ],
+          "suggest": "Schatten van Mensen",
+          "program": "",
+          "img": "https://images.viervijfzes.be/www.vier.be/production/meta/tnwallpaper3840x2160schattenvanmensen-q5hce6.jpg?auto=format&fit=crop&h=452&ixlib=php-1.1.0&q=65&w=682&s=562a815e959f263a5e5275347b1d95a5"
+        },
+        "highlight": {
+          "intro": [
+            "Schatten van <em>Mensen</em> geeft een inkijk in het leven, maar vooral het werk van <em>dealers</em> Bie, Boris, Patrick en Paul uit"
+          ],
+          "title": [
+            "Schatten van <em>Mensen</em>"
+          ],
+          "body": [
+            " Stukken van Mensen. <em>De</em> vier zijn bevlogen met een passie voor opmerkelijke objecten.</p>\r\n"
+          ]
+        }
+      },
+      {
+        "_index": "production",
+        "_type": "page",
+        "_id": "vier:node:en:317",
+        "_score": 14.998133,
+        "_source": {
+          "id": "317",
+          "type": "node",
+          "bundle": "program",
+          "url": "https://www.vier.be/het-zijn-net-mensen",
+          "language": "en",
+          "title": "Het Zijn Net Mensen",
+          "site": "vier",
+          "intro": "Het vaak bijzondere gedrag van de dierlijke soort. Daarover buigen Gert Verhulst en zijn kapiteins Karen Damen en Marc-Marie Huijbregts zich in een geestige panelshow vol dierenmanieren.",
+          "created": 1608850836,
+          "changed": 1581338020,
+          "body": [
+            "Het vaak bijzondere gedrag van de dierlijke soort. Daarover buigen Gert Verhulst en zijn kapiteins Karen Damen en Marc-Marie Huijbregts zich in een geestige panelshow vol dierenmanieren.\r\n\r\n#HZNM"
+          ],
+          "terms": [
+            "Het zijn net Mensen",
+            "Karen Damen",
+            "Gert Verhulst",
+            "Dieren"
+          ],
+          "suggest": "Het Zijn Net Mensen",
+          "program": "",
+          "img": "https://images.viervijfzes.be/www.vier.be/production/meta/fennrljo-q5hk7f.jpeg?auto=format&fit=crop&h=452&ixlib=php-1.1.0&q=65&w=682&s=7ba2ca277d33196c522ba431695979f1"
+        },
+        "highlight": {
+          "intro": [
+            "Het vaak bijzondere gedrag van <em>de</em> dierlijke soort. Daarover buigen Gert Verhulst en zijn kapiteins Karen Damen en Marc"
+          ],
+          "title": [
+            "Het Zijn Net <em>Mensen</em>"
+          ],
+          "body": [
+            "Het vaak bijzondere gedrag van <em>de</em> dierlijke soort. Daarover buigen Gert Verhulst en zijn kapiteins Karen Damen en Marc"
+          ]
+        }
+      },
+      {
+        "_index": "production",
+        "_type": "page",
+        "_id": "vier:node:en:377",
+        "_score": 14.998133,
+        "_source": {
+          "id": "377",
+          "type": "node",
+          "bundle": "program",
+          "url": "https://www.vier.be/stukken-van-mensen",
+          "language": "en",
+          "title": "Stukken van Mensen",
+          "site": "vier",
+          "intro": "Vier topdealers. Een verkoper met een missie: een exclusief pronkstuk voor een zo hoog mogelijke prijs aan de man brengen. Dat wordt zweten, bluffen en gokken aan de onderhandelingstafel. ",
+          "created": 1608850836,
+          "changed": 1581327512,
+          "body": [
+            "<p>Stukken van Mensen goes 2.0. In het vijfde seizoen was de concurrentie nog nooit zo groot, want <strong>drie nieuwe experten</strong> mengen zich mee in de strijd: veilingmeester Carlo Bonte, antiquair Frank Van Laer en vintage specialist Yves Chung. Zo azen er dit keer in totaal maar liefst acht experten op dezelfde pronkstukken. En dat doen ze op een gloednieuwe locatie: indrukwekkende ‘<strong>Verbeke Foundation</strong>’, één van de grootste privémusea voor hedendaagse kunst in Europa. Samen met de vijf vertrouwde dealers Boris Devis, Bie Baert, Sofie Van de Velde, Patrick van der Vorst en Paul De Grande krijgen zij de kans om het beste, mooiste, leukste of meest exclusieve stuk weg te kapen voor de neus van hun concullega’s.</p>\r\n"
+          ],
+          "terms": [
+            "Stukken van Mensen"
+          ],
+          "suggest": "Stukken van Mensen",
+          "program": "",
+          "img": "https://images.viervijfzes.be/www.vier.be/production/meta/tnwallpaper3840x2160svm-q5hc21.jpg?auto=format&fit=crop&h=452&ixlib=php-1.1.0&q=65&w=682&s=04f4fdbf888116e1ea7784ad79bce396"
+        },
+        "highlight": {
+          "intro": [
+            "Vier topdealers. Een verkoper met een missie: een exclusief pronkstuk voor een zo hoog mogelijke prijs aan <em>de</em> man"
+          ],
+          "title": [
+            "Stukken van <em>Mensen</em>"
+          ],
+          "body": [
+            "<p>Stukken van Mensen goes 2.0. In het vijfde seizoen was <em>de</em> concurrentie nog nooit zo groot, want <strong>drie nieuwe"
+          ]
+        }
+      },
+      {
+        "_index": "production",
+        "_type": "page",
+        "_id": "vier:node:en:35517",
+        "_score": 14.058079,
+        "_source": {
+          "id": "35517",
+          "type": "node",
+          "bundle": "video",
+          "url": "https://www.vier.be/video/de-slimste-mens-ter-wereld/de-slimste-mens-ter-wereld-s18/de-slimste-mens-ter-wereld-s18-aflevering-40",
+          "language": "en",
+          "title": "De Slimste Mens Ter Wereld - S18 - Aflevering 40",
+          "site": "vier",
+          "intro": "Erik Van Looy gaat in het 18e seizoen opnieuw op zoek naar De Slimste Mens ter Wereld in het 18e seizoen van de populaire quiz met Ella Leyers, Wesley Sonck, Pedro Elias, Liesbeth Van Impe, Ben Crabbé",
+          "created": 1608238800,
+          "changed": 1608238800,
+          "body": [],
+          "terms": [
+            "De Slimste Mens ter Wereld",
+            "Volledige Aflevering"
+          ],
+          "suggest": "De Slimste Mens Ter Wereld - S18 - Aflevering 40",
+          "program": "De Slimste Mens ter Wereld",
+          "img": "https://images.viervijfzes.be/www.vier.be/production/meta/3b0a3623-qlh44p.jpg?auto=format&fit=crop&h=452&ixlib=php-1.1.0&q=65&w=682&s=115ee6b1ddc215881f0a372bcd2fe630",
+          "duration": 3763
+        },
+        "highlight": {
+          "intro": [
+            "Erik Van Looy gaat in het 18e seizoen opnieuw op zoek naar <em>De</em> <em>Slimste</em> <em>Mens</em> ter Wereld in het 18e seizoen van <em>de</em>"
+          ],
+          "title": [
+            "<em>De</em> <em>Slimste</em> <em>Mens</em> Ter Wereld - S18 - Aflevering 40"
+          ]
+        }
+      },
+      {
+        "_index": "production",
+        "_type": "page",
+        "_id": "vier:node:en:35499",
+        "_score": 13.108446,
+        "_source": {
+          "id": "35499",
+          "type": "node",
+          "bundle": "video",
+          "url": "https://www.vier.be/video/de-slimste-mens-ter-wereld/de-slimste-mens-ter-wereld-s18/de-slimste-mens-ter-wereld-s18-aflevering-39",
+          "language": "en",
+          "title": "De Slimste Mens Ter Wereld - S18 - Aflevering 39",
+          "site": "vier",
+          "intro": "Erik Van Looy gaat in het 18e seizoen opnieuw op zoek naar De Slimste Mens ter Wereld in het 18e seizoen van de populaire quiz met Ella Leyers, Wesley Sonck, Pedro Elias, Liesbeth Van Impe, Ben Crabbé",
+          "created": 1608151620,
+          "changed": 1608151620,
+          "body": [],
+          "terms": [
+            "De Slimste Mens ter Wereld",
+            "Volledige Aflevering"
+          ],
+          "suggest": "De Slimste Mens Ter Wereld - S18 - Aflevering 39",
+          "program": "De Slimste Mens ter Wereld",
+          "img": "https://images.viervijfzes.be/www.vier.be/production/meta/9a7d6757-4dc7-40df-a226-cc8aa93a079b-qlf8a9.png?auto=format&fit=crop&h=452&ixlib=php-1.1.0&q=65&w=682&s=4783d5387cacb27fe82a22ae5ec9888e",
+          "duration": 3307
+        },
+        "highlight": {
+          "intro": [
+            "Erik Van Looy gaat in het 18e seizoen opnieuw op zoek naar <em>De</em> <em>Slimste</em> <em>Mens</em> ter Wereld in het 18e seizoen van <em>de</em>"
+          ],
+          "title": [
+            "<em>De</em> <em>Slimste</em> <em>Mens</em> Ter Wereld - S18 - Aflevering 39"
+          ]
+        }
+      },
+      {
+        "_index": "production",
+        "_type": "page",
+        "_id": "vier:node:en:35527",
+        "_score": 12.964968,
+        "_source": {
+          "id": "35527",
+          "type": "node",
+          "bundle": "video",
+          "url": "https://www.vier.be/video/de-slimste-mens-ter-wereld/ella-leyers-tegen-catherine-van-eylen-wie-wordt-de-slimste-mens-ter-wereld",
+          "language": "en",
+          "title": "Ella Leyers tegen Catherine Van Eylen: wie wordt De Slimste Mens ter Wereld?",
+          "site": "vier",
+          "intro": "Het einde is in zicht. In de finale neemt Ella Leyers het op tegen Catherine Van Eylen.",
+          "created": 1608241770,
+          "changed": 1608241770,
+          "body": [],
+          "terms": [
+            "De Slimste Mens ter Wereld",
+            "best",
+            "18"
+          ],
+          "suggest": "Ella Leyers tegen Catherine Van Eylen: wie wordt De Slimste Mens ter Wereld?",
+          "program": "De Slimste Mens ter Wereld",
+          "img": "https://images.viervijfzes.be/www.vier.be/production/meta/screenshot-2020-12-17-at-175703-qlhtxw.png?auto=format&fit=crop&h=452&ixlib=php-1.1.0&q=65&w=682&s=45d70562de738373e3e33c6898a4b3c2",
+          "duration": 385
+        },
+        "highlight": {
+          "intro": [
+            "Het einde is in zicht. In <em>de</em> finale neemt Ella Leyers het op tegen Catherine Van Eylen."
+          ],
+          "title": [
+            "Ella Leyers tegen Catherine Van Eylen: wie wordt <em>De</em> <em>Slimste</em> <em>Mens</em> ter Wereld?"
+          ]
+        }
+      },
+      {
+        "_index": "production",
+        "_type": "page",
+        "_id": "vier:node:en:35477",
+        "_score": 12.224138,
+        "_source": {
+          "id": "35477",
+          "type": "node",
+          "bundle": "video",
+          "url": "https://www.vier.be/video/de-slimste-mens-ter-wereld/de-slimste-mens-ter-wereld-s18/de-slimste-mens-ter-wereld-s18-aflevering-38",
+          "language": "en",
+          "title": "De Slimste Mens Ter Wereld - S18 - Aflevering 38",
+          "site": "vier",
+          "intro": "Erik Van Looy gaat in het 18e seizoen opnieuw op zoek naar De Slimste Mens ter Wereld in het 18e seizoen van de populaire quiz met Ella Leyers, Wesley Sonck, Pedro Elias, Liesbeth Van Impe, Ben Crabbé",
+          "created": 1608064560,
+          "changed": 1608064560,
+          "body": [],
+          "terms": [
+            "De Slimste Mens ter Wereld",
+            "Volledige Aflevering"
+          ],
+          "suggest": "De Slimste Mens Ter Wereld - S18 - Aflevering 38",
+          "program": "De Slimste Mens ter Wereld",
+          "img": "https://images.viervijfzes.be/www.vier.be/production/meta/38-qldd26.png?auto=format&fit=crop&h=452&ixlib=php-1.1.0&q=65&w=682&s=26358611d2b64d56dbfdce0b138bbb7b",
+          "duration": 3384
+        },
+        "highlight": {
+          "intro": [
+            "Erik Van Looy gaat in het 18e seizoen opnieuw op zoek naar <em>De</em> <em>Slimste</em> <em>Mens</em> ter Wereld in het 18e seizoen van <em>de</em>"
+          ],
+          "title": [
+            "<em>De</em> <em>Slimste</em> <em>Mens</em> Ter Wereld - S18 - Aflevering 38"
+          ]
+        }
+      },
+      {
+        "_index": "production",
+        "_type": "page",
+        "_id": "vier:node:en:35441",
+        "_score": 11.404975,
+        "_source": {
+          "id": "35441",
+          "type": "node",
+          "bundle": "video",
+          "url": "https://www.vier.be/video/de-slimste-mens-ter-wereld/de-slimste-mens-ter-wereld-s18/de-slimste-mens-ter-wereld-s18-aflevering-37",
+          "language": "en",
+          "title": "De Slimste Mens Ter Wereld - S18 - Aflevering 37",
+          "site": "vier",
+          "intro": "Erik Van Looy gaat in het 18e seizoen opnieuw op zoek naar De Slimste Mens ter Wereld in het 18e seizoen van de populaire quiz met Ella Leyers, Wesley Sonck, Pedro Elias, Liesbeth Van Impe, Ben Crabbé",
+          "created": 1607978100,
+          "changed": 1607978100,
+          "body": [],
+          "terms": [
+            "De Slimste Mens ter Wereld",
+            "Volledige Aflevering"
+          ],
+          "suggest": "De Slimste Mens Ter Wereld - S18 - Aflevering 37",
+          "program": "De Slimste Mens ter Wereld",
+          "img": "https://images.viervijfzes.be/www.vier.be/production/meta/37-qlbins.png?auto=format&fit=crop&h=452&ixlib=php-1.1.0&q=65&w=682&s=efe80fbdafe163bd53a2f929065faa5a",
+          "duration": 3329
+        },
+        "highlight": {
+          "intro": [
+            "Erik Van Looy gaat in het 18e seizoen opnieuw op zoek naar <em>De</em> <em>Slimste</em> <em>Mens</em> ter Wereld in het 18e seizoen van <em>de</em>"
+          ],
+          "title": [
+            "<em>De</em> <em>Slimste</em> <em>Mens</em> Ter Wereld - S18 - Aflevering 37"
+          ]
+        }
+      },
+      {
+        "_index": "production",
+        "_type": "page",
+        "_id": "vier:node:en:191",
+        "_score": 9.682843,
+        "_source": {
+          "id": "191",
+          "type": "node",
+          "bundle": "program",
+          "url": "https://www.vier.be/komen-eten",
+          "language": "en",
+          "title": "Komen Eten",
+          "site": "vier",
+          "intro": "Enkele mensen uitnodigen, een glaasje serveren, lekker eten op het vuur zetten, en vervolgens gezellig met zijn allen rond de tafel. ",
+          "created": 1608850835,
+          "changed": 1581333226,
+          "body": [],
+          "terms": [
+            "Komen Eten",
+            "kookprogramma"
+          ],
+          "suggest": "Komen Eten",
+          "program": "",
+          "img": "https://images.viervijfzes.be/www.vier.be/production/meta/tnwallpaper3840x2160komeneten-q5hghq.jpg?auto=format&fit=crop&h=452&ixlib=php-1.1.0&q=65&w=682&s=64e8904632c8410e31ef589c74b1494b"
+        },
+        "highlight": {
+          "intro": [
+            "Enkele <em>mensen</em> uitnodigen, een glaasje serveren, lekker eten op het vuur zetten, en vervolgens gezellig met zijn allen rond <em>de</em> tafel. "
+          ]
+        }
+      },
+      {
+        "_index": "production",
+        "_type": "page",
+        "_id": "vier:node:en:13757",
+        "_score": 9.339379,
+        "_source": {
+          "id": "13757",
+          "type": "node",
+          "bundle": "program",
+          "url": "https://www.vier.be/camping-karen-james",
+          "language": "en",
+          "title": "Camping Karen & James",
+          "site": "vier",
+          "intro": "Karen Damen en James Cooke openen deze zomer hun eigen camping. Als onervaren uitbaters zetten ze elke week hun tenten op voor een groep mensen die ze beter willen leren kennen. ",
+          "created": 1608850837,
+          "changed": 1581327721,
+          "body": [],
+          "terms": [
+            "Camping Karen & James",
+            "James Cooke",
+            "Karen Damen",
+            "Camping",
+            "Kamperen"
+          ],
+          "suggest": "Camping Karen & James",
+          "program": "",
+          "img": "https://images.viervijfzes.be/www.vier.be/production/meta/campingkarenenjamesphd3840x2160-q5hc9j.jpg?auto=format&fit=crop&h=452&ixlib=php-1.1.0&q=65&w=682&s=b11f1b3416d6722fd81bb11e97cfbc44"
+        },
+        "highlight": {
+          "intro": [
+            "Karen Damen en James Cooke openen <em>deze</em> zomer hun eigen camping. Als onervaren uitbaters zetten ze elke week hun tenten op voor een groep <em>mensen</em> die ze beter willen leren kennen. "
+          ]
+        }
+      },
+      {
+        "_index": "production",
+        "_type": "page",
+        "_id": "vier:node:en:31739",
+        "_score": 8.893129,
+        "_source": {
+          "id": "31739",
+          "type": "node",
+          "bundle": "program",
+          "url": "https://www.vier.be/geubels-en-de-idioten",
+          "language": "en",
+          "title": "Geubels en de Idioten",
+          "site": "vier",
+          "intro": "Weinig mensen weten dit, maar Philippe Geubels is een man die zich regelmatig vragen stelt. Helaas is Philippe nogal bang en onavontuurlijken dus werden hem twee medewerkers toegewezen: zijn Idioten.",
+          "created": 1608850840,
+          "changed": 1586532271,
+          "body": [],
+          "terms": [
+            "Geubels en de Idioten"
+          ],
+          "suggest": "Geubels en de Idioten",
+          "program": "",
+          "img": "https://images.viervijfzes.be/www.vier.be/production/meta/wallpaper3840x2160geubelsendeidioten-q8kw1x.jpg?auto=format&fit=crop&h=452&ixlib=php-1.1.0&q=65&w=682&s=899a72a4d26787228e360ad5264a70e3"
+        },
+        "highlight": {
+          "intro": [
+            "Weinig <em>mensen</em> weten dit, maar Philippe Geubels is een man die zich regelmatig vragen stelt. Helaas is Philippe nogal"
+          ],
+          "title": [
+            "Geubels en <em>de</em> Idioten"
+          ]
+        }
+      },
+      {
+        "_index": "production",
+        "_type": "page",
+        "_id": "vier:node:en:35399",
+        "_score": 8.646684,
+        "_source": {
+          "id": "35399",
+          "type": "node",
+          "bundle": "video",
+          "url": "https://www.vier.be/video/de-slimste-mens-ter-wereld/de-slimste-mens-ter-wereld-s18/de-slimste-mens-ter-wereld-s18-aflevering-36",
+          "language": "en",
+          "title": "De Slimste Mens Ter Wereld - S18 - Aflevering 36",
+          "site": "vier",
+          "intro": "Erik Van Looy gaat in het 18e seizoen opnieuw op zoek naar De Slimste Mens ter Wereld in het 18e seizoen van de populaire quiz met Ella Leyers, Wesley Sonck, Pedro Elias, Liesbeth Van Impe, Ben Crabbé",
+          "created": 1607632980,
+          "changed": 1607632980,
+          "body": [],
+          "terms": [
+            "De Slimste Mens ter Wereld",
+            "Volledige Aflevering"
+          ],
+          "suggest": "De Slimste Mens Ter Wereld - S18 - Aflevering 36",
+          "program": "De Slimste Mens ter Wereld",
+          "img": "https://images.viervijfzes.be/www.vier.be/production/meta/36-ql43js.png?auto=format&fit=crop&h=452&ixlib=php-1.1.0&q=65&w=682&s=055d7bc7a7ce3c69bb1251d629ed9261",
+          "duration": 3414
+        },
+        "highlight": {
+          "intro": [
+            "Erik Van Looy gaat in het 18e seizoen opnieuw op zoek naar <em>De</em> <em>Slimste</em> <em>Mens</em> ter Wereld in het 18e seizoen van <em>de</em>"
+          ],
+          "title": [
+            "<em>De</em> <em>Slimste</em> <em>Mens</em> Ter Wereld - S18 - Aflevering 36"
+          ]
+        }
+      },
+      {
+        "_index": "production",
+        "_type": "page",
+        "_id": "vier:node:en:35631",
+        "_score": 8.141572,
+        "_source": {
+          "id": "35631",
+          "type": "node",
+          "bundle": "article",
+          "url": "https://www.vier.be/dit-zijn-onze-spirit-animals-van-2020",
+          "language": "en",
+          "title": "Dit zijn onze spirit animals van 2020!",
+          "site": "vier",
+          "intro": "2020 was vaak een ellendig jaar, maar het volstaat om te denken aan deze geweldige figuren om er toch weer een beetje bovenop te komen. Dit zijn onze spirit animals van het afgelopen jaar! ",
+          "created": 1608801014,
+          "changed": 1608803984,
+          "body": [
+            "<p>2020 was vaak een ellendig jaar, maar het volstaat om te denken aan deze geweldige figuren om er toch weer een beetje bovenop te komen. Dit zijn onze<em> spirit animals </em>van het afgelopen jaar!&nbsp;</p>\r\n",
+            "<h2>Rita van Het Rad</h2>\r\n",
+            "<p>Zelden hebben wij iemand zo uit zijn dak zien gaan als Rita in Het Rad. Geniet nog eens van het moment waarop ze haar droomprijs wint en Peter net niet om de hals vliegt.&nbsp;</p>\r\n",
+            "<h2>Christian van De Mol</h2>\r\n",
+            "<p>Hij slaagde er niet op tijd in om De Mol te ontmaskeren, maar was wel de eeuwig optimistische sfeermaker in het achtste seizoen van De Mol. Geniet nog eens van één van de topmomenten van Christian!&nbsp;</p>\r\n",
+            "<h2>Kandidaat Anthony in Bake Off Vlaanderen</h2>\r\n",
+            "<p>Een medaille voor zelfopoffering voor de 24-jarige Anthony in Bake Off. Wanneer een andere kandidaat van de jury het spel moet verlaten, stelt hij zelf voor om diens plaats in te nemen. Nooit gezien.&nbsp;</p>\r\n",
+            "<h2>Erik Van Looy in De Container Cup</h2>\r\n",
+            "<p>Erik Van Looy zou om vele redenen onze <em>spirit animal</em> kunnen zijn. Maar we zullen toch vooral onthouden hoe hij tijdens De Container Cup al in de tweede discipline zijn schouder ontwrichtte en toch nog het hele parcours afwerkte. Erik, you rock!</p>\r\n",
+            "<h2>De lach van Robert&nbsp;in De Slimste Mens ter Wereld</h2>\r\n",
+            "<p>En toen verwees Covid 19 het publiek in De Slimste Mens ter Wereld resoluut naar de uitgang. Gelukkig was daar Robert, de aanstekelijkste lach van Vlaanderen, om in zijn eentje de stilte&nbsp;te vullen. <em>We owe you one</em>, Robert!</p>\r\n"
+          ],
+          "terms": [],
+          "suggest": "Dit zijn onze spirit animals van 2020!",
+          "program": "",
+          "img": "https://images.viervijfzes.be/www.vier.be/production/meta/spiritanimalsthumb-qlu934.png?auto=format&fit=crop&h=452&ixlib=php-1.1.0&q=65&w=682&s=b5f7068b6bb472bf55f96a6aa4d298ec"
+        },
+        "highlight": {
+          "intro": [
+            "2020 was vaak een ellendig jaar, maar het volstaat om te <em>denken</em> aan <em>deze</em> geweldige figuren om er toch weer een beetje"
+          ],
+          "body": [
+            " haar droomprijs wint en Peter net niet om <em>de</em> hals vliegt.&nbsp;</p>\r\n"
+          ]
+        }
+      },
+      {
+        "_index": "production",
+        "_type": "page",
+        "_id": "vier:node:en:35373",
+        "_score": 8.071137,
+        "_source": {
+          "id": "35373",
+          "type": "node",
+          "bundle": "video",
+          "url": "https://www.vier.be/video/de-slimste-mens-ter-wereld/de-slimste-mens-ter-wereld-s18/de-slimste-mens-ter-wereld-s18-aflevering-35",
+          "language": "en",
+          "title": "De Slimste Mens Ter Wereld - S18 - Aflevering 35",
+          "site": "vier",
+          "intro": "Erik Van Looy gaat in het 18e seizoen opnieuw op zoek naar De Slimste Mens ter Wereld in het 18e seizoen van de populaire quiz met Ella Leyers, Wesley Sonck, Pedro Elias, Liesbeth Van Impe, Ben Crabbé",
+          "created": 1607547120,
+          "changed": 1607547120,
+          "body": [],
+          "terms": [
+            "De Slimste Mens ter Wereld",
+            "Volledige Aflevering"
+          ],
+          "suggest": "De Slimste Mens Ter Wereld - S18 - Aflevering 35",
+          "program": "De Slimste Mens ter Wereld",
+          "img": "https://images.viervijfzes.be/www.vier.be/production/meta/35-ql2ada.png?auto=format&fit=crop&h=452&ixlib=php-1.1.0&q=65&w=682&s=03c83fcb6d543a655398006dcfaeb2eb",
+          "duration": 3328
+        },
+        "highlight": {
+          "intro": [
+            "Erik Van Looy gaat in het 18e seizoen opnieuw op zoek naar <em>De</em> <em>Slimste</em> <em>Mens</em> ter Wereld in het 18e seizoen van <em>de</em>"
+          ],
+          "title": [
+            "<em>De</em> <em>Slimste</em> <em>Mens</em> Ter Wereld - S18 - Aflevering 35"
+          ]
+        }
+      },
+      {
+        "_index": "production",
+        "_type": "page",
+        "_id": "vier:node:en:35455",
+        "_score": 7.6739416,
+        "_source": {
+          "id": "35455",
+          "type": "node",
+          "bundle": "program",
+          "url": "https://www.vier.be/de-verhulstjes",
+          "language": "en",
+          "title": "De Verhulstjes",
+          "site": "vier",
+          "intro": "Bij de familie Verhulst lachen ze ontzettend graag, maar kunnen ze ook serieus zijn. Volg het wel en wee van De Verhulstjes binnenkort op VIER.",
+          "created": 1608850841,
+          "changed": 1608059169,
+          "body": [],
+          "terms": [],
+          "suggest": "De Verhulstjes",
+          "program": "",
+          "img": "https://images.viervijfzes.be/www.vier.be/production/meta/thumbnailimage004-qlamka.jpg?auto=format&fit=crop&h=452&ixlib=php-1.1.0&q=65&w=682&s=fb9d44f1d390d607a26a39bae0df4706"
+        },
+        "highlight": {
+          "intro": [
+            "Bij <em>de</em> familie Verhulst lachen ze ontzettend graag, maar kunnen ze ook serieus zijn. Volg het wel en wee van <em>De</em> Verhulstjes binnenkort op VIER."
+          ],
+          "title": [
+            "<em>De</em> Verhulstjes"
+          ]
+        }
+      },
+      {
+        "_index": "production",
+        "_type": "page",
+        "_id": "vier:node:en:33263",
+        "_score": 7.6739354,
+        "_source": {
+          "id": "33263",
+          "type": "node",
+          "bundle": "program",
+          "url": "https://www.vier.be/tweedehands-deluxe",
+          "language": "en",
+          "title": "Tweedehands Deluxe",
+          "site": "vier",
+          "intro": "Welkom in de wereld van het pandjeshuis. Een wereld waar geld baas is.",
+          "created": 1608850840,
+          "changed": 1594645182,
+          "body": [],
+          "terms": [
+            "Tweedehands Deluxe"
+          ],
+          "suggest": "Tweedehands Deluxe",
+          "program": "",
+          "img": "https://images.viervijfzes.be/www.vier.be/production/meta/unknown-2-qderz4.jpeg?auto=format&fit=crop&h=452&ixlib=php-1.1.0&q=65&w=682&s=4605aadfe36667dca8be3eadfdc91999"
+        },
+        "highlight": {
+          "intro": [
+            "Welkom in <em>de</em> wereld van het pandjeshuis. Een wereld waar geld baas is."
+          ],
+          "title": [
+            "Tweedehands <em>Deluxe</em>"
+          ]
+        }
+      },
+      {
+        "_index": "production",
+        "_type": "page",
+        "_id": "vier:node:en:28699",
+        "_score": 7.673929,
+        "_source": {
+          "id": "28699",
+          "type": "node",
+          "bundle": "program",
+          "url": "https://www.vier.be/de-battle",
+          "language": "en",
+          "title": "De Battle",
+          "site": "vier",
+          "intro": "Gert Verhulst en James Cooke pakken uit met een grootse studioshow: De Battle. Het duo bereidt zich al sinds januari voor op spectaculaire en aartsmoeilijke opdrachten. Binnenkort meer!",
+          "created": 1608850839,
+          "changed": 1581327948,
+          "body": [],
+          "terms": [
+            "James Cooke",
+            "Gert Verhulst",
+            "Katja Schuurman",
+            "De Battle",
+            "Najib Amhali"
+          ],
+          "suggest": "De Battle",
+          "program": "",
+          "img": "https://images.viervijfzes.be/www.vier.be/production/meta/tnwallpaper3840x2160debattle-q5hcfv.jpg?auto=format&fit=crop&h=452&ixlib=php-1.1.0&q=65&w=682&s=3f029d30d17bd373fdf8de1f387505a6"
+        },
+        "highlight": {
+          "intro": [
+            "Gert Verhulst en James Cooke pakken uit met een grootse studioshow: <em>De</em> Battle. Het duo bereidt zich al sinds januari"
+          ],
+          "title": [
+            "<em>De</em> Battle"
+          ]
+        }
+      },
+      {
+        "_index": "production",
+        "_type": "page",
+        "_id": "vier:node:en:29489",
+        "_score": 7.673929,
+        "_source": {
+          "id": "29489",
+          "type": "node",
+          "bundle": "program",
+          "url": "https://www.vier.be/de-premier",
+          "language": "en",
+          "title": "De Premier",
+          "site": "vier",
+          "intro": "De Belgische eerste minister wordt ontvoerd. Hij zal weer worden vrijgelaten op voorwaarde dat hij de persoon, die hij later die dag tijdens een exclusief gesprek zal ontmoeten, vermoordt.",
+          "created": 1608850839,
+          "changed": 1598943301,
+          "body": [],
+          "terms": [],
+          "suggest": "De Premier",
+          "program": "",
+          "img": "https://images.viervijfzes.be/www.vier.be/production/meta/depremierstaand-q1xnbh.png?auto=format&fit=crop&h=452&ixlib=php-1.1.0&q=65&w=682&s=882414446851fbbbe14a9db70ca64e22"
+        },
+        "highlight": {
+          "intro": [
+            "<em>De</em> Belgische eerste minister wordt ontvoerd. Hij zal weer worden vrijgelaten op voorwaarde dat hij <em>de</em> persoon, die hij"
+          ],
+          "title": [
+            "<em>De</em> Premier"
+          ]
+        }
+      }
+    ]
+  }
+}
