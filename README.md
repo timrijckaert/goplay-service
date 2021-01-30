@@ -79,7 +79,6 @@ Er is een `sample` module voorzien.
 
 ## Content
 - [x] Alle programma's alfabetisch
-- [ ] Alle categorieën
 - [x] Zoeken
 - [x] Ophalen van episodes
 - [x] Ophalen van streams
