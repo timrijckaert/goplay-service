@@ -4,13 +4,10 @@ import arrow.core.Tuple2
 import arrow.core.toT
 import arrow.fx.coroutines.parTraverse
 import be.tapped.goplay.ApiResponse
-import be.tapped.goplay.content.EpisodeUuid
-import be.tapped.goplay.content.GoPlayApi
-import be.tapped.goplay.content.Program
-import be.tapped.goplay.content.SearchHit
+import be.tapped.goplay.content.*
 import be.tapped.goplay.epg.EpgRepo
 import be.tapped.goplay.epg.HttpEpgRepo
-import be.tapped.goplay.profile.HttpProfileRepo
+import be.tapped.goplay.profile.*
 
 public suspend fun main(args: Array<String>) {
     val userName = args[0]
@@ -26,10 +23,10 @@ public suspend fun main(args: Array<String>) {
 }
 
 private suspend fun api(token: ApiResponse.Success.Authentication.Token) {
-    val vierApi = GoPlayApi()
+    val goPlayApi = GoPlayApi()
 
     // All Programs
-    val fetchPrograms = vierApi.fetchPrograms()
+    val fetchPrograms = goPlayApi.fetchPrograms()
     val programs = fetchPrograms.orNull()!!
     println(programs)
 
@@ -38,16 +35,16 @@ private suspend fun api(token: ApiResponse.Success.Authentication.Token) {
     val episodeVideoUuids = episodesOfFirstProgram.map(Program.Playlist.Episode::id)
     println(episodeVideoUuids)
 
-    val episodeStreams = episodeVideoUuids.parTraverse { vierApi.streamByVideoUuid(token.token.idToken, it) }
+    val episodeStreams = episodeVideoUuids.parTraverse { goPlayApi.streamByVideoUuid(token.token.idToken, it) }
     println(episodeStreams)
 
     // Program by URL
     val deSlimsteMensTerWereldByProgramUrl =
-            vierApi.fetchProgram(SearchHit.Source.SearchKey.Program("https://www.goplay.be/de-slimste-mens-ter-wereld"))
+            goPlayApi.fetchProgram(SearchHit.Source.SearchKey.Program("https://www.goplay.be/de-slimste-mens-ter-wereld"))
     println(deSlimsteMensTerWereldByProgramUrl)
 
     // Search
-    val searchResults = vierApi.search("big brother")
+    val searchResults = goPlayApi.search("big brother")
     println(searchResults)
 
     if (searchResults.isRight()) {
@@ -59,21 +56,21 @@ private suspend fun api(token: ApiResponse.Success.Authentication.Token) {
                         val programsFromSearchHits =
                                 searchHits
                                         .map { it.source.searchKey as SearchHit.Source.SearchKey.Program }
-                                        .parTraverse(vierApi::fetchProgram)
+                                        .parTraverse(goPlayApi::fetchProgram)
                         println(programsFromSearchHits)
                     }
                     if (bundle == SearchHit.Source.Bundle.VIDEO) {
                         val episodesFromSearchHits =
                                 searchHits
                                         .map { it.source.searchKey as SearchHit.Source.SearchKey.EpisodeByNodeId }
-                                        .parTraverse(vierApi::fetchEpisode)
+                                        .parTraverse(goPlayApi::fetchEpisode)
                         println(episodesFromSearchHits)
                     }
                 }
     }
 
     // Episode by Episode UUID
-    val episode = vierApi.fetchEpisode(EpisodeUuid("c4e8d653-224a-4985-95ac-c8360074c518"))
+    val episode = goPlayApi.fetchEpisode(EpisodeUuid("c4e8d653-224a-4985-95ac-c8360074c518"))
     println(episode)
 }
 

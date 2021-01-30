@@ -6,7 +6,8 @@ public class GoPlayApi(
         private val programRepo: ProgramRepo = HttpProgramRepo(
                 goPlayApiDefaultOkHttpClient,
                 HtmlProgramParser(JsoupParser()),
-                HtmlFullProgramParser(JsoupParser())
+                HtmlFullProgramParser(JsoupParser()),
+                ProgramResponseValidator()
         ),
         episodeRepo: EpisodeRepo = HttpEpisodeRepo(
                 goPlayApiDefaultOkHttpClient,

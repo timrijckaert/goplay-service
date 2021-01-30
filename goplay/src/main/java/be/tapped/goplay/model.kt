@@ -1,6 +1,5 @@
 package be.tapped.goplay
 
-import arrow.core.NonEmptyList
 import be.tapped.goplay.content.M3U8Stream
 import be.tapped.goplay.content.Program
 import be.tapped.goplay.content.SearchHit
@@ -38,7 +37,6 @@ public sealed class ApiResponse {
             public data class MissingAttributeValue(public val attribute: String) : HTML()
             public data class NoSelection(public val cssQuery: String) : HTML()
             public data class NoChildAtPosition(public val position: Int, public val amountOfChildren: Int) : HTML()
-            public data class Parsing(public val failures: NonEmptyList<HTML>) : HTML()
         }
 
         public sealed class Authentication : Failure() {
@@ -49,6 +47,7 @@ public sealed class ApiResponse {
         }
 
         public sealed class Content : Failure() {
+            public object ProgramNoLongerAvailable : Content()
             public object NoEpisodeFound : Content()
         }
 

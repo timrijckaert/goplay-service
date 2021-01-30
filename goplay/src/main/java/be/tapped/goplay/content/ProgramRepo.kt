@@ -3,7 +3,9 @@ package be.tapped.goplay.content
 import arrow.core.Either
 import arrow.core.computations.either
 import arrow.core.flatMap
+import arrow.core.left
 import be.tapped.common.internal.executeAsync
+import be.tapped.goplay.ApiResponse
 import be.tapped.goplay.ApiResponse.Failure
 import be.tapped.goplay.ApiResponse.Failure.HTML
 import be.tapped.goplay.ApiResponse.Success
@@ -17,6 +19,7 @@ import kotlinx.serialization.json.decodeFromJsonElement
 import kotlinx.serialization.json.jsonObject
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import okhttp3.Response
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 
@@ -61,6 +64,22 @@ internal class HtmlFullProgramParser(private val jsoupParser: JsoupParser) {
                     }
 }
 
+// The Search API from Vier is sometimes returning non available Programs.
+// A redirect is triggered to a fixed location
+// Model this into a soft error
+internal class ProgramResponseValidator {
+    private companion object {
+        private const val NO_LONGER_AVAILABLE_REDIRECT_LOCATION = "$siteUrl/programma-niet-meer-beschikbaar"
+    }
+
+    internal suspend fun validateResponse(response: Response): Either<ApiResponse.Failure, String> =
+            if (response.priorResponse?.headers("Location")?.firstOrNull() == "https://www.goplay.be/programma-niet-meer-beschikbaar") {
+                Failure.Content.ProgramNoLongerAvailable.left()
+            } else {
+                response.safeBodyString()
+            }
+}
+
 public interface ProgramRepo {
 
     public suspend fun fetchPrograms(): Either<Failure, Success.Content.Programs>
@@ -73,6 +92,7 @@ internal class HttpProgramRepo(
         private val client: OkHttpClient,
         private val htmlProgramParser: HtmlProgramParser,
         private val htmlFullProgramParser: HtmlFullProgramParser,
+        private val programResponseValidator: ProgramResponseValidator,
 ) : ProgramRepo {
 
     // Scrapes the https://www.goplay.be/programmas searching for all available Programs and the details associated with it.
@@ -90,7 +110,10 @@ internal class HttpProgramRepo(
             fetchProgramFromUrl(programSearchKey.url).map(Success.Content::SingleProgram)
 
     private suspend fun fetchProgramFromUrl(programUrl: String): Either<Failure, Program> = either {
-        val html = !withContext(Dispatchers.IO) { client.executeAsync(Request.Builder().get().url(programUrl).build()).safeBodyString() }
+        val html = withContext(Dispatchers.IO) {
+            val response = client.executeAsync(Request.Builder().get().url(programUrl).build())
+            !programResponseValidator.validateResponse(response)
+        }
         !htmlFullProgramParser.parse(html)
     }
 }
