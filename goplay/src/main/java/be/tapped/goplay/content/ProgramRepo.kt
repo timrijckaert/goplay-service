@@ -22,7 +22,6 @@ import org.jsoup.nodes.Document
 
 internal class HtmlProgramParser(private val jsoupParser: JsoupParser) {
     internal suspend fun parse(html: String): Either<HTML, List<Program>> = either {
-        println(html)
         val htmlPrograms = !jsoupParser.parse(html).safeSelect("a[data-program]")
         val jsons = htmlPrograms.map { !it.safeAttr("data-program").toEither() }
         jsons.map {
