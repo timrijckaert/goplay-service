@@ -23,6 +23,7 @@ import org.jsoup.nodes.Document
 internal class HtmlProgramParser(private val jsoupParser: JsoupParser) {
     internal suspend fun parse(html: String): Either<HTML, List<Program>> = either {
         val htmlPrograms = !jsoupParser.parse(html).safeSelect("a[data-program]")
+        // The Program detail is found within the DOM as a JSON String
         val jsons = htmlPrograms.map { !it.safeAttr("data-program").toEither() }
         jsons.map {
             Json {
@@ -74,7 +75,9 @@ internal class HttpProgramRepo(
         private val htmlFullProgramParser: HtmlFullProgramParser,
 ) : ProgramRepo {
 
-    // curl -X GET "https://www.goplay.be/"
+    // Scrapes the https://www.goplay.be/programmas searching for all available Programs and the details associated with it.
+    // Fortunately for us the details of a Program is encoded in the HTML DOM as a JSON
+    // curl -X GET "https://www.goplay.be/programmas"
     override suspend fun fetchPrograms(): Either<Failure, Success.Content.Programs> = withContext(Dispatchers.IO) {
         either {
             val html = !client.executeAsync(Request.Builder().get().url("$siteUrl/programmas").build()).safeBodyString()
@@ -87,9 +90,7 @@ internal class HttpProgramRepo(
             fetchProgramFromUrl(programSearchKey.url).map(Success.Content::SingleProgram)
 
     private suspend fun fetchProgramFromUrl(programUrl: String): Either<Failure, Program> = either {
-        val html = !withContext(Dispatchers.IO) {
-            client.executeAsync(Request.Builder().get().url(programUrl).build()).safeBodyString()
-        }
+        val html = !withContext(Dispatchers.IO) { client.executeAsync(Request.Builder().get().url(programUrl).build()).safeBodyString() }
         !htmlFullProgramParser.parse(html)
     }
 }
