@@ -72,8 +72,8 @@ internal class ProgramResponseValidator {
         private const val NO_LONGER_AVAILABLE_REDIRECT_LOCATION = "$siteUrl/programma-niet-meer-beschikbaar"
     }
 
-    internal suspend fun validateResponse(response: Response): Either<ApiResponse.Failure, String> =
-            if (response.priorResponse?.headers("Location")?.firstOrNull() == "https://www.goplay.be/programma-niet-meer-beschikbaar") {
+    internal suspend fun validateResponse(response: Response): Either<Failure, String> =
+            if (response.priorResponse?.headers("Location")?.firstOrNull() == NO_LONGER_AVAILABLE_REDIRECT_LOCATION) {
                 Failure.Content.ProgramNoLongerAvailable.left()
             } else {
                 response.safeBodyString()
