@@ -14,7 +14,7 @@ public data class EpgProgram(
     @SerialName("timestamp") val timestamp: Int,
     @SerialName("date_string") val date: String,
     @SerialName("time_string") val time: String,
-    @SerialName("won_id") val wonId: String,
+    @SerialName("won_id") val wonId: String? = null,
     @SerialName("won_program_id") val wonProgramId: String? = null,
     @SerialName("program_concept") val programConcept: String? = null,
     @SerialName("content_episode") val contentEpisode: String? = null,

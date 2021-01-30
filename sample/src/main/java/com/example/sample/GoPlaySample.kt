@@ -4,7 +4,11 @@ import arrow.core.Tuple2
 import arrow.core.toT
 import arrow.fx.coroutines.parTraverse
 import be.tapped.goplay.ApiResponse
-import be.tapped.goplay.content.*
+import be.tapped.goplay.content.EpisodeUuid
+import be.tapped.goplay.content.GoPlayApi
+import be.tapped.goplay.content.Program
+import be.tapped.goplay.content.SearchHit
+import be.tapped.goplay.epg.EpgRepo
 import be.tapped.goplay.epg.HttpEpgRepo
 import be.tapped.goplay.profile.HttpProfileRepo
 
@@ -52,14 +56,17 @@ private suspend fun api(token: ApiResponse.Success.Authentication.Token) {
                 .groupBy { it.source.bundle }
                 .forEach { (bundle, searchHits) ->
                     if (bundle == SearchHit.Source.Bundle.PROGRAM) {
-                        val programsFromSearchHits = searchHits
-                                .map { it.source.searchKey as SearchHit.Source.SearchKey.Program }
-                                .parTraverse(vierApi::fetchProgram)
+                        val programsFromSearchHits =
+                                searchHits
+                                        .map { it.source.searchKey as SearchHit.Source.SearchKey.Program }
+                                        .parTraverse(vierApi::fetchProgram)
                         println(programsFromSearchHits)
                     }
                     if (bundle == SearchHit.Source.Bundle.VIDEO) {
-                        val episodesFromSearchHits = searchHits.map { it.source.searchKey as SearchHit.Source.SearchKey.EpisodeByNodeId }
-                                .parTraverse(vierApi::fetchEpisode)
+                        val episodesFromSearchHits =
+                                searchHits
+                                        .map { it.source.searchKey as SearchHit.Source.SearchKey.EpisodeByNodeId }
+                                        .parTraverse(vierApi::fetchEpisode)
                         println(episodesFromSearchHits)
                     }
                 }
@@ -85,6 +92,10 @@ private suspend fun authentication(
 
 private suspend fun epg() {
     val epgRepo = HttpEpgRepo()
-    val todayEpg = epgRepo.epg()
-    println(todayEpg)
+    val todayEpgVier = epgRepo.epg(EpgRepo.Brand.VIER)
+    val todayEpgVijf = epgRepo.epg(EpgRepo.Brand.VIJF)
+    val todayEpgZes = epgRepo.epg(EpgRepo.Brand.ZES)
+    println(todayEpgVier)
+    println(todayEpgVijf)
+    println(todayEpgZes)
 }

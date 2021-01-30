@@ -8,7 +8,7 @@ import be.tapped.common.internal.executeAsync
 import be.tapped.goplay.ApiResponse
 import be.tapped.goplay.common.safeBodyString
 import be.tapped.goplay.common.goPlayApiDefaultOkHttpClient
-import be.tapped.goplay.common.apiGoPlay
+import be.tapped.goplay.common.siteUrl
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.decodeFromString
@@ -19,7 +19,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 public class JsonEpgParser {
-    public suspend fun parse(json: String): Either<ApiResponse.Failure, List<EpgProgram>> = Either.catch {
+    public fun parse(json: String): Either<ApiResponse.Failure, List<EpgProgram>> = Either.catch {
         Json {
             isLenient = true
             ignoreUnknownKeys = true
@@ -28,7 +28,14 @@ public class JsonEpgParser {
 }
 
 public interface EpgRepo {
-    public suspend fun epg(calendar: Calendar = Calendar.getInstance(TimeZone.getTimeZone("Europe/Brussels"))): Either<ApiResponse.Failure, ApiResponse.Success.ProgramGuide>
+
+    public enum class Brand {
+        VIER,
+        VIJF,
+        ZES;
+    }
+
+    public suspend fun epg(brand: Brand, calendar: Calendar = Calendar.getInstance(TimeZone.getTimeZone("Europe/Brussels"))): Either<ApiResponse.Failure, ApiResponse.Success.ProgramGuide>
 }
 
 public class HttpEpgRepo(
@@ -37,12 +44,11 @@ public class HttpEpgRepo(
         private val dateFormatter: SimpleDateFormat = SimpleDateFormat("yyyy-MM-dd"),
 ) : EpgRepo {
 
-    // curl -X GET "https://www.vier.be/api/epg/2020-12-13"
-    override suspend fun epg(calendar: Calendar): Either<ApiResponse.Failure, ApiResponse.Success.ProgramGuide> = withContext(Dispatchers.IO) {
-        val response = client.executeAsync(
-            Request.Builder().get().url("$apiGoPlay/epg/${dateFormatter.format(calendar.time)}").build()
-        )
-
+    // curl -X GET "https://www.goplay.be/api/epg/vier/2020-12-13"
+    // curl -X GET "https://www.goplay.be/api/epg/vijf/2020-12-13"
+    // curl -X GET "https://www.goplay.be/api/epg/zes/2020-12-13"
+    override suspend fun epg(brand: EpgRepo.Brand, calendar: Calendar): Either<ApiResponse.Failure, ApiResponse.Success.ProgramGuide> = withContext(Dispatchers.IO) {
+        val response = client.executeAsync(Request.Builder().get().url(constructUrl(brand, calendar)).build())
         either {
             val json = !response.safeBodyString()
             val epg = !jsonEpgParser.parse(json)
@@ -53,5 +59,14 @@ public class HttpEpgRepo(
                 ApiResponse.Success.ProgramGuide(epg).right()
             }
         }
+    }
+
+    private fun constructUrl(brand: EpgRepo.Brand, calendar: Calendar): String {
+        val brandPath = when(brand) {
+            EpgRepo.Brand.VIER -> "vier"
+            EpgRepo.Brand.VIJF -> "vijf"
+            EpgRepo.Brand.ZES -> "zes"
+        }
+        return "$siteUrl/api/epg/$brandPath/${dateFormatter.format(calendar.time)}"
     }
 }

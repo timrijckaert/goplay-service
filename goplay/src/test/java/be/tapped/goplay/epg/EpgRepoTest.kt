@@ -9,25 +9,27 @@ public class EpgRepoTest : StringSpec() {
     private val today get() = Calendar.getInstance()
 
     init {
-        "should be able to retrieve EPG for today" {
-            epg.epg(today).shouldBeRight()
-        }
-
-        (1..7).forEach { days ->
-            "should be able to retrieve EPG for $days days back in time" {
-                val dateInThePast = today.apply {
-                    add(Calendar.DAY_OF_MONTH, -days)
-                }
-                epg.epg(dateInThePast).shouldBeRight()
+        EpgRepo.Brand.values().forEach { goPlaySubBrand ->
+            "should be able to retrieve $goPlaySubBrand EPG for today" {
+                epg.epg(goPlaySubBrand, today).shouldBeRight()
             }
-        }
 
-        (1..9).forEach { days ->
-            "should be able to retrieve EPG for $days days in the future" {
-                val dateInThePast = today.apply {
-                    add(Calendar.DAY_OF_MONTH, days)
+            (1..7).forEach { days ->
+                "should be able to retrieve $goPlaySubBrand EPG for $days days back in time" {
+                    val dateInThePast = today.apply {
+                        add(Calendar.DAY_OF_MONTH, -days)
+                    }
+                    epg.epg(goPlaySubBrand, dateInThePast).shouldBeRight()
                 }
-                epg.epg(dateInThePast).shouldBeRight()
+            }
+
+            (1..9).forEach { days ->
+                "should be able to retrieve $goPlaySubBrand EPG for $days days in the future" {
+                    val dateInThePast = today.apply {
+                        add(Calendar.DAY_OF_MONTH, days)
+                    }
+                    epg.epg(goPlaySubBrand, dateInThePast).shouldBeRight()
+                }
             }
         }
     }
