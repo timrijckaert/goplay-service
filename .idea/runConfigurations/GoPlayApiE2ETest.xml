@@ -3,7 +3,7 @@
     <option name="passParentEnvs" value="true" />
     <option name="workingDirectory" value="$MODULE_WORKING_DIR$" />
     <option name="programParameters" value="" />
-    <option name="specName" value="be.tapped.vier.content.GoPlayApiE2ETest" />
+    <option name="specName" value="be.tapped.goplay.content.GoPlayApiE2ETest" />
     <option name="testPath" value="" />
     <option name="packageName" value="" />
     <option name="vmparams" value="" />
