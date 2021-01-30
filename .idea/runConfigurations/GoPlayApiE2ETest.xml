@@ -8,8 +8,8 @@
     <option name="packageName" value="" />
     <option name="vmparams" value="" />
     <envs>
-      <env name="vier.username" value="" />
-      <env name="vier.password" value="" />
+      <env name="goplay.username" value="" />
+      <env name="goplay.password" value="" />
     </envs>
     <method v="2">
       <option name="Make" enabled="true" />
