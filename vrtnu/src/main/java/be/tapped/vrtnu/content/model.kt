@@ -89,94 +89,6 @@ public data class Category(
 }
 
 @Serializable
-public data class DisplayOptions(
-        val showBroadcastDate: Boolean,
-        val showEpisodeNumber: Boolean,
-        val showEpisodeTitle: Boolean,
-        val showGroupedEpisodes: Boolean,
-        val showSeason: Boolean,
-        val showShortDescription: Boolean,
-        val hideNumberOfEpisodes: Boolean? = null,
-        val showMostRelevantEpisode: Boolean? = null,
-)
-
-@Serializable
-public data class ProgramTag(
-        val path: String,
-        val name: String,
-        val titlePath: String,
-        val title: String,
-        val parentTitle: String,
-        val tagId: String,
-        val description: String? = null,
-        val nameSpaceName: String,
-        val localTagId: String,
-) {
-    init {
-        require(path.isNotEmpty()) { "ProgramTag: path should not be null" }
-        require(name.isNotEmpty()) { "ProgramTag: name should not be null" }
-        require(titlePath.isNotEmpty()) { "ProgramTag: titlePath should not be null" }
-        require(title.isNotEmpty()) { "ProgramTag: title should not be null" }
-        require(parentTitle.isNotEmpty()) { "ProgramTag: parentTitle should not be null" }
-        require(tagId.isNotEmpty()) { "ProgramTag: tagId should not be null" }
-        require(nameSpaceName.isNotEmpty()) { "ProgramTag: nameSpaceName should not be null" }
-        require(localTagId.isNotEmpty()) { "ProgramTag: localTagId should not be null" }
-    }
-}
-
-@Serializable
-public data class Chapter(
-        val startTime: Int,
-        val endTime: Int,
-        val title: String,
-        val id: String,
-        val externalImageUrl: String? = null,
-        val description: String? = null,
-        val duration: String,
-        val thumbnail: String,
-        val startTimeInMillis: Double,
-        val formattedStartTime: String,
-) {
-    init {
-        require(title.isNotEmpty()) { "Chapter: title should not be null" }
-        require(id.isNotEmpty()) { "Chapter: id should not be null" }
-        require(duration.isNotEmpty()) { "Chapter: duration should not be null" }
-        require(thumbnail.isNotEmpty()) { "Chapter: thumbnail should not be null" }
-        require(formattedStartTime.isNotEmpty()) { "Chapter: formattedStartTime should not be null" }
-    }
-}
-
-@Serializable
-public data class Tag(
-        val path: String,
-        val name: String,
-        val titlePath: String,
-        val title: String,
-        val parentTitle: String,
-        val tagId: String,
-        val description: String? = null,
-        val nameSpaceName: String,
-        val localTagId: String,
-) {
-    init {
-        require(path.isNotEmpty()) { "Tag: path should not be null" }
-        require(name.isNotEmpty()) { "Tag: name should not be null" }
-        require(titlePath.isNotEmpty()) { "Tag: titlePath should not be null" }
-        require(title.isNotEmpty()) { "Tag: title should not be null" }
-        require(parentTitle.isNotEmpty()) { "Tag: parentTitle should not be null" }
-        require(tagId.isNotEmpty()) { "Tag: tagId should not be null" }
-        require(nameSpaceName.isNotEmpty()) { "Tag: nameSpaceName should not be null" }
-        require(localTagId.isNotEmpty()) { "Tag: localTagId should not be null" }
-    }
-}
-
-@Serializable
-public enum class AssetStatus {
-    AVAILABLE,
-    NOT_AVAILABLE_YET
-}
-
-@Serializable
 public enum class TranscodingStatus {
     AVAILABLE,
     NOT_AVAILABLE_YET
@@ -246,6 +158,95 @@ public data class SearchHit(
         val onTimeDate: Long? = null,
         val productPlacement: Boolean? = null,
 ) {
+
+    @Serializable
+    public enum class AssetStatus {
+        AVAILABLE,
+        NOT_AVAILABLE_YET
+    }
+
+    @Serializable
+    public data class DisplayOptions(
+            val showBroadcastDate: Boolean,
+            val showEpisodeNumber: Boolean,
+            val showEpisodeTitle: Boolean,
+            val showGroupedEpisodes: Boolean,
+            val showSeason: Boolean,
+            val showShortDescription: Boolean,
+            val hideNumberOfEpisodes: Boolean? = null,
+            val showMostRelevantEpisode: Boolean? = null,
+    )
+
+    @Serializable
+    public data class ProgramTag(
+            val path: String,
+            val name: String,
+            val titlePath: String,
+            val title: String,
+            val parentTitle: String,
+            val tagId: String,
+            val description: String? = null,
+            val nameSpaceName: String,
+            val localTagId: String,
+    ) {
+        init {
+            require(path.isNotEmpty()) { "ProgramTag: path should not be null" }
+            require(name.isNotEmpty()) { "ProgramTag: name should not be null" }
+            require(titlePath.isNotEmpty()) { "ProgramTag: titlePath should not be null" }
+            require(title.isNotEmpty()) { "ProgramTag: title should not be null" }
+            require(parentTitle.isNotEmpty()) { "ProgramTag: parentTitle should not be null" }
+            require(tagId.isNotEmpty()) { "ProgramTag: tagId should not be null" }
+            require(nameSpaceName.isNotEmpty()) { "ProgramTag: nameSpaceName should not be null" }
+            require(localTagId.isNotEmpty()) { "ProgramTag: localTagId should not be null" }
+        }
+    }
+
+    @Serializable
+    public data class Tag(
+            val path: String,
+            val name: String,
+            val titlePath: String,
+            val title: String,
+            val parentTitle: String,
+            val tagId: String,
+            val description: String? = null,
+            val nameSpaceName: String,
+            val localTagId: String,
+    ) {
+        init {
+            require(path.isNotEmpty()) { "Tag: path should not be null" }
+            require(name.isNotEmpty()) { "Tag: name should not be null" }
+            require(titlePath.isNotEmpty()) { "Tag: titlePath should not be null" }
+            require(title.isNotEmpty()) { "Tag: title should not be null" }
+            require(parentTitle.isNotEmpty()) { "Tag: parentTitle should not be null" }
+            require(tagId.isNotEmpty()) { "Tag: tagId should not be null" }
+            require(nameSpaceName.isNotEmpty()) { "Tag: nameSpaceName should not be null" }
+            require(localTagId.isNotEmpty()) { "Tag: localTagId should not be null" }
+        }
+    }
+
+    @Serializable
+    public data class Chapter(
+            val startTime: Int,
+            val endTime: Int,
+            val title: String,
+            val id: String,
+            val externalImageUrl: String? = null,
+            val description: String? = null,
+            val duration: String,
+            val thumbnail: String,
+            val startTimeInMillis: Double,
+            val formattedStartTime: String,
+    ) {
+        init {
+            require(title.isNotEmpty()) { "Chapter: title should not be null" }
+            require(id.isNotEmpty()) { "Chapter: id should not be null" }
+            require(duration.isNotEmpty()) { "Chapter: duration should not be null" }
+            require(thumbnail.isNotEmpty()) { "Chapter: thumbnail should not be null" }
+            require(formattedStartTime.isNotEmpty()) { "Chapter: formattedStartTime should not be null" }
+        }
+    }
+
     init {
         require(allowedRegion.isNotEmpty()) { "Episode: allowedRegion can not be empty" }
         require(assetOffTime.isNotEmpty()) { "Episode: assetOffTime can not be empty" }
