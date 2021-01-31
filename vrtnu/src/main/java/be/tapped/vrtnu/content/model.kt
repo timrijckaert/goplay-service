@@ -281,34 +281,6 @@ public data class SearchHit(
     val publicationId: PublicationId get() = PublicationId(pubId)
 }
 
-@Serializable
-public enum class TargetUrlType {
-    @SerialName("hls")
-    HLS,
-
-    @SerialName("hls_aes")
-    HLS_AES,
-
-    @SerialName("mpeg_dash")
-    MPEG_DASH;
-}
-
-@Serializable
-public data class TargetUrl(val type: TargetUrlType, val url: String)
-
-@Serializable
-public data class PlaylistContent(val eventType: String, val duration: Long, val skippable: Boolean)
-
-@Serializable
-public data class PlayList(val content: List<PlaylistContent>)
-
-@Serializable
-public data class ChapteringContent(
-        val id: String, val title: String, val time: String, val imageUrl: String? = null
-)
-
-@Serializable
-public data class Chaptering(val content: List<ChapteringContent>)
 
 @Serializable
 public data class StreamInformation(
@@ -325,6 +297,34 @@ public data class StreamInformation(
         val playlist: PlayList,
         val chaptering: Chaptering,
 ) {
+
+    @Serializable
+    public data class ChapteringContent(val id: String, val title: String, val time: String, val imageUrl: String? = null)
+
+    @Serializable
+    public data class Chaptering(val content: List<ChapteringContent>)
+
+    @Serializable
+    public data class PlaylistContent(val eventType: String, val duration: Long, val skippable: Boolean)
+
+    @Serializable
+    public data class PlayList(val content: List<PlaylistContent>)
+
+    @Serializable
+    public enum class TargetUrlType {
+        @SerialName("hls")
+        HLS,
+
+        @SerialName("hls_aes")
+        HLS_AES,
+
+        @SerialName("mpeg_dash")
+        MPEG_DASH;
+    }
+
+    @Serializable
+    public data class TargetUrl(val type: TargetUrlType, val url: String)
+
     init {
         require(skinType.isNotEmpty()) { "skinType should not be empty" }
         require(targetUrls.isNotEmpty()) { "targetUrls should not be empty" }
