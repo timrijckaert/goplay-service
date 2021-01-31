@@ -105,10 +105,10 @@ public class VRTApiE2ETest : FreeSpec({
                                     }
 
                                     "${Random().nextInt()}:it should have episodes for ${program.programName}" {
-                                        episodes.orNull()?.episodes.shouldNotBeNull()
+                                        episodes.orNull()?.searchHits.shouldNotBeNull()
                                     }
 
-                                    episodes.orNull()!!.episodes.shuffled().take(50).parTraverse {
+                                    episodes.orNull()!!.searchHits.shuffled().take(50).parTraverse {
                                         val stream = vrtApi.getVODStream(
                                             vrtPlayerToken.orNull()!!.vrtPlayerToken, it.videoId, it.publicationId
                                         )
@@ -172,7 +172,7 @@ public class VRTApiE2ETest : FreeSpec({
             }
 
             "it should have found multiple episodes" {
-                episodes.first().orNull()!!.episodes.shouldNotBeEmpty()
+                episodes.first().orNull()!!.searchHits.shouldNotBeEmpty()
             }
         }
 
@@ -185,7 +185,7 @@ public class VRTApiE2ETest : FreeSpec({
             }
 
             "it should have found 1 episode" {
-                episodes.first().orNull()!!.episodes.shouldHaveSize(1)
+                episodes.first().orNull()!!.searchHits.shouldHaveSize(1)
             }
         }
     }

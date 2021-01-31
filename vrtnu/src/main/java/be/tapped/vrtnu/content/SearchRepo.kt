@@ -18,27 +18,26 @@ import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
 import okhttp3.Request
 
-internal class JsonEpisodeParser(private val urlPrefixMapper: UrlPrefixMapper) {
-    suspend fun parse(json: String): Either<ApiResponse.Failure, ElasticSearchResult<Episode>> {
-        return Either.catch { Json.decodeFromString<ElasticSearchResult<Episode>>(json) }.map { elasticSearch ->
-            elasticSearch.copy(results = elasticSearch.results.map {
-                it.copy(
-                        programImageUrl = urlPrefixMapper.toHttpsUrl(it.programImageUrl),
-                        videoThumbnailUrl = urlPrefixMapper.toHttpsUrl(it.videoThumbnailUrl),
-                )
-            })
-        }.mapLeft(::JsonParsingException)
-    }
+internal class JsonSearchHitParser(private val urlPrefixMapper: UrlPrefixMapper) {
+    fun parse(json: String): Either<ApiResponse.Failure, ElasticSearchResult<SearchHit>> =
+            Either.catch { Json.decodeFromString<ElasticSearchResult<SearchHit>>(json) }.map { elasticSearch ->
+                elasticSearch.copy(results = elasticSearch.results.map {
+                    it.copy(
+                            programImageUrl = urlPrefixMapper.toHttpsUrl(it.programImageUrl),
+                            videoThumbnailUrl = urlPrefixMapper.toHttpsUrl(it.videoThumbnailUrl),
+                    )
+                })
+            }.mapLeft(::JsonParsingException)
 }
 
-public interface EpisodeRepo {
+public interface SearchRepo {
 
-    public fun episodes(searchQuery: ElasticSearchQueryBuilder.SearchQuery): Flow<Either<ApiResponse.Failure, ApiResponse.Success.Content.Episodes>>
+    public fun episodes(searchQuery: ElasticSearchQueryBuilder.SearchQuery): Flow<Either<ApiResponse.Failure, ApiResponse.Success.Content.Search>>
 
-    public fun episodesForProgram(program: Program): Flow<Either<ApiResponse.Failure, ApiResponse.Success.Content.Episodes>> =
+    public fun episodesForProgram(program: Program): Flow<Either<ApiResponse.Failure, ApiResponse.Success.Content.Search>> =
             episodes(ElasticSearchQueryBuilder.SearchQuery(programName = program.programName))
 
-    public fun fetchMostRecent(): Flow<Either<ApiResponse.Failure, ApiResponse.Success.Content.Episodes>> = episodes(
+    public fun fetchMostRecent(): Flow<Either<ApiResponse.Failure, ApiResponse.Success.Content.Search>> = episodes(
             ElasticSearchQueryBuilder.SearchQuery(
                     size = 25,
                     custom = mapOf("allowedRegion" to "BE,WORLD", "brands" to "een,canvas,klara,mnm,radio1,radio2,sporza,stubru,vrtnws,vrtnu,vrtnxt"),
@@ -46,20 +45,20 @@ public interface EpisodeRepo {
     )
 }
 
-internal class HttpEpisodeRepo(
+internal class HttpSearchRepo(
         private val client: OkHttpClient,
-        private val jsonEpisodeParser: JsonEpisodeParser,
-) : EpisodeRepo {
+        private val jsonSearchHitParser: JsonSearchHitParser,
+) : SearchRepo {
 
-    override fun episodes(searchQuery: ElasticSearchQueryBuilder.SearchQuery): Flow<Either<ApiResponse.Failure, ApiResponse.Success.Content.Episodes>> =
+    override fun episodes(searchQuery: ElasticSearchQueryBuilder.SearchQuery): Flow<Either<ApiResponse.Failure, ApiResponse.Success.Content.Search>> =
             unfoldFlow(searchQuery.pageIndex) { index ->
                 withContext(Dispatchers.IO) {
                     val episodeByCategoryResponse =
                             client.executeAsync(Request.Builder().get().url(!constructUrl(searchQuery.copy(pageIndex = index))).build())
 
-                    val searchResultEpisodes = !jsonEpisodeParser.parse(!episodeByCategoryResponse.safeBodyString())
+                    val searchResultEpisodes = !jsonSearchHitParser.parse(!episodeByCategoryResponse.safeBodyString())
                     if (index != searchQuery.pageIndex && index >= searchResultEpisodes.meta.pages.total) null
-                    else Pair(index + 1, ApiResponse.Success.Content.Episodes(searchResultEpisodes.results))
+                    else Pair(index + 1, ApiResponse.Success.Content.Search(searchResultEpisodes.results))
                 }
             }
 

@@ -87,7 +87,7 @@ private suspend fun apiSamples(tokenTuple: Tuple6<TokenWrapper, RefreshToken, To
     val programWithEpisodes = vrtApi.fetchProgramByName(programName).map { it.program to vrtApi.episodesForProgram(it.program!!).toList() }
     val forceUnwrappedProgramWithEpisodes = programWithEpisodes.orNull()!!
     val program = forceUnwrappedProgramWithEpisodes.first
-    val episodes = forceUnwrappedProgramWithEpisodes.second.flatMap { it.orNull()!!.episodes }
+    val episodes = forceUnwrappedProgramWithEpisodes.second.flatMap { it.orNull()!!.searchHits }
     println(program)
     println(episodes)
 

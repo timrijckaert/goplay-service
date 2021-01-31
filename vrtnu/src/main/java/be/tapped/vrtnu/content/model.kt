@@ -5,27 +5,27 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 public data class Pages(
-    val total: Int,
-    val current: Int,
-    val size: Int,
+        val total: Int,
+        val current: Int,
+        val size: Int,
 )
 
 @Serializable
 public data class Meta(
-    @SerialName("total_results") val totalResults: Int,
-    val pages: Pages,
+        @SerialName("total_results") val totalResults: Int,
+        val pages: Pages,
 )
 
 @Serializable
 public data class Bucket(
-    val key: String,
-    @SerialName("doc_count") val docCount: Int,
+        val key: String,
+        @SerialName("doc_count") val docCount: Int,
 )
 
 @Serializable
 public data class Facet(
-    val name: String,
-    val buckets: List<Bucket>,
+        val name: String,
+        val buckets: List<Bucket>,
 )
 
 @Serializable
@@ -33,84 +33,84 @@ public data class FacetWrapper(val facets: List<Facet>)
 
 @Serializable
 public data class ElasticSearchResult<out T>(
-    val meta: Meta,
-    val results: List<T>,
-    val facets: FacetWrapper,
+        val meta: Meta,
+        val results: List<T>,
+        val facets: FacetWrapper,
 )
 
 @Serializable
 public data class Program(
-    val title: String,
-    val type: String,
-    @SerialName("episode_count") val episodeCount: Int,
-    val score: Double,
-    val programUrl: String,
-    val targetUrl: String,
-    val programName: String,
-    val thumbnail: String,
-    val alternativeImage: String,
-    val brands: List<String>,
-    val description: String,
+        val title: String,
+        val type: String,
+        @SerialName("episode_count") val episodeCount: Int,
+        val score: Double,
+        val programUrl: String,
+        val targetUrl: String,
+        val programName: String,
+        val thumbnail: String,
+        val alternativeImage: String,
+        val brands: List<String>,
+        val description: String,
 )
 
 @Serializable
 public data class Reference(
-    val link: String,
-    val modelUri: String,
-    val referenceType: String,
-    val permalink: String? = null,
+        val link: String,
+        val modelUri: String,
+        val referenceType: String,
+        val permalink: String? = null,
 )
 
 @Serializable
 public data class Category(
-    val imageStoreUrl: String,
-    val name: String,
-    val permalink: String? = null,
-    val modelUri: String,
-    val title: String,
-    val link: String,
-    val thumbnailUrl: String,
-    val image: Image,
-    val reference: Reference,
-    val description: String? = null,
-    val actions: List<String>,
-    @SerialName(":type") val type: String,
+        val imageStoreUrl: String,
+        val name: String,
+        val permalink: String? = null,
+        val modelUri: String,
+        val title: String,
+        val link: String,
+        val thumbnailUrl: String,
+        val image: Image,
+        val reference: Reference,
+        val description: String? = null,
+        val actions: List<String>,
+        @SerialName(":type") val type: String,
 ) {
     @Serializable
     public data class Image(
-        val src: String,
-        val srcUriTemplate: String,
-        val focalPoint: String,
-        val id: String,
-        val hiddenInApp: Boolean,
-        @SerialName(":type") val type: String,
-        val alt: String? = null,
+            val src: String,
+            val srcUriTemplate: String,
+            val focalPoint: String,
+            val id: String,
+            val hiddenInApp: Boolean,
+            @SerialName(":type") val type: String,
+            val alt: String? = null,
     )
 }
 
 @Serializable
 public data class DisplayOptions(
-    val showBroadcastDate: Boolean,
-    val showEpisodeNumber: Boolean,
-    val showEpisodeTitle: Boolean,
-    val showGroupedEpisodes: Boolean,
-    val showSeason: Boolean,
-    val showShortDescription: Boolean,
-    val hideNumberOfEpisodes: Boolean? = null,
-    val showMostRelevantEpisode: Boolean? = null,
+        val showBroadcastDate: Boolean,
+        val showEpisodeNumber: Boolean,
+        val showEpisodeTitle: Boolean,
+        val showGroupedEpisodes: Boolean,
+        val showSeason: Boolean,
+        val showShortDescription: Boolean,
+        val hideNumberOfEpisodes: Boolean? = null,
+        val showMostRelevantEpisode: Boolean? = null,
 )
 
 @Serializable
 public data class ProgramTag(
-    val path: String,
-    val name: String,
-    val titlePath: String,
-    val title: String,
-    val parentTitle: String,
-    val tagId: String,
-    val description: String? = null,
-    val nameSpaceName: String,
-    val localTagId: String,
+        val path: String,
+        val name: String,
+        val titlePath: String,
+        val title: String,
+        val parentTitle: String,
+        val tagId: String,
+        val description: String? = null,
+        val nameSpaceName: String,
+        val localTagId: String,
 ) {
     init {
         require(path.isNotEmpty()) { "ProgramTag: path should not be null" }
@@ -126,16 +126,16 @@ public data class ProgramTag(
 
 @Serializable
 public data class Chapter(
-    val startTime: Int,
-    val endTime: Int,
-    val title: String,
-    val id: String,
-    val externalImageUrl: String? = null,
-    val description: String? = null,
-    val duration: String,
-    val thumbnail: String,
-    val startTimeInMillis: Double,
-    val formattedStartTime: String,
+        val startTime: Int,
+        val endTime: Int,
+        val title: String,
+        val id: String,
+        val externalImageUrl: String? = null,
+        val description: String? = null,
+        val duration: String,
+        val thumbnail: String,
+        val startTimeInMillis: Double,
+        val formattedStartTime: String,
 ) {
     init {
         require(title.isNotEmpty()) { "Chapter: title should not be null" }
@@ -148,15 +148,15 @@ public data class Chapter(
 
 @Serializable
 public data class Tag(
-    val path: String,
-    val name: String,
-    val titlePath: String,
-    val title: String,
-    val parentTitle: String,
-    val tagId: String,
-    val description: String? = null,
-    val nameSpaceName: String,
-    val localTagId: String,
+        val path: String,
+        val name: String,
+        val titlePath: String,
+        val title: String,
+        val parentTitle: String,
+        val tagId: String,
+        val description: String? = null,
+        val nameSpaceName: String,
+        val localTagId: String,
 ) {
     init {
         require(path.isNotEmpty()) { "Tag: path should not be null" }
@@ -186,7 +186,7 @@ public inline class VideoId(public val id: String)
 public inline class PublicationId(public val id: String)
 
 @Serializable
-public data class Episode(
+public data class SearchHit(
         val allowedRegion: String,
         val assetOffTime: String,
         val assetOnTime: String,
@@ -303,7 +303,7 @@ public data class PlayList(val content: List<PlaylistContent>)
 
 @Serializable
 public data class ChapteringContent(
-    val id: String, val title: String, val time: String, val imageUrl: String? = null
+        val id: String, val title: String, val time: String, val imageUrl: String? = null
 )
 
 @Serializable
@@ -311,18 +311,18 @@ public data class Chaptering(val content: List<ChapteringContent>)
 
 @Serializable
 public data class StreamInformation(
-    val duration: Long,
-    val skinType: String,
-    val title: String? = null,
-    val shortDescription: String? = null,
-    val drm: String? = null,
-    val drmExpired: String? = null,
-    val aspectRatio: String? = null,
-    val targetUrls: List<TargetUrl>,
-    val posterImageUrl: String? = null,
-    val channelId: String? = null,
-    val playlist: PlayList,
-    val chaptering: Chaptering,
+        val duration: Long,
+        val skinType: String,
+        val title: String? = null,
+        val shortDescription: String? = null,
+        val drm: String? = null,
+        val drmExpired: String? = null,
+        val aspectRatio: String? = null,
+        val targetUrls: List<TargetUrl>,
+        val posterImageUrl: String? = null,
+        val channelId: String? = null,
+        val playlist: PlayList,
+        val chaptering: Chaptering,
 ) {
     init {
         require(skinType.isNotEmpty()) { "skinType should not be empty" }

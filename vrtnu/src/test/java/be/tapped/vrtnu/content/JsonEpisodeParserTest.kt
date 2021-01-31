@@ -8,7 +8,7 @@ public class JsonEpisodeParserTest : StringSpec({
 
     "should be able to parse the episodes" {
         val episodeJson = javaClass.classLoader?.getResourceAsStream("episodes.json")!!.reader().readText()
-        val searchResult = JsonEpisodeParser(UrlPrefixMapper()).parse(episodeJson).orNull()!!
+        val searchResult = JsonSearchHitParser(UrlPrefixMapper()).parse(episodeJson).orNull()!!
         searchResult.results shouldHaveSize 22
         searchResult.meta shouldBe Meta(22, Pages(1, 1, 150))
         searchResult.facets shouldBe FacetWrapper(

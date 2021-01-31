@@ -2,7 +2,7 @@ package be.tapped.vrtnu
 
 import arrow.core.NonEmptyList
 import be.tapped.vrtnu.content.Category
-import be.tapped.vrtnu.content.Episode
+import be.tapped.vrtnu.content.SearchHit
 import be.tapped.vrtnu.content.Program
 import be.tapped.vrtnu.content.StreamInformation
 import be.tapped.vrtnu.epg.Epg
@@ -19,7 +19,7 @@ public sealed class ApiResponse {
             public data class Programs(val programs: List<Program>) : Content()
             public data class SingleProgram(val program: Program?) : Content()
             public data class Categories(val categories: List<Category>) : Content()
-            public data class Episodes(val episodes: List<Episode>) : Content()
+            public data class Search(val searchHits: List<SearchHit>) : Content()
             public data class StreamInfo(val info: StreamInformation) : Content()
         }
 
