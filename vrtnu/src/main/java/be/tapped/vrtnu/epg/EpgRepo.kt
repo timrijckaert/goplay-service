@@ -18,8 +18,8 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 public class JsonEpgParser {
-    public suspend fun parse(json: String): Either<ApiResponse.Failure, Epg> =
-        Either.catch { Json.decodeFromString<Epg>(json) }.mapLeft(::JsonParsingException)
+    public fun parse(json: String): Either<ApiResponse.Failure, Epg> =
+            Either.catch { Json.decodeFromString<Epg>(json) }.mapLeft(::JsonParsingException)
 }
 
 public interface EpgRepo {
@@ -27,20 +27,20 @@ public interface EpgRepo {
 }
 
 public class HttpEpgRepo(
-    private val client: OkHttpClient = defaultOkHttpClient,
-    private val jsonEpgParser: JsonEpgParser = JsonEpgParser(),
-    private val dateFormatter: SimpleDateFormat = SimpleDateFormat("yyyy-MM-dd"),
+        private val client: OkHttpClient = defaultOkHttpClient,
+        private val jsonEpgParser: JsonEpgParser = JsonEpgParser(),
+        private val dateFormatter: SimpleDateFormat = SimpleDateFormat("yyyy-MM-dd"),
 ) : EpgRepo {
 
     // curl 'https://www.vrt.be/bin/epg/schedule.2020-11-21.json'
     private fun constructUrl(calendar: Calendar): HttpUrl {
         return HttpUrl.Builder().scheme("https").host("vrt.be").addPathSegments("bin/epg")
-            .addPathSegment("schedule.${dateFormatter.format(calendar.time)}.json").build()
+                .addPathSegment("schedule.${dateFormatter.format(calendar.time)}.json").build()
     }
 
     override suspend fun epg(calendar: Calendar): Either<ApiResponse.Failure, ApiResponse.Success.ProgramGuide> = withContext(Dispatchers.IO) {
         val epgResponse = client.executeAsync(
-            Request.Builder().get().url(constructUrl(calendar)).build()
+                Request.Builder().get().url(constructUrl(calendar)).build()
         )
 
         either {

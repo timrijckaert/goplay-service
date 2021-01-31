@@ -183,67 +183,68 @@ public enum class TranscodingStatus {
 }
 
 public inline class VideoId(public val id: String)
+public inline class PublicationId(public val id: String)
 
 @Serializable
 public data class Episode(
-    val allowedRegion: String,
-    val assetOffTime: String,
-    val assetOnTime: String,
-    val assetStatus: AssetStatus,
-    val brands: List<String>,
-    val broadcastDate: Long,
-    val categories: List<String>,
-    val displayOptions: DisplayOptions,
-    val duration: Int,
-    val episodeNumber: Int,
-    val name: String,
-    val pagePath: String,
-    val path: String? = null,
-    val program: String,
-    val programDescription: String,
-    val programImageUrl: String,
-    val programName: String,
-    val programPath: String,
-    val programType: String,
-    val programUrl: String,
-    val publicationId: String,
-    val seasonHidden: Boolean? = null,
-    val seasonName: String,
-    val seasonNbOfEpisodes: Int,
-    val seasonNumber: Int? = null,
-    val seasonPath: String,
-    val seasonTitle: String,
-    val title: String,
-    val transcodingStatus: TranscodingStatus,
-    val url: String,
-    @SerialName("videoId") private val vidId: String,
-    val videoThumbnailUrl: String,
-    val whatsonId: String,
-    val instigator: String,
-    val lastIndex: String,
-    val id: String,
-    val score: Double,
-    val type: String,
-    val programBrands: List<String> = emptyList(),
-    val programTags: List<ProgramTag> = emptyList(),
-    val tags: List<Tag> = emptyList(),
-    val chapters: List<Chapter> = emptyList(),
-    val pageId: String? = null,
-    val shortDescription: String? = null,
-    val description: String? = null,
-    val formattedBroadcastShortDate: String? = null,
-    val formattedBroadcastFullDate: String? = null,
-    val formattedBroadcastDate: String? = null,
-    val externalPermalink: String? = null,
-    val programWhatsonId: String? = null,
-    val permalink: String? = null,
-    val assetPath: String? = null,
-    val programAlternativeImageUrl: String? = null,
-    val offTimeDate: Long? = null,
-    val subtitle: String? = null,
-    val ageGroup: String? = null,
-    val onTimeDate: Long? = null,
-    val productPlacement: Boolean? = null,
+        val allowedRegion: String,
+        val assetOffTime: String,
+        val assetOnTime: String,
+        val assetStatus: AssetStatus,
+        val brands: List<String>,
+        val broadcastDate: Long,
+        val categories: List<String>,
+        val displayOptions: DisplayOptions,
+        val duration: Int,
+        val episodeNumber: Int,
+        val name: String,
+        val pagePath: String,
+        val path: String? = null,
+        val program: String,
+        val programDescription: String,
+        val programImageUrl: String,
+        val programName: String,
+        val programPath: String,
+        val programType: String,
+        val programUrl: String,
+        @SerialName("publicationId") private val pubId: String,
+        val seasonHidden: Boolean? = null,
+        val seasonName: String,
+        val seasonNbOfEpisodes: Int,
+        val seasonNumber: Int? = null,
+        val seasonPath: String,
+        val seasonTitle: String,
+        val title: String,
+        val transcodingStatus: TranscodingStatus,
+        val url: String,
+        @SerialName("videoId") private val vidId: String,
+        val videoThumbnailUrl: String,
+        val whatsonId: String,
+        val instigator: String,
+        val lastIndex: String,
+        val id: String,
+        val score: Double,
+        val type: String,
+        val programBrands: List<String> = emptyList(),
+        val programTags: List<ProgramTag> = emptyList(),
+        val tags: List<Tag> = emptyList(),
+        val chapters: List<Chapter> = emptyList(),
+        val pageId: String? = null,
+        val shortDescription: String? = null,
+        val description: String? = null,
+        val formattedBroadcastShortDate: String? = null,
+        val formattedBroadcastFullDate: String? = null,
+        val formattedBroadcastDate: String? = null,
+        val externalPermalink: String? = null,
+        val programWhatsonId: String? = null,
+        val permalink: String? = null,
+        val assetPath: String? = null,
+        val programAlternativeImageUrl: String? = null,
+        val offTimeDate: Long? = null,
+        val subtitle: String? = null,
+        val ageGroup: String? = null,
+        val onTimeDate: Long? = null,
+        val productPlacement: Boolean? = null,
 ) {
     init {
         require(allowedRegion.isNotEmpty()) { "Episode: allowedRegion can not be empty" }
@@ -260,7 +261,7 @@ public data class Episode(
         require(programPath.isNotEmpty()) { "Episode: programPath can not be empty" }
         require(programType.isNotEmpty()) { "Episode: programType can not be empty" }
         require(programUrl.isNotEmpty()) { "Episode: programUrl can not be empty" }
-        require(publicationId.isNotEmpty()) { "Episode: publicationId can not be empty" }
+        require(pubId.isNotEmpty()) { "Episode: pubId can not be empty" }
         require(seasonName.isNotEmpty()) { "Episode: seasonName can not be empty" }
         require(seasonPath.isNotEmpty()) { "Episode: seasonPath can not be empty" }
         require(seasonTitle.isNotEmpty()) { "Episode: seasonTitle can not be empty" }
@@ -276,6 +277,7 @@ public data class Episode(
     }
 
     val videoId: VideoId get() = VideoId(vidId)
+    val publicationId: PublicationId get() = PublicationId(pubId)
 }
 
 @Serializable
