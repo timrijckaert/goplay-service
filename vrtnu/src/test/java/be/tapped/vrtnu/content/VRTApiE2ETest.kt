@@ -99,24 +99,7 @@ public class VRTApiE2ETest : FreeSpec({
                             }
 
                             azPrograms.orNull()!!.programs.shuffled().take(50).parTraverse { program ->
-                                vrtApi.episodesForProgram(program).collect { episodes ->
-                                    "${Random().nextInt()}: it should have found episodes for $program successful" {
-                                        episodes.shouldBeRight()
-                                    }
-
-                                    "${Random().nextInt()}:it should have episodes for ${program.programName}" {
-                                        episodes.orNull()?.searchHits.shouldNotBeNull()
-                                    }
-
-                                    episodes.orNull()!!.searchHits.shuffled().take(50).parTraverse {
-                                        val stream = vrtApi.getVODStream(
-                                            vrtPlayerToken.orNull()!!.vrtPlayerToken, it.videoId, it.publicationId
-                                        )
-                                        "${Random().nextInt()}: it should successful. ${it.id}-${program.programName}: ${it.publicationId}-${it.videoId}" {
-                                            stream.shouldBeRight()
-                                        }
-                                    }
-                                }
+                                //TODO use new way to retrieve episodes and seasons
                             }
                         }
                     }
@@ -149,7 +132,7 @@ public class VRTApiE2ETest : FreeSpec({
         }
 
         "fetching episodes that exceed the max requested size" - {
-            vrtApi.episodes(ElasticSearchQueryBuilder.SearchQuery(size = 301)).collect {
+            vrtApi.search(ElasticSearchQueryBuilder.SearchQuery(size = 301)).collect {
                 "it should not be successful" {
                     it.shouldBeLeft()
                 }
@@ -157,7 +140,7 @@ public class VRTApiE2ETest : FreeSpec({
         }
 
         "fetching episodes that exceed the result window" - {
-            vrtApi.episodes(ElasticSearchQueryBuilder.SearchQuery(size = 10_001)).collect {
+            vrtApi.search(ElasticSearchQueryBuilder.SearchQuery(size = 10_001)).collect {
                 "it should not be successful" {
                     it.shouldBeLeft()
                 }
@@ -165,7 +148,7 @@ public class VRTApiE2ETest : FreeSpec({
         }
 
         "fetching episodes by query" - {
-            val episodes = vrtApi.episodes(ElasticSearchQueryBuilder.SearchQuery(query = "Terzake")).toList()
+            val episodes = vrtApi.search(ElasticSearchQueryBuilder.SearchQuery(query = "Terzake")).toList()
 
             "it should have found one match" {
                 episodes.shouldHaveSize(1)
@@ -178,7 +161,7 @@ public class VRTApiE2ETest : FreeSpec({
 
         "fetching episodes by whatsonId" - {
             val whatsonId = "963170543527"
-            val episodes = vrtApi.episodes(ElasticSearchQueryBuilder.SearchQuery(whatsonId = whatsonId)).toList()
+            val episodes = vrtApi.search(ElasticSearchQueryBuilder.SearchQuery(whatsonId = whatsonId)).toList()
 
             "it should have found one match" {
                 episodes.shouldHaveSize(1)

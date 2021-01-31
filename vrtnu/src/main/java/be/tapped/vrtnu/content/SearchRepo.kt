@@ -32,17 +32,15 @@ internal class JsonSearchHitParser(private val urlPrefixMapper: UrlPrefixMapper)
 
 public interface SearchRepo {
 
-    public fun episodes(searchQuery: ElasticSearchQueryBuilder.SearchQuery): Flow<Either<ApiResponse.Failure, ApiResponse.Success.Content.Search>>
+    public fun search(searchQuery: ElasticSearchQueryBuilder.SearchQuery): Flow<Either<ApiResponse.Failure, ApiResponse.Success.Content.Search>>
 
-    public fun episodesForProgram(program: Program): Flow<Either<ApiResponse.Failure, ApiResponse.Success.Content.Search>> =
-            episodes(ElasticSearchQueryBuilder.SearchQuery(programName = program.programName))
-
-    public fun fetchMostRecent(): Flow<Either<ApiResponse.Failure, ApiResponse.Success.Content.Search>> = episodes(
-            ElasticSearchQueryBuilder.SearchQuery(
-                    size = 25,
-                    custom = mapOf("allowedRegion" to "BE,WORLD", "brands" to "een,canvas,klara,mnm,radio1,radio2,sporza,stubru,vrtnws,vrtnu,vrtnxt"),
+    public fun fetchMostRecent(): Flow<Either<ApiResponse.Failure, ApiResponse.Success.Content.Search>> =
+            search(
+                    ElasticSearchQueryBuilder.SearchQuery(
+                            size = 25,
+                            custom = mapOf("allowedRegion" to "BE,WORLD", "brands" to "een,canvas,klara,mnm,radio1,radio2,sporza,stubru,vrtnws,vrtnu,vrtnxt"),
+                    )
             )
-    )
 }
 
 internal class HttpSearchRepo(
@@ -50,7 +48,7 @@ internal class HttpSearchRepo(
         private val jsonSearchHitParser: JsonSearchHitParser,
 ) : SearchRepo {
 
-    override fun episodes(searchQuery: ElasticSearchQueryBuilder.SearchQuery): Flow<Either<ApiResponse.Failure, ApiResponse.Success.Content.Search>> =
+    override fun search(searchQuery: ElasticSearchQueryBuilder.SearchQuery): Flow<Either<ApiResponse.Failure, ApiResponse.Success.Content.Search>> =
             unfoldFlow(searchQuery.pageIndex) { index ->
                 withContext(Dispatchers.IO) {
                     val episodeByCategoryResponse =

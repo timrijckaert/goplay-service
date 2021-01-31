@@ -5,12 +5,7 @@ import be.tapped.vrtnu.content.ElasticSearchQueryBuilder
 import be.tapped.vrtnu.content.LiveStreams
 import be.tapped.vrtnu.content.VRTApi
 import be.tapped.vrtnu.epg.HttpEpgRepo
-import be.tapped.vrtnu.profile.FavoriteWrapper
-import be.tapped.vrtnu.profile.ProfileRepo
-import be.tapped.vrtnu.profile.RefreshToken
-import be.tapped.vrtnu.profile.TokenWrapper
-import be.tapped.vrtnu.profile.VRTPlayerToken
-import be.tapped.vrtnu.profile.XVRTToken
+import be.tapped.vrtnu.profile.*
 import kotlinx.coroutines.flow.toList
 import okhttp3.OkHttpClient
 import java.util.*
@@ -35,9 +30,9 @@ public suspend fun main(args: Array<String>) {
 }
 
 private suspend fun authentication(
-    profileRepo: ProfileRepo,
-    userName: String,
-    password: String,
+        profileRepo: ProfileRepo,
+        userName: String,
+        password: String,
 ): Tuple6<TokenWrapper, RefreshToken, TokenWrapper, XVRTToken, VRTPlayerToken, FavoriteWrapper> {
     // Token wrapper
     val tokenWrapperResult = profileRepo.fetchTokenWrapper(userName, password)
@@ -57,12 +52,12 @@ private suspend fun authentication(
     val userFavorites = profileRepo.favorites(forceUnwrappedXVRTToken)
 
     return Tuple6(
-        tokenWrapperResult.orNull()!!.tokenWrapper,
-        refreshToken,
-        newTokenWrapperResult.orNull()!!.tokenWrapper,
-        xVRTToken.orNull()!!.xVRTToken,
-        vrtPlayerToken.orNull()!!.vrtPlayerToken,
-        userFavorites.orNull()!!.favorites
+            tokenWrapperResult.orNull()!!.tokenWrapper,
+            refreshToken,
+            newTokenWrapperResult.orNull()!!.tokenWrapper,
+            xVRTToken.orNull()!!.xVRTToken,
+            vrtPlayerToken.orNull()!!.vrtPlayerToken,
+            userFavorites.orNull()!!.favorites
     )
 }
 
@@ -79,25 +74,23 @@ private suspend fun apiSamples(tokenTuple: Tuple6<TokenWrapper, RefreshToken, To
     println(categories)
 
     // Search
-    val allSearchResults = vrtApi.episodes(ElasticSearchQueryBuilder.SearchQuery(category = "cultuur")).toList()
+    val allSearchResults = vrtApi.search(ElasticSearchQueryBuilder.SearchQuery(category = "cultuur")).toList()
     println(allSearchResults)
 
     // Single Program
     val programName = "terzake"
-    val programWithEpisodes = vrtApi.fetchProgramByName(programName).map { it.program to vrtApi.episodesForProgram(it.program!!).toList() }
-    val forceUnwrappedProgramWithEpisodes = programWithEpisodes.orNull()!!
-    val program = forceUnwrappedProgramWithEpisodes.first
-    val episodes = forceUnwrappedProgramWithEpisodes.second.flatMap { it.orNull()!!.searchHits }
+    val program = vrtApi.fetchProgramByName(programName).orNull()!!.program
+    val episodes = null
     println(program)
     println(episodes)
 
     // Fetch Video on Demand Streams
-    val latestAiredEpisode = episodes.first()
-    println(latestAiredEpisode)
-    val latestAiredEpisodeStreamInfo = vrtApi.getVODStream(
-        vrtPlayerToken, latestAiredEpisode.videoId, latestAiredEpisode.publicationId
-    )
-    println(latestAiredEpisodeStreamInfo)
+    // val latestAiredEpisode = episodes.first()
+    // println(latestAiredEpisode)
+    // val latestAiredEpisodeStreamInfo = vrtApi.getVODStream(
+    //    vrtPlayerToken, latestAiredEpisode.videoId, latestAiredEpisode.publicationId
+    // )
+    // println(latestAiredEpisodeStreamInfo)
 
     // Fetch Live Stream Video
     val vrtNWSLiveStreamInfo = vrtApi.getLiveStream(vrtPlayerToken, LiveStreams.een.videoId)
