@@ -161,7 +161,7 @@
     <inspection_tool class="ReplaceJavaStaticMethodWithKotlinAnalog" enabled="true" level="ERROR" enabled_by_default="true" />
     <inspection_tool class="ReplaceManualRangeWithIndicesCalls" enabled="true" level="ERROR" enabled_by_default="true" />
     <inspection_tool class="ReplaceNegatedIsEmptyWithIsNotEmpty" enabled="true" level="ERROR" enabled_by_default="true" />
-    <inspection_tool class="ReplaceNotNullAssertionWithElvisReturn" enabled="true" level="ERROR" enabled_by_default="true" />
+    <inspection_tool class="ReplaceNotNullAssertionWithElvisReturn" enabled="true" level="WEAK WARNING" enabled_by_default="true" />
     <inspection_tool class="ReplacePutWithAssignment" enabled="true" level="ERROR" enabled_by_default="true" />
     <inspection_tool class="ReplaceRangeStartEndInclusiveWithFirstLast" enabled="true" level="ERROR" enabled_by_default="true" />
     <inspection_tool class="ReplaceRangeToWithUntil" enabled="true" level="ERROR" enabled_by_default="true" />
