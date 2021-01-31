@@ -54,14 +54,6 @@ public data class Program(
 )
 
 @Serializable
-public data class Reference(
-        val link: String,
-        val modelUri: String,
-        val referenceType: String,
-        val permalink: String? = null,
-)
-
-@Serializable
 public data class Category(
         val imageStoreUrl: String,
         val name: String,
@@ -76,6 +68,14 @@ public data class Category(
         val actions: List<String>,
         @SerialName(":type") val type: String,
 ) {
+    @Serializable
+    public data class Reference(
+            val link: String,
+            val modelUri: String,
+            val referenceType: String,
+            val permalink: String? = null,
+    )
+
     @Serializable
     public data class Image(
             val src: String,
