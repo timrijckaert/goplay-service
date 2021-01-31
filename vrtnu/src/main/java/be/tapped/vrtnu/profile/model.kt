@@ -18,9 +18,9 @@ public inline class RefreshToken(public val token: String)
 public inline class Expiry(public val dateInMillis: Long)
 
 public data class TokenWrapper(
-    val accessToken: AccessToken,
-    val refreshToken: RefreshToken,
-    val expiry: Expiry,
+        val accessToken: AccessToken,
+        val refreshToken: RefreshToken,
+        val expiry: Expiry,
 )
 
 @Serializable(with = DateSerializer::class)
