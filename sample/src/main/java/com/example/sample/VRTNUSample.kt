@@ -80,17 +80,15 @@ private suspend fun apiSamples(tokenTuple: Tuple6<TokenWrapper, RefreshToken, To
     // Single Program
     val programName = "merlina"
     val program = vrtApi.fetchProgramByName(programName).orNull()!!.program
-    val playlist = vrtApi.fetchProgramPlaylist(program!!)
+    val playlist = vrtApi.fetchProgramPlaylist(program!!).orNull()!!
     println(program)
     println(playlist)
 
     // Fetch Video on Demand Streams
-    // val latestAiredEpisode = episodes.first()
-    // println(latestAiredEpisode)
-    // val latestAiredEpisodeStreamInfo = vrtApi.getVODStream(
-    //    vrtPlayerToken, latestAiredEpisode.videoId, latestAiredEpisode.publicationId
-    // )
-    // println(latestAiredEpisodeStreamInfo)
+    val latestAiredEpisode = playlist.first().episodes.last()
+    println(latestAiredEpisode)
+    val latestAiredEpisodeStreamInfo = vrtApi.getVODStream(vrtPlayerToken, latestAiredEpisode.videoId, latestAiredEpisode.publicationId)
+    println(latestAiredEpisodeStreamInfo)
 
     // Fetch Live Stream Video
     val vrtNWSLiveStreamInfo = vrtApi.getLiveStream(vrtPlayerToken, LiveStreams.een.videoId)
