@@ -78,11 +78,11 @@ private suspend fun apiSamples(tokenTuple: Tuple6<TokenWrapper, RefreshToken, To
     println(allSearchResults)
 
     // Single Program
-    val programName = "terzake"
+    val programName = "merlina"
     val program = vrtApi.fetchProgramByName(programName).orNull()!!.program
-    val episodes = null
+    val playlist = vrtApi.fetchProgramPlaylist(program!!)
     println(program)
-    println(episodes)
+    println(playlist)
 
     // Fetch Video on Demand Streams
     // val latestAiredEpisode = episodes.first()

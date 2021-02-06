@@ -12,6 +12,7 @@ import be.tapped.vrtnu.profile.TokenWrapper
 import be.tapped.vrtnu.profile.VRTPlayerToken
 import be.tapped.vrtnu.profile.XVRTToken
 import okhttp3.Request
+import java.lang.Exception
 
 public sealed class ApiResponse {
     public sealed class Success : ApiResponse() {
@@ -44,6 +45,7 @@ public sealed class ApiResponse {
         }
 
         public sealed class Content : Failure() {
+            public data class NoEpisodesFound(val exception: Exception, val seasonKey: String) : Content()
             public data class SearchQuery(val messages: List<String>) : Content()
         }
     }
