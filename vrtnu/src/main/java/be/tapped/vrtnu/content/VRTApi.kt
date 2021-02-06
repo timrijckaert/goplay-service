@@ -13,6 +13,7 @@ public class VRTApi(
                 client,
                 JsonCategoryParser(CategorySanitizer(UrlPrefixMapper(), ImageSanitizer(UrlPrefixMapper())))
         ),
+        playlistRepo: PlaylistRepo = AEMPlaylistRepo(client, SeasonRepo(EpisodeRepo(client, EpisodeParser(UrlPrefixMapper())))),
         searchRepo: SearchRepo = HttpSearchRepo(client, JsonSearchHitParser(UrlPrefixMapper())),
         streamRepo: StreamRepo = HttpStreamRepo(client, JsonStreamInformationParser()),
         screenshotRepo: ScreenshotRepo = DefaultScreenshotRepo,
@@ -21,4 +22,5 @@ public class VRTApi(
         CategoryRepo by categoryRepo,
         SearchRepo by searchRepo,
         StreamRepo by streamRepo,
-        ScreenshotRepo by screenshotRepo
+        ScreenshotRepo by screenshotRepo,
+        PlaylistRepo by playlistRepo

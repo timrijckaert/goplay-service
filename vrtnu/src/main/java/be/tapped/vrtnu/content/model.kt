@@ -330,3 +330,14 @@ public data class StreamInformation(
         require(targetUrls.isNotEmpty()) { "targetUrls should not be empty" }
     }
 }
+
+public data class Season(val name: String, val episodes: List<Episode>) {
+    public data class Episode(
+            val title: String,
+            val image: String,
+            val description: String,
+            val videoId: VideoId,
+            val publicationId: PublicationId,
+            val duration: String,
+    )
+}
