@@ -45,17 +45,17 @@ internal class EpisodeRepo(private val client: OkHttpClient,
                 !try {
                     val episodes =
                             !(season[EPISODES_KEY]?.jsonObject?.right()
-                                    ?: fetchEpisodesForSeason(season["lazySrc"]!!.jsonPrimitive.content))
-                    episodeParser.parse(episodes!!).right()
+                                    ?: fetchEpisodesForSeason(season.getValue("lazySrc").jsonPrimitive.content))
+                    episodeParser.parse(episodes).right()
                 } catch (ex: Exception) {
                     ApiResponse.Failure.Content.NoEpisodesFound(ex, seasonKey).left()
                 }
             }
 
-    private suspend fun fetchEpisodesForSeason(lazySrc: String): Either<ApiResponse.Failure, JsonObject?> =
+    private suspend fun fetchEpisodesForSeason(lazySrc: String): Either<ApiResponse.Failure, JsonObject> =
             either {
                 val rawJson = !client.executeAsync(Request.Builder().get().url("$corporateSiteUrl$lazySrc").build()).safeBodyString()
-                !Json.decodeFromString<JsonObject>(rawJson)[EPISODES_KEY]?.jsonObject.right()
+                !Json.decodeFromString<JsonObject>(rawJson).getValue(EPISODES_KEY).jsonObject.right()
             }
 }
 
