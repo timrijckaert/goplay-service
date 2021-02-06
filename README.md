@@ -20,7 +20,7 @@ Er is een `sample` module voorzien.
 - [x] Alle programma's alfabetisch
 - [x] Alle categorieën
 - [x] Zoeken
-- [ ] Ophalen van episodes
+- [x] Ophalen van episodes
 - [x] Ophalen van streams
 - [x] Live screen grabs
 
