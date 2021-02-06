@@ -1,10 +1,7 @@
 package be.tapped.vrtnu.content
 
-import arrow.core.Either
+import arrow.core.*
 import arrow.core.computations.either
-import arrow.core.flatMap
-import arrow.core.left
-import arrow.core.right
 import arrow.fx.coroutines.parTraverse
 import be.tapped.common.internal.executeAsync
 import be.tapped.vrtnu.ApiResponse
@@ -85,13 +82,13 @@ internal class EpisodeParser(private val urlPrefixMapper: UrlPrefixMapper) {
 }
 
 public interface PlaylistRepo {
-    public suspend fun fetchProgramPlaylist(program: Program): List<Either<ApiResponse.Failure, Season>>
+    public suspend fun fetchProgramPlaylist(program: Program): Either<NonEmptyList<ApiResponse.Failure>, List<Season>>
 }
 
 internal class AEMPlaylistRepo(private val client: OkHttpClient,
                                private val seasonRepo: SeasonRepo) : PlaylistRepo {
 
-    override suspend fun fetchProgramPlaylist(program: Program): List<Either<ApiResponse.Failure, Season>> {
+    override suspend fun fetchProgramPlaylist(program: Program): Either<NonEmptyList<ApiResponse.Failure>, List<Season>> {
         val json: Either<ApiResponse.Failure, List<Either<ApiResponse.Failure, Season>>> = client.executeAsync(
                 Request.Builder()
                         .get()
