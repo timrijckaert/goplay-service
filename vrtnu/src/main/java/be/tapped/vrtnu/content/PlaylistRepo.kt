@@ -17,20 +17,20 @@ import java.lang.Exception
 // https://www.vrt.be/vrtnu/a-z/het-journaal/jcr:content/parsys/container.model.json
 // https://www.vrt.be/vrtnu/a-z/merlina/jcr:content/parsys/container.model.json
 internal class SeasonRepo(private val episodeRepo: EpisodeRepo) {
-    suspend fun seasonsFromAEMJson(json: String): List<Either<ApiResponse.Failure, Season>> {
+    suspend fun seasonsFromAEMJson(json: String): Either<ApiResponse.Failure, List<Season>> {
         val seasons = Json
                 .decodeFromString<JsonObject>(json)
                 .getValue(":items").jsonObject
                 .getValue("banner").jsonObject
                 .getValue(":items").jsonObject
         val seasonKeys = seasons.keys.filter { it != "navigation" }
-        return seasonKeys.parTraverse { seasonKey ->
+        return seasonKeys.parTraverse<String, Either<ApiResponse.Failure, Season>> { seasonKey ->
             either {
                 val season = seasons.getValue(seasonKey).jsonObject
                 val episodesForSeason = !episodeRepo.fetchEpisodesForEpisode(seasonKey, season)
                 Season(seasonKey, episodesForSeason)
             }
-        }
+        }.sequenceEither()
     }
 }
 
@@ -82,22 +82,21 @@ internal class EpisodeParser(private val urlPrefixMapper: UrlPrefixMapper) {
 }
 
 public interface PlaylistRepo {
-    public suspend fun fetchProgramPlaylist(program: Program): Either<NonEmptyList<ApiResponse.Failure>, List<Season>>
+    public suspend fun fetchProgramPlaylist(program: Program): Either<ApiResponse.Failure, List<Season>>
 }
 
 internal class AEMPlaylistRepo(private val client: OkHttpClient,
                                private val seasonRepo: SeasonRepo) : PlaylistRepo {
 
-    override suspend fun fetchProgramPlaylist(program: Program): Either<NonEmptyList<ApiResponse.Failure>, List<Season>> {
-        val json: Either<ApiResponse.Failure, List<Either<ApiResponse.Failure, Season>>> = client.executeAsync(
-                Request.Builder()
-                        .get()
-                        .url("$siteUrl/a-z/${program.programName}/jcr:content/parsys/container.model.json")
-                        .build()
-        ).safeBodyString().map {
-            seasonRepo.seasonsFromAEMJson(it)
-        }
-        TODO()
-    }
+    override suspend fun fetchProgramPlaylist(program: Program): Either<ApiResponse.Failure, List<Season>> =
+            either {
+                val json = !client.executeAsync(
+                        Request.Builder()
+                                .get()
+                                .url("$siteUrl/a-z/${program.programName}/jcr:content/parsys/container.model.json")
+                                .build()
+                ).safeBodyString()
+                !seasonRepo.seasonsFromAEMJson(json)
+            }
 }
 
