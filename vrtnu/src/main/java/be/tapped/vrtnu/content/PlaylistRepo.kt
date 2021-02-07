@@ -97,8 +97,11 @@ internal class EpisodeParser(private val urlPrefixMapper: UrlPrefixMapper) {
 }
 
 public sealed interface PlaylistRepo {
+
     public suspend fun fetchProgramPlaylist(program: Program): Either<ApiResponse.Failure, List<Season>> = fetchProgramPlaylist(program.programName)
+
     public suspend fun fetchProgramPlaylist(programName: String): Either<ApiResponse.Failure, List<Season>>
+
 }
 
 internal class AEMPlaylistRepo(private val client: OkHttpClient,

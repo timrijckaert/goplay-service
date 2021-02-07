@@ -1,12 +1,7 @@
 package be.tapped.vrtnu.content
 
-import arrow.core.Either
-import arrow.core.NonEmptyList
-import arrow.core.Validated
-import arrow.core.ValidatedNel
+import arrow.core.*
 import arrow.core.extensions.nonemptylist.semigroup.semigroup
-import arrow.core.invalidNel
-import arrow.core.validNel
 import be.tapped.vrtnu.ApiResponse
 import be.tapped.vrtnu.ApiResponse.Failure.Content.SearchQuery
 import okhttp3.HttpUrl
@@ -24,20 +19,20 @@ public object ElasticSearchQueryBuilder {
 
     // https://github.com/add-ons/plugin.video.vrt.nu/wiki/VRT-NU-API#vrt-api-parameters
     public data class SearchQuery(
-        val size: Int = DEFAULT_SEARCH_SIZE,
-        val index: Index = DEFAULT_SEARCH_QUERY_INDEX,
-        val order: Order = DEFAULT_SEARCH_QUERY_ORDER,
-        val transcodingStatus: TranscodingStatus = DEFAULT_TRANSCODING_STATUS,
-        val pageIndex: Int = DEFAULT_START_PAGE_INDEX,
-        val available: Boolean? = null,
-        val query: String? = null,
-        val category: String? = null,
-        val start: Long? = null,
-        val end: Long? = null,
-        val programName: String? = null,
-        val programUrl: String? = null,
-        val whatsonId: String? = null,
-        val custom: Map<String, String> = emptyMap(),
+            val size: Int = DEFAULT_SEARCH_SIZE,
+            val index: Index = DEFAULT_SEARCH_QUERY_INDEX,
+            val order: Order = DEFAULT_SEARCH_QUERY_ORDER,
+            val transcodingStatus: TranscodingStatus = DEFAULT_TRANSCODING_STATUS,
+            val pageIndex: Int = DEFAULT_START_PAGE_INDEX,
+            val available: Boolean? = null,
+            val query: String? = null,
+            val category: String? = null,
+            val start: Long? = null,
+            val end: Long? = null,
+            val programName: String? = null,
+            val programUrl: String? = null,
+            val whatsonId: String? = null,
+            val custom: Map<String, String> = emptyMap(),
     ) {
 
         val from: Int
@@ -70,7 +65,7 @@ public object ElasticSearchQueryBuilder {
         }
 
         internal fun validate(): Validated<NonEmptyList<String>, SearchQuery> = Validated.mapN(
-            NonEmptyList.semigroup(), validateMaxSearchSize(), validateResultWindow()
+                NonEmptyList.semigroup(), validateMaxSearchSize(), validateResultWindow()
         ) { _, _ -> this }
     }
 
@@ -90,49 +85,49 @@ public object ElasticSearchQueryBuilder {
 
                     if (order != DEFAULT_SEARCH_QUERY_ORDER) {
                         addQueryParameter("order", order.queryParamName)
-                        }
+                    }
 
-                        addQueryParameter("facets[transcodingStatus]", transcodingStatus.name)
+                    addQueryParameter("facets[transcodingStatus]", transcodingStatus.name)
 
-                        available?.let {
-                            addQueryParameter("available", "$it")
-                        }
-                        query?.let {
-                            addEncodedQueryParameter("q", it)
-                        }
-                        category?.let {
-                            addEncodedQueryParameter("facets[categories]", it)
-                        }
-                        start?.let {
-                            addQueryParameter("start", "$it")
-                        }
-                        end?.let {
-                            addQueryParameter("end", "$it")
-                        }
+                    available?.let {
+                        addQueryParameter("available", "$it")
+                    }
+                    query?.let {
+                        addEncodedQueryParameter("q", it)
+                    }
+                    category?.let {
+                        addEncodedQueryParameter("facets[categories]", it)
+                    }
+                    start?.let {
+                        addQueryParameter("start", "$it")
+                    }
+                    end?.let {
+                        addQueryParameter("end", "$it")
+                    }
 
-                        custom.forEach { (key, value) ->
-                            // Supports dotted JSON Path notation
-                            addQueryParameter("facets[$key]", "[$value]")
-                        }
+                    custom.forEach { (key, value) ->
+                        // Supports dotted JSON Path notation
+                        addQueryParameter("facets[$key]", "[$value]")
+                    }
 
-                        programName?.let {
-                            addQueryParameter("facets[programName]", sanitizeProgramName(it))
-                        }
+                    programName?.let {
+                        addQueryParameter("facets[programName]", sanitizeProgramName(it))
+                    }
 
-                        // In the form of "//www.vrt.be/vrtnu/a-z/terzake/"
-                        programUrl?.let {
-                            addEncodedQueryParameter("facets[programUrl]", it)
-                        }
+                    // In the form of "//www.vrt.be/vrtnu/a-z/terzake/"
+                    programUrl?.let {
+                        addEncodedQueryParameter("facets[programUrl]", it)
+                    }
 
-                        whatsonId?.let {
-                            addQueryParameter("facets[whatsonId]", it)
-                        }
+                    whatsonId?.let {
+                        addQueryParameter("facets[whatsonId]", it)
+                    }
 
-                        if (pageIndex != DEFAULT_START_PAGE_INDEX) {
-                            addQueryParameter("from", "$from")
-                        }
+                    if (pageIndex != DEFAULT_START_PAGE_INDEX) {
+                        addQueryParameter("from", "$from")
                     }
                 }
             }
+        }
     }
 }

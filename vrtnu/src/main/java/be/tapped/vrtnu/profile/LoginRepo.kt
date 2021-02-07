@@ -98,7 +98,9 @@ public data class LoginResponse(
 
 internal object JsonLoginResponseMapper {
     fun parse(json: String): Either<LoginFailure, LoginResponse> =
-            Either.catch { Json.decodeFromString<LoginResponse>(json) }.mapLeft { Json.decodeFromString(json) }
+            Either
+                    .catch { Json.decodeFromString<LoginResponse>(json) }
+                    .mapLeft { Json.decodeFromString(json) }
 }
 
 public sealed interface LoginRepo {
@@ -117,10 +119,17 @@ internal class HttpLoginRepo(
     override suspend fun fetchLoginResponse(userName: String, password: String): Either<ApiResponse.Failure, LoginResponse> =
             withContext(Dispatchers.IO) {
                 val loginResponse = client.executeAsync(
-                        Request.Builder().url(LOGIN_URL).post(
-                                FormBody.Builder().add("loginID", userName).add("password", password).add("sessionExpiration", "-2").add("APIKey", API_KEY)
-                                        .add("targetEnv", "jssdk").build()
-                        ).build()
+                        Request.Builder()
+                                .url(LOGIN_URL)
+                                .post(
+                                        FormBody.Builder()
+                                                .add("loginID", userName)
+                                                .add("password", password)
+                                                .add("sessionExpiration", "-2")
+                                                .add("APIKey", API_KEY)
+                                                .add("targetEnv", "jssdk")
+                                                .build()
+                                ).build()
                 )
 
                 either {

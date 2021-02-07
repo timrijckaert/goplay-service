@@ -9,12 +9,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.decodeFromJsonElement
-import kotlinx.serialization.json.jsonObject
-import kotlinx.serialization.json.jsonPrimitive
-import kotlinx.serialization.json.long
+import kotlinx.serialization.json.*
 import okhttp3.OkHttpClient
 import okhttp3.Request
 
@@ -30,13 +25,13 @@ public data class FavoriteWrapper(private val favorites: Map<String, Favorite>) 
 
 @Serializable
 public data class Favorite(
-    val created: Long = -1,
-    val updated: Long = -1,
-    val adobeCloudId: String? = null,
-    val isFavorite: Boolean,
-    val programUrl: String,
-    val title: String,
-    val whatsonId: String,
+        val created: Long = -1,
+        val updated: Long = -1,
+        val adobeCloudId: String? = null,
+        val isFavorite: Boolean,
+        val programUrl: String,
+        val title: String,
+        val whatsonId: String,
 )
 
 internal class JsonFavoriteParser {
@@ -57,8 +52,8 @@ public sealed interface FavoritesRepo {
 }
 
 internal class HttpFavoritesRepo(
-    private val client: OkHttpClient,
-    private val jsonFavoriteParser: JsonFavoriteParser,
+        private val client: OkHttpClient,
+        private val jsonFavoriteParser: JsonFavoriteParser,
 ) : FavoritesRepo {
 
     companion object {
@@ -71,13 +66,13 @@ internal class HttpFavoritesRepo(
     // -H 'Authorization: Bearer <xVRTToken>' \
     // 'https://video-user-data.vrt.be/favorites'
     override suspend fun favorites(xVRTToken: XVRTToken): Either<ApiResponse.Failure, ApiResponse.Success.Authentication.Favorites> =
-        withContext(Dispatchers.IO) {
-            val favoritesResponse = client.executeAsync(
-                Request.Builder().get().header("Authorization", "Bearer ${xVRTToken.token}").url(FAVORITES_URL).build()
-            )
+            withContext(Dispatchers.IO) {
+                val favoritesResponse = client.executeAsync(
+                        Request.Builder().get().header("Authorization", "Bearer ${xVRTToken.token}").url(FAVORITES_URL).build()
+                )
 
-            either {
-                ApiResponse.Success.Authentication.Favorites(!jsonFavoriteParser.parse(!favoritesResponse.safeBodyString()))
+                either {
+                    ApiResponse.Success.Authentication.Favorites(!jsonFavoriteParser.parse(!favoritesResponse.safeBodyString()))
+                }
             }
-        }
 }

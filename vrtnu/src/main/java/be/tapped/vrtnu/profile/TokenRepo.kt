@@ -1,14 +1,10 @@
 package be.tapped.vrtnu.profile
 
-import arrow.core.Either
-import arrow.core.NonEmptyList
-import arrow.core.Validated
+import arrow.core.*
 import arrow.core.computations.either
 import arrow.core.extensions.nonemptylist.semigroup.semigroup
 import arrow.core.extensions.validated.applicative.applicative
 import arrow.core.extensions.validated.bifunctor.mapLeft
-import arrow.core.invalidNel
-import arrow.core.validNel
 import be.tapped.common.internal.DefaultCookieJar
 import be.tapped.common.internal.ReadOnlyCookieJar
 import be.tapped.common.internal.executeAsync
@@ -34,12 +30,12 @@ public sealed interface TokenRepo {
 }
 
 internal class HttpTokenRepo(
-    private val client: OkHttpClient,
-    private val cookieJar: ReadOnlyCookieJar,
-    loginRepo: LoginRepo = HttpLoginRepo(client, JsonLoginResponseMapper),
-    xVRTTokenRepo: XVRTTokenRepo = HttpXVRTTokenRepo(client, cookieJar),
-    oIDCXSRFRepo: OIDCXSRFRepo = HttpOIDCXSRFRepo(client, cookieJar),
-    playerTokenRepo: PlayerTokenRepo = HttpPlayerTokenRepo(client, JsonVRTPlayerTokenParser()),
+        private val client: OkHttpClient,
+        private val cookieJar: ReadOnlyCookieJar,
+        loginRepo: LoginRepo = HttpLoginRepo(client, JsonLoginResponseMapper),
+        xVRTTokenRepo: XVRTTokenRepo = HttpXVRTTokenRepo(client, cookieJar),
+        oIDCXSRFRepo: OIDCXSRFRepo = HttpOIDCXSRFRepo(client, cookieJar),
+        playerTokenRepo: PlayerTokenRepo = HttpPlayerTokenRepo(client, JsonVRTPlayerTokenParser()),
 ) : TokenRepo, LoginRepo by loginRepo, XVRTTokenRepo by xVRTTokenRepo, OIDCXSRFRepo by oIDCXSRFRepo, PlayerTokenRepo by playerTokenRepo {
 
     companion object {
@@ -51,60 +47,69 @@ internal class HttpTokenRepo(
     }
 
     override suspend fun fetchTokenWrapper(
-        userName: String,
-        password: String,
+            userName: String,
+            password: String,
     ): Either<ApiResponse.Failure, ApiResponse.Success.Authentication.Token> = withContext(Dispatchers.IO) {
         either {
             val loginResponse = !fetchLoginResponse(userName, password)
             val oidcXSRFToken = !fetchXSRFToken()
             client.executeAsync(
-                Request.Builder().url(VRT_LOGIN_URL).post(
-                    FormBody.Builder().add("UID", loginResponse.uid).add("UIDSignature", loginResponse.uidSignature)
-                        .add("signatureTimestamp", loginResponse.signatureTimestamp).add("client_id", "vrtnu-site").add("_csrf", oidcXSRFToken.token)
-                        .build()
-                ).build()
+                    Request.Builder()
+                            .url(VRT_LOGIN_URL)
+                            .post(
+                                    FormBody.Builder()
+                                            .add("UID", loginResponse.uid)
+                                            .add("UIDSignature", loginResponse.uidSignature)
+                                            .add("signatureTimestamp", loginResponse.signatureTimestamp)
+                                            .add("client_id", "vrtnu-site")
+                                            .add("_csrf", oidcXSRFToken.token)
+                                            .build()
+                            ).build()
             ).closeQuietly()
             !fetchTokenWrapperFromCookieJar(cookieJar)
         }
     }
 
     override suspend fun refreshTokenWrapper(refreshToken: RefreshToken): Either<ApiResponse.Failure, ApiResponse.Success.Authentication.Token> =
-        withContext(Dispatchers.IO) {
-            val newCookieJar = DefaultCookieJar()
-            client.newBuilder().cookieJar(newCookieJar).build().executeAsync(
-                Request.Builder().get().header("Cookie", "vrtlogin-rt=${refreshToken.token}").url("$TOKEN_GATEWAY_URL/refreshtoken?legacy=true")
-                    .build()
-            ).closeQuietly()
+            withContext(Dispatchers.IO) {
+                val newCookieJar = DefaultCookieJar()
+                client.newBuilder().cookieJar(newCookieJar).build().executeAsync(
+                        Request.Builder()
+                                .get()
+                                .header("Cookie", "vrtlogin-rt=${refreshToken.token}")
+                                .url("$TOKEN_GATEWAY_URL/refreshtoken?legacy=true")
+                                .build()
+                ).closeQuietly()
 
-            fetchTokenWrapperFromCookieJar(newCookieJar)
-        }
+                fetchTokenWrapperFromCookieJar(newCookieJar)
+            }
 
     override suspend fun fetchXVRTToken(
-        userName: String,
-        password: String,
+            userName: String,
+            password: String,
     ): Either<ApiResponse.Failure, ApiResponse.Success.Authentication.VRTToken> = either {
         val loginResponse = !fetchLoginResponse(userName, password)
         ApiResponse.Success.Authentication.VRTToken(!fetchXVRTToken(userName, loginResponse))
     }
 
     private suspend fun fetchTokenWrapperFromCookieJar(cookieJar: ReadOnlyCookieJar): Either<ApiResponse.Failure, ApiResponse.Success.Authentication.Token> =
-        either {
-            val (accessToken, newRefreshToken, expiry) = !Validated.applicative(NonEmptyList.semigroup<String>())
-                .tupledN(cookieJar.validateCookie(COOKIE_VRT_LOGIN_AT).map { AccessToken(it.value) },
-                    cookieJar.validateCookie(COOKIE_VRT_LOGIN_RT).map { RefreshToken(it.value) },
-                    cookieJar.validateCookie(COOKIE_VRT_LOGIN_EXPIRY).map { Expiry(it.value.toLong()) })
-                .mapLeft(ApiResponse.Failure.Authentication::MissingCookieValues).toEither()
+            either {
+                val (accessToken, newRefreshToken, expiry) = !Validated.applicative(NonEmptyList.semigroup<String>())
+                        .tupledN(cookieJar.validateCookie(COOKIE_VRT_LOGIN_AT).map { AccessToken(it.value) },
+                                cookieJar.validateCookie(COOKIE_VRT_LOGIN_RT).map { RefreshToken(it.value) },
+                                cookieJar.validateCookie(COOKIE_VRT_LOGIN_EXPIRY).map { Expiry(it.value.toLong()) })
+                        .mapLeft(ApiResponse.Failure.Authentication::MissingCookieValues).toEither()
 
-            ApiResponse.Success.Authentication.Token(
-                TokenWrapper(
-                    accessToken,
-                    newRefreshToken,
-                    expiry,
+                ApiResponse.Success.Authentication.Token(
+                        TokenWrapper(
+                                accessToken,
+                                newRefreshToken,
+                                expiry,
+                        )
                 )
-            )
-        }
+            }
 }
 
 @PublishedApi
 internal fun ReadOnlyCookieJar.validateCookie(cookieName: String): Validated<NonEmptyList<String>, Cookie> =
-    this[cookieName]?.validNel() ?: cookieName.invalidNel()
+        this[cookieName]?.validNel() ?: cookieName.invalidNel()

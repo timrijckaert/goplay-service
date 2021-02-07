@@ -39,9 +39,7 @@ public class HttpEpgRepo(
     }
 
     override suspend fun epg(calendar: Calendar): Either<ApiResponse.Failure, ApiResponse.Success.ProgramGuide> = withContext(Dispatchers.IO) {
-        val epgResponse = client.executeAsync(
-                Request.Builder().get().url(constructUrl(calendar)).build()
-        )
+        val epgResponse = client.executeAsync(Request.Builder().get().url(constructUrl(calendar)).build())
 
         either {
             ApiResponse.Success.ProgramGuide(!jsonEpgParser.parse(!epgResponse.safeBodyString()))

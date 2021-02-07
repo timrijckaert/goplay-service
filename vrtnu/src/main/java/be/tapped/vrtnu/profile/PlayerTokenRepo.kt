@@ -17,8 +17,8 @@ import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 
 public class JsonVRTPlayerTokenParser {
-    public suspend fun parse(json: String): Either<ApiResponse.Failure, VRTPlayerToken> =
-        Either.catch { Json.decodeFromString<VRTPlayerToken>(json) }.mapLeft(::JsonParsingException)
+    public fun parse(json: String): Either<ApiResponse.Failure, VRTPlayerToken> =
+            Either.catch { Json.decodeFromString<VRTPlayerToken>(json) }.mapLeft(::JsonParsingException)
 }
 
 public sealed interface PlayerTokenRepo {
@@ -26,21 +26,26 @@ public sealed interface PlayerTokenRepo {
 }
 
 internal class HttpPlayerTokenRepo(
-    private val client: OkHttpClient,
-    private val jsonVRTPlayerTokenParser: JsonVRTPlayerTokenParser,
+        private val client: OkHttpClient,
+        private val jsonVRTPlayerTokenParser: JsonVRTPlayerTokenParser,
 ) : PlayerTokenRepo {
     override suspend fun fetchVRTPlayerToken(xVRTToken: XVRTToken): Either<ApiResponse.Failure, ApiResponse.Success.Authentication.PlayerToken> =
-        with(Dispatchers.IO) {
-            val vrtPlayerTokenResponse = client.executeAsync(
-                Request.Builder().header("Content-Type", "application/json")
-                    .post(buildJsonObject { put("identityToken", xVRTToken.token) }.toString().toRequestBody()).url(
-                        HttpUrl.Builder().scheme("https").host("media-services-public.vrt.be")
-                            .addPathSegments("vualto-video-aggregator-web/rest/external/v1").addPathSegment("tokens").build()
-                    ).build()
-            )
+            with(Dispatchers.IO) {
+                val vrtPlayerTokenResponse = client.executeAsync(
+                        Request.Builder().header("Content-Type", "application/json")
+                                .post("${buildJsonObject { put("identityToken", xVRTToken.token) }}".toRequestBody())
+                                .url(
+                                        HttpUrl.Builder()
+                                                .scheme("https")
+                                                .host("media-services-public.vrt.be")
+                                                .addPathSegments("vualto-video-aggregator-web/rest/external/v1")
+                                                .addPathSegment("tokens")
+                                                .build()
+                                ).build()
+                )
 
-            either {
-                ApiResponse.Success.Authentication.PlayerToken(!jsonVRTPlayerTokenParser.parse(!vrtPlayerTokenResponse.safeBodyString()))
+                either {
+                    ApiResponse.Success.Authentication.PlayerToken(!jsonVRTPlayerTokenParser.parse(!vrtPlayerTokenResponse.safeBodyString()))
+                }
             }
-        }
 }

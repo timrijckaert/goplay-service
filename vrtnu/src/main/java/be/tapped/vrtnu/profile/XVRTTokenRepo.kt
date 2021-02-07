@@ -19,8 +19,8 @@ public sealed interface XVRTTokenRepo {
 }
 
 internal class HttpXVRTTokenRepo(
-    private val client: OkHttpClient,
-    private val cookieJar: ReadOnlyCookieJar,
+        private val client: OkHttpClient,
+        private val cookieJar: ReadOnlyCookieJar,
 ) : XVRTTokenRepo {
 
     companion object {
@@ -31,20 +31,27 @@ internal class HttpXVRTTokenRepo(
 
     override suspend fun fetchXVRTToken(userName: String, loginResponse: LoginResponse): Either<ApiResponse.Failure, XVRTToken> {
         val loginCookie = "glt_${API_KEY}=${loginResponse.sessionInfo.loginToken}"
-        val json = buildJsonObject {
-            put("uid", loginResponse.uid)
-            put("uidsig", loginResponse.uidSignature)
-            put("ts", loginResponse.signatureTimestamp)
-            put("email", userName)
-        }.toString()
+        val json = "${
+            buildJsonObject {
+                put("uid", loginResponse.uid)
+                put("uidsig", loginResponse.uidSignature)
+                put("ts", loginResponse.signatureTimestamp)
+                put("email", userName)
+            }
+        }"
 
         return withContext(Dispatchers.IO) {
             client.executeAsync(
-                Request.Builder().url(TOKEN_GATEWAY_URL).addHeader("Cookie", loginCookie).post(json.toRequestBody(jsonMediaType)).build()
+                    Request
+                            .Builder()
+                            .url(TOKEN_GATEWAY_URL)
+                            .addHeader("Cookie", loginCookie)
+                            .post(json.toRequestBody(jsonMediaType))
+                            .build()
             )
 
             cookieJar.validateCookie(COOKIE_X_VRT_TOKEN).map { XVRTToken(it.value) }.toEither()
-                .mapLeft { ApiResponse.Failure.Authentication.MissingCookieValues(NonEmptyList(COOKIE_X_VRT_TOKEN)) }
+                    .mapLeft { ApiResponse.Failure.Authentication.MissingCookieValues(NonEmptyList(COOKIE_X_VRT_TOKEN)) }
         }
     }
 }

@@ -16,8 +16,8 @@ public sealed interface OIDCXSRFRepo {
 }
 
 internal class HttpOIDCXSRFRepo(
-    private val client: OkHttpClient,
-    private val cookieJar: ReadOnlyCookieJar,
+        private val client: OkHttpClient,
+        private val cookieJar: ReadOnlyCookieJar,
 ) : OIDCXSRFRepo {
 
     companion object {
@@ -26,10 +26,7 @@ internal class HttpOIDCXSRFRepo(
     }
 
     override suspend fun fetchXSRFToken(): Either<MissingCookieValues, OIDCXSRF> = withContext(Dispatchers.IO) {
-        client.executeAsync(
-            Request.Builder().get().url(USER_TOKEN_GATEWAY_URL).build()
-        ).closeQuietly()
-
+        client.executeAsync(Request.Builder().get().url(USER_TOKEN_GATEWAY_URL).build()).closeQuietly()
         cookieJar.validateCookie(COOKIE_XSRF).map { OIDCXSRF(it.value) }.mapLeft(ApiResponse.Failure.Authentication::MissingCookieValues).toEither()
     }
 }
