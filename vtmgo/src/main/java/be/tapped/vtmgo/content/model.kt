@@ -206,6 +206,7 @@ public sealed class StoreFront {
             val teasers: List<MyListTeaser>,
             override val hasDetail: Boolean,
             override val rowType: String,
+            val branding: String? = null
     ) : StoreFront()
 
     @Serializable

@@ -1,0 +1,257 @@
+{
+  "id": "0c8b713d-0829-492b-92f3-2930fd2ee3f4",
+  "metaData": {
+    "provider": "APP",
+    "requestId": "f1ffa5b7-b9d8-49b0-b799-3a48be9f96ab",
+    "routingGroup": "0",
+    "abGroup": "e3363fc5f56171d0e843367040259e44"
+  },
+  "title": "Mijn Lijst",
+  "rowType": "MY_LIST",
+  "teasers": [
+    {
+      "title": "Onderzoeksrechters",
+      "target": {
+        "type": "PROGRAM",
+        "id": "2aa5c6aa-eb1d-47ac-881c-4e7533e9f5b5",
+        "name": "Onderzoeksrechters"
+      },
+      "imageUrl": "https://images2.persgroep.net/rcs/0b4B8xLHpuE_iW3-gidaImhj_l8/diocontent/167782828/_fitwidth/426?appId=038a353bad43ac27fd436dc5419c256b&quality=0.8",
+      "geoBlocked": false,
+      "blockedFor": null
+    },
+    {
+      "title": "Hotel Inspector",
+      "target": {
+        "type": "PROGRAM",
+        "id": "2882094d-0b5b-4d95-aefc-904ce9c9f97f",
+        "name": "Hotel Inspector"
+      },
+      "imageUrl": "https://images4.persgroep.net/rcs/PH0kQqd7nfuOxC0IPNXDGXH9YiY/diocontent/175274910/_fitwidth/426?appId=038a353bad43ac27fd436dc5419c256b&quality=0.8",
+      "geoBlocked": false,
+      "blockedFor": null
+    },
+    {
+      "title": "Demoustier",
+      "target": {
+        "type": "PROGRAM",
+        "id": "7c4db4d2-b89f-417d-9c3a-fedf0af00f5c",
+        "name": "Demoustier"
+      },
+      "imageUrl": "https://images1.persgroep.net/rcs/x4UTNhxKqiBJs6gFg1ffII4VmL8/diocontent/180609956/_fitwidth/426?appId=038a353bad43ac27fd436dc5419c256b&quality=0.8",
+      "geoBlocked": false,
+      "blockedFor": null
+    },
+    {
+      "title": "RIP 2020",
+      "target": {
+        "type": "PROGRAM",
+        "id": "41f18088-4216-4471-a939-f91665c5380f",
+        "name": "RIP 2020"
+      },
+      "imageUrl": "https://images2.persgroep.net/rcs/qPBG_ucregGt2-PmvUK_8nxtHc4/diocontent/180093499/_fitwidth/426?appId=038a353bad43ac27fd436dc5419c256b&quality=0.8",
+      "geoBlocked": false,
+      "blockedFor": null
+    },
+    {
+      "title": "Behind The Mask",
+      "target": {
+        "type": "PROGRAM",
+        "id": "79699287-f403-4ae2-9b4a-68cc16705c7f",
+        "name": "Behind The Mask"
+      },
+      "imageUrl": "https://images0.persgroep.net/rcs/4c6wy6CXpON3VPRsaN1LMEeIHyo/diocontent/176990588/_fitwidth/426?appId=038a353bad43ac27fd436dc5419c256b&quality=0.8",
+      "geoBlocked": false,
+      "blockedFor": null
+    },
+    {
+      "title": "The Masked Singer",
+      "target": {
+        "type": "PROGRAM",
+        "id": "596797e7-e743-4140-bc5a-4f1eb5bce935",
+        "name": "The Masked Singer"
+      },
+      "imageUrl": "https://images2.persgroep.net/rcs/oSFl3sVTPxZpWTO3D5wRmeIzowg/diocontent/176354917/_fitwidth/426?appId=038a353bad43ac27fd436dc5419c256b&quality=0.8",
+      "geoBlocked": false,
+      "blockedFor": null
+    },
+    {
+      "title": "Veel Tamtam",
+      "target": {
+        "type": "PROGRAM",
+        "id": "85ca2aaa-b10c-408d-83d0-483db2674eea",
+        "name": "Veel Tamtam"
+      },
+      "imageUrl": "https://images2.persgroep.net/rcs/9TX9VJwxuZl0BFMgdJqhWWoNjcg/diocontent/175604149/_fitwidth/426?appId=038a353bad43ac27fd436dc5419c256b&quality=0.8",
+      "geoBlocked": false,
+      "blockedFor": null
+    },
+    {
+      "title": "Jonge Wolven",
+      "target": {
+        "type": "PROGRAM",
+        "id": "1c7e7029-cf3a-452b-b91d-8ecc64985b7d",
+        "name": "Jonge Wolven"
+      },
+      "imageUrl": "https://images1.persgroep.net/rcs/9mfD2UzsvWnK1ciXfsb7DoN6g_E/diocontent/175536838/_fitwidth/426?appId=038a353bad43ac27fd436dc5419c256b&quality=0.8",
+      "geoBlocked": false,
+      "blockedFor": null
+    },
+    {
+      "title": "De 25",
+      "target": {
+        "type": "PROGRAM",
+        "id": "4a00cce6-48d3-4c9f-8714-ec028a247836",
+        "name": "De 25"
+      },
+      "imageUrl": "https://images1.persgroep.net/rcs/ItK8UK71q22IFNW5P_a_vcafheI/diocontent/168851212/_fitwidth/426?appId=038a353bad43ac27fd436dc5419c256b&quality=0.8",
+      "geoBlocked": false,
+      "blockedFor": null
+    },
+    {
+      "title": "Dat Belooft voor Later",
+      "target": {
+        "type": "PROGRAM",
+        "id": "cbdaab92-3551-4b71-9c02-6d2f676dd2ed",
+        "name": "Dat Belooft voor Later"
+      },
+      "imageUrl": "https://images4.persgroep.net/rcs/Q9SCEDmE9ba-Hk_K4mB7169l96E/diocontent/168792482/_fitwidth/426?appId=038a353bad43ac27fd436dc5419c256b&quality=0.8",
+      "geoBlocked": false,
+      "blockedFor": null
+    },
+    {
+      "title": "Mijn Keuken Mijn Restaurant",
+      "target": {
+        "type": "PROGRAM",
+        "id": "1f8ae96d-52b6-4244-b719-bd48f757ef1f",
+        "name": "Mijn Keuken Mijn Restaurant"
+      },
+      "imageUrl": "https://images2.persgroep.net/rcs/J7CKGBWAzJXrz5nC-a85U-hTwtE/diocontent/175271106/_fitwidth/426?appId=038a353bad43ac27fd436dc5419c256b&quality=0.8",
+      "geoBlocked": false,
+      "blockedFor": null
+    },
+    {
+      "title": "Holland - België",
+      "target": {
+        "type": "PROGRAM",
+        "id": "fc637214-c8f6-4491-983f-d187b9ddf5a0",
+        "name": "Holland - België"
+      },
+      "imageUrl": "https://images1.persgroep.net/rcs/u3FgElw_VeAHjQvFcexvkdBVDlA/diocontent/166866294/_fitwidth/426?appId=038a353bad43ac27fd436dc5419c256b&quality=0.8",
+      "geoBlocked": false,
+      "blockedFor": null
+    },
+    {
+      "title": "Groeten uit",
+      "target": {
+        "type": "PROGRAM",
+        "id": "bc2562fa-849c-4ab9-91fc-4c052ac32708",
+        "name": "Groeten uit"
+      },
+      "imageUrl": "https://images2.persgroep.net/rcs/_Tlgx8KQli-wax943XIrfjMeR-8/diocontent/181649537/_fitwidth/426?appId=038a353bad43ac27fd436dc5419c256b&quality=0.8",
+      "geoBlocked": false,
+      "blockedFor": null
+    },
+    {
+      "title": "Dossier X",
+      "target": {
+        "type": "PROGRAM",
+        "id": "6cac701b-a4d7-455b-b389-3976fe8b5e5d",
+        "name": "Dossier X"
+      },
+      "imageUrl": "https://images0.persgroep.net/rcs/z8irCb6ohdJ0VGzCcE2e-4mvX4U/diocontent/180609964/_fitwidth/426?appId=038a353bad43ac27fd436dc5419c256b&quality=0.8",
+      "geoBlocked": false,
+      "blockedFor": null
+    },
+    {
+      "title": "Make Belgium Great Again",
+      "target": {
+        "type": "PROGRAM",
+        "id": "c1d6f21c-692d-4a4c-ad74-67f57d227295",
+        "name": "Make Belgium Great Again"
+      },
+      "imageUrl": "https://images1.persgroep.net/rcs/UgCTBjj4zymsdOiJPXKe-kAkMZI/diocontent/165891602/_fitwidth/426?appId=038a353bad43ac27fd436dc5419c256b&quality=0.8",
+      "geoBlocked": false,
+      "blockedFor": null
+    },
+    {
+      "title": "Code van Coppens",
+      "target": {
+        "type": "PROGRAM",
+        "id": "5d5e5976-6ca0-43a5-be96-1467ea25cfff",
+        "name": "Code van Coppens"
+      },
+      "imageUrl": "https://images1.persgroep.net/rcs/ZUZXBWhuYmvFkbv29TKbZ5tgNOg/diocontent/175608804/_fitwidth/426?appId=038a353bad43ac27fd436dc5419c256b&quality=0.8",
+      "geoBlocked": false,
+      "blockedFor": null
+    },
+    {
+      "title": "Steenrijk, straatarm",
+      "target": {
+        "type": "PROGRAM",
+        "id": "ca9b4545-65ba-44cb-a7b7-f00ecbcaae06",
+        "name": "Steenrijk, straatarm"
+      },
+      "imageUrl": "https://images0.persgroep.net/rcs/al1MpG1WcgqFgNfmw5YueDuEJzA/diocontent/180848537/_fitwidth/426?appId=038a353bad43ac27fd436dc5419c256b&quality=0.8",
+      "geoBlocked": false,
+      "blockedFor": null
+    },
+    {
+      "title": "Ontvoerd",
+      "target": {
+        "type": "PROGRAM",
+        "id": "63c1d722-f082-4ce7-9cb8-6f1767f61ce9",
+        "name": "Ontvoerd"
+      },
+      "imageUrl": "https://images4.persgroep.net/rcs/1cZgWCrrTPCDyroynV4PfFcdqaI/diocontent/178033312/_fitwidth/426?appId=038a353bad43ac27fd436dc5419c256b&quality=0.8",
+      "geoBlocked": false,
+      "blockedFor": null
+    },
+    {
+      "title": "De Luchtpolitie",
+      "target": {
+        "type": "PROGRAM",
+        "id": "80ab5f4b-e083-40c2-85d8-9067c6cda4f4",
+        "name": "De Luchtpolitie"
+      },
+      "imageUrl": "https://images2.persgroep.net/rcs/XRSffzAKn9Okfx_-x4TU5fl7FLg/diocontent/180610077/_fitwidth/426?appId=038a353bad43ac27fd436dc5419c256b&quality=0.8",
+      "geoBlocked": false,
+      "blockedFor": null
+    },
+    {
+      "title": "Wat een Jaar!",
+      "target": {
+        "type": "PROGRAM",
+        "id": "0ee39058-8835-4ad8-9da8-7e49671d11a8",
+        "name": "Wat een Jaar!"
+      },
+      "imageUrl": "https://images2.persgroep.net/rcs/TZ4c0GkesqBRtk9Lsfo0Qs3bg2U/diocontent/180044393/_fitwidth/426?appId=038a353bad43ac27fd436dc5419c256b&quality=0.8",
+      "geoBlocked": false,
+      "blockedFor": null
+    },
+    {
+      "title": "Telefacts",
+      "target": {
+        "type": "PROGRAM",
+        "id": "cd95dd45-27a3-45b9-9aec-5a99a6144074",
+        "name": "Telefacts"
+      },
+      "imageUrl": "https://images2.persgroep.net/rcs/v1Qn2hzajS0zgvfnY7m5W2HJ3vg/diocontent/175604800/_fitwidth/426?appId=038a353bad43ac27fd436dc5419c256b&quality=0.8",
+      "geoBlocked": false,
+      "blockedFor": null
+    },
+    {
+      "title": "Beste Kijkers",
+      "target": {
+        "type": "PROGRAM",
+        "id": "b0ffa6e9-f859-4ec2-9e15-c19c90ee1854",
+        "name": "Beste Kijkers"
+      },
+      "imageUrl": "https://images4.persgroep.net/rcs/KEojbu53X7I0GUC-XSl0ePpv8kw/diocontent/179690709/_fitwidth/426?appId=038a353bad43ac27fd436dc5419c256b&quality=0.8",
+      "geoBlocked": false,
+      "blockedFor": null
+    }
+  ],
+  "branding": null,
+  "hasDetail": true
+}
