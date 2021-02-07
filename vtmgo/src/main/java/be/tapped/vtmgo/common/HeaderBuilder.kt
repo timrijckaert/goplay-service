@@ -4,7 +4,7 @@ import be.tapped.vtmgo.profile.JWT
 import be.tapped.vtmgo.profile.Profile
 import okhttp3.Headers
 
-public interface HeaderBuilder {
+public sealed interface HeaderBuilder {
 
     public val defaultHeaders: Headers
 

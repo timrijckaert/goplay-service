@@ -25,7 +25,7 @@ internal class JsonSearchResultResponseParser {
     }.mapLeft(::JsonParsingException)
 }
 
-public interface SearchRepo {
+public sealed interface SearchRepo {
     public suspend fun search(jwt: JWT, profile: Profile, query: String): Either<ApiResponse.Failure, ApiResponse.Success.Content.Search>
 }
 

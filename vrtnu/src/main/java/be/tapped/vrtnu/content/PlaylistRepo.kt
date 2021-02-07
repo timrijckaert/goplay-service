@@ -81,7 +81,7 @@ internal class EpisodeParser(private val urlPrefixMapper: UrlPrefixMapper) {
             }
 }
 
-public interface PlaylistRepo {
+public sealed interface PlaylistRepo {
     public suspend fun fetchProgramPlaylist(program: Program): Either<ApiResponse.Failure, List<Season>>
 }
 

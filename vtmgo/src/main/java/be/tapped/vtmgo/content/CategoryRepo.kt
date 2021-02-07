@@ -23,7 +23,7 @@ internal class JsonCategoryParser {
         Either.catch<CategoryResponse> { Json.decodeFromString(json) }.mapLeft(::JsonParsingException)
 }
 
-public interface CategoryRepo {
+public sealed interface CategoryRepo {
     public suspend fun fetchCategories(jwt: JWT, profile: Profile): Either<ApiResponse.Failure, ApiResponse.Success.Content.Categories>
 }
 

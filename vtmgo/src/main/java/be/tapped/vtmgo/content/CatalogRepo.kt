@@ -28,7 +28,7 @@ internal class JsonPagedTeaserContentParser {
     }.mapLeft(::JsonParsingException)
 }
 
-public interface CatalogRepo {
+public sealed interface CatalogRepo {
     public suspend fun fetchAZ(jwt: JWT, profile: Profile): Either<ApiResponse.Failure, ApiResponse.Success.Content.Catalog>
 }
 

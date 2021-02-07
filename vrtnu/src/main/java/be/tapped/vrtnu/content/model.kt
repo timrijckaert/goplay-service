@@ -94,7 +94,10 @@ public enum class TranscodingStatus {
     NOT_AVAILABLE_YET
 }
 
+@Serializable
 public inline class VideoId(public val id: String)
+
+@Serializable
 public inline class PublicationId(public val id: String)
 
 @Serializable
@@ -119,7 +122,7 @@ public data class SearchHit(
         val programPath: String,
         val programType: String,
         val programUrl: String,
-        @SerialName("publicationId") private val pubId: String,
+        val publicationId: PublicationId,
         val seasonHidden: Boolean? = null,
         val seasonName: String,
         val seasonNbOfEpisodes: Int,
@@ -129,7 +132,7 @@ public data class SearchHit(
         val title: String,
         val transcodingStatus: TranscodingStatus,
         val url: String,
-        @SerialName("videoId") private val vidId: String,
+        val videoId: VideoId,
         val videoThumbnailUrl: String,
         val whatsonId: String,
         val instigator: String,
@@ -262,13 +265,13 @@ public data class SearchHit(
         require(programPath.isNotEmpty()) { "Episode: programPath can not be empty" }
         require(programType.isNotEmpty()) { "Episode: programType can not be empty" }
         require(programUrl.isNotEmpty()) { "Episode: programUrl can not be empty" }
-        require(pubId.isNotEmpty()) { "Episode: pubId can not be empty" }
+        require(publicationId.id.isNotEmpty()) { "Episode: pubId can not be empty" }
         require(seasonName.isNotEmpty()) { "Episode: seasonName can not be empty" }
         require(seasonPath.isNotEmpty()) { "Episode: seasonPath can not be empty" }
         require(seasonTitle.isNotEmpty()) { "Episode: seasonTitle can not be empty" }
         require(title.isNotEmpty()) { "Episode: title can not be empty" }
         require(url.isNotEmpty()) { "Episode: url can not be empty" }
-        require(vidId.isNotEmpty()) { "Episode: videoId can not be empty" }
+        require(videoId.id.isNotEmpty()) { "Episode: videoId can not be empty" }
         require(videoThumbnailUrl.isNotEmpty()) { "Episode: videoThumbnailUrl can not be empty" }
         require(whatsonId.isNotEmpty()) { "Episode: whatsonId can not be empty" }
         require(instigator.isNotEmpty()) { "Episode: instigator can not be empty" }
@@ -276,9 +279,6 @@ public data class SearchHit(
         require(id.isNotEmpty()) { "Episode: id can not be empty" }
         require(type.isNotEmpty()) { "Episode: type can not be empty" }
     }
-
-    val videoId: VideoId get() = VideoId(vidId)
-    val publicationId: PublicationId get() = PublicationId(pubId)
 }
 
 

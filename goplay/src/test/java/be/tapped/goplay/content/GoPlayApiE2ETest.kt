@@ -49,7 +49,7 @@ public class GoPlayApiE2ETest : FreeSpec({
                 val idToken = tokens.orNull()!!.token.idToken
                 "when fetching episodes" - {
                     programs.orNull()!!.programs.flatMap(Program::playlists).flatMap(Program.Playlist::episodes).shuffled().take(100).parTraverse {
-                        val streams = goPlayApi.streamByVideoUuid(idToken, it.id)
+                        val streams = goPlayApi.streamByVideoUuid(idToken, it.videoUuid)
 
                         "it should have found a stream $streams" {
                             streams.shouldBeRight()

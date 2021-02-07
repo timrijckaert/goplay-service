@@ -23,7 +23,7 @@ internal class JsonFavoritesParser {
         Either.catch { Json.decodeFromString<StoreFront.MyListStoreFront>(json) }.mapLeft(ApiResponse.Failure::JsonParsingException)
 }
 
-public interface FavoritesRepo {
+public sealed interface FavoritesRepo {
     public suspend fun fetchMyFavorites(jwt: JWT, profile: Profile): Either<ApiResponse.Failure, ApiResponse.Success.Content.Favorites>
 }
 

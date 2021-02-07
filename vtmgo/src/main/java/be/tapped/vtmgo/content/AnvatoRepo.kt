@@ -63,7 +63,7 @@ internal class AnvatoMasterM3U8JsonParser {
     }.mapLeft(ApiResponse.Failure::JsonParsingException)
 }
 
-public interface AnvatoRepo {
+public sealed interface AnvatoRepo {
 
     public suspend fun fetchLiveStream(anvato: Anvato, streamResponse: StreamResponse): Either<ApiResponse.Failure, AnvatoStream.Live>
 

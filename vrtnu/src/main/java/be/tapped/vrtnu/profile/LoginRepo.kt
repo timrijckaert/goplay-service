@@ -17,44 +17,47 @@ import okhttp3.Request
 
 @Serializable
 public data class LoginFailure(
-    val callId: String,
-    val errorCode: Int,
-    private val errorDetails: String?,
-    val errorMessage: String,
-    val apiVersion: Int,
-    val statusCode: Int,
-    val statusReason: String,
-    val time: String,
+        val callId: String,
+        val errorCode: Int,
+        val errorDetails: String?,
+        val errorMessage: String,
+        val apiVersion: Int,
+        val statusCode: Int,
+        val statusReason: String,
+        val time: String,
 ) {
-    public enum class LoginFailure {
+
+    public enum class Type {
         INVALID_CREDENTIALS,
         MISSING_LOGIN_ID,
         MISSING_PASSWORD,
         UNKNOWN
     }
 
-    public val isValid: Boolean = errorCode == 0
-    public val loginFailure: LoginFailure = when (errorDetails) {
-        "invalid loginID or password" -> LoginFailure.INVALID_CREDENTIALS
-        "loginID must be provided" -> LoginFailure.MISSING_LOGIN_ID
-        "Missing required parameter: password" -> LoginFailure.MISSING_PASSWORD
-        else                                   -> LoginFailure.UNKNOWN
-    }
+    public val isValid: Boolean get() = errorCode == 0
+    public val loginFailureType: Type
+        get() = when (errorDetails) {
+            "invalid loginID or password" -> Type.INVALID_CREDENTIALS
+            "loginID must be provided" -> Type.MISSING_LOGIN_ID
+            "Missing required parameter: password" -> Type.MISSING_PASSWORD
+            else -> Type.UNKNOWN
+        }
 }
+
 
 @Serializable
 public data class Profile(
-    val firstName: String,
-    val lastName: String,
-    val age: Int,
-    val birthDay: Int,
-    val birthMonth: Int,
-    val birthYear: Int,
-    val city: String,
-    val country: String,
-    val email: String,
-    val gender: String,
-    val zip: String,
+        val firstName: String,
+        val lastName: String,
+        val age: Int,
+        val birthDay: Int,
+        val birthMonth: Int,
+        val birthYear: Int,
+        val city: String,
+        val country: String,
+        val email: String,
+        val gender: String,
+        val zip: String,
 )
 
 @Serializable
@@ -62,49 +65,49 @@ public data class SessionInfo(@SerialName("login_token") val loginToken: String)
 
 @Serializable
 public data class LoginResponse(
-    val callId: String,
-    val errorCode: Int,
-    val apiVersion: Int,
-    val statusCode: Int,
-    val statusReason: String,
-    val time: String,
-    val registeredTimestamp: Long,
-    @SerialName("UID") val uid: String,
-    @SerialName("UIDSignature") val uidSignature: String,
-    val signatureTimestamp: String,
-    val created: String,
-    val createdTimestamp: Long,
-    val isActive: Boolean,
-    val isRegistered: Boolean,
-    val isVerified: Boolean,
-    val lastLogin: String,
-    val lastLoginTimestamp: Long,
-    val lastUpdated: String,
-    val lastUpdatedTimestamp: Long,
-    val loginProvider: String,
-    val oldestDataUpdated: String,
-    val oldestDataUpdatedTimestamp: Long,
-    val profile: Profile,
-    val registered: String,
-    val socialProviders: String,
-    val verified: String,
-    val verifiedTimestamp: Long,
-    val newUser: Boolean,
-    val sessionInfo: SessionInfo,
+        val callId: String,
+        val errorCode: Int,
+        val apiVersion: Int,
+        val statusCode: Int,
+        val statusReason: String,
+        val time: String,
+        val registeredTimestamp: Long,
+        @SerialName("UID") val uid: String,
+        @SerialName("UIDSignature") val uidSignature: String,
+        val signatureTimestamp: String,
+        val created: String,
+        val createdTimestamp: Long,
+        val isActive: Boolean,
+        val isRegistered: Boolean,
+        val isVerified: Boolean,
+        val lastLogin: String,
+        val lastLoginTimestamp: Long,
+        val lastUpdated: String,
+        val lastUpdatedTimestamp: Long,
+        val loginProvider: String,
+        val oldestDataUpdated: String,
+        val oldestDataUpdatedTimestamp: Long,
+        val profile: Profile,
+        val registered: String,
+        val socialProviders: String,
+        val verified: String,
+        val verifiedTimestamp: Long,
+        val newUser: Boolean,
+        val sessionInfo: SessionInfo,
 )
 
 internal object JsonLoginResponseMapper {
-    suspend fun parse(json: String): Either<LoginFailure, LoginResponse> =
-        Either.catch { Json.decodeFromString<LoginResponse>(json) }.mapLeft { Json.decodeFromString(json) }
+    fun parse(json: String): Either<LoginFailure, LoginResponse> =
+            Either.catch { Json.decodeFromString<LoginResponse>(json) }.mapLeft { Json.decodeFromString(json) }
 }
 
-public interface LoginRepo {
+public sealed interface LoginRepo {
     public suspend fun fetchLoginResponse(userName: String, password: String): Either<ApiResponse.Failure, LoginResponse>
 }
 
 internal class HttpLoginRepo(
-    private val client: OkHttpClient,
-    private val jsonLoginResponseMapper: JsonLoginResponseMapper,
+        private val client: OkHttpClient,
+        private val jsonLoginResponseMapper: JsonLoginResponseMapper,
 ) : LoginRepo {
     companion object {
         private const val API_KEY = "3_qhEcPa5JGFROVwu5SWKqJ4mVOIkwlFNMSKwzPDAh8QZOtHqu6L4nD5Q7lk0eXOOG"
@@ -112,16 +115,16 @@ internal class HttpLoginRepo(
     }
 
     override suspend fun fetchLoginResponse(userName: String, password: String): Either<ApiResponse.Failure, LoginResponse> =
-        withContext(Dispatchers.IO) {
-            val loginResponse = client.executeAsync(
-                Request.Builder().url(LOGIN_URL).post(
-                    FormBody.Builder().add("loginID", userName).add("password", password).add("sessionExpiration", "-2").add("APIKey", API_KEY)
-                        .add("targetEnv", "jssdk").build()
-                ).build()
-            )
+            withContext(Dispatchers.IO) {
+                val loginResponse = client.executeAsync(
+                        Request.Builder().url(LOGIN_URL).post(
+                                FormBody.Builder().add("loginID", userName).add("password", password).add("sessionExpiration", "-2").add("APIKey", API_KEY)
+                                        .add("targetEnv", "jssdk").build()
+                        ).build()
+                )
 
-            either {
-                !jsonLoginResponseMapper.parse(!loginResponse.safeBodyString()).mapLeft(ApiResponse.Failure.Authentication::FailedToLogin)
+                either {
+                    !jsonLoginResponseMapper.parse(!loginResponse.safeBodyString()).mapLeft(ApiResponse.Failure.Authentication::FailedToLogin)
+                }
             }
-        }
 }

@@ -5,7 +5,6 @@ import arrow.core.computations.either
 import arrow.core.flatMap
 import arrow.core.left
 import be.tapped.common.internal.executeAsync
-import be.tapped.goplay.ApiResponse
 import be.tapped.goplay.ApiResponse.Failure
 import be.tapped.goplay.ApiResponse.Failure.HTML
 import be.tapped.goplay.ApiResponse.Success
@@ -80,7 +79,7 @@ internal class ProgramResponseValidator {
             }
 }
 
-public interface ProgramRepo {
+public sealed interface ProgramRepo {
 
     public suspend fun fetchPrograms(): Either<Failure, Success.Content.Programs>
 

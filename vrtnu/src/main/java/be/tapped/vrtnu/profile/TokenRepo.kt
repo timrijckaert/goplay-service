@@ -21,7 +21,7 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.internal.closeQuietly
 
-public interface TokenRepo {
+public sealed interface TokenRepo {
 
     public suspend fun fetchTokenWrapper(userName: String, password: String): Either<ApiResponse.Failure, ApiResponse.Success.Authentication.Token>
 

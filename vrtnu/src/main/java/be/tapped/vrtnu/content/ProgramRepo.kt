@@ -31,7 +31,7 @@ internal class JsonProgramParser(private val programSanitizer: ProgramSanitizer)
     }.mapLeft(::JsonParsingException)
 }
 
-public interface ProgramRepo {
+public sealed interface ProgramRepo {
 
     public suspend fun fetchAZPrograms(): Either<ApiResponse.Failure, ApiResponse.Success.Content.Programs>
 
