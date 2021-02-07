@@ -108,10 +108,6 @@ public class VRTApiE2ETest : FreeSpec({
                                     }
                                 }
                             }
-
-                            programs.shuffled().take(50).parTraverse { program ->
-                                //TODO use new way to retrieve episodes and seasons
-                            }
                         }
                     }
                 }
