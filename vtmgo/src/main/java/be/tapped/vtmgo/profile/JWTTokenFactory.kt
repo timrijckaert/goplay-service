@@ -26,10 +26,10 @@ import okhttp3.Request
 import okhttp3.Response
 import okhttp3.ResponseBody
 
-public interface JWTTokenRepo {
+public sealed interface JWTTokenRepo {
     public suspend fun login(
-        userName: String,
-        password: String,
+            userName: String,
+            password: String,
     ): Either<ApiResponse.Failure, ApiResponse.Success.Authentication.Token>
 }
 

@@ -80,7 +80,7 @@ internal class ProgramResponseValidator {
             }
 }
 
-public interface ProgramRepo {
+public sealed interface ProgramRepo {
 
     public suspend fun fetchPrograms(): Either<Failure, Success.Content.Programs>
 

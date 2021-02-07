@@ -26,7 +26,7 @@ internal class JsonStreamParser {
         }
 }
 
-public interface StreamRepo {
+public sealed interface StreamRepo {
     public suspend fun streamByVideoUuid(idToken: IdToken, videoUuid: VideoUuid): Either<ApiResponse.Failure, ApiResponse.Success.Stream>
 }
 

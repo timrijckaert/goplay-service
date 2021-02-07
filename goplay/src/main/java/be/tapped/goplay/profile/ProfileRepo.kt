@@ -37,7 +37,7 @@ public class ProfileUserAttributeParser {
     }
 }
 
-public interface ProfileRepo {
+public sealed interface ProfileRepo {
 
     public suspend fun fetchTokens(username: String, password: String): Either<ApiResponse.Failure, ApiResponse.Success.Authentication.Token>
 

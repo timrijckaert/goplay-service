@@ -28,7 +28,7 @@ public class JsonChannelParser {
     }.mapLeft(::JsonParsingException)
 }
 
-public interface ChannelRepo {
+public sealed interface ChannelRepo {
     public suspend fun fetchChannels(jwt: JWT, profile: Profile): Either<ApiResponse.Failure, ApiResponse.Success.Content.LiveChannels>
 }
 

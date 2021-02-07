@@ -5,7 +5,7 @@ import okhttp3.CookieJar
 import okhttp3.HttpUrl
 import java.util.*
 
-public interface ReadOnlyCookieJar : CookieJar {
+public sealed interface ReadOnlyCookieJar : CookieJar {
     public operator fun get(name: String): Cookie?
 }
 

@@ -19,7 +19,7 @@ internal class JsonSearchResultsParser {
     }.mapLeft { ApiResponse.Failure.JsonParsingException(it) }
 }
 
-public interface SearchRepo {
+public sealed interface SearchRepo {
     public suspend fun search(query: String): Either<ApiResponse.Failure, ApiResponse.Success.Content.SearchResults>
 }
 

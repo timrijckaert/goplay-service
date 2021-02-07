@@ -98,7 +98,7 @@ internal object JsonLoginResponseMapper {
         Either.catch { Json.decodeFromString<LoginResponse>(json) }.mapLeft { Json.decodeFromString(json) }
 }
 
-public interface LoginRepo {
+public sealed interface LoginRepo {
     public suspend fun fetchLoginResponse(userName: String, password: String): Either<ApiResponse.Failure, LoginResponse>
 }
 

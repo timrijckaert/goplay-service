@@ -52,7 +52,7 @@ internal class JsonFavoriteParser {
     }.mapLeft(ApiResponse.Failure::JsonParsingException)
 }
 
-public interface FavoritesRepo {
+public sealed interface FavoritesRepo {
     public suspend fun favorites(xVRTToken: XVRTToken): Either<ApiResponse.Failure, ApiResponse.Success.Authentication.Favorites>
 }
 

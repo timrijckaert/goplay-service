@@ -30,7 +30,7 @@ internal class JsonSearchHitParser(private val urlPrefixMapper: UrlPrefixMapper)
             }.mapLeft(::JsonParsingException)
 }
 
-public interface SearchRepo {
+public sealed interface SearchRepo {
 
     public fun search(searchQuery: ElasticSearchQueryBuilder.SearchQuery): Flow<Either<ApiResponse.Failure, ApiResponse.Success.Content.Search>>
 

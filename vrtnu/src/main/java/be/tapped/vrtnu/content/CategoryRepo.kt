@@ -42,7 +42,7 @@ internal class JsonCategoryParser(private val categorySanitizer: CategorySanitiz
         }
 }
 
-public interface CategoryRepo {
+public sealed interface CategoryRepo {
     public suspend fun fetchCategories(): Either<ApiResponse.Failure, ApiResponse.Success.Content.Categories>
 }
 

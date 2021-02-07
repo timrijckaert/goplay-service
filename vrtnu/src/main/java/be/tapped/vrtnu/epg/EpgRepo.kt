@@ -22,7 +22,7 @@ public class JsonEpgParser {
             Either.catch { Json.decodeFromString<Epg>(json) }.mapLeft(::JsonParsingException)
 }
 
-public interface EpgRepo {
+public sealed interface EpgRepo {
     public suspend fun epg(calendar: Calendar = Calendar.getInstance(TimeZone.getTimeZone("Europe/Brussels"))): Either<ApiResponse.Failure, ApiResponse.Success.ProgramGuide>
 }
 

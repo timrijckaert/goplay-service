@@ -21,7 +21,7 @@ public class JsonStreamInformationParser {
             Either.catch { Json.decodeFromString<StreamInformation>(json) }.mapLeft(::JsonParsingException)
 }
 
-public interface StreamRepo {
+public sealed interface StreamRepo {
 
     public suspend fun getVODStream(
             vrtPlayerToken: VRTPlayerToken, videoId: VideoId, publicationId: PublicationId

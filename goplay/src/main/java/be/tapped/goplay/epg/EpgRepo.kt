@@ -27,7 +27,7 @@ public class JsonEpgParser {
     }.mapLeft(ApiResponse.Failure::JsonParsingException)
 }
 
-public interface EpgRepo {
+public sealed interface EpgRepo {
 
     public enum class Brand {
         VIER,

@@ -94,18 +94,18 @@ internal class AnvatoStreamParser(private val anvatoRepo: AnvatoRepo) {
         fetch(stream) { anvatoRepo.fetchEpisodeStream(it, streamResponse) }
 }
 
-public interface StreamRepo {
+public sealed interface StreamRepo {
 
     public suspend fun fetchStream(liveChannel: LiveChannel): Either<Failure, ApiResponse.Success.Stream.Anvato>
 
     public suspend fun fetchStream(
-        target: TargetResponse.Target.Movie,
-        streamType: StreamType = StreamType.DASH,
+            target: TargetResponse.Target.Movie,
+            streamType: StreamType = StreamType.DASH,
     ): Either<Failure, ApiResponse.Success.Stream>
 
     public suspend fun fetchStream(
-        target: TargetResponse.Target.Episode,
-        streamType: StreamType = StreamType.DASH,
+            target: TargetResponse.Target.Episode,
+            streamType: StreamType = StreamType.DASH,
     ): Either<Failure, ApiResponse.Success.Stream>
 
 }
