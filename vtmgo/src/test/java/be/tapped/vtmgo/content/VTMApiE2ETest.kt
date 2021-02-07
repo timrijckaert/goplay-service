@@ -118,18 +118,18 @@ public class VTMApiE2ETest : FreeSpec() {
                                         val streams = when (val t = target.asTarget) {
                                             is TargetResponse.Target.Movie -> vtmApi.fetchStream(t)
                                             is TargetResponse.Target.Episode -> vtmApi.fetchStream(t)
-                                            else                             -> throw IllegalStateException("Can never happen but compiler is not smart enough")
+                                            else -> throw IllegalStateException("Can never happen but compiler is not smart enough")
                                         }
 
                                         "it should be successful" {
                                             streams.shouldBeRight()
                                         }
-                                        }
                                     }
+                                }
                             }
                         }
 
-                        "and fetch program from A-2" - {
+                        "and fetch program from A-Z" - {
                             val azPrograms = vtmApi.fetchAZ(jwtToken, profile)
 
                             "then it should be successful" {
@@ -141,15 +141,15 @@ public class VTMApiE2ETest : FreeSpec() {
                             }
 
                             azPrograms.orNull()!!.catalog.map { it.target.asTarget }.filterIsInstance<TargetResponse.Target.Program>().shuffled()
-                                .take(100).forEach { program ->
-                                    "fetching program details with id ${program.id}" - {
-                                        val programDetails = vtmApi.fetchProgram(program, jwtToken, profile)
+                                    .take(100).forEach { program ->
+                                        "fetching program details with id ${program.id}" - {
+                                            val programDetails = vtmApi.fetchProgram(program, jwtToken, profile)
 
-                                        "then it should be successful" {
-                                            programDetails.shouldBeRight()
+                                            "then it should be successful" {
+                                                programDetails.shouldBeRight()
+                                            }
                                         }
                                     }
-                                }
                         }
                     }
                 }

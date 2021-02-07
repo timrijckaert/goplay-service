@@ -161,6 +161,7 @@ public sealed class StoreFront {
     public abstract val id: String
     public abstract val metaData: Metadata
     public abstract val hasDetail: Boolean
+    public abstract val branding: String?
 
     @Serializable
     @SerialName("CAROUSEL")
@@ -170,6 +171,7 @@ public sealed class StoreFront {
             override val metaData: Metadata,
             override val hasDetail: Boolean,
             override val rowType: String,
+            override val branding: String? = null,
     ) : StoreFront()
 
     @Serializable
@@ -182,6 +184,7 @@ public sealed class StoreFront {
             val teasers: List<DefaultSwimlaneTeaser>,
             override val hasDetail: Boolean,
             override val rowType: String,
+            override val branding: String? = null,
     ) : StoreFront()
 
     @Serializable
@@ -194,6 +197,7 @@ public sealed class StoreFront {
             val teasers: List<ContinueWatchingTeaser>,
             override val hasDetail: Boolean,
             override val rowType: String,
+            override val branding: String? = null,
     ) : StoreFront()
 
     @Serializable
@@ -206,7 +210,7 @@ public sealed class StoreFront {
             val teasers: List<MyListTeaser>,
             override val hasDetail: Boolean,
             override val rowType: String,
-            val branding: String? = null
+            override val branding: String? = null
     ) : StoreFront()
 
     @Serializable
@@ -217,6 +221,7 @@ public sealed class StoreFront {
             override val metaData: Metadata,
             override val hasDetail: Boolean,
             override val rowType: String,
+            override val branding: String? = null,
     ) : StoreFront()
 
     @Serializable
@@ -228,6 +233,7 @@ public sealed class StoreFront {
             val profiles: List<JsonObject>,
             override val hasDetail: Boolean,
             override val rowType: String,
+            override val branding: String? = null,
     ) : StoreFront()
 }
 
