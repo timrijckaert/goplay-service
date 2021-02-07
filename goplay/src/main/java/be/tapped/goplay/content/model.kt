@@ -7,7 +7,6 @@ import kotlinx.serialization.json.*
 
 public inline class EpisodeUuid(public val id: String)
 
-@Serializable
 public inline class VideoUuid(public val id: String)
 public inline class M3U8Stream(public val url: String)
 
@@ -168,12 +167,15 @@ public data class Program(
                 val title: String,
                 val type: String,
                 val unpublishDate: String,
-                val videoUuid: VideoUuid,
+                @SerialName("videoUuid")
+                private val id: String,
                 val whatsonId: String? = null,
                 // https://github.com/Kotlin/kotlinx.serialization/issues/1253
                 // @Serializable(with = ProgramSerializer::class)
                 // val program: Program? = null,
         ) {
+
+            val videoUuid: VideoUuid get() = VideoUuid(id)
 
             @Serializable
             public data class Program(val title: String, val poster: String)

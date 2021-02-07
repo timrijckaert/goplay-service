@@ -5,7 +5,6 @@ import arrow.core.computations.either
 import arrow.core.flatMap
 import arrow.core.left
 import be.tapped.common.internal.executeAsync
-import be.tapped.goplay.ApiResponse
 import be.tapped.goplay.ApiResponse.Failure
 import be.tapped.goplay.ApiResponse.Failure.HTML
 import be.tapped.goplay.ApiResponse.Success
@@ -49,19 +48,25 @@ internal class HtmlFullProgramParser(private val jsoupParser: JsoupParser) {
 
     fun canParse(html: String): Boolean = jsoupParser.parse(html).safeSelectFirst(CSSSelector).isRight()
 
-    fun parse(html: String): Either<Failure, Program> =
-            jsoupParser.parse(html)
-                    .safeSelectFirst(CSSSelector)
-                    .flatMap { it.safeAttr(datasetName).toEither() }
-                    .flatMap {
-                        Either.catch {
-                            val programDataObject = Json.decodeFromString<JsonObject>(it)["data"]!!.jsonObject
-                            Json {
-                                isLenient = true
-                                ignoreUnknownKeys = true
-                            }.decodeFromJsonElement<Program>(programDataObject)
-                        }.mapLeft(Failure::JsonParsingException)
+    fun parse(html: String): Either<Failure, Program> {
+        var s: JsonObject? = null
+        return jsoupParser.parse(html)
+                .safeSelectFirst(CSSSelector)
+                .flatMap { it.safeAttr(datasetName).toEither() }
+                .flatMap {
+                    Either.catch {
+                        val programDataObject = Json.decodeFromString<JsonObject>(it)["data"]!!.jsonObject
+                        s = programDataObject
+                        Json {
+                            isLenient = true
+                            ignoreUnknownKeys = true
+                        }.decodeFromJsonElement<Program>(programDataObject)
+                    }.mapLeft {
+                        println(s)
+                        Failure.JsonParsingException(it)
                     }
+                }
+    }
 }
 
 // The Search API from Vier is sometimes returning non available Programs.
