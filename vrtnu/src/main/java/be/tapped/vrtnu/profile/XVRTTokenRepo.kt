@@ -14,7 +14,7 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 
-public interface XVRTTokenRepo {
+public sealed interface XVRTTokenRepo {
     public suspend fun fetchXVRTToken(userName: String, loginResponse: LoginResponse): Either<ApiResponse.Failure, XVRTToken>
 }
 

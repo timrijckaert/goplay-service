@@ -1,6 +1,6 @@
 package be.tapped.vrtnu.content
 
-public interface ScreenshotRepo {
+public sealed interface ScreenshotRepo {
     public enum class Brand {
         EEN,
         CANVAS,

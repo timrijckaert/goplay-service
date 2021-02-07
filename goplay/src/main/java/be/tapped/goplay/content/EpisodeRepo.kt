@@ -42,7 +42,7 @@ internal class HtmlClipEpisodeParser(private val jsoupParser: JsoupParser) {
             }
 }
 
-public interface EpisodeRepo {
+public sealed interface EpisodeRepo {
 
     public suspend fun fetchEpisode(episodeVideoUuid: EpisodeUuid): Either<ApiResponse.Failure, ApiResponse.Success.Content.SingleEpisode>
 

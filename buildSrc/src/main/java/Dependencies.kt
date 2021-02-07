@@ -3,7 +3,7 @@ object Versions {
 }
 
 object Dependencies {
-    const val kotlinXSerialization = "org.jetbrains.kotlinx:kotlinx-serialization-json:1.0.1"
+    const val kotlinXSerialization = "org.jetbrains.kotlinx:kotlinx-serialization-json:1.1.0-RC"
 
     const val kotlinStdLib = "org.jetbrains.kotlin:kotlin-stdlib:${Versions.kotlinVersion}"
 

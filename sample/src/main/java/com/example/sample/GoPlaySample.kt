@@ -32,7 +32,7 @@ private suspend fun api(token: ApiResponse.Success.Authentication.Token) {
 
     val episodesOfFirstProgram: List<Program.Playlist.Episode> = programs.programs.first().playlists.flatMap(Program.Playlist::episodes)
     println(episodesOfFirstProgram)
-    val episodeVideoUuids = episodesOfFirstProgram.map(Program.Playlist.Episode::id)
+    val episodeVideoUuids = episodesOfFirstProgram.map(Program.Playlist.Episode::videoUuid)
     println(episodeVideoUuids)
 
     val episodeStreams = episodeVideoUuids.parTraverse { goPlayApi.streamByVideoUuid(token.token.idToken, it) }

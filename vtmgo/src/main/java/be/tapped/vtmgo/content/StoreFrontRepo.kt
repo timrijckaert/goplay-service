@@ -37,12 +37,12 @@ internal class JsonStoreFrontParser {
     }.mapLeft(::JsonParsingException)
 }
 
-public interface StoreFrontRepo {
+public sealed interface StoreFrontRepo {
 
     public suspend fun fetchStoreFront(
-        jwt: JWT,
-        profile: Profile,
-        storeFrontType: StoreFrontType,
+            jwt: JWT,
+            profile: Profile,
+            storeFrontType: StoreFrontType,
     ): Either<ApiResponse.Failure, ApiResponse.Success.Content.StoreFrontRows>
 
 }

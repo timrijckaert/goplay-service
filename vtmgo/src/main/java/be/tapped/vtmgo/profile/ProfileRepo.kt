@@ -21,7 +21,7 @@ public class JsonProfileParser {
         Either.catch { Json.decodeFromString<List<Profile>>(json) }.mapLeft(::JsonParsingException)
 }
 
-public interface ProfileRepo {
+public sealed interface ProfileRepo {
     public suspend fun getProfiles(jwtToken: JWT): Either<ApiResponse.Failure, ApiResponse.Success.Authentication.Profiles>
 }
 

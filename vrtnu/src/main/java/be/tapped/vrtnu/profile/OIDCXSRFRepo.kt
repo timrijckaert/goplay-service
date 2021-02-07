@@ -11,7 +11,7 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.internal.closeQuietly
 
-public interface OIDCXSRFRepo {
+public sealed interface OIDCXSRFRepo {
     public suspend fun fetchXSRFToken(): Either<MissingCookieValues, OIDCXSRF>
 }
 

@@ -25,7 +25,7 @@ internal class JsonProgramParser {
                     .mapLeft(::JsonParsingException)
 }
 
-public interface EpisodeRepo {
+public sealed interface EpisodeRepo {
     public suspend fun fetchProgram(
             program: TargetResponse.Target.Program,
             jwt: JWT,

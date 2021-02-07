@@ -13,7 +13,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.*
 
-public interface JWTTokenRepo {
+public sealed interface JWTTokenRepo {
     public suspend fun login(
             userName: String,
             password: String,

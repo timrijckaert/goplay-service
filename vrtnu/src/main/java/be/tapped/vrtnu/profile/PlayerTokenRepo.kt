@@ -21,7 +21,7 @@ public class JsonVRTPlayerTokenParser {
         Either.catch { Json.decodeFromString<VRTPlayerToken>(json) }.mapLeft(::JsonParsingException)
 }
 
-public interface PlayerTokenRepo {
+public sealed interface PlayerTokenRepo {
     public suspend fun fetchVRTPlayerToken(xVRTToken: XVRTToken): Either<ApiResponse.Failure, ApiResponse.Success.Authentication.PlayerToken>
 }
 

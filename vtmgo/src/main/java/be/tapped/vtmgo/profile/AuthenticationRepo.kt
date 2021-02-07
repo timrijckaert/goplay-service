@@ -4,7 +4,7 @@ import be.tapped.vtmgo.common.defaultCookieJar
 import be.tapped.vtmgo.common.vtmApiDefaultOkHttpClient
 import okhttp3.OkHttpClient
 
-public interface AuthenticationRepo : ProfileRepo, JWTTokenRepo
+public sealed interface AuthenticationRepo : ProfileRepo, JWTTokenRepo
 
 public class HttpAuthenticationRepo(
     private val client: OkHttpClient = vtmApiDefaultOkHttpClient,
