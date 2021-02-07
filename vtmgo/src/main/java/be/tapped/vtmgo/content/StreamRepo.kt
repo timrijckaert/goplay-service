@@ -28,9 +28,9 @@ internal class JsonStreamResponseParser {
 }
 
 internal class StreamResponseParser(
-    private val dashStreamParser: DashStreamParser,
-    private val hlsStreamParser: HlsStreamParser,
-    private val anvatoStreamParser: AnvatoStreamParser,
+        private val dashStreamParser: DashStreamParser,
+        private val hlsStreamParser: HlsStreamParser,
+        private val anvatoStreamParser: AnvatoStreamParser,
 ) {
 
     private fun rawStreamTypeFromStreamType(streamType: StreamType) = when (streamType) {
@@ -42,12 +42,12 @@ internal class StreamResponseParser(
     }
 
     suspend fun streamForStreamType(
-        streamType: StreamType,
-        streamResponse: StreamResponse,
+            streamType: StreamType,
+            streamResponse: StreamResponse,
     ): Either<Failure.Stream, ApiResponse.Success.Stream> = either {
         val rawStreamType = rawStreamTypeFromStreamType(streamType)
         val rawStream = !Either.fromNullable(streamResponse.streams.firstOrNull { it.type == rawStreamType })
-            .mapLeft { Failure.Stream.NoStreamFoundForType(rawStreamType) }
+                .mapLeft { Failure.Stream.NoStreamFoundForType(rawStreamType) }
         !when (streamType) {
             StreamType.ANVATO_LIVE -> anvatoStreamParser.fetchLiveStream(rawStream, streamResponse)
             StreamType.ANVATO_VOD -> anvatoStreamParser.fetchEpisodeStream(rawStream, streamResponse)
@@ -59,11 +59,11 @@ internal class StreamResponseParser(
 
 internal class DashStreamParser {
     fun parse(
-        dashStream: Stream,
-        subtitles: List<Subtitle>,
+            dashStream: Stream,
+            subtitles: List<Subtitle>,
     ): Either<Failure.Stream.NoDashStreamFound, ApiResponse.Success.Stream.Dash> = Either.catch {
         ApiResponse.Success.Stream.Dash(
-            MPDUrl(dashStream.url!!), LicenseUrl(dashStream.drm!!.licenseUrl), subtitles
+                MPDUrl(dashStream.url!!), LicenseUrl(dashStream.drm!!.licenseUrl), subtitles
         )
     }.mapLeft { Failure.Stream.NoDashStreamFound }
 }
@@ -71,27 +71,27 @@ internal class DashStreamParser {
 internal class HlsStreamParser {
     fun parse(hlsStream: Stream, subtitles: List<Subtitle>): Either<Failure.Stream.NoHlsStreamFound, ApiResponse.Success.Stream.Hls> = Either.catch {
         ApiResponse.Success.Stream.Hls(
-            HlsUrl(hlsStream.url!!), LicenseUrl(hlsStream.drm!!.licenseUrl), HlsCertificate(hlsStream.drm.certificate!!), subtitles
+                HlsUrl(hlsStream.url!!), LicenseUrl(hlsStream.drm!!.licenseUrl), HlsCertificate(hlsStream.drm.certificate!!), subtitles
         )
     }.mapLeft { Failure.Stream.NoHlsStreamFound }
 }
 
 internal class AnvatoStreamParser(private val anvatoRepo: AnvatoRepo) {
     private suspend fun fetch(stream: Stream, f: suspend AnvatoRepo.(Anvato) -> Either<Failure, AnvatoStream>) =
-        Either.fromNullable(stream.anvato).flatMap { anvatoRepo.f(it) }.map(ApiResponse.Success.Stream::Anvato)
-            .mapLeft { Failure.Stream.NoAnvatoStreamFound }
+            Either.fromNullable(stream.anvato).flatMap { anvatoRepo.f(it) }.map(ApiResponse.Success.Stream::Anvato)
+                    .mapLeft { Failure.Stream.NoAnvatoStreamFound }
 
     suspend fun fetchLiveStream(
-        stream: Stream,
-        streamResponse: StreamResponse,
+            stream: Stream,
+            streamResponse: StreamResponse,
     ): Either<Failure.Stream.NoAnvatoStreamFound, ApiResponse.Success.Stream.Anvato> =
-        fetch(stream) { anvatoRepo.fetchLiveStream(it, streamResponse) }
+            fetch(stream) { anvatoRepo.fetchLiveStream(it, streamResponse) }
 
     suspend fun fetchEpisodeStream(
-        stream: Stream,
-        streamResponse: StreamResponse,
+            stream: Stream,
+            streamResponse: StreamResponse,
     ): Either<Failure.Stream.NoAnvatoStreamFound, ApiResponse.Success.Stream.Anvato> =
-        fetch(stream) { anvatoRepo.fetchEpisodeStream(it, streamResponse) }
+            fetch(stream) { anvatoRepo.fetchEpisodeStream(it, streamResponse) }
 }
 
 public interface StreamRepo {
@@ -99,22 +99,22 @@ public interface StreamRepo {
     public suspend fun fetchStream(liveChannel: LiveChannel): Either<Failure, ApiResponse.Success.Stream.Anvato>
 
     public suspend fun fetchStream(
-        target: TargetResponse.Target.Movie,
-        streamType: StreamType = StreamType.DASH,
+            target: TargetResponse.Target.Movie,
+            streamType: StreamType = StreamType.DASH,
     ): Either<Failure, ApiResponse.Success.Stream>
 
     public suspend fun fetchStream(
-        target: TargetResponse.Target.Episode,
-        streamType: StreamType = StreamType.DASH,
+            target: TargetResponse.Target.Episode,
+            streamType: StreamType = StreamType.DASH,
     ): Either<Failure, ApiResponse.Success.Stream>
 
 }
 
 internal class HttpStreamRepo(
-    private val client: OkHttpClient,
-    private val headerBuilder: HeaderBuilder,
-    private val jsonStreamResponseParser: JsonStreamResponseParser,
-    private val streamResponseParser: StreamResponseParser,
+        private val client: OkHttpClient,
+        private val headerBuilder: HeaderBuilder,
+        private val jsonStreamResponseParser: JsonStreamResponseParser,
+        private val streamResponseParser: StreamResponseParser,
 ) : StreamRepo {
 
     companion object {
@@ -128,34 +128,34 @@ internal class HttpStreamRepo(
     }
 
     private suspend fun fetchStream(
-        pathSegmentForTargetType: String,
-        id: String,
-        streamType: StreamType,
+            pathSegmentForTargetType: String,
+            id: String,
+            streamType: StreamType,
     ): Either<Failure, ApiResponse.Success.Stream> = either {
         val streamResponse = !getStreamResponseForId(pathSegmentForTargetType, id)
         !streamResponseParser.streamForStreamType(streamType, streamResponse)
     }
 
     override suspend fun fetchStream(target: TargetResponse.Target.Movie, streamType: StreamType): Either<Failure, ApiResponse.Success.Stream> =
-        fetchStream("movies", target.id, streamType)
+            fetchStream("movies", target.id, streamType)
 
     override suspend fun fetchStream(target: TargetResponse.Target.Episode, streamType: StreamType): Either<Failure, ApiResponse.Success.Stream> =
-        fetchStream("episodes", target.id, streamType)
+            fetchStream("episodes", target.id, streamType)
 
     private suspend fun getStreamResponseForId(pathSegmentForTargetType: String, id: String): Either<Failure, StreamResponse> =
-        withContext(Dispatchers.IO) {
-            val response = client.executeAsync(
-                Request.Builder().get().headers(
-                    Headers.Builder().addAll(headerBuilder.defaultHeaders).add("x-api-key", POPCORN_API_KEY)
-                        .add("Popcorn-SDK-Version", POPCORN_SDK_VERSION).build()
-                ).url(
-                    HttpUrl.Builder().scheme("https").host("videoplayer-service.api.persgroep.cloud")
-                        .addPathSegments("config/$pathSegmentForTargetType").addQueryParameter("startPosition", "0.0")
-                        .addQueryParameter("autoPlay", "true").addPathSegment(id).build()
-                ).build()
-            )
+            withContext(Dispatchers.IO) {
+                val response = client.executeAsync(
+                        Request.Builder().get().headers(
+                                Headers.Builder().addAll(headerBuilder.defaultHeaders).add("x-api-key", POPCORN_API_KEY)
+                                        .add("Popcorn-SDK-Version", POPCORN_SDK_VERSION).build()
+                        ).url(
+                                HttpUrl.Builder().scheme("https").host("videoplayer-service.api.persgroep.cloud")
+                                        .addPathSegments("config/$pathSegmentForTargetType").addQueryParameter("startPosition", "0.0")
+                                        .addQueryParameter("autoPlay", "true").addPathSegment(id).build()
+                        ).build()
+                )
 
-            either { !jsonStreamResponseParser.parse(!response.safeBodyString()) }
-        }
+                either { !jsonStreamResponseParser.parse(!response.safeBodyString()) }
+            }
 
 }
