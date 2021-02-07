@@ -11,54 +11,46 @@ import be.tapped.vtmgo.common.safeBodyString
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.jsonArray
-import kotlinx.serialization.json.jsonObject
-import kotlinx.serialization.json.jsonPrimitive
+import kotlinx.serialization.json.*
+import okhttp3.*
 import okhttp3.Headers.Companion.toHeaders
-import okhttp3.HttpUrl
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
-import okhttp3.Response
 
 internal class AnvatoJsonJavascriptFunctionExtractor {
     private val jsJsonExtractionRegex = Regex("anvatoVideoJSONLoaded\\((.*)\\)")
 
     fun getJSONFromJavascript(jsFunction: String): Either<ApiResponse.Failure.Stream.NoJSONFoundInAnvatoJavascriptFunction, String> =
-        Either.fromNullable(jsJsonExtractionRegex.findAll(jsFunction).toList().firstOrNull()?.groups?.get(1)?.value)
-            .mapLeft { ApiResponse.Failure.Stream.NoJSONFoundInAnvatoJavascriptFunction }
+            Either.fromNullable(jsJsonExtractionRegex.findAll(jsFunction).toList().firstOrNull()?.groups?.get(1)?.value)
+                    .mapLeft { ApiResponse.Failure.Stream.NoJSONFoundInAnvatoJavascriptFunction }
 }
 
 internal class AnvatoPublishedUrlParser {
-    suspend fun parse(anvatoPublishedUrl: JsonObject): Either<ApiResponse.Failure, AnvatoPublishedUrl> = Either.catch {
+    fun parse(anvatoPublishedUrl: JsonObject): Either<ApiResponse.Failure, AnvatoPublishedUrl> = Either.catch {
         AnvatoPublishedUrl(
-            anvatoPublishedUrl["embed_url"]!!.jsonPrimitive.content,
-            anvatoPublishedUrl["license_url"]!!.jsonPrimitive.content,
-            anvatoPublishedUrl["backup_url"]?.jsonPrimitive?.content,
-            anvatoPublishedUrl["backup_license_url"]?.jsonPrimitive?.content,
+                anvatoPublishedUrl["embed_url"]!!.jsonPrimitive.content,
+                anvatoPublishedUrl["license_url"]!!.jsonPrimitive.content,
+                anvatoPublishedUrl["backup_url"]?.jsonPrimitive?.content,
+                anvatoPublishedUrl["backup_license_url"]?.jsonPrimitive?.content,
         )
     }.mapLeft(ApiResponse.Failure::JsonParsingException)
 }
 
 internal class AnvatoVideoJsonParser(
-    private val anvatoJsonJavascriptFunctionExtractor: AnvatoJsonJavascriptFunctionExtractor,
-    private val anvatoPublishedUrlParser: AnvatoPublishedUrlParser,
+        private val anvatoJsonJavascriptFunctionExtractor: AnvatoJsonJavascriptFunctionExtractor,
+        private val anvatoPublishedUrlParser: AnvatoPublishedUrlParser,
 ) {
 
     suspend fun getFirstPublishedUrl(jsFunction: String): Either<ApiResponse.Failure, AnvatoPublishedUrl> =
-        anvatoJsonJavascriptFunctionExtractor.getJSONFromJavascript(jsFunction).flatMap {
-            Either.catch {
-                Json.decodeFromString<JsonObject>(it)["published_urls"]?.jsonArray?.get(0)?.jsonObject
-            }.mapLeft(ApiResponse.Failure::JsonParsingException)
-        }.flatMap { Either.fromNullable(it).mapLeft { ApiResponse.Failure.Stream.NoPublishedEmbedUrlFound } }
-            .flatMap { anvatoPublishedUrlParser.parse(it) }
+            anvatoJsonJavascriptFunctionExtractor.getJSONFromJavascript(jsFunction).flatMap {
+                Either.catch {
+                    Json.decodeFromString<JsonObject>(it)["published_urls"]?.jsonArray?.get(0)?.jsonObject
+                }.mapLeft(ApiResponse.Failure::JsonParsingException)
+            }.flatMap { Either.fromNullable(it).mapLeft { ApiResponse.Failure.Stream.NoPublishedEmbedUrlFound } }
+                    .flatMap { anvatoPublishedUrlParser.parse(it) }
 }
 
 internal class AnvatoMasterM3U8JsonParser {
-    suspend fun parse(json: String): Either<ApiResponse.Failure, M3U8Url> = Either.catch {
+    fun parse(json: String): Either<ApiResponse.Failure, M3U8Url> = Either.catch {
         M3U8Url(Json.decodeFromString<JsonObject>(json)["master_m3u8"]!!.jsonPrimitive.content)
     }.mapLeft(ApiResponse.Failure::JsonParsingException)
 }
@@ -72,9 +64,9 @@ public sealed interface AnvatoRepo {
 }
 
 internal class HttpAnvatoRepo(
-    private val client: OkHttpClient,
-    private val anvatoVideoJsonParser: AnvatoVideoJsonParser,
-    private val anvatoMasterM3U8JsonParser: AnvatoMasterM3U8JsonParser,
+        private val client: OkHttpClient,
+        private val anvatoVideoJsonParser: AnvatoVideoJsonParser,
+        private val anvatoMasterM3U8JsonParser: AnvatoMasterM3U8JsonParser,
 ) : AnvatoRepo {
 
     companion object {
@@ -82,64 +74,64 @@ internal class HttpAnvatoRepo(
     }
 
     private val anvatoHeaders = mapOf(
-        "X-Anvato-User-Agent" to ANVATO_USER_AGENT,
-        "User-Agent" to ANVATO_USER_AGENT,
+            "X-Anvato-User-Agent" to ANVATO_USER_AGENT,
+            "User-Agent" to ANVATO_USER_AGENT,
     ).toHeaders()
 
     override suspend fun fetchLiveStream(anvato: Anvato, streamResponse: StreamResponse): Either<ApiResponse.Failure, AnvatoStream.Live> =
-        withContext(Dispatchers.IO) {
-            val anvatoResponse = fetchPublishedUrlResponse(streamResponse, anvato)
+            withContext(Dispatchers.IO) {
+                val anvatoResponse = fetchPublishedUrlResponse(streamResponse, anvato)
 
-            either {
-                val firstPublishedUrl = !anvatoVideoJsonParser.getFirstPublishedUrl(!anvatoResponse.safeBodyString())
+                either {
+                    val firstPublishedUrl = !anvatoVideoJsonParser.getFirstPublishedUrl(!anvatoResponse.safeBodyString())
 
-                val mpdManifestUrl = !mpdManifestUrl(firstPublishedUrl.embedUrl)
-                val backUpMpdManifestUrl = !mpdManifestUrl(firstPublishedUrl.backupUrl!!)
-                val licenseUrl = firstPublishedUrl.licenseUrl
-                val backUpLicenseUrl = firstPublishedUrl.backupLicenseUrl
+                    val mpdManifestUrl = !mpdManifestUrl(firstPublishedUrl.embedUrl)
+                    val backUpMpdManifestUrl = !mpdManifestUrl(firstPublishedUrl.backupUrl!!)
+                    val licenseUrl = firstPublishedUrl.licenseUrl
+                    val backUpLicenseUrl = firstPublishedUrl.backupLicenseUrl
 
-                AnvatoStream.Live(
-                    rawMdpUrl = MPDUrl(firstPublishedUrl.embedUrl),
-                    mdpUrl = MPDUrl(mpdManifestUrl),
-                    rawBackUpMdpUrl = MPDUrl(firstPublishedUrl.backupUrl),
-                    backUpMdpUrl = MPDUrl(backUpMpdManifestUrl),
-                    licenseUrl = LicenseUrl(licenseUrl),
-                    backUpLicenseUrl = LicenseUrl(backUpLicenseUrl!!)
-                )
+                    AnvatoStream.Live(
+                            rawMdpUrl = MPDUrl(firstPublishedUrl.embedUrl),
+                            mdpUrl = MPDUrl(mpdManifestUrl),
+                            rawBackUpMdpUrl = MPDUrl(firstPublishedUrl.backupUrl),
+                            backUpMdpUrl = MPDUrl(backUpMpdManifestUrl),
+                            licenseUrl = LicenseUrl(licenseUrl),
+                            backUpLicenseUrl = LicenseUrl(backUpLicenseUrl!!)
+                    )
+                }
             }
-        }
 
     override suspend fun fetchEpisodeStream(anvato: Anvato, streamResponse: StreamResponse): Either<ApiResponse.Failure, AnvatoStream.Episode> =
-        withContext(Dispatchers.IO) {
-            val anvatoResponse = fetchPublishedUrlResponse(streamResponse, anvato)
+            withContext(Dispatchers.IO) {
+                val anvatoResponse = fetchPublishedUrlResponse(streamResponse, anvato)
 
-            either {
-                val firstPublishedUrl = !anvatoVideoJsonParser.getFirstPublishedUrl(!anvatoResponse.safeBodyString())
-                val response = client.executeAsync(
-                    Request.Builder().get().url(firstPublishedUrl.embedUrl).build()
-                )
+                either {
+                    val firstPublishedUrl = !anvatoVideoJsonParser.getFirstPublishedUrl(!anvatoResponse.safeBodyString())
+                    val response = client.executeAsync(
+                            Request.Builder().get().url(firstPublishedUrl.embedUrl).build()
+                    )
 
-                AnvatoStream.Episode(
-                    MPDUrl((!anvatoMasterM3U8JsonParser.parse(!response.safeBodyString())).url),
-                    LicenseUrl(firstPublishedUrl.licenseUrl),
-                    streamResponse.subtitles
-                )
+                    AnvatoStream.Episode(
+                            MPDUrl((!anvatoMasterM3U8JsonParser.parse(!response.safeBodyString())).url),
+                            LicenseUrl(firstPublishedUrl.licenseUrl),
+                            streamResponse.subtitles
+                    )
+                }
             }
-        }
 
     private suspend fun fetchPublishedUrlResponse(streamResponse: StreamResponse, anvato: Anvato): Response = client.executeAsync(
-        Request.Builder().headers(anvatoHeaders).post(constructAnvatoRequestBody(streamResponse.ads.freewheel, anvato)).url(
-            HttpUrl.Builder().scheme("https").host("tkx.apis.anvato.net").addPathSegments("rest/v2/mcp/video").addPathSegment(anvato.video)
-                .addQueryParameter("rtyp", "fp").addQueryParameter("anvack", anvato.accessKey).addQueryParameter("anvtrid", getRandomString(32))
-                .build()
-        ).build()
+            Request.Builder().headers(anvatoHeaders).post(constructAnvatoRequestBody(streamResponse.ads.freewheel, anvato)).url(
+                    HttpUrl.Builder().scheme("https").host("tkx.apis.anvato.net").addPathSegments("rest/v2/mcp/video").addPathSegment(anvato.video)
+                            .addQueryParameter("rtyp", "fp").addQueryParameter("anvack", anvato.accessKey).addQueryParameter("anvtrid", getRandomString(32))
+                            .build()
+            ).build()
     )
 
     private suspend fun mpdManifestUrl(publishedUrl: String): Either<ApiResponse.Failure, String> {
         val redirectLocationXMLRegex = Regex("<Location>([^<]+)</Location>")
         suspend fun downloadRaw(url: String): Either<ApiResponse.Failure, String> = withContext(Dispatchers.IO) {
             val response = client.executeAsync(
-                Request.Builder().get().url(url).headers(anvatoHeaders).build()
+                    Request.Builder().get().url(url).headers(anvatoHeaders).build()
             )
             response.safeBodyString()
         }
@@ -147,7 +139,7 @@ internal class HttpAnvatoRepo(
         return either {
             val xml = !downloadRaw(publishedUrl)
             !Either.fromNullable(
-                redirectLocationXMLRegex.findAll(xml).toList().firstOrNull()?.groups?.get(1)?.value
+                    redirectLocationXMLRegex.findAll(xml).toList().firstOrNull()?.groups?.get(1)?.value
             ).handleErrorWith { publishedUrl.right() }.mapLeft { ApiResponse.Failure.Stream.NoMPDManifestUrlFound }
         }
     }
@@ -158,8 +150,8 @@ internal class HttpAnvatoRepo(
     }
 
     private fun constructAnvatoRequestBody(freeWheel: Freewheel, anvato: Anvato): RequestBody =
-        //language=JSON
-        """
+            //language=JSON
+            """
 {
   "ads": {
     "freewheel": {

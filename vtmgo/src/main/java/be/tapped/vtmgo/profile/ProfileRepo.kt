@@ -17,8 +17,8 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 
 public class JsonProfileParser {
-    public suspend fun parse(json: String): Either<ApiResponse.Failure, List<Profile>> =
-        Either.catch { Json.decodeFromString<List<Profile>>(json) }.mapLeft(::JsonParsingException)
+    public fun parse(json: String): Either<ApiResponse.Failure, List<Profile>> =
+            Either.catch { Json.decodeFromString<List<Profile>>(json) }.mapLeft(::JsonParsingException)
 }
 
 public sealed interface ProfileRepo {
@@ -26,9 +26,9 @@ public sealed interface ProfileRepo {
 }
 
 internal class HttpProfileRepo(
-    private val client: OkHttpClient = vtmApiDefaultOkHttpClient,
-    private val headerBuilder: HeaderBuilder = AuthorizationHeaderBuilder(),
-    private val jsonProfileParser: JsonProfileParser = JsonProfileParser(),
+        private val client: OkHttpClient = vtmApiDefaultOkHttpClient,
+        private val headerBuilder: HeaderBuilder = AuthorizationHeaderBuilder(),
+        private val jsonProfileParser: JsonProfileParser = JsonProfileParser(),
 ) : ProfileRepo {
 
     private companion object {
@@ -44,15 +44,18 @@ internal class HttpProfileRepo(
     // -H "Cookie:authId=<authId>" \
     // -H "User-Agent:okhttp/4.9.0" "https://lfvp-api.dpgmedia.net/profiles?products=VTM_GO,VTM_GO_KIDS"
     override suspend fun getProfiles(jwtToken: JWT): Either<ApiResponse.Failure, ApiResponse.Success.Authentication.Profiles> =
-        withContext(Dispatchers.IO) {
-            val response = client.executeAsync(
-                Request.Builder().get().headers(headerBuilder.authenticationHeaders(jwtToken))
-                    .url("$API_ENDPOINT/profiles?products=VTM_GO,VTM_GO_KIDS").build()
-            )
+            withContext(Dispatchers.IO) {
+                val response = client.executeAsync(
+                        Request.Builder()
+                                .get()
+                                .headers(headerBuilder.authenticationHeaders(jwtToken))
+                                .url("$API_ENDPOINT/profiles?products=VTM_GO,VTM_GO_KIDS")
+                                .build()
+                )
 
-            either {
-                val profiles = !jsonProfileParser.parse(!response.safeBodyString())
-                ApiResponse.Success.Authentication.Profiles(profiles)
+                either {
+                    val profiles = !jsonProfileParser.parse(!response.safeBodyString())
+                    ApiResponse.Success.Authentication.Profiles(profiles)
+                }
             }
-        }
 }

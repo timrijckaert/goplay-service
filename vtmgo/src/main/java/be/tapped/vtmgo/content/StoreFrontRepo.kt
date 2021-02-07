@@ -31,10 +31,11 @@ public enum class StoreFrontType(internal val id: String) {
 internal class JsonStoreFrontParser {
     private val jsonParser: Json = Json { classDiscriminator = "rowType" }
 
-    suspend fun parseListOfStoreFront(json: String): Either<ApiResponse.Failure, List<StoreFront>> = Either.catch {
-        val rows = jsonParser.decodeFromString<JsonObject>(json)["rows"]!!.jsonArray
-        jsonParser.decodeFromJsonElement<List<StoreFront>>(rows)
-    }.mapLeft(::JsonParsingException)
+    fun parseListOfStoreFront(json: String): Either<ApiResponse.Failure, List<StoreFront>> =
+            Either.catch {
+                val rows = jsonParser.decodeFromString<JsonObject>(json)["rows"]!!.jsonArray
+                jsonParser.decodeFromJsonElement<List<StoreFront>>(rows)
+            }.mapLeft(::JsonParsingException)
 }
 
 public sealed interface StoreFrontRepo {
@@ -48,10 +49,10 @@ public sealed interface StoreFrontRepo {
 }
 
 internal class HttpStoreFrontRepo(
-    private val client: OkHttpClient,
-    private val baseContentHttpUrlBuilder: BaseContentHttpUrlBuilder,
-    private val headerBuilder: HeaderBuilder,
-    private val jsonStoreFrontParser: JsonStoreFrontParser,
+        private val client: OkHttpClient,
+        private val baseContentHttpUrlBuilder: BaseContentHttpUrlBuilder,
+        private val headerBuilder: HeaderBuilder,
+        private val jsonStoreFrontParser: JsonStoreFrontParser,
 ) : StoreFrontRepo {
 
     // curl -X GET \
@@ -66,17 +67,20 @@ internal class HttpStoreFrontRepo(
     // -H "Accept-Encoding:gzip" \
     // -H "User-Agent:okhttp/4.9.0" "https://lfvp-api.dpgmedia.net/vtmgo/storefronts/<StoreFrontType.id>"
     override suspend fun fetchStoreFront(
-        jwt: JWT,
-        profile: Profile,
-        storeFrontType: StoreFrontType,
+            jwt: JWT,
+            profile: Profile,
+            storeFrontType: StoreFrontType,
     ): Either<ApiResponse.Failure, ApiResponse.Success.Content.StoreFrontRows> {
         fun constructUrl(product: VTMGOProduct, storeFrontType: StoreFrontType): HttpUrl =
-            baseContentHttpUrlBuilder.constructBaseContentUrl(product).addPathSegment("storefronts").addPathSegment(storeFrontType.id).build()
+                baseContentHttpUrlBuilder.constructBaseContentUrl(product).addPathSegment("storefronts").addPathSegment(storeFrontType.id).build()
 
         return withContext(Dispatchers.IO) {
             val response = client.executeAsync(
-                Request.Builder().headers(headerBuilder.authenticationHeaders(jwt, profile)).get().url(constructUrl(profile.product, storeFrontType))
-                    .build()
+                    Request.Builder()
+                            .headers(headerBuilder.authenticationHeaders(jwt, profile))
+                            .get()
+                            .url(constructUrl(profile.product, storeFrontType))
+                            .build()
             )
 
             either {

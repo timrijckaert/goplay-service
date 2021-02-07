@@ -21,8 +21,8 @@ import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
 import okhttp3.Request
 
-public class JsonChannelParser {
-    public suspend fun parse(json: String): Either<ApiResponse.Failure, List<LiveChannel>> = Either.catch {
+internal class JsonChannelParser {
+    internal fun parse(json: String): Either<ApiResponse.Failure, List<LiveChannel>> = Either.catch {
         val jsonObject = Json.decodeFromString<JsonObject>(json)
         Json.decodeFromJsonElement<List<LiveChannel>>(jsonObject["channels"]!!.jsonArray)
     }.mapLeft(::JsonParsingException)
@@ -33,24 +33,29 @@ public sealed interface ChannelRepo {
 }
 
 internal class HttpChannelRepo(
-    private val client: OkHttpClient,
-    private val baseContentHttpUrlBuilder: BaseContentHttpUrlBuilder,
-    private val headerBuilder: HeaderBuilder,
-    private val jsonChannelParser: JsonChannelParser,
+        private val client: OkHttpClient,
+        private val baseContentHttpUrlBuilder: BaseContentHttpUrlBuilder,
+        private val headerBuilder: HeaderBuilder,
+        private val jsonChannelParser: JsonChannelParser,
 ) : ChannelRepo {
 
     override suspend fun fetchChannels(jwt: JWT, profile: Profile): Either<ApiResponse.Failure, ApiResponse.Success.Content.LiveChannels> =
-        withContext(Dispatchers.IO) {
-            val response = client.executeAsync(
-                Request.Builder().get().headers(headerBuilder.authenticationHeaders(jwt, profile)).url(constructUrl(profile.product)).build()
-            )
+            withContext(Dispatchers.IO) {
+                val response = client.executeAsync(
+                        Request
+                                .Builder()
+                                .headers(headerBuilder.authenticationHeaders(jwt, profile))
+                                .get()
+                                .url(constructUrl(profile.product))
+                                .build()
+                )
 
-            either {
-                ApiResponse.Success.Content.LiveChannels(!jsonChannelParser.parse(!response.safeBodyString()))
+                either {
+                    ApiResponse.Success.Content.LiveChannels(!jsonChannelParser.parse(!response.safeBodyString()))
+                }
             }
-        }
 
     private fun constructUrl(product: VTMGOProduct): HttpUrl =
-        baseContentHttpUrlBuilder.constructBaseContentUrl(product).addPathSegments("live").build()
+            baseContentHttpUrlBuilder.constructBaseContentUrl(product).addPathSegments("live").build()
 }
 

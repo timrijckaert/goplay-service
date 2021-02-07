@@ -22,7 +22,7 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 
 internal class JsonPagedTeaserContentParser {
-    suspend fun parse(json: String): Either<ApiResponse.Failure, List<PagedTeaserContent>> = Either.catch {
+    fun parse(json: String): Either<ApiResponse.Failure, List<PagedTeaserContent>> = Either.catch {
         val pagedTeasers = Json.decodeFromString<JsonObject>(json)["pagedTeasers"]!!.jsonObject["content"]!!
         Json.decodeFromJsonElement<List<PagedTeaserContent>>(pagedTeasers)
     }.mapLeft(::JsonParsingException)
@@ -33,10 +33,10 @@ public sealed interface CatalogRepo {
 }
 
 internal class HttpCatalogRepo(
-    private val client: OkHttpClient,
-    private val baseContentHttpUrlBuilder: BaseContentHttpUrlBuilder,
-    private val headerBuilder: HeaderBuilder,
-    private val jsonPagedTeaserContentParser: JsonPagedTeaserContentParser,
+        private val client: OkHttpClient,
+        private val baseContentHttpUrlBuilder: BaseContentHttpUrlBuilder,
+        private val headerBuilder: HeaderBuilder,
+        private val jsonPagedTeaserContentParser: JsonPagedTeaserContentParser,
 ) : CatalogRepo {
 
     // curl -X GET \
@@ -51,21 +51,25 @@ internal class HttpCatalogRepo(
     // -H "Accept-Encoding:gzip" \
     // -H "User-Agent:okhttp/4.9.0" "https://lfvp-api.dpgmedia.net/vtmgo/catalog?pageSize=2000"
     override suspend fun fetchAZ(jwt: JWT, profile: Profile): Either<ApiResponse.Failure, ApiResponse.Success.Content.Catalog> =
-        withContext(Dispatchers.IO) {
-            either {
-                val response = client.executeAsync(
-                    Request.Builder().headers(headerBuilder.authenticationHeaders(jwt, profile)).get().url(constructUrl(profile.product)).build()
-                )
+            withContext(Dispatchers.IO) {
+                either {
+                    val response = client.executeAsync(
+                            Request.Builder()
+                                    .headers(headerBuilder.authenticationHeaders(jwt, profile))
+                                    .get()
+                                    .url(constructUrl(profile.product))
+                                    .build()
+                    )
 
-                ApiResponse.Success.Content.Catalog(!jsonPagedTeaserContentParser.parse(!response.safeBodyString()))
+                    ApiResponse.Success.Content.Catalog(!jsonPagedTeaserContentParser.parse(!response.safeBodyString()))
+                }
             }
-        }
 
     private fun constructUrl(vtmGoProduct: VTMGOProduct, filter: String? = null): HttpUrl =
-        baseContentHttpUrlBuilder.constructBaseContentUrl(vtmGoProduct).addPathSegments("catalog").addQueryParameter("pageSize", "2000").apply {
-            filter?.let {
-                //Category Filter
-                addEncodedQueryParameter("filter", it)
-            }
-        }.build()
+            baseContentHttpUrlBuilder.constructBaseContentUrl(vtmGoProduct).addPathSegments("catalog").addQueryParameter("pageSize", "2000").apply {
+                filter?.let {
+                    //Category Filter
+                    addEncodedQueryParameter("filter", it)
+                }
+            }.build()
 }

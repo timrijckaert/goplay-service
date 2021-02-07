@@ -7,7 +7,10 @@ import okhttp3.OkHttpClient
 public sealed interface AuthenticationRepo : ProfileRepo, JWTTokenRepo
 
 public class HttpAuthenticationRepo(
-    private val client: OkHttpClient = vtmApiDefaultOkHttpClient,
-    private val profileRepo: ProfileRepo = HttpProfileRepo(client),
-    private val jwtTokenRepo: JWTTokenRepo = HttpJWTTokenRepo(client, defaultCookieJar),
-) : AuthenticationRepo, ProfileRepo by profileRepo, JWTTokenRepo by jwtTokenRepo
+        private val client: OkHttpClient = vtmApiDefaultOkHttpClient,
+        private val profileRepo: ProfileRepo = HttpProfileRepo(client),
+        private val jwtTokenRepo: JWTTokenRepo = HttpJWTTokenRepo(client, defaultCookieJar),
+) :
+        AuthenticationRepo,
+        ProfileRepo by profileRepo,
+        JWTTokenRepo by jwtTokenRepo

@@ -20,7 +20,7 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 
 internal class JsonProgramParser {
-    suspend fun parse(json: String): Either<ApiResponse.Failure, Program> =
+    fun parse(json: String): Either<ApiResponse.Failure, Program> =
             Either.catch<Program> { Json.decodeFromJsonElement(Json.decodeFromString<JsonObject>(json)["program"]!!.jsonObject) }
                     .mapLeft(::JsonParsingException)
 }
@@ -46,7 +46,12 @@ internal class HttpEpisodeRepo(
             profile: Profile,
     ): Either<ApiResponse.Failure, ApiResponse.Success.Content.Programs> = withContext(Dispatchers.IO) {
         val response = client.executeAsync(
-                Request.Builder().get().headers(headerBuilder.authenticationHeaders(jwt, profile)).url(constructUrl(profile, program)).build()
+                Request
+                        .Builder()
+                        .get()
+                        .headers(headerBuilder.authenticationHeaders(jwt, profile))
+                        .url(constructUrl(profile, program))
+                        .build()
         )
 
         either {
@@ -55,5 +60,9 @@ internal class HttpEpisodeRepo(
     }
 
     private fun constructUrl(profile: Profile, program: TargetResponse.Target.Program) =
-            baseContentHttpUrlBuilder.constructBaseContentUrl(profile.product).addPathSegment("programs").addPathSegment(program.id).build()
+            baseContentHttpUrlBuilder
+                    .constructBaseContentUrl(profile.product)
+                    .addPathSegment("programs")
+                    .addPathSegment(program.id)
+                    .build()
 }

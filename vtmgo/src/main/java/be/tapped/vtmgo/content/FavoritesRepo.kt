@@ -19,8 +19,8 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 
 internal class JsonFavoritesParser {
-    suspend fun parse(json: String): Either<ApiResponse.Failure, StoreFront.MyListStoreFront> =
-        Either.catch { Json.decodeFromString<StoreFront.MyListStoreFront>(json) }.mapLeft(ApiResponse.Failure::JsonParsingException)
+    fun parse(json: String): Either<ApiResponse.Failure, StoreFront.MyListStoreFront> =
+            Either.catch { Json.decodeFromString<StoreFront.MyListStoreFront>(json) }.mapLeft(ApiResponse.Failure::JsonParsingException)
 }
 
 public sealed interface FavoritesRepo {
@@ -28,10 +28,10 @@ public sealed interface FavoritesRepo {
 }
 
 internal class HttpFavoritesRepo(
-    private val client: OkHttpClient,
-    private val baseContentHttpUrlBuilder: BaseContentHttpUrlBuilder,
-    private val headerBuilder: HeaderBuilder,
-    private val jsonFavoritesParser: JsonFavoritesParser,
+        private val client: OkHttpClient,
+        private val baseContentHttpUrlBuilder: BaseContentHttpUrlBuilder,
+        private val headerBuilder: HeaderBuilder,
+        private val jsonFavoritesParser: JsonFavoritesParser,
 ) : FavoritesRepo {
 
     // curl -X GET \
@@ -47,15 +47,15 @@ internal class HttpFavoritesRepo(
     // -H "Cookie:authId=44de1089-dac7-43a8-a7b5-0f01042ab769" \
     // -H "User-Agent:okhttp/4.9.0" "https://lfvp-api.dpgmedia.net/vtmgo/main/swimlane/my-list"
     override suspend fun fetchMyFavorites(
-        jwt: JWT,
-        profile: Profile,
+            jwt: JWT,
+            profile: Profile,
     ): Either<ApiResponse.Failure, ApiResponse.Success.Content.Favorites> {
         fun constructUrl(product: VTMGOProduct): HttpUrl =
-            baseContentHttpUrlBuilder.constructBaseContentUrl(product).addPathSegments("main/swimlane/my-list").build()
+                baseContentHttpUrlBuilder.constructBaseContentUrl(product).addPathSegments("main/swimlane/my-list").build()
 
         return withContext(Dispatchers.IO) {
             val response = client.executeAsync(
-                Request.Builder().headers(headerBuilder.authenticationHeaders(jwt, profile)).get().url(constructUrl(profile.product)).build()
+                    Request.Builder().headers(headerBuilder.authenticationHeaders(jwt, profile)).get().url(constructUrl(profile.product)).build()
             )
 
             either {

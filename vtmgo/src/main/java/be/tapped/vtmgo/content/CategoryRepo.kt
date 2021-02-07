@@ -19,8 +19,8 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 
 internal class JsonCategoryParser {
-    suspend fun parse(json: String): Either<ApiResponse.Failure, CategoryResponse> =
-        Either.catch<CategoryResponse> { Json.decodeFromString(json) }.mapLeft(::JsonParsingException)
+    fun parse(json: String): Either<ApiResponse.Failure, CategoryResponse> =
+            Either.catch<CategoryResponse> { Json.decodeFromString(json) }.mapLeft(::JsonParsingException)
 }
 
 public sealed interface CategoryRepo {
@@ -28,10 +28,10 @@ public sealed interface CategoryRepo {
 }
 
 internal class HttpCategoryRepo(
-    private val client: OkHttpClient,
-    private val baseContentHttpUrlBuilder: BaseContentHttpUrlBuilder,
-    private val headerBuilder: HeaderBuilder,
-    private val jsonCategoryParser: JsonCategoryParser,
+        private val client: OkHttpClient,
+        private val baseContentHttpUrlBuilder: BaseContentHttpUrlBuilder,
+        private val headerBuilder: HeaderBuilder,
+        private val jsonCategoryParser: JsonCategoryParser,
 ) : CategoryRepo {
 
     // curl -X GET \
@@ -46,18 +46,24 @@ internal class HttpCategoryRepo(
     // -H "Accept-Encoding:gzip" \
     // -H "User-Agent:okhttp/4.9.0" "https://lfvp-api.dpgmedia.net/vtmgo/catalog/filters?pageSize=2000"
     override suspend fun fetchCategories(jwt: JWT, profile: Profile): Either<ApiResponse.Failure, ApiResponse.Success.Content.Categories> =
-        withContext(Dispatchers.IO) {
-            val response = client.executeAsync(
-                Request.Builder().headers(headerBuilder.authenticationHeaders(jwt, profile)).get().url(constructUrl(profile.product)).build()
-            )
+            withContext(Dispatchers.IO) {
+                val response = client.executeAsync(
+                        Request.Builder()
+                                .headers(headerBuilder.authenticationHeaders(jwt, profile))
+                                .get()
+                                .url(constructUrl(profile.product))
+                                .build()
+                )
 
-            either {
-                val categoryResponse = !jsonCategoryParser.parse(!response.safeBodyString())
-                ApiResponse.Success.Content.Categories(categoryResponse.categories)
+                either {
+                    val categoryResponse = !jsonCategoryParser.parse(!response.safeBodyString())
+                    ApiResponse.Success.Content.Categories(categoryResponse.categories)
+                }
             }
-        }
 
     private fun constructUrl(vtmGoProduct: VTMGOProduct): HttpUrl =
-        baseContentHttpUrlBuilder.constructBaseContentUrl(vtmGoProduct).addPathSegments("catalog/filters").addQueryParameter("pageSize", "2000")
-            .build()
+            baseContentHttpUrlBuilder.constructBaseContentUrl(vtmGoProduct)
+                    .addPathSegments("catalog/filters")
+                    .addQueryParameter("pageSize", "2000")
+                    .build()
 }
