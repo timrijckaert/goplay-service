@@ -97,18 +97,19 @@ internal class EpisodeParser(private val urlPrefixMapper: UrlPrefixMapper) {
 }
 
 public sealed interface PlaylistRepo {
-    public suspend fun fetchProgramPlaylist(program: Program): Either<ApiResponse.Failure, List<Season>>
+    public suspend fun fetchProgramPlaylist(program: Program): Either<ApiResponse.Failure, List<Season>> = fetchProgramPlaylist(program.programName)
+    public suspend fun fetchProgramPlaylist(programName: String): Either<ApiResponse.Failure, List<Season>>
 }
 
 internal class AEMPlaylistRepo(private val client: OkHttpClient,
                                private val seasonRepo: SeasonRepo) : PlaylistRepo {
 
-    override suspend fun fetchProgramPlaylist(program: Program): Either<ApiResponse.Failure, List<Season>> =
+    override suspend fun fetchProgramPlaylist(programName: String): Either<ApiResponse.Failure, List<Season>> =
             either {
                 val json = !client.executeAsync(
                         Request.Builder()
                                 .get()
-                                .url("$siteUrl/a-z/${program.programName}/jcr:content/parsys/container.model.json")
+                                .url("$siteUrl/a-z/${programName}/jcr:content/parsys/container.model.json")
                                 .build()
                 ).safeBodyString()
                 !seasonRepo.seasonsFromAEMJson(json)
