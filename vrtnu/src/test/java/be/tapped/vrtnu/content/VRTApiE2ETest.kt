@@ -8,12 +8,10 @@ import io.kotest.assertions.arrow.either.shouldBeRight
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.collections.shouldNotBeEmpty
-import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.toList
-import java.util.*
 
 /**
  * E2E test for [VRTApi].
@@ -44,8 +42,21 @@ public class VRTApiE2ETest : FreeSpec({
                 azPrograms.shouldBeRight()
             }
 
+            val programs = azPrograms.orNull()!!.programs
             "it should not be empty" {
-                azPrograms.orNull()!!.programs.shouldNotBeEmpty()
+                programs.shouldNotBeEmpty()
+
+                "fetching the Playlists" - {
+                    programs.forEach {
+                        "fetching the Playlist of ${it.programName}" - {
+                            val playlist = vrtApi.fetchProgramPlaylist(it)
+
+                            "it should be successful" {
+                                playlist.shouldBeRight()
+                            }
+                        }
+                    }
+                }
             }
 
             "given a ${ProfileRepo::class.java.simpleName}" - {
@@ -89,7 +100,7 @@ public class VRTApiE2ETest : FreeSpec({
                                 LiveStreams.allLiveStreams.parTraverse {
                                     "fetching live stream $it" - {
                                         val liveStream = vrtApi.getLiveStream(
-                                            vrtPlayerToken.orNull()!!.vrtPlayerToken, it.videoId
+                                                vrtPlayerToken.orNull()!!.vrtPlayerToken, it.videoId
                                         )
                                         "it should be successful" {
                                             liveStream.shouldBeRight()
@@ -98,7 +109,7 @@ public class VRTApiE2ETest : FreeSpec({
                                 }
                             }
 
-                            azPrograms.orNull()!!.programs.shuffled().take(50).parTraverse { program ->
+                            programs.shuffled().take(50).parTraverse { program ->
                                 //TODO use new way to retrieve episodes and seasons
                             }
                         }

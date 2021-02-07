@@ -335,7 +335,7 @@ public data class Season(val name: String, val episodes: List<Episode>) {
     public data class Episode(
             val title: String,
             val image: String,
-            val description: String,
+            val description: String?,
             val videoId: VideoId,
             val publicationId: PublicationId,
             val duration: String,
