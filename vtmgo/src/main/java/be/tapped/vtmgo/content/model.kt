@@ -458,8 +458,11 @@ public data class Program(
         val geoBlocked: Boolean,
         val blockedFor: String? = null,
         val kidsContent: Boolean,
+        val ratingIcons: List<JsonElement>? = null,
         val legalIcons: List<LegalIcon>,
+        val meta: List<JsonElement>? = null,
         val addedToMyList: Boolean,
+        val productionYear: String? = null,
 ) {
     init {
         require(id.isNotEmpty()) { "id is not empty" }

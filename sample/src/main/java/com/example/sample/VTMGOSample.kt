@@ -84,7 +84,7 @@ private suspend fun api(jwtToken: JWT, profile: Profile) {
         (searchResult.orNull()!!.search.first { it.type == SearchResultType.EXACT }.teasers.first().target.asTarget as TargetResponse.Target.Program)
     val firstExactProgram = vtmApi.fetchProgram(firstExactSearchResultProgramTarget, jwtToken, profile)
     val streamOfActiveEpisodeOfSearchedProgram =
-        vtmApi.fetchStream(TargetResponse.Target.Episode(firstExactProgram.orNull()!!.program.seasons.first().episodes.last().id))
+        vtmApi.fetchStream(TargetResponse.Target.Episode(firstExactProgram.orNull()!!.program.seasons.last().episodes.last().id))
     println(streamOfActiveEpisodeOfSearchedProgram)
 }
 
