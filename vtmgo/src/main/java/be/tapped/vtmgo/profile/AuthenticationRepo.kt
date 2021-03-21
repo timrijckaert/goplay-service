@@ -9,7 +9,7 @@ public sealed interface AuthenticationRepo : ProfileRepo, JWTTokenRepo
 public class HttpAuthenticationRepo(
         private val client: OkHttpClient = vtmApiDefaultOkHttpClient,
         private val profileRepo: ProfileRepo = HttpProfileRepo(client),
-        private val jwtTokenRepo: JWTTokenRepo = HttpJWTTokenRepo(client, defaultCookieJar),
+        private val jwtTokenRepo: JWTTokenRepo = HttpAndroidJWTTokenRepo(client),
 ) :
         AuthenticationRepo,
         ProfileRepo by profileRepo,

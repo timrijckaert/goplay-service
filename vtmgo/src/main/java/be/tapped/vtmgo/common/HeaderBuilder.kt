@@ -15,8 +15,13 @@ internal class AuthorizationHeaderBuilder : HeaderBuilder {
 
     // https://github.com/add-ons/plugin.video.vtm.go/wiki/API#vtm-go-api
     override val defaultHeaders =
-            Headers.Builder().add("User-Agent", "VTMGO/6.11.18 (be.vmma.vtm.zenderapp; build:12648; Android 25) okhttp/4.7.2").add("x-app-version", "8")
-                    .add("x-persgroep-mobile-app", "true").add("x-persgroep-os", "android").add("x-persgroep-os-version", "25").build()
+            Headers.Builder()
+                    .add("User-Agent", "VTMGO/9.10 (be.vmma.vtm.zenderapp; build:13200; Android 25) okhttp/4.9.0")
+                    .add("x-app-version", "9")
+                    .add("x-persgroep-mobile-app", "true")
+                    .add("x-persgroep-os", "android")
+                    .add("x-persgroep-os-version", "25")
+                    .build()
 
     override fun authenticationHeaders(jwt: JWT, profile: Profile?): Headers =
             Headers.Builder().addAll(defaultHeaders).add("x-dpp-jwt", jwt.token).apply {
