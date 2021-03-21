@@ -1,7 +1,12 @@
 package be.tapped.vrtnu.content
 
-import arrow.core.*
-import arrow.core.extensions.nonemptylist.semigroup.semigroup
+import arrow.core.Either
+import arrow.core.NonEmptyList
+import arrow.core.Validated
+import arrow.core.ValidatedNel
+import arrow.core.invalidNel
+import arrow.core.validNel
+import arrow.core.zip
 import be.tapped.vrtnu.ApiResponse
 import be.tapped.vrtnu.ApiResponse.Failure.Content.SearchQuery
 import okhttp3.HttpUrl
@@ -64,13 +69,11 @@ public object ElasticSearchQueryBuilder {
             false -> Unit.validNel()
         }
 
-        internal fun validate(): Validated<NonEmptyList<String>, SearchQuery> = Validated.mapN(
-                NonEmptyList.semigroup(), validateMaxSearchSize(), validateResultWindow()
-        ) { _, _ -> this }
+        internal fun validate(): Validated<NonEmptyList<String>, SearchQuery> =
+                validateMaxSearchSize().zip(validateResultWindow()) { _, _ -> this }
     }
 
-    private val nonWordCharacterRegex = Regex("\\W")
-    private fun sanitizeProgramName(programName: String): String = programName.replace(nonWordCharacterRegex, "-").toLowerCase()
+    private fun sanitizeProgramName(programName: String): String = programName.replace("\\W", "-").toLowerCase()
 
     // Only add query parameters that differ from the defaults in order to limit the URL which is capped at max. 8192 characters
     public fun HttpUrl.Builder.applySearchQuery(searchQuery: SearchQuery): Either<ApiResponse.Failure.Content.SearchQuery, HttpUrl.Builder> {
