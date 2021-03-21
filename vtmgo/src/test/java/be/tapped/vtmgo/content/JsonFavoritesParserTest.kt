@@ -9,8 +9,7 @@ public class JsonFavoritesParserTest : StringSpec({
 
     "should be able to parse your favourites" {
         val favoritesJson = javaClass.classLoader?.getResourceAsStream("favorites.json")!!.reader().readText()
-        val sut = JsonFavoritesParser()
-        val favorites = sut.parse(favoritesJson)
+        val favorites = JsonFavoritesParser().parse(favoritesJson)
         favorites.shouldBeRight()
     }
 })

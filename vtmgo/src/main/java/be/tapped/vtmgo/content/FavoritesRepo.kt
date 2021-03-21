@@ -19,8 +19,8 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 
 internal class JsonFavoritesParser {
-    fun parse(json: String): Either<ApiResponse.Failure, StoreFront.MyListStoreFront> =
-            Either.catch { Json.decodeFromString<StoreFront.MyListStoreFront>(json) }.mapLeft(ApiResponse.Failure::JsonParsingException)
+    fun parse(json: String): Either<ApiResponse.Failure, Favorite> =
+            Either.catch { Json.decodeFromString<Favorite>(json) }.mapLeft { ApiResponse.Failure.JsonParsingException(it, json) }
 }
 
 public sealed interface FavoritesRepo {
@@ -51,7 +51,7 @@ internal class HttpFavoritesRepo(
             profile: Profile,
     ): Either<ApiResponse.Failure, ApiResponse.Success.Content.Favorites> {
         fun constructUrl(product: VTMGOProduct): HttpUrl =
-                baseContentHttpUrlBuilder.constructBaseContentUrl(product).addPathSegments("main/swimlane/my-list").build()
+                baseContentHttpUrlBuilder.constructBaseContentUrl(product).addPathSegment("my-list").build()
 
         return withContext(Dispatchers.IO) {
             val response = client.executeAsync(

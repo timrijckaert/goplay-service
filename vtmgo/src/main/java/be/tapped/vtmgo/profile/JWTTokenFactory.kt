@@ -3,7 +3,6 @@ package be.tapped.vtmgo.profile
 import arrow.core.Either
 import arrow.core.computations.either
 import arrow.core.flatMap
-import arrow.core.right
 import be.tapped.common.internal.executeAsync
 import be.tapped.common.internal.jsonMediaType
 import be.tapped.vtmgo.ApiResponse
@@ -142,5 +141,5 @@ internal class JWTTokenJsonParser {
     fun parse(json: String): Either<ApiResponse.Failure, TokenWrapper> =
             Either
                     .catch { TokenWrapper(JWT(Json.decodeFromString<JsonObject>(json)["jsonWebToken"]!!.jsonPrimitive.content)) }
-                    .mapLeft(ApiResponse.Failure::JsonParsingException)
+                    .mapLeft { ApiResponse.Failure.JsonParsingException(it, json) }
 }

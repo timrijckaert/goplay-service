@@ -2,7 +2,6 @@ package be.tapped.vtmgo.content
 
 import arrow.core.Either
 import arrow.core.computations.either
-import arrow.core.flatMap
 import arrow.core.handleErrorWith
 import arrow.core.right
 import be.tapped.common.internal.executeAsync
@@ -32,7 +31,7 @@ internal class AnvatoPublishedUrlParser {
                 anvatoPublishedUrl["backup_url"]?.jsonPrimitive?.content,
                 anvatoPublishedUrl["backup_license_url"]?.jsonPrimitive?.content,
         )
-    }.mapLeft(ApiResponse.Failure::JsonParsingException)
+    }.mapLeft { ApiResponse.Failure.JsonParsingException(it, "$anvatoPublishedUrl") }
 }
 
 internal class AnvatoVideoJsonParser(
@@ -40,21 +39,20 @@ internal class AnvatoVideoJsonParser(
         private val anvatoPublishedUrlParser: AnvatoPublishedUrlParser,
 ) {
 
-    fun getFirstPublishedUrl(jsFunction: String): Either<ApiResponse.Failure, AnvatoPublishedUrl> =
-            anvatoJsonJavascriptFunctionExtractor.getJSONFromJavascript(jsFunction)
-                    .flatMap {
-                        Either.catch {
-                            Json.decodeFromString<JsonObject>(it)["published_urls"]?.jsonArray?.get(0)?.jsonObject
-                        }.mapLeft(ApiResponse.Failure::JsonParsingException)
-                    }
-                    .flatMap { Either.fromNullable(it).mapLeft { ApiResponse.Failure.Stream.NoPublishedEmbedUrlFound } }
-                    .flatMap(anvatoPublishedUrlParser::parse)
+    suspend fun getFirstPublishedUrl(jsFunction: String): Either<ApiResponse.Failure, AnvatoPublishedUrl> =
+            either {
+                val json = anvatoJsonJavascriptFunctionExtractor.getJSONFromJavascript(jsFunction).bind()
+                val publishedUrl = Either.catch { Json.decodeFromString<JsonObject>(json)["published_urls"]?.jsonArray?.get(0)?.jsonObject }.mapLeft { ApiResponse.Failure.JsonParsingException(it, json) }.bind()
+                val nonNullablePublishedUrl = Either.fromNullable(publishedUrl).mapLeft { ApiResponse.Failure.Stream.NoPublishedEmbedUrlFound }.bind()
+                anvatoPublishedUrlParser.parse(nonNullablePublishedUrl).bind()
+            }
 }
 
 internal class AnvatoMasterM3U8JsonParser {
-    fun parse(json: String): Either<ApiResponse.Failure, M3U8Url> = Either.catch {
-        M3U8Url(Json.decodeFromString<JsonObject>(json)["master_m3u8"]!!.jsonPrimitive.content)
-    }.mapLeft(ApiResponse.Failure::JsonParsingException)
+    fun parse(json: String): Either<ApiResponse.Failure, M3U8Url> =
+            Either.catch {
+                M3U8Url(Json.decodeFromString<JsonObject>(json)["master_m3u8"]!!.jsonPrimitive.content)
+            }.mapLeft { ApiResponse.Failure.JsonParsingException(it, json) }
 }
 
 public sealed interface AnvatoRepo {

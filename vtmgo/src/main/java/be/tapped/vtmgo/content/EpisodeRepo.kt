@@ -21,8 +21,10 @@ import okhttp3.Request
 
 internal class JsonProgramParser {
     fun parse(json: String): Either<ApiResponse.Failure, Program> =
-            Either.catch<Program> { Json.decodeFromJsonElement(Json.decodeFromString<JsonObject>(json)["program"]!!.jsonObject) }
-                    .mapLeft(::JsonParsingException)
+            Either.catch<Program> {
+                val json1 = Json.decodeFromString<JsonObject>(json)["program"]!!.jsonObject
+                Json.decodeFromJsonElement(json1)
+            }.mapLeft { JsonParsingException(it, json) }
 }
 
 public sealed interface EpisodeRepo {

@@ -35,7 +35,9 @@ internal class JsonStoreFrontParser {
             Either.catch {
                 val rows = jsonParser.decodeFromString<JsonObject>(json)["rows"]!!.jsonArray
                 jsonParser.decodeFromJsonElement<List<StoreFront>>(rows)
-            }.mapLeft(::JsonParsingException)
+            }.mapLeft {
+                JsonParsingException(it, json)
+            }
 }
 
 public sealed interface StoreFrontRepo {

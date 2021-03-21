@@ -108,6 +108,10 @@ public class VTMApiE2ETest : FreeSpec() {
                                         is StoreFront.ContinueWatchingStoreFront -> storeFront.teasers.map(ContinueWatchingTeaser::target)
                                         is StoreFront.MyListStoreFront -> storeFront.teasers.map(MyListTeaser::target)
                                         is StoreFront.MarketingStoreFront -> listOf(storeFront.teaser.target)
+                                        is StoreFront.BannerStoreFront -> listOf(storeFront.teaser.target)
+                                        is StoreFront.TopBannerStoreFront -> listOf(storeFront.teaser.target)
+                                        is StoreFront.SwimlaneLandscapeStoreFront -> storeFront.teasers.map(DefaultSwimlaneTeaser::target)
+                                        is StoreFront.SwimlanePortraitStoreFront -> storeFront.teasers.map(DefaultSwimlaneTeaser::target)
                                         is StoreFront.ProfileSwitcherStoreFront -> emptyList()
                                     }
                                 }.filter { resp ->

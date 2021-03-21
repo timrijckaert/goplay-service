@@ -25,7 +25,7 @@ internal class JsonChannelParser {
     internal fun parse(json: String): Either<ApiResponse.Failure, List<LiveChannel>> = Either.catch {
         val jsonObject = Json.decodeFromString<JsonObject>(json)
         Json.decodeFromJsonElement<List<LiveChannel>>(jsonObject["channels"]!!.jsonArray)
-    }.mapLeft(::JsonParsingException)
+    }.mapLeft { JsonParsingException(it, json) }
 }
 
 public sealed interface ChannelRepo {

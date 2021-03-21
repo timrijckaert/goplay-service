@@ -25,7 +25,7 @@ internal class JsonStreamResponseParser {
             Either.catch {
                 val videoObject = Json.decodeFromString<JsonObject>(json)["video"]!!.jsonObject
                 Json.decodeFromJsonElement<StreamResponse>(videoObject)
-            }.mapLeft(Failure::JsonParsingException)
+            }.mapLeft { Failure.JsonParsingException(it, json) }
 }
 
 internal class StreamResponseParser(

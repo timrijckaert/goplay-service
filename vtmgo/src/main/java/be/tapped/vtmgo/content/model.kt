@@ -1,6 +1,7 @@
 package be.tapped.vtmgo.content
 
 import be.tapped.vtmgo.epg.LegalIcon
+import be.tapped.vtmgo.profile.Profile
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.*
@@ -20,6 +21,7 @@ internal object DrmSerializer : JsonTransformingSerializer<Drm>(Drm.serializer()
 }
 
 public enum class TargetType {
+    LIVE,
     MOVIE,
     PROGRAM,
     EPISODE,
@@ -33,8 +35,10 @@ public data class TargetResponse(
         private val url: String? = null,
         private val name: String? = null,
         private val programId: String? = null,
+        private val seoKey: String? = null,
 ) {
     public sealed class Target {
+        public data class Live(val id: String) : Target()
         public data class Movie(val id: String) : Target()
         public data class Program(val id: String) : Target()
         public data class Episode(val id: String) : Target()
@@ -43,6 +47,7 @@ public data class TargetResponse(
 
     val asTarget: Target
         get() = when (type) {
+            TargetType.LIVE -> Target.Live(id!!)
             TargetType.MOVIE -> Target.Movie(id!!)
             TargetType.PROGRAM -> Target.Program(id!!)
             TargetType.EPISODE -> Target.Episode(id!!)
@@ -93,7 +98,7 @@ public data class CarouselTeaser(
         val mobileImageUrl: String,
         val mobileCompressedImageUrl: String,
         val smartTvImageUrl: String,
-        val visualOnly: Boolean,
+        val visualOnly: Boolean? = null,
         val addedToMyList: Boolean,
         val overlay: List<Overlay>,
         val title: String,
@@ -140,7 +145,24 @@ public data class MarketingTeaser(
         val mobileImageUrl: String,
         val mobileCompressedImageUrl: String,
         val smartTvImageUrl: String,
-        val visualOnly: Boolean,
+        val visualOnly: Boolean? = null,
+        val addedToMyList: Boolean,
+        val overlay: List<Overlay>,
+        val showOverlay: Boolean,
+        val title: String,
+        val target: TargetResponse,
+)
+
+@Serializable
+public data class TopBannerTeaser(
+        val tagline: String? = null,
+        val bannerAltText: String? = null,
+        val largeImageUrl: String,
+        val mediumImageUrl: String,
+        val mobileImageUrl: String,
+        val mobileCompressedImageUrl: String,
+        val smartTvImageUrl: String,
+        val showOverlay: Boolean,
         val addedToMyList: Boolean,
         val overlay: List<Overlay>,
         val title: String,
@@ -156,12 +178,32 @@ public data class Metadata(
 )
 
 @Serializable
+public data class Branding(
+        val type: BrandingType,
+        val backgroundColor: String,
+        val backgroundImageUrl: String? = null,
+        val backgroundSmallImageUrl: String? = null,
+        val backgroundMediumImageUrl: String? = null,
+        val backgroundLargeImageUrl: String? = null,
+        val logoSmallImageUrl: String? = null,
+        val logoMediumImageUrl: String? = null,
+        val logoLargeImageUrl: String? = null,
+        val logoUrl: String? = null,
+        val logoAltText: String,
+) {
+    public enum class BrandingType {
+        SMALL,
+        LARGE
+    }
+}
+
+@Serializable
 public sealed class StoreFront {
     public abstract val rowType: String
     public abstract val id: String
     public abstract val metaData: Metadata
     public abstract val hasDetail: Boolean
-    public abstract val branding: String?
+    public abstract val branding: Branding?
 
     @Serializable
     @SerialName("CAROUSEL")
@@ -171,7 +213,7 @@ public sealed class StoreFront {
             override val metaData: Metadata,
             override val hasDetail: Boolean,
             override val rowType: String,
-            override val branding: String? = null,
+            override val branding: Branding? = null,
     ) : StoreFront()
 
     @Serializable
@@ -184,7 +226,7 @@ public sealed class StoreFront {
             val teasers: List<DefaultSwimlaneTeaser>,
             override val hasDetail: Boolean,
             override val rowType: String,
-            override val branding: String? = null,
+            override val branding: Branding? = null,
     ) : StoreFront()
 
     @Serializable
@@ -197,7 +239,8 @@ public sealed class StoreFront {
             val teasers: List<ContinueWatchingTeaser>,
             override val hasDetail: Boolean,
             override val rowType: String,
-            override val branding: String? = null,
+            override val branding: Branding? = null,
+            val brandingStyle: Branding? = null,
     ) : StoreFront()
 
     @Serializable
@@ -210,7 +253,8 @@ public sealed class StoreFront {
             val teasers: List<MyListTeaser>,
             override val hasDetail: Boolean,
             override val rowType: String,
-            override val branding: String? = null
+            override val branding: Branding? = null,
+            val brandingStyle: Branding? = null,
     ) : StoreFront()
 
     @Serializable
@@ -221,7 +265,18 @@ public sealed class StoreFront {
             override val metaData: Metadata,
             override val hasDetail: Boolean,
             override val rowType: String,
-            override val branding: String? = null,
+            override val branding: Branding? = null,
+    ) : StoreFront()
+
+    @Serializable
+    @SerialName("BANNER")
+    public data class BannerStoreFront(
+            override val id: String,
+            val teaser: MarketingTeaser,
+            override val metaData: Metadata,
+            override val hasDetail: Boolean,
+            override val rowType: String,
+            override val branding: Branding? = null,
     ) : StoreFront()
 
     @Serializable
@@ -233,7 +288,44 @@ public sealed class StoreFront {
             val profiles: List<JsonObject>,
             override val hasDetail: Boolean,
             override val rowType: String,
-            override val branding: String? = null,
+            override val branding: Branding? = null,
+    ) : StoreFront()
+
+    @Serializable
+    @SerialName("TOP_BANNER")
+    public data class TopBannerStoreFront(
+            override val id: String,
+            override val rowType: String,
+            val teaser: TopBannerTeaser,
+            override val metaData: Metadata,
+            override val hasDetail: Boolean,
+            override val branding: Branding? = null,
+    ) : StoreFront()
+
+    @Serializable
+    @SerialName("SWIMLANE_LANDSCAPE")
+    public data class SwimlaneLandscapeStoreFront(
+            override val id: String,
+            override val metaData: Metadata,
+            val title: String,
+            override val rowType: String,
+            val teasers: List<DefaultSwimlaneTeaser>,
+            override val branding: Branding? = null,
+            val brandingStyle: Branding? = null,
+            override val hasDetail: Boolean,
+    ) : StoreFront()
+
+    @Serializable
+    @SerialName("SWIMLANE_PORTRAIT")
+    public data class SwimlanePortraitStoreFront(
+            override val id: String,
+            override val metaData: Metadata,
+            val title: String,
+            override val rowType: String,
+            val teasers: List<DefaultSwimlaneTeaser>,
+            override val branding: Branding? = null,
+            val brandingStyle: Branding? = null,
+            override val hasDetail: Boolean,
     ) : StoreFront()
 }
 
@@ -409,9 +501,9 @@ public data class Episode(
         val name: String,
         val description: String? = null,
         val index: Int,
-        val bigPhotoUrl: String,
-        val mediumPhotoUrl: String,
-        val smallPhotoUrl: String,
+        val bigPhotoUrl: String? = null,
+        val mediumPhotoUrl: String? = null,
+        val smallPhotoUrl: String? = null,
         val userProgressPercentage: Int,
         val playerPositionSeconds: Int,
         val durationSeconds: Int? = null,
@@ -426,9 +518,6 @@ public data class Episode(
     init {
         require(id.isNotEmpty()) { "id is not empty" }
         require(name.isNotEmpty()) { "name is not empty" }
-        require(bigPhotoUrl.isNotEmpty()) { "bigPhotoUrl is not empty" }
-        require(mediumPhotoUrl.isNotEmpty()) { "mediumPhotoUrl is not empty" }
-        require(smallPhotoUrl.isNotEmpty()) { "smallPhotoUrl is not empty" }
     }
 }
 
@@ -472,3 +561,11 @@ public data class Program(
         require(seasons.isNotEmpty()) { "seasons is not empty" }
     }
 }
+
+@Serializable
+public data class Favorite(
+        val hashedAccountId: String,
+        val profiles: List<Profile>,
+        val abroad: Boolean,
+        val teasers: List<MyListTeaser>
+)

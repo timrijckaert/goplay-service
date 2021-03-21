@@ -24,12 +24,12 @@ public data class Color(
 public data class Profile(
         val id: String,
         val name: String,
-        val gender: Gender,
-        val birthDate: String,
-        val deletable: Boolean? = null,
-        val mainProfile: Boolean,
         val color: Color,
         val product: VTMGOProduct,
+        val gender: Gender? = null,
+        val birthDate: String? = null,
+        val deletable: Boolean? = null,
+        val mainProfile: Boolean? = null,
 )
 
 public data class TokenWrapper(val jwt: JWT)

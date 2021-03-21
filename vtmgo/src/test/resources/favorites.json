@@ -1,13 +1,28 @@
 {
-  "id": "0c8b713d-0829-492b-92f3-2930fd2ee3f4",
-  "metaData": {
-    "provider": "APP",
-    "requestId": "f1ffa5b7-b9d8-49b0-b799-3a48be9f96ab",
-    "routingGroup": "0",
-    "abGroup": "e3363fc5f56171d0e843367040259e44"
-  },
-  "title": "Mijn Lijst",
-  "rowType": "MY_LIST",
+  "hashedAccountId": "3aa91e074d0e43a9f9d80fad7ca47628",
+  "profiles": [
+    {
+      "id": "1e033722-2350-413e-b374-3440897f38eb",
+      "name": "Tim",
+      "color": {
+        "id": 1005,
+        "start": "#FFB24D",
+        "end": "#FFDF42"
+      },
+      "product": "VTM_GO"
+    },
+    {
+      "id": "fc394de3-d6ea-4f66-80af-300beea37a98",
+      "name": "Some Kid",
+      "color": {
+        "id": 1001,
+        "start": "#64d8e3",
+        "end": "#094aa9"
+      },
+      "product": "VTM_GO_KIDS"
+    }
+  ],
+  "abroad": false,
   "teasers": [
     {
       "title": "Onderzoeksrechters",
@@ -17,7 +32,6 @@
         "name": "Onderzoeksrechters"
       },
       "imageUrl": "https://images2.persgroep.net/rcs/0b4B8xLHpuE_iW3-gidaImhj_l8/diocontent/167782828/_fitwidth/426?appId=038a353bad43ac27fd436dc5419c256b&quality=0.8",
-      "geoBlocked": false,
       "blockedFor": null
     },
     {
@@ -28,7 +42,16 @@
         "name": "Hotel Inspector"
       },
       "imageUrl": "https://images4.persgroep.net/rcs/PH0kQqd7nfuOxC0IPNXDGXH9YiY/diocontent/175274910/_fitwidth/426?appId=038a353bad43ac27fd436dc5419c256b&quality=0.8",
-      "geoBlocked": false,
+      "blockedFor": null
+    },
+    {
+      "title": "US Kitchen Nightmares",
+      "target": {
+        "type": "PROGRAM",
+        "id": "7b6d59e3-8482-42bc-a6b3-6ee64175d9f4",
+        "name": "US Kitchen Nightmares"
+      },
+      "imageUrl": "https://images1.persgroep.net/rcs/wIxwdIXqsk36NA6VZX57YnOppkY/diocontent/166271556/_fitwidth/426?appId=038a353bad43ac27fd436dc5419c256b&quality=0.8",
       "blockedFor": null
     },
     {
@@ -39,7 +62,6 @@
         "name": "Demoustier"
       },
       "imageUrl": "https://images1.persgroep.net/rcs/x4UTNhxKqiBJs6gFg1ffII4VmL8/diocontent/180609956/_fitwidth/426?appId=038a353bad43ac27fd436dc5419c256b&quality=0.8",
-      "geoBlocked": false,
       "blockedFor": null
     },
     {
@@ -50,7 +72,6 @@
         "name": "RIP 2020"
       },
       "imageUrl": "https://images2.persgroep.net/rcs/qPBG_ucregGt2-PmvUK_8nxtHc4/diocontent/180093499/_fitwidth/426?appId=038a353bad43ac27fd436dc5419c256b&quality=0.8",
-      "geoBlocked": false,
       "blockedFor": null
     },
     {
@@ -61,7 +82,6 @@
         "name": "Behind The Mask"
       },
       "imageUrl": "https://images0.persgroep.net/rcs/4c6wy6CXpON3VPRsaN1LMEeIHyo/diocontent/176990588/_fitwidth/426?appId=038a353bad43ac27fd436dc5419c256b&quality=0.8",
-      "geoBlocked": false,
       "blockedFor": null
     },
     {
@@ -72,7 +92,6 @@
         "name": "The Masked Singer"
       },
       "imageUrl": "https://images2.persgroep.net/rcs/oSFl3sVTPxZpWTO3D5wRmeIzowg/diocontent/176354917/_fitwidth/426?appId=038a353bad43ac27fd436dc5419c256b&quality=0.8",
-      "geoBlocked": false,
       "blockedFor": null
     },
     {
@@ -83,7 +102,6 @@
         "name": "Veel Tamtam"
       },
       "imageUrl": "https://images2.persgroep.net/rcs/9TX9VJwxuZl0BFMgdJqhWWoNjcg/diocontent/175604149/_fitwidth/426?appId=038a353bad43ac27fd436dc5419c256b&quality=0.8",
-      "geoBlocked": false,
       "blockedFor": null
     },
     {
@@ -94,7 +112,6 @@
         "name": "Jonge Wolven"
       },
       "imageUrl": "https://images1.persgroep.net/rcs/9mfD2UzsvWnK1ciXfsb7DoN6g_E/diocontent/175536838/_fitwidth/426?appId=038a353bad43ac27fd436dc5419c256b&quality=0.8",
-      "geoBlocked": false,
       "blockedFor": null
     },
     {
@@ -105,7 +122,6 @@
         "name": "De 25"
       },
       "imageUrl": "https://images1.persgroep.net/rcs/ItK8UK71q22IFNW5P_a_vcafheI/diocontent/168851212/_fitwidth/426?appId=038a353bad43ac27fd436dc5419c256b&quality=0.8",
-      "geoBlocked": false,
       "blockedFor": null
     },
     {
@@ -116,7 +132,6 @@
         "name": "Dat Belooft voor Later"
       },
       "imageUrl": "https://images4.persgroep.net/rcs/Q9SCEDmE9ba-Hk_K4mB7169l96E/diocontent/168792482/_fitwidth/426?appId=038a353bad43ac27fd436dc5419c256b&quality=0.8",
-      "geoBlocked": false,
       "blockedFor": null
     },
     {
@@ -127,7 +142,6 @@
         "name": "Mijn Keuken Mijn Restaurant"
       },
       "imageUrl": "https://images2.persgroep.net/rcs/J7CKGBWAzJXrz5nC-a85U-hTwtE/diocontent/175271106/_fitwidth/426?appId=038a353bad43ac27fd436dc5419c256b&quality=0.8",
-      "geoBlocked": false,
       "blockedFor": null
     },
     {
@@ -138,7 +152,6 @@
         "name": "Holland - België"
       },
       "imageUrl": "https://images1.persgroep.net/rcs/u3FgElw_VeAHjQvFcexvkdBVDlA/diocontent/166866294/_fitwidth/426?appId=038a353bad43ac27fd436dc5419c256b&quality=0.8",
-      "geoBlocked": false,
       "blockedFor": null
     },
     {
@@ -149,7 +162,6 @@
         "name": "Groeten uit"
       },
       "imageUrl": "https://images2.persgroep.net/rcs/_Tlgx8KQli-wax943XIrfjMeR-8/diocontent/181649537/_fitwidth/426?appId=038a353bad43ac27fd436dc5419c256b&quality=0.8",
-      "geoBlocked": false,
       "blockedFor": null
     },
     {
@@ -160,7 +172,6 @@
         "name": "Dossier X"
       },
       "imageUrl": "https://images0.persgroep.net/rcs/z8irCb6ohdJ0VGzCcE2e-4mvX4U/diocontent/180609964/_fitwidth/426?appId=038a353bad43ac27fd436dc5419c256b&quality=0.8",
-      "geoBlocked": false,
       "blockedFor": null
     },
     {
@@ -171,7 +182,16 @@
         "name": "Make Belgium Great Again"
       },
       "imageUrl": "https://images1.persgroep.net/rcs/UgCTBjj4zymsdOiJPXKe-kAkMZI/diocontent/165891602/_fitwidth/426?appId=038a353bad43ac27fd436dc5419c256b&quality=0.8",
-      "geoBlocked": false,
+      "blockedFor": null
+    },
+    {
+      "title": "Faroek",
+      "target": {
+        "type": "PROGRAM",
+        "id": "f9bd9dcc-9562-44da-9c84-75c54b8c4ca5",
+        "name": "Faroek"
+      },
+      "imageUrl": "https://images2.persgroep.net/rcs/djAT5On3-CcVSD-9MwQi7Gj34vM/diocontent/165353373/_fitwidth/426?appId=038a353bad43ac27fd436dc5419c256b&quality=0.8",
       "blockedFor": null
     },
     {
@@ -182,18 +202,6 @@
         "name": "Code van Coppens"
       },
       "imageUrl": "https://images1.persgroep.net/rcs/ZUZXBWhuYmvFkbv29TKbZ5tgNOg/diocontent/175608804/_fitwidth/426?appId=038a353bad43ac27fd436dc5419c256b&quality=0.8",
-      "geoBlocked": false,
-      "blockedFor": null
-    },
-    {
-      "title": "Steenrijk, straatarm",
-      "target": {
-        "type": "PROGRAM",
-        "id": "ca9b4545-65ba-44cb-a7b7-f00ecbcaae06",
-        "name": "Steenrijk, straatarm"
-      },
-      "imageUrl": "https://images0.persgroep.net/rcs/al1MpG1WcgqFgNfmw5YueDuEJzA/diocontent/180848537/_fitwidth/426?appId=038a353bad43ac27fd436dc5419c256b&quality=0.8",
-      "geoBlocked": false,
       "blockedFor": null
     },
     {
@@ -204,7 +212,6 @@
         "name": "Ontvoerd"
       },
       "imageUrl": "https://images4.persgroep.net/rcs/1cZgWCrrTPCDyroynV4PfFcdqaI/diocontent/178033312/_fitwidth/426?appId=038a353bad43ac27fd436dc5419c256b&quality=0.8",
-      "geoBlocked": false,
       "blockedFor": null
     },
     {
@@ -215,7 +222,6 @@
         "name": "De Luchtpolitie"
       },
       "imageUrl": "https://images2.persgroep.net/rcs/XRSffzAKn9Okfx_-x4TU5fl7FLg/diocontent/180610077/_fitwidth/426?appId=038a353bad43ac27fd436dc5419c256b&quality=0.8",
-      "geoBlocked": false,
       "blockedFor": null
     },
     {
@@ -226,7 +232,6 @@
         "name": "Wat een Jaar!"
       },
       "imageUrl": "https://images2.persgroep.net/rcs/TZ4c0GkesqBRtk9Lsfo0Qs3bg2U/diocontent/180044393/_fitwidth/426?appId=038a353bad43ac27fd436dc5419c256b&quality=0.8",
-      "geoBlocked": false,
       "blockedFor": null
     },
     {
@@ -237,7 +242,6 @@
         "name": "Telefacts"
       },
       "imageUrl": "https://images2.persgroep.net/rcs/v1Qn2hzajS0zgvfnY7m5W2HJ3vg/diocontent/175604800/_fitwidth/426?appId=038a353bad43ac27fd436dc5419c256b&quality=0.8",
-      "geoBlocked": false,
       "blockedFor": null
     },
     {
@@ -248,10 +252,7 @@
         "name": "Beste Kijkers"
       },
       "imageUrl": "https://images4.persgroep.net/rcs/KEojbu53X7I0GUC-XSl0ePpv8kw/diocontent/179690709/_fitwidth/426?appId=038a353bad43ac27fd436dc5419c256b&quality=0.8",
-      "geoBlocked": false,
       "blockedFor": null
     }
-  ],
-  "branding": null,
-  "hasDetail": true
+  ]
 }

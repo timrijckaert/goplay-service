@@ -1,6 +1,5 @@
 package be.tapped.vtmgo
 
-import arrow.core.NonEmptyList
 import be.tapped.vtmgo.content.*
 import be.tapped.vtmgo.epg.Epg
 import be.tapped.vtmgo.profile.Profile
@@ -15,7 +14,7 @@ public sealed class ApiResponse {
             public data class LiveChannels(val channels: List<LiveChannel>) : Content()
             public data class StoreFrontRows(val rows: List<StoreFront>) : Content()
             public data class Programs(val program: Program) : Content()
-            public data class Favorites(val favorites: StoreFront.MyListStoreFront?) : Content()
+            public data class Favorites(val favorite: Favorite?) : Content()
             public data class Search(val search: List<SearchResultResponse>) : Content()
         }
 
@@ -35,7 +34,7 @@ public sealed class ApiResponse {
 
     public sealed class Failure : ApiResponse() {
         public data class NetworkFailure(val responseCode: Int, val request: Request) : Failure()
-        public data class JsonParsingException(val throwable: Throwable) : Failure()
+        public data class JsonParsingException(val throwable: Throwable, val json: String) : Failure()
         public object EmptyJson : Failure()
 
         public sealed class Authentication : Failure() {

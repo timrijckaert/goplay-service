@@ -22,7 +22,7 @@ import okhttp3.Request
 internal class JsonSearchResultResponseParser {
     fun parse(json: String): Either<ApiResponse.Failure, List<SearchResultResponse>> = Either.catch {
         Json.decodeFromJsonElement<List<SearchResultResponse>>(Json.decodeFromString<JsonObject>(json)["results"]!!.jsonArray)
-    }.mapLeft(::JsonParsingException)
+    }.mapLeft { JsonParsingException(it, json) }
 }
 
 public sealed interface SearchRepo {

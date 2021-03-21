@@ -25,7 +25,7 @@ internal class JsonPagedTeaserContentParser {
     fun parse(json: String): Either<ApiResponse.Failure, List<PagedTeaserContent>> = Either.catch {
         val pagedTeasers = Json.decodeFromString<JsonObject>(json)["pagedTeasers"]!!.jsonObject["content"]!!
         Json.decodeFromJsonElement<List<PagedTeaserContent>>(pagedTeasers)
-    }.mapLeft(::JsonParsingException)
+    }.mapLeft { JsonParsingException(it, json) }
 }
 
 public sealed interface CatalogRepo {

@@ -18,7 +18,7 @@ import java.util.*
 
 public class JsonEpgParser {
     public fun parse(json: String): Either<ApiResponse.Failure, Epg> =
-            Either.catch { Json.decodeFromString<Epg>(json) }.mapLeft(::JsonParsingException)
+            Either.catch { Json.decodeFromString<Epg>(json) }.mapLeft { JsonParsingException(it, json) }
 }
 
 public sealed interface EpgRepo {

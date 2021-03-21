@@ -20,7 +20,7 @@ import okhttp3.Request
 
 internal class JsonCategoryParser {
     fun parse(json: String): Either<ApiResponse.Failure, CategoryResponse> =
-            Either.catch<CategoryResponse> { Json.decodeFromString(json) }.mapLeft(::JsonParsingException)
+            Either.catch<CategoryResponse> { Json.decodeFromString(json) }.mapLeft { JsonParsingException(it, json) }
 }
 
 public sealed interface CategoryRepo {

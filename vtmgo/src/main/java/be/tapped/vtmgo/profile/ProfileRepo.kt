@@ -18,7 +18,7 @@ import okhttp3.Request
 
 public class JsonProfileParser {
     public fun parse(json: String): Either<ApiResponse.Failure, List<Profile>> =
-            Either.catch { Json.decodeFromString<List<Profile>>(json) }.mapLeft(::JsonParsingException)
+            Either.catch { Json.decodeFromString<List<Profile>>(json) }.mapLeft { JsonParsingException(it, json) }
 }
 
 public sealed interface ProfileRepo {
