@@ -39,10 +39,6 @@ public sealed class ApiResponse {
         public object EmptyJson : Failure()
 
         public sealed class Authentication : Failure() {
-            public data class MissingCookieValues(val cookieValues: NonEmptyList<String>) : Authentication()
-            public object NoAuthorizeResponse : Authentication()
-            public object NoCodeFound : Authentication()
-            public object NoStateFound : Authentication()
             public object MissingIdToken : Authentication()
         }
 
