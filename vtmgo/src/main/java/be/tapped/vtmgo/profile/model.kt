@@ -32,10 +32,6 @@ public data class Profile(
         val product: VTMGOProduct,
 )
 
-public data class TokenWrapper(
-        val jwt: JWT,
-        val expiry: Expiry,
-)
+public data class TokenWrapper(val jwt: JWT)
 
 public inline class JWT(public val token: String)
-public inline class Expiry(public val dateInMillis: Long)

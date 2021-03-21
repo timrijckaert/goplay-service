@@ -1,21 +1,14 @@
 package be.tapped.vtmgo.profile
 
 import arrow.core.Either
-import arrow.core.ValidatedNel
 import arrow.core.computations.either
 import arrow.core.flatMap
-import arrow.core.invalidNel
-import arrow.core.left
-import arrow.core.nonEmptyListOf
 import arrow.core.right
-import arrow.core.rightIfNotNull
-import arrow.core.validNel
-import arrow.core.zip
-import be.tapped.common.internal.ReadOnlyCookieJar
 import be.tapped.common.internal.executeAsync
 import be.tapped.common.internal.jsonMediaType
 import be.tapped.vtmgo.ApiResponse
 import be.tapped.vtmgo.ApiResponse.Failure.Authentication
+import be.tapped.vtmgo.common.HeaderBuilder
 import be.tapped.vtmgo.common.safeBodyString
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -23,16 +16,13 @@ import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.put
-import okhttp3.Cookie
 import okhttp3.FormBody
 import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
-import okhttp3.Response
-import okhttp3.ResponseBody
 
 public sealed interface JWTTokenRepo {
     public suspend fun login(
@@ -43,13 +33,21 @@ public sealed interface JWTTokenRepo {
 
 private inline class IdToken(val token: String)
 
-internal class HttpAndroidJWTTokenRepo(private val client: OkHttpClient) : JWTTokenRepo {
+internal class HttpAndroidJWTTokenRepo(
+        private val client: OkHttpClient,
+        private val headerBuilder: HeaderBuilder,
+        private val jwtTokenJsonParser: JWTTokenJsonParser = JWTTokenJsonParser()
+) : JWTTokenRepo {
+
+    private val idTokenRegex by lazy { Regex("id_token=([^&]*)?") }
+
     override suspend fun login(userName: String, password: String): Either<ApiResponse.Failure, ApiResponse.Success.Authentication.Token> =
             either {
                 withContext(Dispatchers.IO) {
                     // Start login flow
                     client.executeAsync(
                             Request.Builder()
+                                    .headers(headerBuilder.defaultHeaders)
                                     .url(
                                             HttpUrl.Builder()
                                                     .scheme("https")
@@ -71,6 +69,7 @@ internal class HttpAndroidJWTTokenRepo(private val client: OkHttpClient) : JWTTo
                     // Send login credentials
                     client.executeAsync(
                             Request.Builder()
+                                    .headers(headerBuilder.defaultHeaders)
                                     .url(
                                             HttpUrl.Builder()
                                                     .scheme("https")
@@ -92,6 +91,7 @@ internal class HttpAndroidJWTTokenRepo(private val client: OkHttpClient) : JWTTo
                     // We are redirected and our id_token is in the fragment of the redirected url
                     val idToken = client.executeAsync(
                             Request.Builder()
+                                    .headers(headerBuilder.defaultHeaders)
                                     .url(
                                             HttpUrl.Builder()
                                                     .scheme("https")
@@ -107,6 +107,7 @@ internal class HttpAndroidJWTTokenRepo(private val client: OkHttpClient) : JWTTo
                     // Okay, final stage. We now need to authorize our id_token so we get a valid JWT.
                     val json = !client.executeAsync(
                             Request.Builder()
+                                    .headers(headerBuilder.defaultHeaders)
                                     .url(
                                             HttpUrl.Builder()
                                                     .scheme("https")
@@ -121,23 +122,25 @@ internal class HttpAndroidJWTTokenRepo(private val client: OkHttpClient) : JWTTo
                                                     put("clientId", "vtm-go-android")
                                                     put("pipIdToken", idToken.token)
                                                 }
-                                            }".toRequestBody()
+                                            }".toRequestBody(jsonMediaType)
                                     )
                                     .build()
                     ).safeBodyString()
 
-                    val jwtToken = Either.catch { Json.decodeFromString<JsonObject>(json)["jsonWebToken"] }.mapLeft(ApiResponse.Failure::JsonParsingException)
-                    println(jwtToken)
-
-                    TODO()
+                    ApiResponse.Success.Authentication.Token(jwtTokenJsonParser.parse(json).bind())
                 }
             }
-
-    private val idTokenRegex by lazy { Regex("id_token=([^&]*)?") }
 
     private val String?.idTokenFromFragment: Either<Authentication.MissingIdToken, IdToken>
         get() =
             Either.fromNullable(this)
                     .flatMap { Either.fromNullable(idTokenRegex.find(it)?.groupValues?.get(1)).map(::IdToken) }
                     .mapLeft { Authentication.MissingIdToken }
+}
+
+internal class JWTTokenJsonParser {
+    fun parse(json: String): Either<ApiResponse.Failure, TokenWrapper> =
+            Either
+                    .catch { TokenWrapper(JWT(Json.decodeFromString<JsonObject>(json)["jsonWebToken"]!!.jsonPrimitive.content)) }
+                    .mapLeft(ApiResponse.Failure::JsonParsingException)
 }
