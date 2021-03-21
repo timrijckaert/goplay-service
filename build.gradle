@@ -1,12 +1,14 @@
 buildscript {
     repositories {
         google()
+        gradlePluginPortal()
         mavenCentral()
         jcenter()
     }
 
     dependencies {
         classpath Plugins.kotlinGradle
+        classpath Plugins.versions
     }
 }
 
@@ -23,8 +25,17 @@ allprojects {
 
     apply plugin: 'java-library'
     apply plugin: 'kotlin'
+    apply plugin: "com.github.ben-manes.versions"
     apply from: "${rootDir}/credentials.gradle"
-    //apply plugin: 'kotlin-kapt'
+
+    tasks.named("dependencyUpdates").configure {
+        rejectVersionIf {
+            def version = it.candidate.version
+            def stableKeyword = ['RELEASE', 'FINAL', 'GA'].any { version.toUpperCase().contains(it) }
+            def regex = /^[0-9,.v-]+(-r)?$/
+            return !stableKeyword && !(version ==~ regex)
+        }
+    }
 
     java {
         sourceCompatibility = JavaVersion.VERSION_1_8

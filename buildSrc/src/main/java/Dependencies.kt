@@ -1,16 +1,16 @@
 object Versions {
-    const val kotlinVersion = "1.4.30"
+    const val kotlinVersion = "1.4.31"
 }
 
 object Dependencies {
-    const val kotlinXSerialization = "org.jetbrains.kotlinx:kotlinx-serialization-json:1.1.0-RC"
+    const val kotlinXSerialization = "org.jetbrains.kotlinx:kotlinx-serialization-json:1.1.0"
 
     const val kotlinStdLib = "org.jetbrains.kotlin:kotlin-stdlib:${Versions.kotlinVersion}"
 
-    const val awsBOM = "software.amazon.awssdk:bom:2.15.23"
+    const val awsBOM = "software.amazon.awssdk:bom:2.16.23"
     const val awsCognitoProvider = "software.amazon.awssdk:cognitoidentityprovider"
 
-    const val okHttp3 = "com.squareup.okhttp3:okhttp:4.9.0"
+    const val okHttp3 = "com.squareup.okhttp3:okhttp:4.9.1"
 
     private const val arrowVersion = "0.12.0-SNAPSHOT"
     const val arrowCore = "io.arrow-kt:arrow-core:${arrowVersion}"
@@ -21,16 +21,17 @@ object Dependencies {
 
     const val jsoup = "org.jsoup:jsoup:1.13.1"
 
-    private const val coroutineVersion = "1.4.1"
+    private const val coroutineVersion = "1.4.3"
     const val coroutinesCore = "org.jetbrains.kotlinx:kotlinx-coroutines-core:${coroutineVersion}"
 }
 
 object Plugins {
     const val kotlinGradle = "org.jetbrains.kotlin:kotlin-gradle-plugin:${Versions.kotlinVersion}"
+    const val versions = "com.github.ben-manes:gradle-versions-plugin:0.38.0"
 }
 
 object Testing {
-    private const val kotestVersion = "4.3.1"
+    private const val kotestVersion = "4.4.3"
 
     private const val kotestRunner = "io.kotest:kotest-runner-junit5:${kotestVersion}"
     private const val kotestAssertionsCore = "io.kotest:kotest-assertions-core:${kotestVersion}"
