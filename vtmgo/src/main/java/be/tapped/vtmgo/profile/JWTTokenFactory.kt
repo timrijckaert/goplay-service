@@ -1,17 +1,27 @@
 package be.tapped.vtmgo.profile
 
-import arrow.core.*
+import arrow.core.Either
+import arrow.core.ValidatedNel
 import arrow.core.computations.either
-import arrow.core.extensions.nonemptylist.semigroup.semigroup
-import arrow.core.extensions.validated.applicative.applicative
-import arrow.core.extensions.validated.bifunctor.mapLeft
+import arrow.core.invalidNel
+import arrow.core.left
+import arrow.core.nonEmptyListOf
+import arrow.core.right
+import arrow.core.rightIfNotNull
+import arrow.core.validNel
+import arrow.core.zip
 import be.tapped.common.internal.ReadOnlyCookieJar
 import be.tapped.common.internal.executeAsync
 import be.tapped.vtmgo.ApiResponse
 import be.tapped.vtmgo.ApiResponse.Failure.Authentication
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import okhttp3.*
+import okhttp3.Cookie
+import okhttp3.FormBody
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.Response
+import okhttp3.ResponseBody
 
 public sealed interface JWTTokenRepo {
     public suspend fun login(
@@ -48,8 +58,7 @@ internal class HttpJWTTokenRepo(
     ): Either<ApiResponse.Failure, ApiResponse.Success.Authentication.Token> = either {
         !initLogin()
 
-        !Validated.applicative(NonEmptyList.semigroup<String>()).tupledN(authState, debugId, ticket).mapLeft(Authentication::MissingCookieValues)
-                .toEither()
+        !authState.zip(debugId, ticket, ::Triple).mapLeft(Authentication::MissingCookieValues).toEither()
 
         !webLogin(userName, password)
 
@@ -118,7 +127,7 @@ internal class HttpJWTTokenRepo(
 
     private fun jwt(): Either<Authentication, TokenWrapper> =
             vtmCookieJar[COOKIE_LFVP_AUTH]?.let { TokenWrapper(JWT(it.value), Expiry(it.expiresAt)) }
-                    .rightIfNotNull { Authentication.MissingCookieValues(NonEmptyList(COOKIE_LFVP_AUTH)) }
+                    .rightIfNotNull { Authentication.MissingCookieValues(nonEmptyListOf(COOKIE_LFVP_AUTH)) }
 
     private fun validateCookie(cookieName: String): ValidatedNel<String, Cookie> = vtmCookieJar[cookieName]?.validNel()
             ?: cookieName.invalidNel()
