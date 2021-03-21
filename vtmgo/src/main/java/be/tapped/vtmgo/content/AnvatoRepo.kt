@@ -40,13 +40,15 @@ internal class AnvatoVideoJsonParser(
         private val anvatoPublishedUrlParser: AnvatoPublishedUrlParser,
 ) {
 
-    suspend fun getFirstPublishedUrl(jsFunction: String): Either<ApiResponse.Failure, AnvatoPublishedUrl> =
-            anvatoJsonJavascriptFunctionExtractor.getJSONFromJavascript(jsFunction).flatMap {
-                Either.catch {
-                    Json.decodeFromString<JsonObject>(it)["published_urls"]?.jsonArray?.get(0)?.jsonObject
-                }.mapLeft(ApiResponse.Failure::JsonParsingException)
-            }.flatMap { Either.fromNullable(it).mapLeft { ApiResponse.Failure.Stream.NoPublishedEmbedUrlFound } }
-                    .flatMap { anvatoPublishedUrlParser.parse(it) }
+    fun getFirstPublishedUrl(jsFunction: String): Either<ApiResponse.Failure, AnvatoPublishedUrl> =
+            anvatoJsonJavascriptFunctionExtractor.getJSONFromJavascript(jsFunction)
+                    .flatMap {
+                        Either.catch {
+                            Json.decodeFromString<JsonObject>(it)["published_urls"]?.jsonArray?.get(0)?.jsonObject
+                        }.mapLeft(ApiResponse.Failure::JsonParsingException)
+                    }
+                    .flatMap { Either.fromNullable(it).mapLeft { ApiResponse.Failure.Stream.NoPublishedEmbedUrlFound } }
+                    .flatMap(anvatoPublishedUrlParser::parse)
 }
 
 internal class AnvatoMasterM3U8JsonParser {

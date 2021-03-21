@@ -55,7 +55,7 @@ public data class PagedTeaserContent(
         val title: String,
         val target: TargetResponse,
         val imageUrl: String? = null,
-        val geoBlocked: Boolean,
+        val geoBlocked: Boolean? = null,
         val blockedFor: String? = null,
 )
 
@@ -105,7 +105,7 @@ public data class DefaultSwimlaneTeaser(
         val title: String,
         val target: TargetResponse,
         val imageUrl: String? = null,
-        val geoBlocked: Boolean,
+        val geoBlocked: Boolean? = null,
         val blockedFor: String? = null,
 )
 
@@ -118,7 +118,7 @@ public data class ContinueWatchingTeaser(
         val userProgressPercentage: Int,
         val playerPositionSeconds: Int,
         val remainingDaysAvailable: Long,
-        val geoBlocked: Boolean,
+        val geoBlocked: Boolean? = null,
         val blockedFor: String? = null,
 )
 
@@ -127,7 +127,7 @@ public data class MyListTeaser(
         val title: String,
         val target: TargetResponse,
         val imageUrl: String,
-        val geoBlocked: Boolean,
+        val geoBlocked: Boolean? = null,
         val blockedFor: String? = null,
 )
 
@@ -301,7 +301,7 @@ public data class PosterImage(val height: Int, val url: String)
 @Serializable
 public data class StreamMetadata(
         val id: String,
-        val geoBlocked: Boolean,
+        val geoBlocked: Boolean? = null,
         val availability: Int? = null,
         val assetType: String,
         val title: String,
@@ -418,8 +418,8 @@ public data class Episode(
         val remainingDaysAvailable: Int,
         val broadcastTimestamp: String? = null,
         val doneWatching: Boolean,
-        val geoBlocked: Boolean,
-        val ageBlocked: Boolean,
+        val geoBlocked: Boolean? = null,
+        val ageBlocked: Boolean? = null,
         val blockedFor: String? = null,
         val downloadAllowed: Boolean,
 ) {
@@ -455,14 +455,15 @@ public data class Program(
         val watching: Boolean,
         val channelLogoUrl: String? = null,
         val seasons: List<Season>,
-        val geoBlocked: Boolean,
+        val geoBlocked: Boolean? = null,
         val blockedFor: String? = null,
         val kidsContent: Boolean,
         val ratingIcons: List<JsonElement>? = null,
         val legalIcons: List<LegalIcon>,
         val meta: List<JsonElement>? = null,
         val addedToMyList: Boolean,
-        val productionYear: String? = null,
+        val productionYear: Int? = null,
+        val linkedContent: List<JsonElement>? = null
 ) {
     init {
         require(id.isNotEmpty()) { "id is not empty" }

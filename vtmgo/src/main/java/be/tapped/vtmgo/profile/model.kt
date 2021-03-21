@@ -26,7 +26,7 @@ public data class Profile(
         val name: String,
         val gender: Gender,
         val birthDate: String,
-        val deletable: Boolean,
+        val deletable: Boolean? = null,
         val mainProfile: Boolean,
         val color: Color,
         val product: VTMGOProduct,

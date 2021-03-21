@@ -21,10 +21,11 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 
 internal class JsonStreamResponseParser {
-    fun parse(json: String): Either<Failure, StreamResponse> = Either.catch {
-        val videoObject = Json.decodeFromString<JsonObject>(json)["video"]!!.jsonObject
-        Json.decodeFromJsonElement<StreamResponse>(videoObject)
-    }.mapLeft(Failure::JsonParsingException)
+    fun parse(json: String): Either<Failure, StreamResponse> =
+            Either.catch {
+                val videoObject = Json.decodeFromString<JsonObject>(json)["video"]!!.jsonObject
+                Json.decodeFromJsonElement<StreamResponse>(videoObject)
+            }.mapLeft(Failure::JsonParsingException)
 }
 
 internal class StreamResponseParser(
