@@ -8,7 +8,11 @@ import be.tapped.common.internal.executeAsync
 import be.tapped.goplay.ApiResponse.Failure
 import be.tapped.goplay.ApiResponse.Failure.HTML
 import be.tapped.goplay.ApiResponse.Success
-import be.tapped.goplay.common.*
+import be.tapped.goplay.common.safeAttr
+import be.tapped.goplay.common.safeBodyString
+import be.tapped.goplay.common.safeSelect
+import be.tapped.goplay.common.safeSelectFirst
+import be.tapped.goplay.common.siteUrl
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.decodeFromString
@@ -24,9 +28,9 @@ import org.jsoup.nodes.Document
 
 internal class HtmlProgramParser(private val jsoupParser: JsoupParser) {
     internal suspend fun parse(html: String): Either<HTML, List<Program>> = either {
-        val htmlPrograms = !jsoupParser.parse(html).safeSelect("a[data-program]")
+        val htmlPrograms = jsoupParser.parse(html).safeSelect("a[data-program]").bind()
         // The Program detail is found within the DOM as a JSON String
-        val jsons = htmlPrograms.map { !it.safeAttr("data-program").toEither() }
+        val jsons = htmlPrograms.map { it.safeAttr("data-program").toEither().bind() }
         jsons.map {
             Json {
                 isLenient = true
@@ -99,8 +103,8 @@ internal class HttpProgramRepo(
     // curl -X GET "https://www.goplay.be/programmas"
     override suspend fun fetchPrograms(): Either<Failure, Success.Content.Programs> = withContext(Dispatchers.IO) {
         either {
-            val html = !client.executeAsync(Request.Builder().get().url("$siteUrl/programmas").build()).safeBodyString()
-            val programs = !htmlProgramParser.parse(html)
+            val html = client.executeAsync(Request.Builder().get().url("$siteUrl/programmas").build()).safeBodyString().bind()
+            val programs = htmlProgramParser.parse(html).bind()
             Success.Content.Programs(programs)
         }
     }
@@ -111,8 +115,8 @@ internal class HttpProgramRepo(
     private suspend fun fetchProgramFromUrl(programUrl: String): Either<Failure, Program> = either {
         val html = withContext(Dispatchers.IO) {
             val response = client.executeAsync(Request.Builder().get().url(programUrl).build())
-            !programResponseValidator.validateResponse(response)
+            programResponseValidator.validateResponse(response).bind()
         }
-        !htmlFullProgramParser.parse(html)
+        htmlFullProgramParser.parse(html).bind()
     }
 }

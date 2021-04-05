@@ -12,7 +12,7 @@ object Dependencies {
 
     const val okHttp3 = "com.squareup.okhttp3:okhttp:4.9.1"
 
-    private const val arrowVersion = "0.12.0-SNAPSHOT"
+    private const val arrowVersion = "1.0.0-SNAPSHOT"
     const val arrowCore = "io.arrow-kt:arrow-core:${arrowVersion}"
     const val arrowSyntax = "io.arrow-kt:arrow-syntax:${arrowVersion}"
     const val arrowMeta = "io.arrow-kt:arrow-meta:${arrowVersion}"

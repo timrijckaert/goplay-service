@@ -19,7 +19,7 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 
 internal class JsonStreamParser {
-    suspend fun parse(videoUuid: VideoUuid, json: String): Either<ApiResponse.Failure, M3U8Stream> =
+    fun parse(videoUuid: VideoUuid, json: String): Either<ApiResponse.Failure, M3U8Stream> =
             Either.catch { Json.decodeFromString<JsonObject>(json) }.mapLeft { ApiResponse.Failure.Stream.NoStreamFound(videoUuid) }.flatMap {
                 Either.catch { M3U8Stream(it["video"]!!.jsonObject["S"]!!.jsonPrimitive.content) }
                         .mapLeft { ApiResponse.Failure.JsonParsingException(it) }
@@ -44,7 +44,7 @@ internal class HttpStreamRepo(
                     val response = client.executeAsync(
                             Request.Builder().get().url("$vierVijfZesApi/content/${videoUuid.id}").header("Authorization", idToken.token).build()
                     )
-                    ApiResponse.Success.Stream(!jsonStreamParser.parse(videoUuid, !response.safeBodyString()))
+                    ApiResponse.Success.Stream(jsonStreamParser.parse(videoUuid, response.safeBodyString().bind()).bind())
                 }
             }
 }

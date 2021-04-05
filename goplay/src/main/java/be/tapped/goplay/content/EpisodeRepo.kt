@@ -76,33 +76,33 @@ internal class HttpEpisodeRepo(
             nodeId: String,
             programHtml: String,
     ): Either<ApiResponse.Failure, ApiResponse.Success.Content.SingleEpisode> = either {
-        val program = !htmlFullProgramParser.parse(programHtml)
+        val program = htmlFullProgramParser.parse(programHtml).bind()
         val episodeForSearchKey =
-                !Either.fromNullable(program.playlists.flatMap(Program.Playlist::episodes).firstOrNull { it.pageInfo.nodeId == nodeId })
-                        .mapLeft { ApiResponse.Failure.Content.NoEpisodeFound }
+               Either.fromNullable(program.playlists.flatMap(Program.Playlist::episodes).firstOrNull { it.pageInfo.nodeId == nodeId })
+                        .mapLeft { ApiResponse.Failure.Content.NoEpisodeFound }.bind()
         ApiResponse.Success.Content.SingleEpisode(episodeForSearchKey)
     }
 
     // GoPlay API does not make a distinction between clips and video's. However the strategy for fetching the Episode data from the HTML differs.
     override suspend fun fetchEpisode(episodeByNodeIdSearchKey: SearchHit.Source.SearchKey.EpisodeByNodeId): Either<ApiResponse.Failure, ApiResponse.Success.Content.SingleEpisode> {
         return either {
-            val html = !fetchRawResponse(episodeByNodeIdSearchKey.url)
-            !when (determineEpisodeType(html)) {
-                EpisodeType.CLIP -> fetchEpisode(!htmlClipEpisodeParser.parse(html))
+            val html = fetchRawResponse(episodeByNodeIdSearchKey.url).bind()
+            when (determineEpisodeType(html)) {
+                EpisodeType.CLIP -> fetchEpisode(htmlClipEpisodeParser.parse(html).bind())
                 EpisodeType.FULL_EPISODE -> fetchEpisodeFromProgramHtml(episodeByNodeIdSearchKey.nodeId, html)
                 EpisodeType.UNKNOWN -> ApiResponse.Failure.Content.NoEpisodeFound.left()
-            }
+            }.bind()
         }
     }
 
     override suspend fun fetchEpisode(episodeVideoUuid: EpisodeUuid): Either<ApiResponse.Failure, ApiResponse.Success.Content.SingleEpisode> =
             withContext(Dispatchers.IO) {
                 either {
-                    val episode = !client.executeAsync(
+                    val episode = client.executeAsync(
                             Request.Builder().get().url("$siteUrl/api/video/${episodeVideoUuid.id}").build()
-                    ).safeBodyString()
+                    ).safeBodyString().bind()
 
-                    ApiResponse.Success.Content.SingleEpisode(!episodeParser.parse(episode))
+                    ApiResponse.Success.Content.SingleEpisode(episodeParser.parse(episode).bind())
                 }
             }
 

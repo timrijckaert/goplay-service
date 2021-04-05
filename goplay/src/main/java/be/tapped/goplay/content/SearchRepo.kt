@@ -48,7 +48,7 @@ internal class HttpSearchRepo(
                 ).url("$vierVijfZesApi/search").build()
         )
 
-        val searchResults = !jsonSearchResultsParser.parse(!searchResponse.safeBodyString())
+        val searchResults = jsonSearchResultsParser.parse(searchResponse.safeBodyString().bind()).bind()
         ApiResponse.Success.Content.SearchResults(searchResults)
     }
 }

@@ -6,8 +6,8 @@ import arrow.core.left
 import arrow.core.right
 import be.tapped.common.internal.executeAsync
 import be.tapped.goplay.ApiResponse
-import be.tapped.goplay.common.safeBodyString
 import be.tapped.goplay.common.goPlayApiDefaultOkHttpClient
+import be.tapped.goplay.common.safeBodyString
 import be.tapped.goplay.common.siteUrl
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -47,22 +47,23 @@ public class HttpEpgRepo(
     // curl -X GET "https://www.goplay.be/api/epg/vier/2020-12-13"
     // curl -X GET "https://www.goplay.be/api/epg/vijf/2020-12-13"
     // curl -X GET "https://www.goplay.be/api/epg/zes/2020-12-13"
-    override suspend fun epg(brand: EpgRepo.Brand, calendar: Calendar): Either<ApiResponse.Failure, ApiResponse.Success.ProgramGuide> = withContext(Dispatchers.IO) {
-        val response = client.executeAsync(Request.Builder().get().url(constructUrl(brand, calendar)).build())
-        either {
-            val json = !response.safeBodyString()
-            val epg = !jsonEpgParser.parse(json)
+    override suspend fun epg(brand: EpgRepo.Brand, calendar: Calendar): Either<ApiResponse.Failure, ApiResponse.Success.ProgramGuide> =
+            withContext(Dispatchers.IO) {
+                val response = client.executeAsync(Request.Builder().get().url(constructUrl(brand, calendar)).build())
+                either {
+                    val json = response.safeBodyString().bind()
+                    val epg = jsonEpgParser.parse(json).bind()
 
-            !if (epg.isEmpty()) {
-                ApiResponse.Failure.Epg.NoEpgDataFor(calendar).left()
-            } else {
-                ApiResponse.Success.ProgramGuide(epg).right()
+                    if (epg.isEmpty()) {
+                        ApiResponse.Failure.Epg.NoEpgDataFor(calendar).left()
+                    } else {
+                        ApiResponse.Success.ProgramGuide(epg).right()
+                    }.bind()
+                }
             }
-        }
-    }
 
     private fun constructUrl(brand: EpgRepo.Brand, calendar: Calendar): String {
-        val brandPath = when(brand) {
+        val brandPath = when (brand) {
             EpgRepo.Brand.VIER -> "vier"
             EpgRepo.Brand.VIJF -> "vijf"
             EpgRepo.Brand.ZES -> "zes"
