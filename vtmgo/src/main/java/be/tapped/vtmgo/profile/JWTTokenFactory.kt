@@ -104,7 +104,7 @@ internal class HttpAndroidJWTTokenRepo(
                     ).request.url.fragment.idTokenFromFragment.bind()
 
                     // Okay, final stage. We now need to authorize our id_token so we get a valid JWT.
-                    val json = !client.executeAsync(
+                    val json = client.executeAsync(
                             Request.Builder()
                                     .headers(headerBuilder.defaultHeaders)
                                     .url(
@@ -124,7 +124,7 @@ internal class HttpAndroidJWTTokenRepo(
                                             }".toRequestBody(jsonMediaType)
                                     )
                                     .build()
-                    ).safeBodyString()
+                    ).safeBodyString().bind()
 
                     ApiResponse.Success.Authentication.Token(jwtTokenJsonParser.parse(json).bind())
                 }

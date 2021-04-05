@@ -6,8 +6,8 @@ import arrow.core.flatMap
 import arrow.core.left
 import be.tapped.common.internal.executeAsync
 import be.tapped.goplay.ApiResponse
-import be.tapped.goplay.common.*
 import be.tapped.goplay.common.safeAttr
+import be.tapped.goplay.common.safeBodyString
 import be.tapped.goplay.common.safeSelectFirst
 import be.tapped.goplay.common.siteUrl
 import kotlinx.coroutines.Dispatchers
@@ -78,7 +78,7 @@ internal class HttpEpisodeRepo(
     ): Either<ApiResponse.Failure, ApiResponse.Success.Content.SingleEpisode> = either {
         val program = htmlFullProgramParser.parse(programHtml).bind()
         val episodeForSearchKey =
-               Either.fromNullable(program.playlists.flatMap(Program.Playlist::episodes).firstOrNull { it.pageInfo.nodeId == nodeId })
+                Either.fromNullable(program.playlists.flatMap(Program.Playlist::episodes).firstOrNull { it.pageInfo.nodeId == nodeId })
                         .mapLeft { ApiResponse.Failure.Content.NoEpisodeFound }.bind()
         ApiResponse.Success.Content.SingleEpisode(episodeForSearchKey)
     }

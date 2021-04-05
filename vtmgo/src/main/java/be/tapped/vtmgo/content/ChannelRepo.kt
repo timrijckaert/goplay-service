@@ -51,7 +51,7 @@ internal class HttpChannelRepo(
                 )
 
                 either {
-                    ApiResponse.Success.Content.LiveChannels(!jsonChannelParser.parse(!response.safeBodyString()))
+                    ApiResponse.Success.Content.LiveChannels(jsonChannelParser.parse(response.safeBodyString().bind()).bind())
                 }
             }
 

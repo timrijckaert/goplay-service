@@ -77,7 +77,7 @@ public class HttpStreamRepo(
                 val videoStreamResponse = client.executeAsync(Request.Builder().get().url(httpUrl).build())
 
                 either {
-                    Success.Content.StreamInfo(!jsonStreamInformationParser.parse(!videoStreamResponse.safeBodyString()))
+                    Success.Content.StreamInfo(jsonStreamInformationParser.parse(videoStreamResponse.safeBodyString().bind()).bind())
                 }
             }
 

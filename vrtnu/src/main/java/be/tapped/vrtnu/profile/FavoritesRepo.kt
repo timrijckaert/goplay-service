@@ -35,7 +35,7 @@ public data class Favorite(
 )
 
 internal class JsonFavoriteParser {
-    suspend fun parse(json: String): Either<ApiResponse.Failure, FavoriteWrapper> = Either.catch {
+    fun parse(json: String): Either<ApiResponse.Failure, FavoriteWrapper> = Either.catch {
         val rootJsonObject = Json.decodeFromString<JsonObject>(json)
         FavoriteWrapper(rootJsonObject.keys.associateWith {
             val favoriteJson = rootJsonObject[it]!!.jsonObject
@@ -72,7 +72,7 @@ internal class HttpFavoritesRepo(
                 )
 
                 either {
-                    ApiResponse.Success.Authentication.Favorites(!jsonFavoriteParser.parse(!favoritesResponse.safeBodyString()))
+                    ApiResponse.Success.Authentication.Favorites(jsonFavoriteParser.parse(favoritesResponse.safeBodyString().bind()).bind())
                 }
             }
 }

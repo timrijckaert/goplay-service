@@ -1,7 +1,7 @@
 package be.tapped.vrtnu.profile
 
 import arrow.core.Either
-import arrow.core.NonEmptyList
+import arrow.core.nonEmptyListOf
 import be.tapped.common.internal.ReadOnlyCookieJar
 import be.tapped.common.internal.executeAsync
 import be.tapped.common.internal.jsonMediaType
@@ -51,7 +51,7 @@ internal class HttpXVRTTokenRepo(
             )
 
             cookieJar.validateCookie(COOKIE_X_VRT_TOKEN).map { XVRTToken(it.value) }.toEither()
-                    .mapLeft { ApiResponse.Failure.Authentication.MissingCookieValues(NonEmptyList(COOKIE_X_VRT_TOKEN)) }
+                    .mapLeft { ApiResponse.Failure.Authentication.MissingCookieValues(nonEmptyListOf(COOKIE_X_VRT_TOKEN)) }
         }
     }
 }

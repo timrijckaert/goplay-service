@@ -59,9 +59,9 @@ internal class HttpFavoritesRepo(
             )
 
             either {
-                val json = !response.safeBodyString()
-                !if (json.isBlank()) ApiResponse.Success.Content.Favorites(null).right()
-                else !jsonFavoritesParser.parse(json).map { ApiResponse.Success.Content.Favorites(it).right() }
+                val json = response.safeBodyString().bind()
+                (if (json.isBlank()) ApiResponse.Success.Content.Favorites(null).right()
+                else jsonFavoritesParser.parse(json).map { ApiResponse.Success.Content.Favorites(it).right() }.bind()).bind()
             }
         }
     }

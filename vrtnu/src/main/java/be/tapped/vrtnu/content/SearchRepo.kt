@@ -52,9 +52,9 @@ internal class HttpSearchRepo(
             unfoldFlow(searchQuery.pageIndex) { index ->
                 withContext(Dispatchers.IO) {
                     val episodeByCategoryResponse =
-                            client.executeAsync(Request.Builder().get().url(!constructUrl(searchQuery.copy(pageIndex = index))).build())
+                            client.executeAsync(Request.Builder().get().url(constructUrl(searchQuery.copy(pageIndex = index)).bind()).build())
 
-                    val searchResultEpisodes = !jsonSearchHitParser.parse(!episodeByCategoryResponse.safeBodyString())
+                    val searchResultEpisodes = jsonSearchHitParser.parse(episodeByCategoryResponse.safeBodyString().bind()).bind()
                     if (index != searchQuery.pageIndex && index >= searchResultEpisodes.meta.pages.total) null
                     else Pair(index + 1, ApiResponse.Success.Content.Search(searchResultEpisodes.results))
                 }

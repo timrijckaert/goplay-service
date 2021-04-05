@@ -45,7 +45,7 @@ internal class HttpPlayerTokenRepo(
                 )
 
                 either {
-                    ApiResponse.Success.Authentication.PlayerToken(!jsonVRTPlayerTokenParser.parse(!vrtPlayerTokenResponse.safeBodyString()))
+                    ApiResponse.Success.Authentication.PlayerToken(jsonVRTPlayerTokenParser.parse(vrtPlayerTokenResponse.safeBodyString().bind()).bind())
                 }
             }
 }

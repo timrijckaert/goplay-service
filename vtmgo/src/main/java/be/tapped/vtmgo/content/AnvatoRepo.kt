@@ -10,10 +10,18 @@ import be.tapped.vtmgo.common.safeBodyString
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.json.*
-import okhttp3.*
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.jsonArray
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 import okhttp3.Headers.Companion.toHeaders
+import okhttp3.HttpUrl
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
+import okhttp3.Response
 
 internal class AnvatoJsonJavascriptFunctionExtractor {
     private val jsJsonExtractionRegex = Regex("anvatoVideoJSONLoaded\\((.*)\\)")
@@ -83,10 +91,10 @@ internal class HttpAnvatoRepo(
                 val anvatoResponse = fetchPublishedUrlResponse(streamResponse, anvato)
 
                 either {
-                    val firstPublishedUrl = !anvatoVideoJsonParser.getFirstPublishedUrl(!anvatoResponse.safeBodyString())
+                    val firstPublishedUrl = anvatoVideoJsonParser.getFirstPublishedUrl(anvatoResponse.safeBodyString().bind()).bind()
 
-                    val mpdManifestUrl = !mpdManifestUrl(firstPublishedUrl.embedUrl)
-                    val backUpMpdManifestUrl = !mpdManifestUrl(firstPublishedUrl.backupUrl!!)
+                    val mpdManifestUrl = mpdManifestUrl(firstPublishedUrl.embedUrl).bind()
+                    val backUpMpdManifestUrl = mpdManifestUrl(firstPublishedUrl.backupUrl!!).bind()
                     val licenseUrl = firstPublishedUrl.licenseUrl
                     val backUpLicenseUrl = firstPublishedUrl.backupLicenseUrl
 
@@ -106,13 +114,13 @@ internal class HttpAnvatoRepo(
                 val anvatoResponse = fetchPublishedUrlResponse(streamResponse, anvato)
 
                 either {
-                    val firstPublishedUrl = !anvatoVideoJsonParser.getFirstPublishedUrl(!anvatoResponse.safeBodyString())
+                    val firstPublishedUrl = anvatoVideoJsonParser.getFirstPublishedUrl(anvatoResponse.safeBodyString().bind()).bind()
                     val response = client.executeAsync(
                             Request.Builder().get().url(firstPublishedUrl.embedUrl).build()
                     )
 
                     AnvatoStream.Episode(
-                            MPDUrl((!anvatoMasterM3U8JsonParser.parse(!response.safeBodyString())).url),
+                            MPDUrl((anvatoMasterM3U8JsonParser.parse(response.safeBodyString().bind())).bind().url),
                             LicenseUrl(firstPublishedUrl.licenseUrl),
                             streamResponse.subtitles
                     )
@@ -130,17 +138,15 @@ internal class HttpAnvatoRepo(
     private suspend fun mpdManifestUrl(publishedUrl: String): Either<ApiResponse.Failure, String> {
         val redirectLocationXMLRegex = Regex("<Location>([^<]+)</Location>")
         suspend fun downloadRaw(url: String): Either<ApiResponse.Failure, String> = withContext(Dispatchers.IO) {
-            val response = client.executeAsync(
-                    Request.Builder().get().url(url).headers(anvatoHeaders).build()
-            )
+            val response = client.executeAsync(Request.Builder().get().url(url).headers(anvatoHeaders).build())
             response.safeBodyString()
         }
 
         return either {
-            val xml = !downloadRaw(publishedUrl)
-            !Either.fromNullable(
-                    redirectLocationXMLRegex.findAll(xml).toList().firstOrNull()?.groups?.get(1)?.value
-            ).handleErrorWith { publishedUrl.right() }.mapLeft { ApiResponse.Failure.Stream.NoMPDManifestUrlFound }
+            val xml = downloadRaw(publishedUrl).bind()
+            Either.fromNullable(redirectLocationXMLRegex.findAll(xml).toList().firstOrNull()?.groups?.get(1)?.value)
+                    .handleErrorWith { publishedUrl.right() }
+                    .mapLeft { ApiResponse.Failure.Stream.NoMPDManifestUrlFound }.bind()
         }
     }
 

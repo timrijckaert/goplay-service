@@ -46,7 +46,7 @@ internal class HttpSearchRepo(
                 )
 
                 either {
-                    ApiResponse.Success.Content.Search(!jsonSearchResultResponseParser.parse(!searchResponse.safeBodyString()))
+                    ApiResponse.Success.Content.Search(jsonSearchResultResponseParser.parse(searchResponse.safeBodyString().bind()).bind())
                 }
             }
 }

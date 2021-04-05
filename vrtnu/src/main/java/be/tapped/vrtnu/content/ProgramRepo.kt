@@ -50,11 +50,11 @@ internal class HttpProgramRepo(
             val programsAZSorted = client.executeAsync(
                     Request.Builder()
                             .get()
-                            .url(!constructUrl(ElasticSearchQueryBuilder.SearchQuery(transcodingStatus = TranscodingStatus.AVAILABLE)))
+                            .url(constructUrl(ElasticSearchQueryBuilder.SearchQuery(transcodingStatus = TranscodingStatus.AVAILABLE)).bind())
                             .build()
             )
 
-            ApiResponse.Success.Content.Programs(!jsonProgramParser.parse(!programsAZSorted.safeBodyString()))
+            ApiResponse.Success.Content.Programs(jsonProgramParser.parse(programsAZSorted.safeBodyString().bind()).bind())
         }
     }
 
@@ -63,17 +63,17 @@ internal class HttpProgramRepo(
                 either {
                     val fetchSingleProgram = client.executeAsync(
                             Request.Builder().get().url(
-                                    !constructUrl(
+                                    constructUrl(
                                             ElasticSearchQueryBuilder.SearchQuery(
                                                     transcodingStatus = TranscodingStatus.AVAILABLE,
                                                     programName = programName,
                                                     size = 1
                                             )
-                                    )
+                                    ).bind()
                             ).build()
                     )
 
-                    ApiResponse.Success.Content.SingleProgram((!jsonProgramParser.parse(!fetchSingleProgram.safeBodyString())).firstOrNull())
+                    ApiResponse.Success.Content.SingleProgram((jsonProgramParser.parse(fetchSingleProgram.safeBodyString().bind()).bind()).firstOrNull())
                 }
             }
 

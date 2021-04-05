@@ -8,6 +8,6 @@ import okhttp3.Response
 
 @Suppress("BlockingMethodInNonBlockingContext") //False positive
 public suspend fun Response.safeBodyString(): Either<ApiResponse.Failure, String> = either {
-    !validateResponse { ApiResponse.Failure.NetworkFailure(code, request) }
-    !Either.fromNullable(body?.string()).mapLeft { ApiResponse.Failure.EmptyJson }
+    validateResponse { ApiResponse.Failure.NetworkFailure(code, request) }.bind()
+    Either.fromNullable(body?.string()).mapLeft { ApiResponse.Failure.EmptyJson }.bind()
 }

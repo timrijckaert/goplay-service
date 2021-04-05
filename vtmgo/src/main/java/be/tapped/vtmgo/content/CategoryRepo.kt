@@ -56,7 +56,7 @@ internal class HttpCategoryRepo(
                 )
 
                 either {
-                    val categoryResponse = !jsonCategoryParser.parse(!response.safeBodyString())
+                    val categoryResponse = jsonCategoryParser.parse(response.safeBodyString().bind()).bind()
                     ApiResponse.Success.Content.Categories(categoryResponse.categories)
                 }
             }

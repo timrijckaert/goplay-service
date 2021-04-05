@@ -54,7 +54,7 @@ internal class HttpProfileRepo(
                 )
 
                 either {
-                    val profiles = !jsonProfileParser.parse(!response.safeBodyString())
+                    val profiles = jsonProfileParser.parse(response.safeBodyString().bind()).bind()
                     ApiResponse.Success.Authentication.Profiles(profiles)
                 }
             }

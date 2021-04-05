@@ -65,7 +65,7 @@ internal class HttpCategoryRepo(
         )
 
         either {
-            ApiResponse.Success.Content.Categories(!jsonCategoryParser.parse(!categoryResponse.safeBodyString()))
+            ApiResponse.Success.Content.Categories(jsonCategoryParser.parse(categoryResponse.safeBodyString().bind()).bind())
         }
     }
 }

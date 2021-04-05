@@ -133,7 +133,7 @@ internal class HttpLoginRepo(
                 )
 
                 either {
-                    !jsonLoginResponseMapper.parse(!loginResponse.safeBodyString()).mapLeft(ApiResponse.Failure.Authentication::FailedToLogin)
+                    jsonLoginResponseMapper.parse(loginResponse.safeBodyString().bind()).mapLeft(ApiResponse.Failure.Authentication::FailedToLogin).bind()
                 }
             }
 }

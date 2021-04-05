@@ -45,17 +45,18 @@ internal class StreamResponseParser(
     suspend fun streamForStreamType(
             streamType: StreamType,
             streamResponse: StreamResponse,
-    ): Either<Failure.Stream, ApiResponse.Success.Stream> = either {
-        val rawStreamType = rawStreamTypeFromStreamType(streamType)
-        val rawStream = !Either.fromNullable(streamResponse.streams.firstOrNull { it.type == rawStreamType })
-                .mapLeft { Failure.Stream.NoStreamFoundForType(rawStreamType) }
-        !when (streamType) {
-            StreamType.ANVATO_LIVE -> anvatoStreamParser.fetchLiveStream(rawStream, streamResponse)
-            StreamType.ANVATO_VOD -> anvatoStreamParser.fetchEpisodeStream(rawStream, streamResponse)
-            StreamType.DASH -> dashStreamParser.parse(rawStream, streamResponse.subtitles)
-            StreamType.HLS -> hlsStreamParser.parse(rawStream, streamResponse.subtitles)
-        }
-    }
+    ): Either<Failure.Stream, ApiResponse.Success.Stream> =
+            either {
+                val rawStreamType = rawStreamTypeFromStreamType(streamType)
+                val rawStream = Either.fromNullable(streamResponse.streams.firstOrNull { it.type == rawStreamType })
+                        .mapLeft { Failure.Stream.NoStreamFoundForType(rawStreamType) }.bind()
+                when (streamType) {
+                    StreamType.ANVATO_LIVE -> anvatoStreamParser.fetchLiveStream(rawStream, streamResponse)
+                    StreamType.ANVATO_VOD -> anvatoStreamParser.fetchEpisodeStream(rawStream, streamResponse)
+                    StreamType.DASH -> dashStreamParser.parse(rawStream, streamResponse.subtitles)
+                    StreamType.HLS -> hlsStreamParser.parse(rawStream, streamResponse.subtitles)
+                }.bind()
+            }
 }
 
 internal class DashStreamParser {
@@ -123,19 +124,21 @@ internal class HttpStreamRepo(
         private const val POPCORN_SDK_VERSION = "4"
     }
 
-    override suspend fun fetchStream(liveChannel: LiveChannel): Either<Failure, ApiResponse.Success.Stream.Anvato> = either {
-        val streamResponse: StreamResponse = !getStreamResponseForId("channels", liveChannel.channelId)
-        !streamResponseParser.streamForStreamType(StreamType.ANVATO_LIVE, streamResponse).map { it as ApiResponse.Success.Stream.Anvato }
-    }
+    override suspend fun fetchStream(liveChannel: LiveChannel): Either<Failure, ApiResponse.Success.Stream.Anvato> =
+            either {
+                val streamResponse: StreamResponse = getStreamResponseForId("channels", liveChannel.channelId).bind()
+                streamResponseParser.streamForStreamType(StreamType.ANVATO_LIVE, streamResponse).map { it as ApiResponse.Success.Stream.Anvato }.bind()
+            }
 
     private suspend fun fetchStream(
             pathSegmentForTargetType: String,
             id: String,
             streamType: StreamType,
-    ): Either<Failure, ApiResponse.Success.Stream> = either {
-        val streamResponse = !getStreamResponseForId(pathSegmentForTargetType, id)
-        !streamResponseParser.streamForStreamType(streamType, streamResponse)
-    }
+    ): Either<Failure, ApiResponse.Success.Stream> =
+            either {
+                val streamResponse = getStreamResponseForId(pathSegmentForTargetType, id).bind()
+                streamResponseParser.streamForStreamType(streamType, streamResponse).bind()
+            }
 
     override suspend fun fetchStream(target: TargetResponse.Target.Movie, streamType: StreamType): Either<Failure, ApiResponse.Success.Stream> =
             fetchStream("movies", target.id, streamType)
@@ -146,17 +149,28 @@ internal class HttpStreamRepo(
     private suspend fun getStreamResponseForId(pathSegmentForTargetType: String, id: String): Either<Failure, StreamResponse> =
             withContext(Dispatchers.IO) {
                 val response = client.executeAsync(
-                        Request.Builder().get().headers(
-                                Headers.Builder().addAll(headerBuilder.defaultHeaders).add("x-api-key", POPCORN_API_KEY)
-                                        .add("Popcorn-SDK-Version", POPCORN_SDK_VERSION).build()
-                        ).url(
-                                HttpUrl.Builder().scheme("https").host("videoplayer-service.api.persgroep.cloud")
-                                        .addPathSegments("config/$pathSegmentForTargetType").addQueryParameter("startPosition", "0.0")
-                                        .addQueryParameter("autoPlay", "true").addPathSegment(id).build()
-                        ).build()
+                        Request.Builder()
+                                .get()
+                                .headers(
+                                        Headers.Builder()
+                                                .addAll(headerBuilder.defaultHeaders)
+                                                .add("x-api-key", POPCORN_API_KEY)
+                                                .add("Popcorn-SDK-Version", POPCORN_SDK_VERSION)
+                                                .build()
+                                )
+                                .url(
+                                        HttpUrl.Builder()
+                                                .scheme("https")
+                                                .host("videoplayer-service.api.persgroep.cloud")
+                                                .addPathSegments("config/$pathSegmentForTargetType")
+                                                .addQueryParameter("startPosition", "0.0")
+                                                .addQueryParameter("autoPlay", "true")
+                                                .addPathSegment(id)
+                                                .build()
+                                ).build()
                 )
 
-                either { !jsonStreamResponseParser.parse(!response.safeBodyString()) }
+                either { jsonStreamResponseParser.parse(response.safeBodyString().bind()).bind() }
             }
 
 }

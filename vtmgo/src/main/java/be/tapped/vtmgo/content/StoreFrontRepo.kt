@@ -86,7 +86,7 @@ internal class HttpStoreFrontRepo(
             )
 
             either {
-                ApiResponse.Success.Content.StoreFrontRows(!jsonStoreFrontParser.parseListOfStoreFront(!response.safeBodyString()))
+                ApiResponse.Success.Content.StoreFrontRows(jsonStoreFrontParser.parseListOfStoreFront(response.safeBodyString().bind()).bind())
             }
         }
     }

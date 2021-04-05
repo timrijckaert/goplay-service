@@ -31,7 +31,7 @@ internal class SeasonRepo(private val episodeRepo: EpisodeRepo) {
                     seasonKeys.parTraverse<String, Either<ApiResponse.Failure, Season>> { seasonKey ->
                         either {
                             val season = it.getValue(seasonKey).jsonObject
-                            val episodesForSeason = !episodeRepo.fetchEpisodesForEpisode(seasonKey, season)
+                            val episodesForSeason = episodeRepo.fetchEpisodesForEpisode(seasonKey, season).bind()
                             Season(seasonKey, episodesForSeason)
                         }
                     }.sequenceEither()
@@ -47,20 +47,20 @@ internal class EpisodeRepo(private val client: OkHttpClient,
 
     suspend fun fetchEpisodesForEpisode(seasonKey: String, season: JsonObject): Either<ApiResponse.Failure, List<Season.Episode>> =
             either {
-                !try {
+                try {
                     val episodes =
-                            !(season[EPISODES_KEY]?.jsonObject?.right()
-                                    ?: fetchEpisodesForSeason(season.getValue("lazySrc").jsonPrimitive.content))
+                            (season[EPISODES_KEY]?.jsonObject?.right()
+                                    ?: fetchEpisodesForSeason(season.getValue("lazySrc").jsonPrimitive.content)).bind()
                     episodeParser.parse(episodes)
                 } catch (ex: Exception) {
                     ApiResponse.Failure.Content.NoEpisodesFound(ex, seasonKey).left()
-                }
+                }.bind()
             }
 
     private suspend fun fetchEpisodesForSeason(lazySrc: String): Either<ApiResponse.Failure, JsonObject> =
             either {
-                val rawJson = !client.executeAsync(Request.Builder().get().url("$corporateSiteUrl$lazySrc").build()).safeBodyString()
-                !Json.decodeFromString<JsonObject>(rawJson).getValue(EPISODES_KEY).jsonObject.right()
+                val rawJson = client.executeAsync(Request.Builder().get().url("$corporateSiteUrl$lazySrc").build()).safeBodyString().bind()
+                Json.decodeFromString<JsonObject>(rawJson).getValue(EPISODES_KEY).jsonObject.right().bind()
             }
 }
 
@@ -109,13 +109,13 @@ internal class AEMPlaylistRepo(private val client: OkHttpClient,
 
     override suspend fun fetchProgramPlaylist(programName: String): Either<ApiResponse.Failure, List<Season>> =
             either {
-                val json = !client.executeAsync(
+                val json = client.executeAsync(
                         Request.Builder()
                                 .get()
                                 .url("$siteUrl/a-z/${programName}/jcr:content/parsys/container.model.json")
                                 .build()
-                ).safeBodyString()
-                !seasonRepo.seasonsFromAEMJson(json)
+                ).safeBodyString().bind()
+                seasonRepo.seasonsFromAEMJson(json).bind()
             }
 }
 

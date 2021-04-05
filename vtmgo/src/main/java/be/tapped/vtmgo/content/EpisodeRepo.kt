@@ -57,7 +57,7 @@ internal class HttpEpisodeRepo(
         )
 
         either {
-            ApiResponse.Success.Content.Programs(!jsonProgramParser.parse(!response.safeBodyString()))
+            ApiResponse.Success.Content.Programs(jsonProgramParser.parse(response.safeBodyString().bind()).bind())
         }
     }
 

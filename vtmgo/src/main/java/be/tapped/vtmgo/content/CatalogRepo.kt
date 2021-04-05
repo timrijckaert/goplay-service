@@ -61,7 +61,7 @@ internal class HttpCatalogRepo(
                                     .build()
                     )
 
-                    ApiResponse.Success.Content.Catalog(!jsonPagedTeaserContentParser.parse(!response.safeBodyString()))
+                    ApiResponse.Success.Content.Catalog(jsonPagedTeaserContentParser.parse(response.safeBodyString().bind()).bind())
                 }
             }
 

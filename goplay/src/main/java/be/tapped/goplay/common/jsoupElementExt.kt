@@ -19,14 +19,6 @@ internal fun Element.safeAttr(attributeKey: String): Validated<ApiResponse.Failu
     }
 }
 
-internal suspend fun Element.safeChild(index: Int): Either<ApiResponse.Failure.HTML.NoChildAtPosition, Element> =
-    Either.catch { child(index) }.mapLeft { ApiResponse.Failure.HTML.NoChildAtPosition(index, childrenSize()) }
-
-internal fun Element.safeText(): Either<ApiResponse.Failure.HTML.EmptyHTML, String> {
-    val text = text()
-    return Either.conditionally(text.isNotBlank(), ifFalse = { ApiResponse.Failure.HTML.EmptyHTML }, ifTrue = { text })
-}
-
 internal fun Element.safeSelect(cssQuery: String): Either<ApiResponse.Failure.HTML.NoSelection, Elements> {
     val elements = select(cssQuery)
     return if (elements.isEmpty()) {
@@ -37,4 +29,4 @@ internal fun Element.safeSelect(cssQuery: String): Either<ApiResponse.Failure.HT
 }
 
 internal fun Element.safeSelectFirst(cssQuery: String): Either<ApiResponse.Failure.HTML.NoSelection, Element> =
-    selectFirst(cssQuery)?.right() ?: ApiResponse.Failure.HTML.NoSelection(cssQuery).left()
+        selectFirst(cssQuery)?.right() ?: ApiResponse.Failure.HTML.NoSelection(cssQuery).left()

@@ -1,9 +1,15 @@
 package be.tapped.goplay.profile
 
-import arrow.core.*
+import arrow.core.Either
+import arrow.core.Validated
+import arrow.core.flatMap
+import arrow.core.invalid
+import arrow.core.valid
 import be.tapped.goplay.ApiResponse
-import be.tapped.goplay.ApiResponse.Failure.Authentication.*
+import be.tapped.goplay.ApiResponse.Failure.Authentication.AWS
+import be.tapped.goplay.ApiResponse.Failure.Authentication.Login
 import be.tapped.goplay.ApiResponse.Failure.Authentication.Profile
+import be.tapped.goplay.ApiResponse.Failure.Authentication.Refresh
 import software.amazon.awssdk.auth.credentials.AnonymousCredentialsProvider
 import software.amazon.awssdk.core.SdkResponse
 import software.amazon.awssdk.regions.Region
