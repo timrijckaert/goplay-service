@@ -10,8 +10,7 @@ public class JsonFavoriteParserTest : StringSpec({
     "should be able to parse" {
         val favoritesJson = javaClass.classLoader?.getResourceAsStream("favorites.json")!!.reader().readText()
         val favorites = JsonFavoriteParser().parse(favoritesJson)
-        favorites.shouldBeRight()
-        val favoriteWrapper = favorites.orNull()!!
+        val favoriteWrapper = favorites.shouldBeRight()
         favoriteWrapper.size shouldBe 137
         favoriteWrapper.programs shouldBe listOf(
             "vrtnuaz16",

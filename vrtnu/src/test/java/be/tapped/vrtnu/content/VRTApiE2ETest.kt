@@ -31,7 +31,7 @@ public class VRTApiE2ETest : FreeSpec({
             }
 
             "the categories should not be empty"  {
-                categories.orNull()!!.categories.shouldNotBeEmpty()
+                categories.shouldBeRight().categories.shouldNotBeEmpty()
             }
         }
 
@@ -42,7 +42,7 @@ public class VRTApiE2ETest : FreeSpec({
                 azPrograms.shouldBeRight()
             }
 
-            val programs = azPrograms.orNull()!!.programs
+            val programs = azPrograms.shouldBeRight().programs
             "it should not be empty" {
                 programs.shouldNotBeEmpty()
 
@@ -68,7 +68,7 @@ public class VRTApiE2ETest : FreeSpec({
                     }
 
                     "refreshing the tokens by refresh token" - {
-                        val newTokens = profileRepo.refreshTokenWrapper(tokens.orNull()!!.tokenWrapper.refreshToken)
+                        val newTokens = profileRepo.refreshTokenWrapper(tokens.shouldBeRight().tokenWrapper.refreshToken)
                         "it should be successful" {
                             newTokens.shouldBeRight()
                         }
@@ -82,7 +82,7 @@ public class VRTApiE2ETest : FreeSpec({
                         }
 
                         "fetching favorites" - {
-                            val favorites = profileRepo.favorites(xVRTToken.orNull()!!.xVRTToken)
+                            val favorites = profileRepo.favorites(xVRTToken.shouldBeRight().xVRTToken)
 
                             "it should be successful" {
                                 favorites.shouldBeRight()
@@ -90,7 +90,7 @@ public class VRTApiE2ETest : FreeSpec({
                         }
 
                         "fetching a VRT-Player-Token" - {
-                            val vrtPlayerToken = profileRepo.fetchVRTPlayerToken(xVRTToken.orNull()!!.xVRTToken)
+                            val vrtPlayerToken = profileRepo.fetchVRTPlayerToken(xVRTToken.shouldBeRight().xVRTToken)
 
                             "it should be successful" {
                                 vrtPlayerToken.shouldBeRight()
@@ -100,7 +100,7 @@ public class VRTApiE2ETest : FreeSpec({
                                 LiveStreams.allLiveStreams.parTraverse {
                                     "fetching live stream $it" - {
                                         val liveStream = vrtApi.getLiveStream(
-                                                vrtPlayerToken.orNull()!!.vrtPlayerToken, it.videoId
+                                                vrtPlayerToken.shouldBeRight().vrtPlayerToken, it.videoId
                                         )
                                         "it should be successful" {
                                             liveStream.shouldBeRight()
@@ -122,7 +122,7 @@ public class VRTApiE2ETest : FreeSpec({
             }
 
             "the program should not be null" {
-                program.orNull()!!.program shouldNotBe null
+                program.shouldBeRight().program shouldNotBe null
             }
         }
 
@@ -134,7 +134,7 @@ public class VRTApiE2ETest : FreeSpec({
             }
 
             "the program should be null" {
-                nonExistingProgram.orNull()!!.program shouldBe null
+                nonExistingProgram.shouldBeRight().program shouldBe null
             }
         }
 
@@ -162,7 +162,7 @@ public class VRTApiE2ETest : FreeSpec({
             }
 
             "it should have found multiple episodes" {
-                episodes.first().orNull()!!.searchHits.shouldNotBeEmpty()
+                episodes.first().shouldBeRight().searchHits.shouldNotBeEmpty()
             }
         }
 
@@ -175,7 +175,7 @@ public class VRTApiE2ETest : FreeSpec({
             }
 
             "it should have found 1 episode" {
-                episodes.first().orNull()!!.searchHits.shouldHaveSize(1)
+                episodes.first().shouldBeRight().searchHits.shouldHaveSize(1)
             }
         }
     }

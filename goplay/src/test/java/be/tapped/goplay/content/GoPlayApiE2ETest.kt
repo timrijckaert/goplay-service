@@ -22,7 +22,7 @@ public class GoPlayApiE2ETest : FreeSpec({
                 tokens.shouldBeRight()
             }
 
-            val refreshTokens = tokens.orNull()!!.token.refreshToken
+            val refreshTokens = tokens.shouldBeRight().token.refreshToken
             "it should be able to refresh the tokens" - {
                 val newTokens = profileRepo.refreshTokens(refreshTokens)
 
@@ -31,7 +31,7 @@ public class GoPlayApiE2ETest : FreeSpec({
                 }
             }
 
-            val accessToken = tokens.orNull()!!.token.accessToken
+            val accessToken = tokens.shouldBeRight().token.accessToken
             "it should be able to fetch the user attributes" - {
                 val profile = profileRepo.getUserAttributes(accessToken)
 
@@ -46,9 +46,9 @@ public class GoPlayApiE2ETest : FreeSpec({
                     programs.shouldBeRight()
                 }
 
-                val idToken = tokens.orNull()!!.token.idToken
+                val idToken = tokens.shouldBeRight().token.idToken
                 "when fetching episodes" - {
-                    programs.orNull()!!.programs.flatMap(Program::playlists).flatMap(Program.Playlist::episodes).shuffled().take(100).parTraverse {
+                    programs.shouldBeRight().programs.flatMap(Program::playlists).flatMap(Program.Playlist::episodes).shuffled().take(100).parTraverse {
                         val streams = goPlayApi.streamByVideoUuid(idToken, it.videoUuid)
 
                         "it should have found a stream $streams" {
@@ -195,7 +195,7 @@ public class GoPlayApiE2ETest : FreeSpec({
             }
 
             "should have found search hits" {
-                searchResult.orNull()!!.hits.shouldNotBeEmpty()
+                searchResult.shouldBeRight().hits.shouldNotBeEmpty()
             }
 
             val searchKeys = searchResult.orNull()!!.hits.map { it.source.searchKey }

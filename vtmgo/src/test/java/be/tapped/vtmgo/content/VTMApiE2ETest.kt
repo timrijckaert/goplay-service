@@ -32,7 +32,7 @@ public class VTMApiE2ETest : FreeSpec() {
                             token.orNull()?.token?.jwt.shouldNotBeNull()
                         }
 
-                        val jwtToken = token.orNull()!!.token.jwt
+                        val jwtToken = token.shouldBeRight().token.jwt
                         val profiles = profileRepo.getProfiles(jwtToken)
 
                         "then it should be successful" {
@@ -40,10 +40,10 @@ public class VTMApiE2ETest : FreeSpec() {
                         }
 
                         "then it should have at least one profile" {
-                            profiles.orNull()!!.profiles.shouldHaveAtLeastSize(1)
+                            profiles.shouldBeRight().profiles.shouldHaveAtLeastSize(1)
                         }
 
-                        profiles.orNull()!!.profiles.parTraverse { profile ->
+                        profiles.shouldBeRight().profiles.parTraverse { profile ->
                             "fetching favorites for $profile" - {
                                 val favorites = vtmApi.fetchMyFavorites(jwtToken, profile)
 
@@ -53,7 +53,7 @@ public class VTMApiE2ETest : FreeSpec() {
                             }
                         }
 
-                        val profile = profiles.orNull()!!.profiles.first()
+                        val profile = profiles.shouldBeRight().profiles.first()
 
                         "and doing a search" - {
                             val searchResults = vtmApi.search(jwtToken, profile, "Code van Coppens")
@@ -78,7 +78,7 @@ public class VTMApiE2ETest : FreeSpec() {
                                 liveChannels.shouldBeRight()
                             }
 
-                            liveChannels.orNull()!!.channels.parTraverse {
+                            liveChannels.shouldBeRight().channels.parTraverse {
                                 "fetching the stream for $it" - {
                                     val liveStream = vtmApi.fetchStream(it)
 
@@ -87,7 +87,7 @@ public class VTMApiE2ETest : FreeSpec() {
                                     }
 
                                     "should be of correct type" {
-                                        liveStream.orNull()!!.stream should beOfType<AnvatoStream.Live>()
+                                        liveStream.shouldBeRight().stream should beOfType<AnvatoStream.Live>()
                                     }
                                 }
                             }
@@ -101,7 +101,7 @@ public class VTMApiE2ETest : FreeSpec() {
                                     storeFronts.shouldBeRight()
                                 }
 
-                                storeFronts.orNull()!!.rows.flatMap { storeFront ->
+                                storeFronts.shouldBeRight().rows.flatMap { storeFront ->
                                     when (storeFront) {
                                         is StoreFront.CarouselStoreFront -> storeFront.teasers.map(CarouselTeaser::target)
                                         is StoreFront.DefaultSwimlaneStoreFront -> storeFront.teasers.map(DefaultSwimlaneTeaser::target)
@@ -141,10 +141,10 @@ public class VTMApiE2ETest : FreeSpec() {
                             }
 
                             "then the list should not be empty" {
-                                azPrograms.orNull()!!.catalog.shouldNotBeEmpty()
+                                azPrograms.shouldBeRight().catalog.shouldNotBeEmpty()
                             }
 
-                            azPrograms.orNull()!!.catalog.map { it.target.asTarget }.filterIsInstance<TargetResponse.Target.Program>().shuffled()
+                            azPrograms.shouldBeRight().catalog.map { it.target.asTarget }.filterIsInstance<TargetResponse.Target.Program>().shuffled()
                                     .take(100).forEach { program ->
                                         "fetching program details with id ${program.id}" - {
                                             val programDetails = vtmApi.fetchProgram(program, jwtToken, profile)
