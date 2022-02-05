@@ -1,6 +1,6 @@
 package be.tapped.vrtnu.epg
 
-import io.kotest.assertions.arrow.either.shouldBeRight
+import io.kotest.assertions.arrow.core.shouldBeRight
 import io.kotest.core.spec.style.StringSpec
 
 public class JsonEpgParserTest : StringSpec({

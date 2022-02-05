@@ -1,5 +1,6 @@
 package be.tapped.vrtnu.content
 
+import io.kotest.assertions.arrow.core.shouldBeRight
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
@@ -15,7 +16,7 @@ public class JsonCategoryParserTest : StringSpec() {
     init {
         "should be able to parse" {
             val categoriesJson = javaClass.classLoader?.getResourceAsStream("categories.json")!!.reader().readText()
-            val categories = jsonCategoryParser.parse(categoriesJson).orNull()!!
+            val categories = jsonCategoryParser.parse(categoriesJson).shouldBeRight()
             categories shouldHaveSize 19
             categories.map(Category::name) shouldBe listOf(
                 "met-audiodescriptie",

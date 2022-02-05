@@ -2,7 +2,7 @@ package be.tapped.goplay.content
 
 import arrow.core.Either
 import be.tapped.goplay.ApiResponse
-import io.kotest.assertions.arrow.either.shouldBeRight
+import io.kotest.assertions.arrow.core.shouldBeRight
 import io.kotest.core.spec.style.StringSpec
 
 public class EpisodeParserTest : StringSpec({

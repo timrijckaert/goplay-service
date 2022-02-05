@@ -1,7 +1,7 @@
 package be.tapped.vrtnu.content
 
 import io.kotest.core.spec.style.StringSpec
-import io.kotest.assertions.arrow.either.shouldBeRight
+import io.kotest.assertions.arrow.core.shouldBeRight
 
 public class JsonStreamInformationParserTest : StringSpec({
     "should be able to parse the live stream " {
