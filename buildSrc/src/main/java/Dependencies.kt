@@ -1,5 +1,5 @@
 object Versions {
-    const val kotlinVersion = "1.4.31"
+    const val kotlinVersion = "1.6.10"
 }
 
 object Dependencies {
@@ -12,7 +12,7 @@ object Dependencies {
 
     const val okHttp3 = "com.squareup.okhttp3:okhttp:4.9.1"
 
-    private const val arrowVersion = "1.0.0-SNAPSHOT"
+    private const val arrowVersion = "1.0.1"
     const val arrowCore = "io.arrow-kt:arrow-core:${arrowVersion}"
     const val arrowSyntax = "io.arrow-kt:arrow-syntax:${arrowVersion}"
     const val arrowMeta = "io.arrow-kt:arrow-meta:${arrowVersion}"
@@ -21,7 +21,7 @@ object Dependencies {
 
     const val jsoup = "org.jsoup:jsoup:1.13.1"
 
-    private const val coroutineVersion = "1.4.3"
+    private const val coroutineVersion = "1.6.0"
     const val coroutinesCore = "org.jetbrains.kotlinx:kotlinx-coroutines-core:${coroutineVersion}"
 }
 
@@ -31,11 +31,11 @@ object Plugins {
 }
 
 object Testing {
-    private const val kotestVersion = "4.4.3"
+    private const val kotestVersion = "5.1.0"
 
     private const val kotestRunner = "io.kotest:kotest-runner-junit5:${kotestVersion}"
     private const val kotestAssertionsCore = "io.kotest:kotest-assertions-core:${kotestVersion}"
-    private const val kotestAssertionsArrow = "io.kotest:kotest-assertions-arrow:${kotestVersion}"
+    private const val kotestAssertionsArrow = "io.kotest.extensions:kotest-assertions-arrow:1.2.2"
     private const val kotestProperty = "io.kotest:kotest-property:${kotestVersion}"
 
     const val mockk = "io.mockk:mockk:v1.10.2"

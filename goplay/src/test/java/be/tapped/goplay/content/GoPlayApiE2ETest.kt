@@ -3,7 +3,7 @@ package be.tapped.goplay.content
 import arrow.fx.coroutines.parTraverse
 import be.tapped.goplay.CredentialsProvider
 import be.tapped.goplay.profile.HttpProfileRepo
-import io.kotest.assertions.arrow.either.shouldBeRight
+import io.kotest.assertions.arrow.core.shouldBeRight
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.matchers.collections.shouldNotBeEmpty
 
