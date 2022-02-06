@@ -5,9 +5,9 @@ import be.tapped.goplay.content.Program
 import be.tapped.goplay.content.SearchHit
 import be.tapped.goplay.content.VideoUuid
 import be.tapped.goplay.epg.EpgProgram
+import be.tapped.goplay.epg.EpgRepo
 import be.tapped.goplay.profile.TokenWrapper
 import okhttp3.Request
-import java.util.Calendar
 
 public sealed class ApiResponse {
     public sealed class Success : ApiResponse() {
@@ -56,7 +56,7 @@ public sealed class ApiResponse {
         }
 
         public sealed class Epg : Failure() {
-            public data class NoEpgDataFor(val calendar: Calendar) : Epg()
+            public data class NoEpgDataFor(val date: EpgRepo.Date) : Epg()
         }
     }
 }

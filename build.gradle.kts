@@ -6,10 +6,6 @@ plugins {
 }
 
 allprojects {
-    apply {
-        from("${rootDir}/credentials.gradle")
-    }
-
     repositories {
         mavenCentral()
         google()
@@ -28,7 +24,6 @@ allprojects {
         }
 
         withType<Test>().configureEach {
-            addAuthenticationTokensToSystemEnv(this)
             useJUnitPlatform()
         }
     }
@@ -36,9 +31,3 @@ allprojects {
 //  Why can it not find KotlinProjectExtension or kotlin { }
 //  configure<KotlinProjectExtension> { explicitApi() }
 }
-
-fun addAuthenticationTokensToSystemEnv(test: Test) {
-    (project.extra.get("addAuthenticationTokensToSystemEnv") as org.codehaus.groovy.runtime.MethodClosure)(test)
-}
-
-

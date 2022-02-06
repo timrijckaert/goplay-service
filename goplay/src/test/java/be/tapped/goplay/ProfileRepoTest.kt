@@ -1,6 +1,5 @@
 package be.tapped.goplay
 
-import be.tapped.goplay.CredentialsProvider.credentials
 import be.tapped.goplay.profile.HttpProfileRepo
 import io.kotest.assertions.arrow.core.shouldBeLeft
 import io.kotest.assertions.arrow.core.shouldBeRight
@@ -8,7 +7,8 @@ import io.kotest.core.spec.style.FreeSpec
 
 internal class ProfileRepoTest : FreeSpec({
     "with valid credentials" - {
-        val (username, password) = credentials
+        error("credentials should be injected!")
+        val (username, password) = "" to ""
         val sut = HttpProfileRepo()
 
         "should be able to fetch tokens" {

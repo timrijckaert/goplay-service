@@ -18,6 +18,9 @@ dependencies {
     implementation(libs.arrow.core)
     implementation(libs.arrow.fx.coroutines)
     implementation(libs.jsoup)
+    implementation(libs.ktor.client.core)
+    implementation(libs.ktor.client.apache)
+    implementation(libs.ktor.client.logging)
 
     testImplementation(libs.kotest.runner)
     testImplementation(libs.kotest.assertions.core)
