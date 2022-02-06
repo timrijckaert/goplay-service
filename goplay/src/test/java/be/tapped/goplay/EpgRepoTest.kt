@@ -1,7 +1,7 @@
 package be.tapped.goplay
 
 import be.tapped.goplay.epg.EpgRepo
-import be.tapped.goplay.epg.HttpEpgRepo
+import be.tapped.goplay.epg.defaultEpgRepo
 import io.kotest.assertions.arrow.core.shouldBeRight
 import io.kotest.core.spec.style.ShouldSpec
 import java.util.Calendar
@@ -11,7 +11,7 @@ internal class EpgRepoTest : ShouldSpec({
     EpgRepo.Brand.values().forEach {
         // TODO if tests are going to be MPP we need a way to fetch the date without a dep on java.util.Calendar
         val today = Calendar.getInstance(TimeZone.getTimeZone("Europe/Brussels"))
-        val sut = HttpEpgRepo()
+        val sut = defaultEpgRepo()
 
         should("be able to fetch the day before yesterday's EPG for $it") {
             val dayBeforeYesterday = today.apply { add(Calendar.DAY_OF_MONTH, -2) }
