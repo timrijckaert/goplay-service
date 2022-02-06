@@ -1,6 +1,7 @@
+@Suppress("DSL_SCOPE_VIOLATION")
 plugins {
-    kotlin("jvm")
-    id("org.jetbrains.kotlin.plugin.serialization") version "1.6.10"
+    id(libs.plugins.kotlin.jvm.get().pluginId)
+    alias(libs.plugins.kotlinx.serialization)
 }
 
 dependencies {

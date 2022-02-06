@@ -32,4 +32,6 @@ kotest-property = { module = "io.kotest:kotest-property", version.ref = "kotest"
 mockk = "io.mockk:mockk:v1.10.2"
 
 [plugins]
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+kotlinx-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 # kotlin-gradle = { group = 'org.jetbrains.kotlin', name= 'kotlin-gradle-plugin', version.ref = "kotlin" }

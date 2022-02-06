@@ -1,7 +1,8 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
+@Suppress("DSL_SCOPE_VIOLATION")
 plugins {
-    kotlin("jvm") version "1.6.10" apply false
+    alias(libs.plugins.kotlin.jvm) apply false
 }
 
 allprojects {
