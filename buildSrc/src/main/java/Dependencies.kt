@@ -15,11 +15,12 @@ object Dependencies {
 
     // TODO Use BOM
     private const val arrowVersion = "1.0.1"
-    const val arrowCore: String = "io.arrow-kt:arrow-core:${arrowVersion}"
-    const val arrowSyntax: String = "io.arrow-kt:arrow-syntax:${arrowVersion}"
-    const val arrowMeta: String = "io.arrow-kt:arrow-meta:${arrowVersion}"
-    const val arrowFx: String = "io.arrow-kt:arrow-fx:${arrowVersion}"
-    const val arrowFxCoroutines: String = "io.arrow-kt:arrow-fx-coroutines:${arrowVersion}"
+    const val arrowBom: String = "io.arrow-kt:arrow-stack:$arrowVersion"
+    const val arrowCore: String = "io.arrow-kt:arrow-core"
+    const val arrowSyntax: String = "io.arrow-kt:arrow-syntax"
+    const val arrowMeta: String = "io.arrow-kt:arrow-meta"
+    const val arrowFx: String = "io.arrow-kt:arrow-fx"
+    const val arrowFxCoroutines: String = "io.arrow-kt:arrow-fx-coroutines"
 
     // TODO Remove 🔫
     const val jsoup: String = "org.jsoup:jsoup:1.13.1"
@@ -30,16 +31,15 @@ object Dependencies {
 
 object Plugins {
     const val kotlinGradle: String = "org.jetbrains.kotlin:kotlin-gradle-plugin:${Versions.kotlinVersion}"
-    const val versions: String = "com.github.ben-manes:gradle-versions-plugin:0.38.0"
 }
 
 object Testing {
     private const val kotestVersion = "5.1.0"
 
-    private const val kotestRunner = "io.kotest:kotest-runner-junit5:${kotestVersion}"
-    private const val kotestAssertionsCore = "io.kotest:kotest-assertions-core:${kotestVersion}"
-    private const val kotestAssertionsArrow = "io.kotest.extensions:kotest-assertions-arrow:1.2.2"
-    private const val kotestProperty = "io.kotest:kotest-property:${kotestVersion}"
+    const val kotestRunner: String = "io.kotest:kotest-runner-junit5:${kotestVersion}"
+    const val kotestAssertionsCore: String = "io.kotest:kotest-assertions-core:${kotestVersion}"
+    const val kotestAssertionsArrow: String = "io.kotest.extensions:kotest-assertions-arrow:1.2.2"
+    const val kotestProperty: String = "io.kotest:kotest-property:${kotestVersion}"
 
     const val mockk: String = "io.mockk:mockk:v1.10.2"
 }

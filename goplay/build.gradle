@@ -1,4 +1,5 @@
 plugins {
+    // TODO find a way to share this with the kotlinVersion
     id 'org.jetbrains.kotlin.plugin.serialization' version '1.6.10'
 }
 
@@ -12,6 +13,7 @@ dependencies {
 
     implementation Dependencies.okHttp3
 
+    implementation platform(Dependencies.arrowBom)
     implementation Dependencies.arrowCore
     implementation Dependencies.arrowFxCoroutines
     implementation Dependencies.jsoup
