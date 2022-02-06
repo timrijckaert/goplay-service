@@ -29,7 +29,7 @@ public sealed class ApiResponse {
     }
 
     public sealed class Failure : ApiResponse() {
-        public data class NetworkFailure(val responseCode: Int, val request: Request) : Failure()
+        public data class NetworkFailure(val responseCode: Int) : Failure()
         public data class JsonParsingException(val throwable: Throwable) : Failure()
 
         public sealed class HTML : Failure() {

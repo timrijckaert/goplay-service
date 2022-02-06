@@ -6,12 +6,7 @@ import be.tapped.goplay.epg.EpgRepo
 import be.tapped.goplay.epg.defaultEpgRepo
 
 public object GoPlayApi :
-    ProgramRepo by HttpProgramRepo(
-        goPlayApiDefaultOkHttpClient,
-        HtmlProgramParser(JsoupParser(), jsonSerializer),
-        HtmlFullProgramParser(JsoupParser(), jsonSerializer),
-        ProgramResponseValidator()
-    ),
+    ProgramRepo by HttpProgramRepo(),
     EpisodeRepo by HttpEpisodeRepo(
         goPlayApiDefaultOkHttpClient,
         HtmlFullProgramParser(JsoupParser(), jsonSerializer),
