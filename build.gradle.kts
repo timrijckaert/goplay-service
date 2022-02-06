@@ -2,7 +2,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 @Suppress("DSL_SCOPE_VIOLATION")
 plugins {
-    alias(libs.plugins.kotlin.jvm) apply false
+    id(libs.plugins.kotlin.jvm.pluginId) apply false
 }
 
 allprojects {
@@ -25,9 +25,14 @@ allprojects {
 
         withType<Test>().configureEach {
             useJUnitPlatform()
+
+            listOf("goplay").forEach { brand ->
+                val username by variable("${brand}.username")
+                val password by variable("${brand}.password")
+
+                environment("${brand}.username", username)
+                environment("${brand}.password", password)
+            }
         }
     }
-
-//  Why can it not find KotlinProjectExtension or kotlin { }
-//  configure<KotlinProjectExtension> { explicitApi() }
 }

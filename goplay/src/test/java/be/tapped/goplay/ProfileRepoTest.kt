@@ -7,9 +7,7 @@ import io.kotest.core.spec.style.FreeSpec
 
 internal class ProfileRepoTest : FreeSpec({
     "with valid credentials" - {
-        val username = System.getProperty("username")
-        val password = System.getProperty("password")
-
+        val (username, password) = Credentials.default
         val sut = HttpProfileRepo()
 
         "should be able to fetch tokens" {

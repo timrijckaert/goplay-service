@@ -1,6 +1,6 @@
 @Suppress("DSL_SCOPE_VIOLATION")
 plugins {
-    id(libs.plugins.kotlin.jvm.get().pluginId)
+    id(libs.plugins.kotlin.jvm.pluginId)
     alias(libs.plugins.kotlinx.serialization)
 }
 
