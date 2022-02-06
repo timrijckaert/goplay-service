@@ -1,17 +1,18 @@
 package be.tapped.goplay.content
 
 import be.tapped.goplay.common.goPlayApiDefaultOkHttpClient
+import be.tapped.goplay.common.jsonSerializer
 
 public object GoPlayApi :
     ProgramRepo by HttpProgramRepo(
         goPlayApiDefaultOkHttpClient,
-        HtmlProgramParser(JsoupParser()),
-        HtmlFullProgramParser(JsoupParser()),
+        HtmlProgramParser(JsoupParser(), jsonSerializer),
+        HtmlFullProgramParser(JsoupParser(), jsonSerializer),
         ProgramResponseValidator()
     ),
     EpisodeRepo by HttpEpisodeRepo(
         goPlayApiDefaultOkHttpClient,
-        HtmlFullProgramParser(JsoupParser()),
+        HtmlFullProgramParser(JsoupParser(), jsonSerializer),
         HtmlClipEpisodeParser(JsoupParser()),
         EpisodeParser()
     ),

@@ -26,17 +26,11 @@ import okhttp3.Response
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 
-internal class HtmlProgramParser(private val jsoupParser: JsoupParser) {
+internal class HtmlProgramParser(private val jsoupParser: JsoupParser, private val jsonSerializer: Json) {
     internal suspend fun parse(html: String): Either<HTML, List<Program>> = either {
         val htmlPrograms = jsoupParser.parse(html).safeSelect("a[data-program]").bind()
         // The Program detail is found within the DOM as a JSON String
-        val jsons = htmlPrograms.map { it.safeAttr("data-program").toEither().bind() }
-        jsons.map {
-            Json {
-                isLenient = true
-                ignoreUnknownKeys = true
-            }.decodeFromString(it)
-        }
+        htmlPrograms.map { it.safeAttr("data-program").toEither().bind() }.map(jsonSerializer::decodeFromString)
     }
 }
 
@@ -44,7 +38,7 @@ internal class JsoupParser {
     fun parse(rawHtml: String): Document = Jsoup.parse(rawHtml)
 }
 
-internal class HtmlFullProgramParser(private val jsoupParser: JsoupParser) {
+internal class HtmlFullProgramParser(private val jsoupParser: JsoupParser, private val jsonSerializer: Json) {
     private companion object {
         private const val datasetName = "data-hero"
         private const val CSSSelector = "div[$datasetName]"
@@ -59,10 +53,7 @@ internal class HtmlFullProgramParser(private val jsoupParser: JsoupParser) {
             .flatMap {
                 Either.catch {
                     val programDataObject = Json.decodeFromString<JsonObject>(it)["data"]!!.jsonObject
-                    Json {
-                        isLenient = true
-                        ignoreUnknownKeys = true
-                    }.decodeFromJsonElement<Program>(programDataObject)
+                    jsonSerializer.decodeFromJsonElement<Program>(programDataObject)
                 }.mapLeft(Failure::JsonParsingException)
             }
 }
@@ -101,13 +92,14 @@ internal class HttpProgramRepo(
     // Scrapes the https://www.goplay.be/programmas searching for all available Programs and the details associated with it.
     // Fortunately for us the details of a Program is encoded in the HTML DOM as a JSON
     // curl -X GET "https://www.goplay.be/programmas"
-    override suspend fun fetchPrograms(): Either<Failure, Success.Content.Programs> = withContext(Dispatchers.IO) {
-        either {
-            val html = client.executeAsync(Request.Builder().get().url("$siteUrl/programmas").build()).safeBodyString().bind()
-            val programs = htmlProgramParser.parse(html).bind()
-            Success.Content.Programs(programs)
+    override suspend fun fetchPrograms(): Either<Failure, Success.Content.Programs> =
+        withContext(Dispatchers.IO) {
+            either {
+                val html = client.executeAsync(Request.Builder().get().url("$siteUrl/programmas").build()).safeBodyString().bind()
+                val programs = htmlProgramParser.parse(html).bind()
+                Success.Content.Programs(programs)
+            }
         }
-    }
 
     override suspend fun fetchProgram(programSearchKey: SearchHit.Source.SearchKey.Program): Either<Failure, Success.Content.SingleProgram> =
         fetchProgramFromUrl(programSearchKey.url).map(Success.Content::SingleProgram)
