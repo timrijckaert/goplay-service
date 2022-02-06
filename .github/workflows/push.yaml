@@ -22,7 +22,7 @@ jobs:
           java-version: 11
 
       - name: Inject credentials
-        run: echo "$CREDENTIALS" >> local.properties
+        run: echo "$CREDENTIALS" >> goplay/src/test/resources/kotest.properties
         shell: bash
         env:
           CREDENTIALS: ${{ secrets.CREDENTIALS }}
