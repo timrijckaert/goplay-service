@@ -1,9 +1,3 @@
-include ':common'
-
-include ':sample'
-
-include ':vrtnu'
-include ':vtmgo'
 include ':goplay'
 
 rootProject.name = "Vlaamse TV Aggregator"

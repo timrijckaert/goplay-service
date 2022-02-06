@@ -1,5 +1,5 @@
 plugins {
-    id 'org.jetbrains.kotlin.plugin.serialization' version '1.4.30-RC'
+    id 'org.jetbrains.kotlin.plugin.serialization' version '1.6.10'
 }
 
 dependencies {
@@ -20,6 +20,4 @@ dependencies {
     testImplementation Testing.kotestAssertionsCore
     testImplementation Testing.kotestAssertionsArrow
     testImplementation Testing.kotestProperty
-
-    api project(':common')
 }

@@ -36,10 +36,10 @@ internal class HtmlClipEpisodeParser(private val jsoupParser: JsoupParser) {
     fun canParse(html: String): Boolean = jsoupParser.parse(html).safeSelectFirst(CSSSelector).isRight()
 
     fun parse(html: String): Either<ApiResponse.Failure, EpisodeUuid> =
-            jsoupParser.parse(html).safeSelectFirst(CSSSelector).flatMap { it.safeAttr(datasetName).toEither() }.flatMap {
-                Either.catch { EpisodeUuid(Json.decodeFromString<JsonObject>(it)["id"]!!.jsonPrimitive.content) }
-                        .mapLeft(ApiResponse.Failure::JsonParsingException)
-            }
+        jsoupParser.parse(html).safeSelectFirst(CSSSelector).flatMap { it.safeAttr(datasetName).toEither() }.flatMap {
+            Either.catch { EpisodeUuid(Json.decodeFromString<JsonObject>(it)["id"]!!.jsonPrimitive.content) }
+                .mapLeft(ApiResponse.Failure::JsonParsingException)
+        }
 }
 
 public sealed interface EpisodeRepo {
@@ -51,14 +51,14 @@ public sealed interface EpisodeRepo {
 }
 
 internal class HttpEpisodeRepo(
-        private val client: OkHttpClient,
-        private val htmlFullProgramParser: HtmlFullProgramParser,
-        private val htmlClipEpisodeParser: HtmlClipEpisodeParser,
-        private val episodeParser: EpisodeParser,
+    private val client: OkHttpClient,
+    private val htmlFullProgramParser: HtmlFullProgramParser,
+    private val htmlClipEpisodeParser: HtmlClipEpisodeParser,
+    private val episodeParser: EpisodeParser,
 ) : EpisodeRepo {
 
     private suspend fun fetchRawResponse(programUrl: String): Either<ApiResponse.Failure, String> =
-            withContext(Dispatchers.IO) { client.executeAsync(Request.Builder().get().url(programUrl).build()).safeBodyString() }
+        withContext(Dispatchers.IO) { client.executeAsync(Request.Builder().get().url(programUrl).build()).safeBodyString() }
 
     enum class EpisodeType {
         CLIP,
@@ -73,13 +73,13 @@ internal class HttpEpisodeRepo(
     }
 
     private suspend fun fetchEpisodeFromProgramHtml(
-            nodeId: String,
-            programHtml: String,
+        nodeId: String,
+        programHtml: String,
     ): Either<ApiResponse.Failure, ApiResponse.Success.Content.SingleEpisode> = either {
         val program = htmlFullProgramParser.parse(programHtml).bind()
         val episodeForSearchKey =
-                Either.fromNullable(program.playlists.flatMap(Program.Playlist::episodes).firstOrNull { it.pageInfo.nodeId == nodeId })
-                        .mapLeft { ApiResponse.Failure.Content.NoEpisodeFound }.bind()
+            Either.fromNullable(program.playlists.flatMap(Program.Playlist::episodes).firstOrNull { it.pageInfo.nodeId == nodeId })
+                .mapLeft { ApiResponse.Failure.Content.NoEpisodeFound }.bind()
         ApiResponse.Success.Content.SingleEpisode(episodeForSearchKey)
     }
 
@@ -96,14 +96,14 @@ internal class HttpEpisodeRepo(
     }
 
     override suspend fun fetchEpisode(episodeVideoUuid: EpisodeUuid): Either<ApiResponse.Failure, ApiResponse.Success.Content.SingleEpisode> =
-            withContext(Dispatchers.IO) {
-                either {
-                    val episode = client.executeAsync(
-                            Request.Builder().get().url("$siteUrl/api/video/${episodeVideoUuid.id}").build()
-                    ).safeBodyString().bind()
+        withContext(Dispatchers.IO) {
+            either {
+                val episode = client.executeAsync(
+                    Request.Builder().get().url("$siteUrl/api/video/${episodeVideoUuid.id}").build()
+                ).safeBodyString().bind()
 
-                    ApiResponse.Success.Content.SingleEpisode(episodeParser.parse(episode).bind())
-                }
+                ApiResponse.Success.Content.SingleEpisode(episodeParser.parse(episode).bind())
             }
+        }
 
 }

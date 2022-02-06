@@ -5,12 +5,6 @@ Install the [Kotest Plugin](https://kotest.io/docs/intellij/intellij-plugin.html
 To run the `:sample` module or end 2 end tests you will need to add your credentials to the `local.properties`
 
 ```properties
-vrtnu.username=
-vrtnu.password=
-
-vtmgo.username=
-vtmgo.password=
-
 goplay.username=
 goplay.password=
 ```
@@ -31,18 +25,18 @@ git update-index --assume-unchanged .idea/runConfigurations/*
 
 ## Charles
 
-In order to use Charles as a proxy to investigate API calls a few steps are required.   
-In `Charles` navigate to **Help** > **SSL Proxying** > **Save Charles Root Certificate** 
+In order to use Charles as a proxy to investigate API calls a few steps are required.
+In `Charles` navigate to **Help** > **SSL Proxying** > **Save Charles Root Certificate**
 
 ## Mac OS X
-Make sure to add the Charles Root certificate to the Mac OS X Keychain.  
+Make sure to add the Charles Root certificate to the Mac OS X Keychain.
 
 Right click in the settings to also trust the certificate.
 
 ## JVM
 Add the Charles Root certificate to the trusted Java certificates.
 
-Convert the `.pem` to a `.der` 
+Convert the `.pem` to a `.der`
 
 ```
 openssl x509 -in charles-ssl-proxying-certificate.pem -out charles-ssl-proxying-certificate.der -outform DER

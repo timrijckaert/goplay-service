@@ -21,20 +21,20 @@ import software.amazon.awssdk.services.cognitoidentityprovider.model.GetUserResp
 public class ProfileUserAttributeParser {
     public fun parse(userResponse: GetUserResponse): ApiResponse.Success.Authentication.Profile {
         val userAttributeMap =
-                userResponse.userAttributes().groupBy(AttributeType::name, AttributeType::value).mapValues { (_, value) -> value.firstOrNull() }
+            userResponse.userAttributes().groupBy(AttributeType::name, AttributeType::value).mapValues { (_, value) -> value.firstOrNull() }
 
         return ApiResponse.Success.Authentication.Profile(
-                Profile(
-                        username = userResponse.username(),
-                        sub = userAttributeMap["sub"],
-                        birthDate = userAttributeMap["birthdate"],
-                        gender = userAttributeMap["gender"],
-                        postalCode = userAttributeMap["custom:postal_code"],
-                        selligentId = userAttributeMap["custom:selligentId"],
-                        name = userAttributeMap["name"],
-                        familyName = userAttributeMap["family_name"],
-                        email = userAttributeMap["email"]
-                )
+            Profile(
+                username = userResponse.username(),
+                sub = userAttributeMap["sub"],
+                birthDate = userAttributeMap["birthdate"],
+                gender = userAttributeMap["gender"],
+                postalCode = userAttributeMap["custom:postal_code"],
+                selligentId = userAttributeMap["custom:selligentId"],
+                name = userAttributeMap["name"],
+                familyName = userAttributeMap["family_name"],
+                email = userAttributeMap["email"]
+            )
         )
     }
 }
@@ -63,39 +63,39 @@ public class HttpProfileRepo(private val profileUserAttributeParser: ProfileUser
     }
 
     override suspend fun fetchTokens(username: String, password: String): Either<ApiResponse.Failure, ApiResponse.Success.Authentication.Token> =
-            cognitoIdentityProvider.initiateAuth(AuthenticationHelper.initiateUserSrpAuthRequest(username)).checkResult.toEither()
-                    .flatMap { cognitoIdentityProvider.respondToAuthChallenge(AuthenticationHelper.userSrpAuthRequest(it, password)).checkResult.toEither() }
-                    .map {
-                        val authenticationResult = it.authenticationResult()
-                        ApiResponse.Success.Authentication.Token(
-                                TokenWrapper(
-                                        accessToken = AccessToken(authenticationResult.accessToken()),
-                                        expiry = Expiry(System.currentTimeMillis() + (authenticationResult.expiresIn() * 1000)),
-                                        tokenType = authenticationResult.tokenType(),
-                                        refreshToken = RefreshToken(authenticationResult.refreshToken()),
-                                        idToken = IdToken(authenticationResult.idToken())
-                                )
-                        )
-                    }.mapLeft { Login }
+        cognitoIdentityProvider.initiateAuth(AuthenticationHelper.initiateUserSrpAuthRequest(username)).checkResult.toEither()
+            .flatMap { cognitoIdentityProvider.respondToAuthChallenge(AuthenticationHelper.userSrpAuthRequest(it, password)).checkResult.toEither() }
+            .map {
+                val authenticationResult = it.authenticationResult()
+                ApiResponse.Success.Authentication.Token(
+                    TokenWrapper(
+                        accessToken = AccessToken(authenticationResult.accessToken()),
+                        expiry = Expiry(System.currentTimeMillis() + (authenticationResult.expiresIn() * 1000)),
+                        tokenType = authenticationResult.tokenType(),
+                        refreshToken = RefreshToken(authenticationResult.refreshToken()),
+                        idToken = IdToken(authenticationResult.idToken())
+                    )
+                )
+            }.mapLeft { Login }
 
     override suspend fun refreshTokens(refreshToken: RefreshToken): Either<ApiResponse.Failure, ApiResponse.Success.Authentication.Token> =
-            cognitoIdentityProvider.initiateAuth(AuthenticationHelper.refreshToken(refreshToken.token)).checkResult.toEither().map {
-                with(it.authenticationResult()) {
-                    ApiResponse.Success.Authentication.Token(
-                            TokenWrapper(
-                                    accessToken = AccessToken(accessToken()),
-                                    expiry = Expiry(System.currentTimeMillis() + (expiresIn() * 1000)),
-                                    tokenType = tokenType(),
-                                    refreshToken = refreshToken()?.let(::RefreshToken)
-                                            ?: refreshToken,
-                                    idToken = IdToken(idToken())
-                            )
+        cognitoIdentityProvider.initiateAuth(AuthenticationHelper.refreshToken(refreshToken.token)).checkResult.toEither().map {
+            with(it.authenticationResult()) {
+                ApiResponse.Success.Authentication.Token(
+                    TokenWrapper(
+                        accessToken = AccessToken(accessToken()),
+                        expiry = Expiry(System.currentTimeMillis() + (expiresIn() * 1000)),
+                        tokenType = tokenType(),
+                        refreshToken = refreshToken()?.let(::RefreshToken)
+                            ?: refreshToken,
+                        idToken = IdToken(idToken())
                     )
-                }
-            }.mapLeft { Refresh }
+                )
+            }
+        }.mapLeft { Refresh }
 
     override suspend fun getUserAttributes(accessToken: AccessToken): Either<ApiResponse.Failure, ApiResponse.Success.Authentication.Profile> =
-            cognitoIdentityProvider.getUser(GetUserRequest.builder().accessToken(accessToken.token).build()).checkResult.toEither()
-                    .map(profileUserAttributeParser::parse).mapLeft { Profile }
+        cognitoIdentityProvider.getUser(GetUserRequest.builder().accessToken(accessToken.token).build()).checkResult.toEither()
+            .map(profileUserAttributeParser::parse).mapLeft { Profile }
 
 }

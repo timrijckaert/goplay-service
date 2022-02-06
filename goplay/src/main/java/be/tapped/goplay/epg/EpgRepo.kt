@@ -16,7 +16,8 @@ import kotlinx.serialization.json.Json
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Calendar
+import java.util.TimeZone
 
 public class JsonEpgParser {
     public fun parse(json: String): Either<ApiResponse.Failure, List<EpgProgram>> = Either.catch {
@@ -35,32 +36,35 @@ public sealed interface EpgRepo {
         ZES;
     }
 
-    public suspend fun epg(brand: Brand, calendar: Calendar = Calendar.getInstance(TimeZone.getTimeZone("Europe/Brussels"))): Either<ApiResponse.Failure, ApiResponse.Success.ProgramGuide>
+    public suspend fun epg(
+        brand: Brand,
+        calendar: Calendar = Calendar.getInstance(TimeZone.getTimeZone("Europe/Brussels"))
+    ): Either<ApiResponse.Failure, ApiResponse.Success.ProgramGuide>
 }
 
 public class HttpEpgRepo(
-        private val client: OkHttpClient = goPlayApiDefaultOkHttpClient,
-        private val jsonEpgParser: JsonEpgParser = JsonEpgParser(),
-        private val dateFormatter: SimpleDateFormat = SimpleDateFormat("yyyy-MM-dd"),
+    private val client: OkHttpClient = goPlayApiDefaultOkHttpClient,
+    private val jsonEpgParser: JsonEpgParser = JsonEpgParser(),
+    private val dateFormatter: SimpleDateFormat = SimpleDateFormat("yyyy-MM-dd"),
 ) : EpgRepo {
 
     // curl -X GET "https://www.goplay.be/api/epg/vier/2020-12-13"
     // curl -X GET "https://www.goplay.be/api/epg/vijf/2020-12-13"
     // curl -X GET "https://www.goplay.be/api/epg/zes/2020-12-13"
     override suspend fun epg(brand: EpgRepo.Brand, calendar: Calendar): Either<ApiResponse.Failure, ApiResponse.Success.ProgramGuide> =
-            withContext(Dispatchers.IO) {
-                val response = client.executeAsync(Request.Builder().get().url(constructUrl(brand, calendar)).build())
-                either {
-                    val json = response.safeBodyString().bind()
-                    val epg = jsonEpgParser.parse(json).bind()
+        withContext(Dispatchers.IO) {
+            val response = client.executeAsync(Request.Builder().get().url(constructUrl(brand, calendar)).build())
+            either {
+                val json = response.safeBodyString().bind()
+                val epg = jsonEpgParser.parse(json).bind()
 
-                    if (epg.isEmpty()) {
-                        ApiResponse.Failure.Epg.NoEpgDataFor(calendar).left()
-                    } else {
-                        ApiResponse.Success.ProgramGuide(epg).right()
-                    }.bind()
-                }
+                if (epg.isEmpty()) {
+                    ApiResponse.Failure.Epg.NoEpgDataFor(calendar).left()
+                } else {
+                    ApiResponse.Success.ProgramGuide(epg).right()
+                }.bind()
             }
+        }
 
     private fun constructUrl(brand: EpgRepo.Brand, calendar: Calendar): String {
         val brandPath = when (brand) {

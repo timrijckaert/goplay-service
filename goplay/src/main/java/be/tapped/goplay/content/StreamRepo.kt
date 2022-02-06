@@ -20,10 +20,10 @@ import okhttp3.Request
 
 internal class JsonStreamParser {
     fun parse(videoUuid: VideoUuid, json: String): Either<ApiResponse.Failure, M3U8Stream> =
-            Either.catch { Json.decodeFromString<JsonObject>(json) }.mapLeft { ApiResponse.Failure.Stream.NoStreamFound(videoUuid) }.flatMap {
-                Either.catch { M3U8Stream(it["video"]!!.jsonObject["S"]!!.jsonPrimitive.content) }
-                        .mapLeft { ApiResponse.Failure.JsonParsingException(it) }
-            }
+        Either.catch { Json.decodeFromString<JsonObject>(json) }.mapLeft { ApiResponse.Failure.Stream.NoStreamFound(videoUuid) }.flatMap {
+            Either.catch { M3U8Stream(it["video"]!!.jsonObject["S"]!!.jsonPrimitive.content) }
+                .mapLeft(ApiResponse.Failure::JsonParsingException)
+        }
 }
 
 public sealed interface StreamRepo {
@@ -31,20 +31,20 @@ public sealed interface StreamRepo {
 }
 
 internal class HttpStreamRepo(
-        private val client: OkHttpClient,
-        private val jsonStreamParser: JsonStreamParser,
+    private val client: OkHttpClient,
+    private val jsonStreamParser: JsonStreamParser,
 ) : StreamRepo {
 
     // curl -X GET \
     // -H "Authorization: <IdToken>" \
     // -H "https://api.viervijfzes.be/content/<VideoUuid>"
     override suspend fun streamByVideoUuid(idToken: IdToken, videoUuid: VideoUuid): Either<ApiResponse.Failure, ApiResponse.Success.Stream> =
-            withContext(Dispatchers.IO) {
-                either {
-                    val response = client.executeAsync(
-                            Request.Builder().get().url("$vierVijfZesApi/content/${videoUuid.id}").header("Authorization", idToken.token).build()
-                    )
-                    ApiResponse.Success.Stream(jsonStreamParser.parse(videoUuid, response.safeBodyString().bind()).bind())
-                }
+        withContext(Dispatchers.IO) {
+            either {
+                val response = client.executeAsync(
+                    Request.Builder().get().url("$vierVijfZesApi/content/${videoUuid.id}").header("Authorization", idToken.token).build()
+                )
+                ApiResponse.Success.Stream(jsonStreamParser.parse(videoUuid, response.safeBodyString().bind()).bind())
             }
+        }
 }

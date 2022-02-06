@@ -29,4 +29,4 @@ internal fun Element.safeSelect(cssQuery: String): Either<ApiResponse.Failure.HT
 }
 
 internal fun Element.safeSelectFirst(cssQuery: String): Either<ApiResponse.Failure.HTML.NoSelection, Element> =
-        selectFirst(cssQuery)?.right() ?: ApiResponse.Failure.HTML.NoSelection(cssQuery).left()
+    selectFirst(cssQuery)?.right() ?: ApiResponse.Failure.HTML.NoSelection(cssQuery).left()

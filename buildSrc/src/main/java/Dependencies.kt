@@ -1,33 +1,36 @@
 object Versions {
-    const val kotlinVersion = "1.6.10"
+    const val kotlinVersion: String = "1.6.10"
 }
 
 object Dependencies {
-    const val kotlinXSerialization = "org.jetbrains.kotlinx:kotlinx-serialization-json:1.1.0"
+    const val kotlinXSerialization: String = "org.jetbrains.kotlinx:kotlinx-serialization-json:1.1.0"
 
-    const val kotlinStdLib = "org.jetbrains.kotlin:kotlin-stdlib:${Versions.kotlinVersion}"
+    const val kotlinStdLib: String = "org.jetbrains.kotlin:kotlin-stdlib:${Versions.kotlinVersion}"
 
-    const val awsBOM = "software.amazon.awssdk:bom:2.16.23"
-    const val awsCognitoProvider = "software.amazon.awssdk:cognitoidentityprovider"
+    const val awsBOM: String = "software.amazon.awssdk:bom:2.16.23"
+    const val awsCognitoProvider: String = "software.amazon.awssdk:cognitoidentityprovider"
 
-    const val okHttp3 = "com.squareup.okhttp3:okhttp:4.9.1"
+    // TODO Replace 🔫 with Ktor to make MPP compatible
+    const val okHttp3: String = "com.squareup.okhttp3:okhttp:4.9.1"
 
+    // TODO Use BOM
     private const val arrowVersion = "1.0.1"
-    const val arrowCore = "io.arrow-kt:arrow-core:${arrowVersion}"
-    const val arrowSyntax = "io.arrow-kt:arrow-syntax:${arrowVersion}"
-    const val arrowMeta = "io.arrow-kt:arrow-meta:${arrowVersion}"
-    const val arrowFx = "io.arrow-kt:arrow-fx:${arrowVersion}"
-    const val arrowFxCoroutines = "io.arrow-kt:arrow-fx-coroutines:${arrowVersion}"
+    const val arrowCore: String = "io.arrow-kt:arrow-core:${arrowVersion}"
+    const val arrowSyntax: String = "io.arrow-kt:arrow-syntax:${arrowVersion}"
+    const val arrowMeta: String = "io.arrow-kt:arrow-meta:${arrowVersion}"
+    const val arrowFx: String = "io.arrow-kt:arrow-fx:${arrowVersion}"
+    const val arrowFxCoroutines: String = "io.arrow-kt:arrow-fx-coroutines:${arrowVersion}"
 
-    const val jsoup = "org.jsoup:jsoup:1.13.1"
+    // TODO Remove 🔫
+    const val jsoup: String = "org.jsoup:jsoup:1.13.1"
 
     private const val coroutineVersion = "1.6.0"
-    const val coroutinesCore = "org.jetbrains.kotlinx:kotlinx-coroutines-core:${coroutineVersion}"
+    const val coroutinesCore: String = "org.jetbrains.kotlinx:kotlinx-coroutines-core:${coroutineVersion}"
 }
 
 object Plugins {
-    const val kotlinGradle = "org.jetbrains.kotlin:kotlin-gradle-plugin:${Versions.kotlinVersion}"
-    const val versions = "com.github.ben-manes:gradle-versions-plugin:0.38.0"
+    const val kotlinGradle: String = "org.jetbrains.kotlin:kotlin-gradle-plugin:${Versions.kotlinVersion}"
+    const val versions: String = "com.github.ben-manes:gradle-versions-plugin:0.38.0"
 }
 
 object Testing {
@@ -38,5 +41,5 @@ object Testing {
     private const val kotestAssertionsArrow = "io.kotest.extensions:kotest-assertions-arrow:1.2.2"
     private const val kotestProperty = "io.kotest:kotest-property:${kotestVersion}"
 
-    const val mockk = "io.mockk:mockk:v1.10.2"
+    const val mockk: String = "io.mockk:mockk:v1.10.2"
 }

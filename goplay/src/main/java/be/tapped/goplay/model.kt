@@ -7,7 +7,7 @@ import be.tapped.goplay.content.VideoUuid
 import be.tapped.goplay.epg.EpgProgram
 import be.tapped.goplay.profile.TokenWrapper
 import okhttp3.Request
-import java.util.*
+import java.util.Calendar
 
 public sealed class ApiResponse {
     public sealed class Success : ApiResponse() {

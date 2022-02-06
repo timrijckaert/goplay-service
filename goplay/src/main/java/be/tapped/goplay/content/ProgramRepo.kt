@@ -53,18 +53,18 @@ internal class HtmlFullProgramParser(private val jsoupParser: JsoupParser) {
     fun canParse(html: String): Boolean = jsoupParser.parse(html).safeSelectFirst(CSSSelector).isRight()
 
     fun parse(html: String): Either<Failure, Program> =
-            jsoupParser.parse(html)
-                    .safeSelectFirst(CSSSelector)
-                    .flatMap { it.safeAttr(datasetName).toEither() }
-                    .flatMap {
-                        Either.catch {
-                            val programDataObject = Json.decodeFromString<JsonObject>(it)["data"]!!.jsonObject
-                            Json {
-                                isLenient = true
-                                ignoreUnknownKeys = true
-                            }.decodeFromJsonElement<Program>(programDataObject)
-                        }.mapLeft(Failure::JsonParsingException)
-                    }
+        jsoupParser.parse(html)
+            .safeSelectFirst(CSSSelector)
+            .flatMap { it.safeAttr(datasetName).toEither() }
+            .flatMap {
+                Either.catch {
+                    val programDataObject = Json.decodeFromString<JsonObject>(it)["data"]!!.jsonObject
+                    Json {
+                        isLenient = true
+                        ignoreUnknownKeys = true
+                    }.decodeFromJsonElement<Program>(programDataObject)
+                }.mapLeft(Failure::JsonParsingException)
+            }
 }
 
 // The Search API from Vier is sometimes returning non available Programs.
@@ -76,11 +76,11 @@ internal class ProgramResponseValidator {
     }
 
     internal suspend fun validateResponse(response: Response): Either<Failure, String> =
-            if (response.priorResponse?.headers("Location")?.firstOrNull() == NO_LONGER_AVAILABLE_REDIRECT_LOCATION) {
-                Failure.Content.ProgramNoLongerAvailable.left()
-            } else {
-                response.safeBodyString()
-            }
+        if (response.priorResponse?.headers("Location")?.firstOrNull() == NO_LONGER_AVAILABLE_REDIRECT_LOCATION) {
+            Failure.Content.ProgramNoLongerAvailable.left()
+        } else {
+            response.safeBodyString()
+        }
 }
 
 public sealed interface ProgramRepo {
@@ -92,10 +92,10 @@ public sealed interface ProgramRepo {
 }
 
 internal class HttpProgramRepo(
-        private val client: OkHttpClient,
-        private val htmlProgramParser: HtmlProgramParser,
-        private val htmlFullProgramParser: HtmlFullProgramParser,
-        private val programResponseValidator: ProgramResponseValidator,
+    private val client: OkHttpClient,
+    private val htmlProgramParser: HtmlProgramParser,
+    private val htmlFullProgramParser: HtmlFullProgramParser,
+    private val programResponseValidator: ProgramResponseValidator,
 ) : ProgramRepo {
 
     // Scrapes the https://www.goplay.be/programmas searching for all available Programs and the details associated with it.
@@ -110,7 +110,7 @@ internal class HttpProgramRepo(
     }
 
     override suspend fun fetchProgram(programSearchKey: SearchHit.Source.SearchKey.Program): Either<Failure, Success.Content.SingleProgram> =
-            fetchProgramFromUrl(programSearchKey.url).map(Success.Content::SingleProgram)
+        fetchProgramFromUrl(programSearchKey.url).map(Success.Content::SingleProgram)
 
     private suspend fun fetchProgramFromUrl(programUrl: String): Either<Failure, Program> = either {
         val html = withContext(Dispatchers.IO) {

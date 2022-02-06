@@ -11,6 +11,7 @@
 /.idea/.name
 .DS_Store
 /build
+out/
 /captures
 .externalNativeBuild
 .cxx

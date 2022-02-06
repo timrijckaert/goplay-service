@@ -1,6 +1,6 @@
 name: Pipeline
 
-on: [push]
+on: [ push ]
 
 jobs:
   tests:
@@ -8,7 +8,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        brand: ['vrtnu', 'vtmgo', 'vier']
+        brand: [ 'vier' ]
 
     steps:
       - uses: actions/checkout@v2.4.0
