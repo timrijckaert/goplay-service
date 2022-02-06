@@ -14,8 +14,8 @@ internal class EpgRepoTest : ShouldSpec({
         val sut = HttpEpgRepo()
 
         should("be able to fetch the day before yesterday's EPG for $it") {
-            val yesterday = today.apply { add(Calendar.DAY_OF_MONTH, -2) }
-            sut.epg(it, yesterday.toDate()).shouldBeRight()
+            val dayBeforeYesterday = today.apply { add(Calendar.DAY_OF_MONTH, -2) }
+            sut.epg(it, dayBeforeYesterday.toDate()).shouldBeRight()
         }
 
         should("be able to fetch yesterday's EPG for $it") {
@@ -33,8 +33,8 @@ internal class EpgRepoTest : ShouldSpec({
         }
 
         should("be able to fetch the day after tomorrow's EPG for $it") {
-            val tomorrow = today.apply { add(Calendar.DAY_OF_MONTH, 2) }
-            sut.epg(it, tomorrow.toDate()).shouldBeRight()
+            val dayAfterTomorrow = today.apply { add(Calendar.DAY_OF_MONTH, 2) }
+            sut.epg(it, dayAfterTomorrow.toDate()).shouldBeRight()
         }
     }
 })
