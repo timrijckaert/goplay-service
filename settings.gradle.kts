@@ -1,6 +1,6 @@
 enableFeaturePreview("VERSION_CATALOGS")
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
-include ':goplay'
-
 rootProject.name = "flemish-tv-aggregator"
+
+include(":goplay")
