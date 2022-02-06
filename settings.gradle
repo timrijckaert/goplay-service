@@ -1,3 +1,6 @@
+enableFeaturePreview("VERSION_CATALOGS")
+enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
+
 include ':goplay'
 
-rootProject.name = "Vlaamse TV Aggregator"
+rootProject.name = "flemish-tv-aggregator"

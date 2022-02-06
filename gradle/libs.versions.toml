@@ -1,0 +1,35 @@
+[versions]
+kotlin = "1.6.10"
+arrow = "1.0.1"
+coroutines = "1.6.0"
+kotest = "5.1.0"
+
+[libraries]
+kotlinx-serialization-json = "org.jetbrains.kotlinx:kotlinx-serialization-json:1.1.0"
+kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlin" }
+
+aws-bom = "software.amazon.awssdk:bom:2.16.23"
+aws-cognitoidentityprovider = { group = "software.amazon.awssdk", name = "cognitoidentityprovider" }
+
+okhttp3 = "com.squareup.okhttp3:okhttp:4.9.1"
+
+arrow-bom = { module = "io.arrow-kt:arrow-stack", version.ref = "arrow" }
+arrow-core = { group = "io.arrow-kt", name = "arrow-core" }
+arrow-syntax = { group = "io.arrow-kt", name = "arrow-syntax" }
+arrow-meta = { group = "io.arrow-kt", name = "arrow-meta" }
+arrow-fx = { group = "io.arrow-kt", name = "arrow-fx" }
+arrow-fx-coroutines = { group = "io.arrow-kt", name = "arrow-fx-coroutines" }
+
+jsoup = "org.jsoup:jsoup:1.13.1"
+
+coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
+
+kotest-runner = { module = "io.kotest:kotest-runner-junit5", version.ref = "kotest" }
+kotest-assertions-core = { module = "io.kotest:kotest-assertions-core", version.ref = "kotest" }
+kotest-assertions-arrow = "io.kotest.extensions:kotest-assertions-arrow:1.2.2"
+kotest-property = { module = "io.kotest:kotest-property", version.ref = "kotest" }
+
+mockk = "io.mockk:mockk:v1.10.2"
+
+[plugins]
+# kotlin-gradle = { group = 'org.jetbrains.kotlin', name= 'kotlin-gradle-plugin', version.ref = "kotlin" }

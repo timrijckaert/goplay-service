@@ -4,22 +4,22 @@ plugins {
 }
 
 dependencies {
-    implementation Dependencies.kotlinXSerialization
-    implementation Dependencies.kotlinStdLib
-    implementation Dependencies.coroutinesCore
+    implementation libs.kotlinx.serialization.json
+    implementation libs.kotlin.stdlib
+    implementation libs.coroutines.core
 
-    implementation platform(Dependencies.awsBOM)
-    implementation Dependencies.awsCognitoProvider
+    implementation platform(libs.aws.bom)
+    implementation libs.aws.cognitoidentityprovider
 
-    implementation Dependencies.okHttp3
+    implementation libs.okhttp3
 
-    implementation platform(Dependencies.arrowBom)
-    implementation Dependencies.arrowCore
-    implementation Dependencies.arrowFxCoroutines
-    implementation Dependencies.jsoup
+    implementation platform(libs.arrow.bom)
+    implementation libs.arrow.core
+    implementation libs.arrow.fx.coroutines
+    implementation libs.jsoup
 
-    testImplementation Testing.kotestRunner
-    testImplementation Testing.kotestAssertionsCore
-    testImplementation Testing.kotestAssertionsArrow
-    testImplementation Testing.kotestProperty
+    testImplementation libs.kotest.runner
+    testImplementation libs.kotest.assertions.core
+    testImplementation libs.kotest.assertions.arrow
+    testImplementation libs.kotest.property
 }

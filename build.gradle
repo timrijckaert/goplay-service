@@ -6,7 +6,7 @@ buildscript {
     }
 
     dependencies {
-        classpath Plugins.kotlinGradle
+        // classpath libs.plugins.kotlin.gradle
     }
 }
 
@@ -17,7 +17,7 @@ allprojects {
     }
 
     apply plugin: 'java-library'
-    apply plugin: 'kotlin'
+    // apply plugin: 'kotlin'
     apply from: "${rootDir}/credentials.gradle"
 
     java {
@@ -30,11 +30,11 @@ allprojects {
         useJUnitPlatform()
     }
 
-    compileKotlin {
-        kotlinOptions {
-            freeCompilerArgs += [
-                    "-Xexplicit-api=strict"
-            ]
-        }
-    }
+    // compileKotlin {
+    //     kotlinOptions {
+    //         freeCompilerArgs += [
+    //                 "-Xexplicit-api=strict"
+    //         ]
+    //     }
+    // }
 }
