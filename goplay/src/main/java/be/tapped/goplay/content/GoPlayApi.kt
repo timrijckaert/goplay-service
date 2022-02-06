@@ -2,6 +2,7 @@ package be.tapped.goplay.content
 
 import be.tapped.goplay.common.goPlayApiDefaultOkHttpClient
 import be.tapped.goplay.common.jsonSerializer
+import be.tapped.goplay.common.ktorClient
 import be.tapped.goplay.epg.EpgRepo
 import be.tapped.goplay.epg.defaultEpgRepo
 
@@ -14,5 +15,5 @@ public object GoPlayApi :
         EpisodeParser()
     ),
     StreamRepo by HttpStreamRepo(goPlayApiDefaultOkHttpClient, JsonStreamParser()),
-    SearchRepo by HttpSearchRepo(goPlayApiDefaultOkHttpClient, JsonSearchResultsParser()),
+    SearchRepo by HttpSearchRepo(ktorClient),
     EpgRepo by defaultEpgRepo()
