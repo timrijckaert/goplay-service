@@ -2,14 +2,10 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 @Suppress("DSL_SCOPE_VIOLATION")
 plugins {
-    alias(libs.plugins.kotlin.jvm) apply false
+    id(libs.plugins.kotlin.jvm.pluginId) apply false
 }
 
 allprojects {
-    apply {
-        from("${rootDir}/credentials.gradle")
-    }
-
     repositories {
         mavenCentral()
         google()
@@ -27,18 +23,14 @@ allprojects {
             targetCompatibility = JavaVersion.VERSION_11.toString()
         }
 
+        val username by variable("username")
+        val password by variable("password")
+
         withType<Test>().configureEach {
-            addAuthenticationTokensToSystemEnv(this)
             useJUnitPlatform()
+
+            environment("goplay.username", username)
+            environment("goplay.password", password)
         }
     }
-
-//  Why can it not find KotlinProjectExtension or kotlin { }
-//  configure<KotlinProjectExtension> { explicitApi() }
 }
-
-fun addAuthenticationTokensToSystemEnv(test: Test) {
-    (project.extra.get("addAuthenticationTokensToSystemEnv") as org.codehaus.groovy.runtime.MethodClosure)(test)
-}
-
-
