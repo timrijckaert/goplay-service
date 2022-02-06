@@ -47,13 +47,6 @@ public sealed interface ProfileRepo {
 
 }
 
-internal val <T : SdkResponse> T.checkResult: Either<ApiResponse.Failure, T>
-    get() = if (sdkHttpResponse().isSuccessful) {
-        right()
-    } else {
-        ApiResponse.Failure.Authentication.AWS(sdkHttpResponse().statusCode(), sdkHttpResponse().statusText().orElse(null)).left()
-    }
-
 public class HttpProfileRepo(private val profileUserAttributeParser: ProfileUserAttributeParser = ProfileUserAttributeParser()) : ProfileRepo {
 
     private val cognitoIdentityProvider by lazy(CognitoIdentityProviderClient.builder().credentialsProvider(AnonymousCredentialsProvider.create()).region(Region.EU_WEST_1)::build)
@@ -106,3 +99,10 @@ public class HttpProfileRepo(private val profileUserAttributeParser: ProfileUser
             }.mapLeft { Profile }.bind()
         }
 }
+
+private val <T : SdkResponse> T.checkResult: Either<ApiResponse.Failure, T>
+    get() = if (sdkHttpResponse().isSuccessful) {
+        right()
+    } else {
+        ApiResponse.Failure.Authentication.AWS(sdkHttpResponse().statusCode(), sdkHttpResponse().statusText().orElse(null)).left()
+    }

@@ -1,24 +1,32 @@
 package be.tapped.goplay.content
 
-import be.tapped.goplay.common.goPlayApiDefaultOkHttpClient
+import be.tapped.goplay.epg.EpgRepo
+import be.tapped.goplay.epg.httpEpgRepo
+import io.ktor.client.*
+import io.ktor.client.engine.apache.*
+import io.ktor.client.features.json.*
+import io.ktor.client.features.json.serializer.*
+import kotlinx.serialization.json.Json
 
-public class GoPlayApi(
-    private val programRepo: ProgramRepo = HttpProgramRepo(
-        goPlayApiDefaultOkHttpClient,
-        HtmlProgramParser(JsoupParser()),
-        HtmlFullProgramParser(JsoupParser()),
-        ProgramResponseValidator()
-    ),
-    episodeRepo: EpisodeRepo = HttpEpisodeRepo(
-        goPlayApiDefaultOkHttpClient,
-        HtmlFullProgramParser(JsoupParser()),
-        HtmlClipEpisodeParser(JsoupParser()),
-        EpisodeParser()
-    ),
-    private val streamRepo: StreamRepo = HttpStreamRepo(goPlayApiDefaultOkHttpClient, JsonStreamParser()),
-    private val searchRepo: SearchRepo = HttpSearchRepo(goPlayApiDefaultOkHttpClient, JsonSearchResultsParser()),
-) :
-    ProgramRepo by programRepo,
-    EpisodeRepo by episodeRepo,
-    StreamRepo by streamRepo,
-    SearchRepo by searchRepo
+internal const val siteUrl: String = "https://www.goplay.be"
+internal const val vierVijfZesApi: String = "https://api.viervijfzes.be"
+internal const val apiGoPlay: String = "https://api.goplay.be"
+
+internal val jsonSerializer =
+    Json {
+        isLenient = true
+        ignoreUnknownKeys = true
+    }
+
+internal val httpClient: HttpClient =
+    HttpClient(Apache) {
+        install(JsonFeature)
+        install(JsonFeature) {
+            serializer = KotlinxSerializer(jsonSerializer)
+        }
+    }
+
+public object GoPlayApi :
+    ProgramRepo by httpProgramRepo(httpClient, HtmlProgramParser(jsonSerializer)),
+    SearchRepo by httpSearchRepo(),
+    EpgRepo by httpEpgRepo(httpClient)

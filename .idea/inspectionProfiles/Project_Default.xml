@@ -20,7 +20,6 @@
     <inspection_tool class="ConvertLambdaToReference" enabled="true" level="WEAK WARNING" enabled_by_default="true" />
     <inspection_tool class="ConvertNaNEquality" enabled="true" level="ERROR" enabled_by_default="true" />
     <inspection_tool class="ConvertPairConstructorToToFunction" enabled="true" level="ERROR" enabled_by_default="true" />
-    <inspection_tool class="ConvertReferenceToLambda" enabled="true" level="WEAK WARNING" enabled_by_default="true" />
     <inspection_tool class="ConvertSecondaryConstructorToPrimary" enabled="true" level="ERROR" enabled_by_default="true" />
     <inspection_tool class="ConvertToStringTemplate" enabled="true" level="ERROR" enabled_by_default="true" />
     <inspection_tool class="ConvertTryFinallyToUseCall" enabled="true" level="ERROR" enabled_by_default="true" />

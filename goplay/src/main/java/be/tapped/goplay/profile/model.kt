@@ -2,10 +2,13 @@ package be.tapped.goplay.profile
 
 @JvmInline
 public value class AccessToken(public val token: String)
+
 @JvmInline
 public value class RefreshToken(public val token: String)
+
 @JvmInline
 public value class IdToken(public val token: String)
+
 @JvmInline
 public value class Expiry(public val dateInMillis: Long)
 

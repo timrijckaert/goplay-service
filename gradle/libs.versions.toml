@@ -3,6 +3,7 @@ kotlin = "1.6.10"
 arrow = "1.0.1"
 coroutines = "1.6.0"
 kotest = "5.1.0"
+ktor = "1.6.7"
 
 [libraries]
 kotlinx-serialization-json = "org.jetbrains.kotlinx:kotlinx-serialization-json:1.1.0"
@@ -11,8 +12,6 @@ kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "
 aws-bom = "software.amazon.awssdk:bom:2.16.23"
 aws-cognitoidentityprovider = { group = "software.amazon.awssdk", name = "cognitoidentityprovider" }
 
-okhttp3 = "com.squareup.okhttp3:okhttp:4.9.1"
-
 arrow-bom = { module = "io.arrow-kt:arrow-stack", version.ref = "arrow" }
 arrow-core = { group = "io.arrow-kt", name = "arrow-core" }
 arrow-syntax = { group = "io.arrow-kt", name = "arrow-syntax" }
@@ -20,7 +19,10 @@ arrow-meta = { group = "io.arrow-kt", name = "arrow-meta" }
 arrow-fx = { group = "io.arrow-kt", name = "arrow-fx" }
 arrow-fx-coroutines = { group = "io.arrow-kt", name = "arrow-fx-coroutines" }
 
-jsoup = "org.jsoup:jsoup:1.13.1"
+ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
+ktor-client-apache = { module = "io.ktor:ktor-client-apache", version.ref = "ktor" }
+ktor-client-logging = { module = "io.ktor:ktor-client-logging", version.ref = "ktor" }
+ktor-client-serialization = { module = "io.ktor:ktor-client-serialization", version.ref = "ktor" }
 
 coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
 
