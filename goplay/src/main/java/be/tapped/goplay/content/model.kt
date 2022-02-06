@@ -64,22 +64,6 @@ public data class SearchHit(
         val duration: Int? = null,
     ) {
 
-        public sealed class SearchKey {
-            public data class Program(internal val url: String) : SearchKey()
-            public data class EpisodeByNodeId(internal val nodeId: String, internal val url: String) : SearchKey()
-            public object Invalid : SearchKey()
-        }
-
-        val searchKey: SearchKey
-            get() = when (bundle) {
-                Bundle.PROGRAM -> SearchKey.Program(url)
-                Bundle.VIDEO -> SearchKey.EpisodeByNodeId(id, url)
-                Bundle.STUB,
-                Bundle.ARTICLE,
-                Bundle.PLAYLIST,
-                -> SearchKey.Invalid
-            }
-
         @Serializable
         public enum class Bundle {
             @SerialName("program")

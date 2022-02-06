@@ -5,8 +5,7 @@ import arrow.core.computations.either
 import arrow.core.left
 import arrow.core.right
 import be.tapped.goplay.ApiResponse
-import be.tapped.goplay.common.ktorClient
-import be.tapped.goplay.common.siteUrl
+import be.tapped.goplay.content.siteUrl
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
 import kotlinx.coroutines.Dispatchers
@@ -35,7 +34,7 @@ public fun interface EpgRepo {
 // curl -X GET "https://www.goplay.be/api/epg/vier/2020-12-13"
 // curl -X GET "https://www.goplay.be/api/epg/vijf/2020-12-13"
 // curl -X GET "https://www.goplay.be/api/epg/zes/2020-12-13"
-internal fun defaultEpgRepo(client: HttpClient = ktorClient): EpgRepo =
+internal fun httpEpgRepo(client: HttpClient): EpgRepo =
     EpgRepo { brand: EpgRepo.Brand, date: EpgRepo.Date ->
         val (year, month, day) = date
         val brandPath = when (brand) {
