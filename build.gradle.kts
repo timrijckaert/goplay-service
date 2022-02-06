@@ -23,14 +23,16 @@ allprojects {
             targetCompatibility = JavaVersion.VERSION_11.toString()
         }
 
-        val username by variable("username")
-        val password by variable("password")
-
         withType<Test>().configureEach {
             useJUnitPlatform()
 
-            environment("goplay.username", username)
-            environment("goplay.password", password)
+            listOf("goplay").forEach { brand ->
+                val username by variable("${brand}.username")
+                val password by variable("${brand}.password")
+
+                environment("${brand}.username", username)
+                environment("${brand}.password", password)
+            }
         }
     }
 }

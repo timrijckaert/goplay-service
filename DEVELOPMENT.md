@@ -2,12 +2,14 @@
 Install the [Kotest Plugin](https://kotest.io/docs/intellij/intellij-plugin.html) if you want to be able to run tests from IDEA.
 
 ## Sample and Tests
-To run the `:sample` module or end 2 end tests you will need to add your credentials to the `local.properties`
+To run the `:sample` module or end 2 end tests you will need to add your credentials to the `local.properties` or `gradle.properties`.
 
 ```properties
 goplay.username=
 goplay.password=
 ```
+
+Or you can set the as system variables as well.
 
 Afterwards you can run tests like normal.
 Use the Kotest plugin from within IDEA or from CLI
@@ -15,10 +17,10 @@ Use the Kotest plugin from within IDEA or from CLI
 ./gradlew test
 ```
 
-Prevent `git` from trying to update these run configurations.
+Alternatively, you can pass the parameters as Gradle parameters too.
 
 ```sh
-git update-index --assume-unchanged .idea/runConfigurations/*
+./gradlew test -Pgoplay.username=... -Pgoplay.password=...
 ```
 
 # Charles Root Certificates

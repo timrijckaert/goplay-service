@@ -17,7 +17,9 @@ class Variable(private val project: Project, private val name: String) {
     }
 
     operator fun getValue(nothing: Nothing?, property: KProperty<*>): String =
-        requireNotNull(project.properties[name]?.toString() ?: localProperties.getProperty(name, null)) {
-            "Property $name as parameter, project property, or local.properties"
-        }
+        requireNotNull(
+            project.properties[name]?.toString() ?:
+            localProperties.getProperty(name, null) ?:
+            System.getenv(name)
+        ) { "Property $name as parameter, project property, local.properties or system variable" }
 }
