@@ -6,8 +6,8 @@ import arrow.core.left
 import arrow.core.right
 import be.tapped.goplay.ApiResponse
 import be.tapped.goplay.content.siteUrl
-import io.ktor.client.HttpClient
-import io.ktor.client.request.get
+import io.ktor.client.*
+import io.ktor.client.request.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 

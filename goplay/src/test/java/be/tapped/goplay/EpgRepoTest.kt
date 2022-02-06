@@ -5,8 +5,7 @@ import be.tapped.goplay.epg.EpgRepo
 import be.tapped.goplay.epg.httpEpgRepo
 import io.kotest.assertions.arrow.core.shouldBeRight
 import io.kotest.core.spec.style.ShouldSpec
-import java.util.Calendar
-import java.util.TimeZone
+import java.util.*
 
 internal class EpgRepoTest : ShouldSpec({
     EpgRepo.Brand.values().forEach {
