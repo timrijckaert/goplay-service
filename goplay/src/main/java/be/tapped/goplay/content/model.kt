@@ -1,6 +1,5 @@
 package be.tapped.goplay.content
 
-import be.tapped.goplay.GoPlayBrand
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -22,8 +21,12 @@ public data class Program(
     val link: String,
     val title: String,
     val label: String,
-    val pageInfo: PageInfo
+    val pageInfo: PageInfo,
+    val images: Images,
 ) {
+    @Serializable
+    public data class Images(val poster: String, val teaser: String)
+
     @Serializable
     public data class PageInfo(val brand: Brand) {
         public enum class Brand {
