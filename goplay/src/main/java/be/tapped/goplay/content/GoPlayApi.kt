@@ -9,7 +9,7 @@ import io.ktor.client.features.json.serializer.*
 import kotlinx.serialization.json.Json
 
 internal const val siteUrl: String = "https://www.goplay.be"
-internal const val vierVijfZesApi: String = "https://api.viervijfzes.be"
+internal const val apiVierVijfZes: String = "https://api.viervijfzes.be"
 internal const val apiGoPlay: String = "https://api.goplay.be"
 
 internal val jsonSerializer =
@@ -20,7 +20,6 @@ internal val jsonSerializer =
 
 internal val httpClient: HttpClient =
     HttpClient(Apache) {
-        install(JsonFeature)
         install(JsonFeature) {
             serializer = KotlinxSerializer(jsonSerializer)
         }
