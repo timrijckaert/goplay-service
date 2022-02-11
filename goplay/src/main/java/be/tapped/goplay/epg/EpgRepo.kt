@@ -14,21 +14,19 @@ import kotlinx.coroutines.withContext
 import kotlinx.datetime.LocalDate
 
 public fun interface EpgRepo {
-    public suspend fun epg(
-        goPlayBrand: GoPlayBrand,
-        date: LocalDate,
-    ): Either<ApiResponse.Failure, ApiResponse.Success.ProgramGuide>
+    public suspend fun epg(brand: GoPlayBrand, date: LocalDate): Either<ApiResponse.Failure, ApiResponse.Success.ProgramGuide>
 }
 
 // curl -X GET "https://www.goplay.be/api/epg/vier/2020-12-13"
 // curl -X GET "https://www.goplay.be/api/epg/vijf/2020-12-13"
 // curl -X GET "https://www.goplay.be/api/epg/zes/2020-12-13"
+// curl -X GET "https://www.goplay.be/api/epg/zeven/2020-12-13"
 internal fun httpEpgRepo(client: HttpClient): EpgRepo =
     EpgRepo { goPlayBrand, date ->
         val year = date.year
         val month = date.month.value
         val dayOfMonth = date.dayOfMonth
-        val goPlayBrandPath =
+        val brandPath =
             when (goPlayBrand) {
                 GoPlayBrand.Play4 -> "vier"
                 GoPlayBrand.Play5 -> "vijf"
@@ -37,7 +35,7 @@ internal fun httpEpgRepo(client: HttpClient): EpgRepo =
             }
         val monthStr = if (month < 10) "0${month}" else "$month"
         val dayStr = if (dayOfMonth < 10) "0${dayOfMonth}" else "$dayOfMonth"
-        val url = "$siteUrl/api/epg/$goPlayBrandPath/${year}-$monthStr-$dayStr"
+        val url = "$siteUrl/api/epg/$brandPath/${year}-$monthStr-$dayStr"
 
         withContext(Dispatchers.IO) {
             either {
