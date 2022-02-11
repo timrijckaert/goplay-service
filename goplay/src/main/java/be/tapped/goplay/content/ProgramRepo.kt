@@ -18,7 +18,7 @@ internal class HtmlJsonProgramExtractor(private val jsonSerializer: Json) {
         Either.catch(
             regex.findAll(html)
                 .map { it.groupValues[1] }
-                .map(::htmlDecode)
+                .map(String::htmlDecode)
                 .map<String, Program>(jsonSerializer::decodeFromString)::toList
         ).mapLeft(Failure::JsonParsingException)
 }
@@ -39,8 +39,8 @@ internal fun httpProgramRepo(client: HttpClient, htmlJsonProgramExtractor: HtmlJ
 
 // A poor man's html decoder
 // TODO refactor or replace with a dedicated MPP lib?
-private fun htmlDecode(str: String): String {
-    var s = str
+private fun String.htmlDecode(): String {
+    var s = this
     if (s.isEmpty()) {
         return s
     }
