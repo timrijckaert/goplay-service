@@ -19,6 +19,7 @@ dependencies {
     implementation(libs.ktor.client.apache)
     implementation(libs.ktor.client.logging)
     implementation(libs.ktor.client.serialization)
+    implementation(libs.kotlinx.datetime)
 
     testImplementation(libs.kotest.runner)
     testImplementation(libs.kotest.assertions.core)

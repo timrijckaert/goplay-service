@@ -7,6 +7,8 @@ ktor = "1.6.7"
 
 [libraries]
 kotlinx-serialization-json = "org.jetbrains.kotlinx:kotlinx-serialization-json:1.1.0"
+kotlinx-datetime = "org.jetbrains.kotlinx:kotlinx-datetime:0.3.2"
+
 kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlin" }
 
 aws-bom = "software.amazon.awssdk:bom:2.16.23"

@@ -4,8 +4,8 @@ import be.tapped.goplay.content.M3U8Stream
 import be.tapped.goplay.content.Program
 import be.tapped.goplay.content.SearchHit
 import be.tapped.goplay.epg.EpgProgram
-import be.tapped.goplay.epg.EpgRepo
 import be.tapped.goplay.profile.TokenWrapper
+import kotlinx.datetime.LocalDate
 
 public sealed class ApiResponse {
     public sealed class Success : ApiResponse() {
@@ -40,7 +40,7 @@ public sealed class ApiResponse {
         }
 
         public sealed class Epg : Failure() {
-            public data class NoEpgDataFor(val date: EpgRepo.Date) : Epg()
+            public data class NoEpgDataFor(val date: LocalDate) : Epg()
         }
     }
 }

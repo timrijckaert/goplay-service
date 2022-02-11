@@ -18,8 +18,7 @@ public data class EpgProgram(
     @SerialName("won_program_id") val wonProgramId: String? = null,
     @SerialName("program_concept") val programConcept: String? = null,
     @SerialName("content_episode") val contentEpisode: String? = null,
-    //    @SerialName("duration")
-    //    val duration: Int? = null,
+    @SerialName("duration") val duration: String? = null,
     @SerialName("program_node") val programName: ProgramNode? = null,
     @SerialName("video_node") val videoNode: VideoNode? = null,
 )
