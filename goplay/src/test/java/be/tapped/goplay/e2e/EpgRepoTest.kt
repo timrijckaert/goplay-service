@@ -12,8 +12,7 @@ import kotlinx.datetime.plus
 import kotlinx.datetime.toLocalDateTime
 
 internal class EpgRepoTest : ShouldSpec({
-    GoPlayBrand::class.sealedSubclasses.forEach {
-        val brand = it.objectInstance!!
+    GoPlayBrand.values().forEach { brand ->
         val sut = httpEpgRepo(httpClient)
 
         should("be able to fetch the day before yesterday's EPG for $brand") {
