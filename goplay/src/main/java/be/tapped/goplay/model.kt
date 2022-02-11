@@ -1,8 +1,6 @@
 package be.tapped.goplay
 
-import be.tapped.goplay.content.M3U8Stream
 import be.tapped.goplay.content.Program
-import be.tapped.goplay.content.SearchHit
 import be.tapped.goplay.epg.EpgProgram
 import be.tapped.goplay.profile.TokenWrapper
 import kotlinx.datetime.LocalDate
@@ -16,10 +14,7 @@ public sealed class ApiResponse {
 
         public sealed class Content : Success() {
             public data class Programs(val programs: List<Program>) : Content()
-            public data class SearchResults(val hits: List<SearchHit>) : Content()
         }
-
-        public data class Stream(val m3U8Stream: M3U8Stream) : Success()
 
         public data class ProgramGuide(val epg: List<EpgProgram>) : Success()
     }
