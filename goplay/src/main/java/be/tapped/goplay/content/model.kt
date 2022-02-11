@@ -1,5 +1,6 @@
 package be.tapped.goplay.content
 
+import be.tapped.goplay.GoPlayBrand
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -13,7 +14,7 @@ public value class VideoUuid(public val id: String)
 public value class M3U8Stream(public val url: String)
 
 @Serializable
-public data class Program(val id: String, val playlists: List<Playlist>) {
+public data class Program(val id: String, val playlists: List<Playlist> = emptyList(), val pageInfo: PageInfo) {
     @Serializable
     public data class Playlist(val episodes: List<Episode>) {
         @Serializable
@@ -30,7 +31,15 @@ public data class Program(val id: String, val playlists: List<Playlist>) {
     }
 
     @Serializable
-    public data class PageInfo(val nodeId: String)
+    public data class PageInfo(val brand: Brand) {
+        public enum class Brand {
+            Play4,
+            Play5,
+            Play6,
+            Play7,
+            GoPlay;
+        }
+    }
 }
 
 //<editor-fold desc="Search">

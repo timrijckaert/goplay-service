@@ -1,4 +1,4 @@
-package be.tapped.goplay
+package be.tapped.goplay.e2e
 
 import be.tapped.goplay.content.httpSearchRepo
 import io.kotest.assertions.arrow.core.shouldBeRight

@@ -1,5 +1,6 @@
-package be.tapped.goplay
+package be.tapped.goplay.e2e
 
+import be.tapped.goplay.Credentials
 import be.tapped.goplay.profile.HttpProfileRepo
 import io.kotest.assertions.arrow.core.shouldBeLeft
 import io.kotest.assertions.arrow.core.shouldBeRight
