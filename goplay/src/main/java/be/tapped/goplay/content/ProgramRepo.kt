@@ -4,6 +4,7 @@ import arrow.core.Either
 import arrow.core.computations.either
 import be.tapped.goplay.ApiResponse.Failure
 import be.tapped.goplay.ApiResponse.Success
+import be.tapped.goplay.siteUrl
 import io.ktor.client.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
