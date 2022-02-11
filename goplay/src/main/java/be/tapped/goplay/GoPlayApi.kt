@@ -1,5 +1,8 @@
-package be.tapped.goplay.content
+package be.tapped.goplay
 
+import be.tapped.goplay.content.HtmlJsonProgramExtractor
+import be.tapped.goplay.content.ProgramRepo
+import be.tapped.goplay.content.httpProgramRepo
 import be.tapped.goplay.epg.EpgRepo
 import be.tapped.goplay.epg.httpEpgRepo
 import io.ktor.client.*

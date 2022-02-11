@@ -6,7 +6,7 @@ import arrow.core.left
 import arrow.core.right
 import be.tapped.goplay.ApiResponse
 import be.tapped.goplay.GoPlayBrand
-import be.tapped.goplay.content.siteUrl
+import be.tapped.goplay.siteUrl
 import io.ktor.client.*
 import io.ktor.client.request.*
 import kotlinx.coroutines.Dispatchers
