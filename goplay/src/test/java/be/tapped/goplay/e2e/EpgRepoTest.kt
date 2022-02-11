@@ -1,5 +1,6 @@
-package be.tapped.goplay
+package be.tapped.goplay.e2e
 
+import be.tapped.goplay.GoPlayBrand
 import be.tapped.goplay.content.httpClient
 import be.tapped.goplay.epg.httpEpgRepo
 import io.kotest.assertions.arrow.core.shouldBeRight
@@ -11,7 +12,8 @@ import kotlinx.datetime.plus
 import kotlinx.datetime.toLocalDateTime
 
 internal class EpgRepoTest : ShouldSpec({
-    GoPlayBrand.values().forEach { brand ->
+    GoPlayBrand::class.sealedSubclasses.forEach {
+        val brand = it.objectInstance!!
         val sut = httpEpgRepo(httpClient)
 
         should("be able to fetch the day before yesterday's EPG for $brand") {
