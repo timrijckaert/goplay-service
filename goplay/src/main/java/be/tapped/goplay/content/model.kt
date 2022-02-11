@@ -13,11 +13,15 @@ public value class VideoUuid(public val id: String)
 @JvmInline
 public value class M3U8Stream(public val url: String)
 
+/**
+ * @param label: Most of time this is an empty string. Sometimes it contains values such as "Volledig seizoen", "nieuw", "Volledige reeks"
+ */
 @Serializable
 public data class Program(
     val id: String,
     val link: String,
     val title: String,
+    val label: String,
     val playlists: List<Playlist> = emptyList(),
     val pageInfo: PageInfo
 ) {
