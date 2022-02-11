@@ -22,24 +22,8 @@ public data class Program(
     val link: String,
     val title: String,
     val label: String,
-    val playlists: List<Playlist> = emptyList(),
     val pageInfo: PageInfo
 ) {
-    @Serializable
-    public data class Playlist(val episodes: List<Episode>) {
-        @Serializable
-        public data class Episode(
-            @SerialName("videoUuid")
-            private val id: String,
-            val pageInfo: PageInfo
-        ) {
-            val videoUuid: VideoUuid get() = VideoUuid(id)
-
-            @Serializable
-            public data class Program(val title: String, val poster: String)
-        }
-    }
-
     @Serializable
     public data class PageInfo(val brand: Brand) {
         public enum class Brand {
