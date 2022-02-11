@@ -14,7 +14,13 @@ public value class VideoUuid(public val id: String)
 public value class M3U8Stream(public val url: String)
 
 @Serializable
-public data class Program(val id: String, val link: String, val playlists: List<Playlist> = emptyList(), val pageInfo: PageInfo) {
+public data class Program(
+    val id: String,
+    val link: String,
+    val title: String,
+    val playlists: List<Playlist> = emptyList(),
+    val pageInfo: PageInfo
+) {
     @Serializable
     public data class Playlist(val episodes: List<Episode>) {
         @Serializable
