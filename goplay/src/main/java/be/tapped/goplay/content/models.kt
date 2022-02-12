@@ -113,7 +113,7 @@ public sealed interface Program {
                 val description: String,
                 val image: String,
                 val duration: Long,
-                val seasonNumber: Int,
+                val seasonNumber: String,
                 // TODO Not every episode has an 'episodeNumber' ?!
                 // val episodeNumber: Int,
             ) {
