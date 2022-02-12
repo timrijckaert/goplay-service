@@ -118,7 +118,8 @@ public sealed interface Program {
                 // val episodeNumber: Int,
                 val createdDate: String,
                 val unpublishDate: String,
-                val parentalRating: String
+                val parentalRating: String,
+                val path: String,
             ) {
                 @JvmInline
                 @Serializable
