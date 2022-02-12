@@ -112,6 +112,7 @@ public sealed interface Program {
                 val title: String,
                 val description: String,
                 val image: String,
+                val duration: Long,
             ) {
                 @JvmInline
                 @Serializable
