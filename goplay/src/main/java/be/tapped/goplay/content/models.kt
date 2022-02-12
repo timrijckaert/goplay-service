@@ -114,6 +114,8 @@ public sealed interface Program {
                 val image: String,
                 val duration: Long,
                 val seasonNumber: Int,
+                // TODO Not every episode has an 'episodeNumber' ?!
+                // val episodeNumber: Int,
             ) {
                 @JvmInline
                 @Serializable
