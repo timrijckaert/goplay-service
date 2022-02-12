@@ -19,9 +19,21 @@ internal class ProgramRepoTest : FreeSpec({
             allPrograms.shouldBeRight()
         }
 
-        "and retrieving the details" - {
+        "and retrieving the details by link" - {
             allPrograms.shouldBeRight().programs.parTraverse {
                 val detail = sut.fetchProgramByLink(it.link)
+
+                "for ${it.title}" - {
+                    "it should be successful" {
+                        detail.shouldBeRight()
+                    }
+                }
+            }
+        }
+
+        "and retrieving the details by id" - {
+            allPrograms.shouldBeRight().programs.parTraverse {
+                val detail = sut.fetchProgramById(it.id)
 
                 "for ${it.title}" - {
                     "it should be successful" {
