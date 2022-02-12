@@ -117,6 +117,7 @@ public sealed interface Program {
                 // TODO Not every episode has an 'episodeNumber' ?!
                 // val episodeNumber: Int,
                 val createdDate: String,
+                val unpublishDate: String,
             ) {
                 @JvmInline
                 @Serializable
