@@ -111,6 +111,7 @@ public sealed interface Program {
                  */
                 val title: String,
                 val description: String,
+                val image: String,
             ) {
                 @JvmInline
                 @Serializable
