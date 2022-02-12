@@ -1,5 +1,6 @@
 package be.tapped.goplay
 
+import arrow.core.Nel
 import be.tapped.goplay.content.Program
 import be.tapped.goplay.epg.EpgProgram
 import be.tapped.goplay.profile.TokenWrapper
@@ -13,7 +14,8 @@ public sealed class ApiResponse {
         }
 
         public sealed class Content : Success() {
-            public data class Programs(val programs: List<Program>) : Content()
+            public data class Programs(val programs: Nel<Program>) : Content()
+            public data class ProgramDetail(val program: Program) : Content()
         }
 
         public data class ProgramGuide(val epg: List<EpgProgram>) : Success()
@@ -21,6 +23,7 @@ public sealed class ApiResponse {
 
     public sealed class Failure : ApiResponse() {
         public data class JsonParsingException(val throwable: Throwable) : Failure()
+        public data class HTMLJsonExtractionException(val throwable: Throwable) : Failure()
         public data class Network(val throwable: Throwable) : Failure()
 
         public sealed class Authentication : Failure() {
@@ -31,8 +34,7 @@ public sealed class ApiResponse {
         }
 
         public sealed class Content : Failure() {
-            public object ProgramNoLongerAvailable : Content()
-            public object NoEpisodeFound : Content()
+            public object NoPrograms : Content()
         }
 
         public sealed class Epg : Failure() {
