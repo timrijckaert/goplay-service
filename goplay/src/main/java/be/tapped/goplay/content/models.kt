@@ -55,7 +55,8 @@ public data class ProgramDetail(
     val link: Link,
     val title: String,
     val label: String,
-    val pageInfo: ProgramOverview.PageInfo,
+    val description: String,
+    val pageInfo: PageInfo,
     val images: Images,
 ) {
 
@@ -71,10 +72,16 @@ public data class ProgramDetail(
     public value class Link(public val link: String)
 
     @Serializable
-    public data class Images(val poster: String, val teaser: String)
+    public data class Images(
+        val hero: String,
+        val mobile: String,
+        val poster: String,
+        val teaser: String,
+        val moviePoster: String,
+    )
 
     @Serializable
-    public data class PageInfo(val brand: Brand) {
+    public data class PageInfo(val brand: Brand, val publishDate: String) {
         public enum class Brand {
             Play4,
             Play5,
