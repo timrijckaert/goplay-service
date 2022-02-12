@@ -16,8 +16,8 @@ import software.amazon.awssdk.services.cognitoidentityprovider.model.AttributeTy
 import software.amazon.awssdk.services.cognitoidentityprovider.model.GetUserRequest
 import software.amazon.awssdk.services.cognitoidentityprovider.model.GetUserResponse
 
-public class ProfileUserAttributeParser {
-    public fun parse(userResponse: GetUserResponse): ApiResponse.Success.Authentication.Profile {
+internal class ProfileUserAttributeParser {
+    fun parse(userResponse: GetUserResponse): ApiResponse.Success.Authentication.Profile {
         val userAttributeMap =
             userResponse.userAttributes().groupBy(AttributeType::name, AttributeType::value).mapValues { (_, value) -> value.firstOrNull() }
 
@@ -37,17 +37,17 @@ public class ProfileUserAttributeParser {
     }
 }
 
-public sealed interface ProfileRepo {
+internal interface ProfileRepo {
 
-    public suspend fun fetchTokens(username: String, password: String): Either<ApiResponse.Failure, ApiResponse.Success.Authentication.Token>
+    suspend fun fetchTokens(username: String, password: String): Either<ApiResponse.Failure, ApiResponse.Success.Authentication.Token>
 
-    public suspend fun refreshTokens(refreshToken: RefreshToken): Either<ApiResponse.Failure, ApiResponse.Success.Authentication.Token>
+    suspend fun refreshTokens(refreshToken: RefreshToken): Either<ApiResponse.Failure, ApiResponse.Success.Authentication.Token>
 
-    public suspend fun getUserAttributes(accessToken: AccessToken): Either<ApiResponse.Failure, ApiResponse.Success.Authentication.Profile>
+    suspend fun getUserAttributes(accessToken: AccessToken): Either<ApiResponse.Failure, ApiResponse.Success.Authentication.Profile>
 
 }
 
-public class HttpProfileRepo(private val profileUserAttributeParser: ProfileUserAttributeParser = ProfileUserAttributeParser()) : ProfileRepo {
+internal class HttpProfileRepo(private val profileUserAttributeParser: ProfileUserAttributeParser) : ProfileRepo {
 
     private val cognitoIdentityProvider by lazy(CognitoIdentityProviderClient.builder().credentialsProvider(AnonymousCredentialsProvider.create()).region(Region.EU_WEST_1)::build)
 

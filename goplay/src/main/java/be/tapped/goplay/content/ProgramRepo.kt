@@ -20,11 +20,11 @@ import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 
-public interface ProgramRepo {
-    public suspend fun fetchPrograms(): Either<Failure, Success.Content.Program.Overview>
-    public suspend fun fetchProgramByLink(link: Program.Link): Either<Failure, Success.Content.Program.Detail>
-    public suspend fun fetchProgramById(id: Program.Id): Either<Failure, Success.Content.Program.Detail>
-    public suspend fun fetchPopularPrograms(brand: GoPlayBrand? = null): Either<Failure, Nel<Success.Content.Program.Detail>>
+internal interface ProgramRepo {
+    suspend fun fetchPrograms(): Either<Failure, Success.Content.Program.Overview>
+    suspend fun fetchProgramByLink(link: Program.Link): Either<Failure, Success.Content.Program.Detail>
+    suspend fun fetchProgramById(id: Program.Id): Either<Failure, Success.Content.Program.Detail>
+    suspend fun fetchPopularPrograms(brand: GoPlayBrand? = null): Either<Failure, Nel<Success.Content.Program.Detail>>
 }
 
 internal class HttpProgramRepo(
