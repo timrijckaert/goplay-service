@@ -110,6 +110,7 @@ public sealed interface Program {
                  * Example "Culinaire Speurneuzen - S2 - Aflevering 1"
                  */
                 val title: String,
+                val description: String,
             ) {
                 @JvmInline
                 @Serializable
