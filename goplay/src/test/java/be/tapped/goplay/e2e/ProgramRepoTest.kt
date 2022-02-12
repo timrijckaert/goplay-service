@@ -4,6 +4,7 @@ import arrow.fx.coroutines.parTraverse
 import be.tapped.goplay.content.AllProgramsHtmlJsonExtractor
 import be.tapped.goplay.content.HttpProgramRepo
 import be.tapped.goplay.content.ProgramDetailHtmlJsonExtractor
+import be.tapped.goplay.epg.GoPlayBrand
 import be.tapped.goplay.httpClient
 import be.tapped.goplay.jsonSerializer
 import io.kotest.assertions.arrow.core.shouldBeRight
@@ -40,6 +41,16 @@ internal class ProgramRepoTest : FreeSpec({
                         detail.shouldBeRight()
                     }
                 }
+            }
+        }
+    }
+
+    GoPlayBrand.values().forEach { brand ->
+        "when retrieving the most popular programs for $brand" - {
+            val mostPopularPrograms = sut.fetchPopularPrograms(brand)
+
+            "it should be successful" {
+                mostPopularPrograms.shouldBeRight()
             }
         }
     }

@@ -2,9 +2,11 @@ package be.tapped.goplay.content
 
 import arrow.core.Either
 import arrow.core.Either.Companion.catch
+import arrow.core.Nel
 import arrow.core.computations.either
 import be.tapped.goplay.ApiResponse.Failure
 import be.tapped.goplay.ApiResponse.Success
+import be.tapped.goplay.epg.GoPlayBrand
 import be.tapped.goplay.safeDecodeFromJsonElement
 import be.tapped.goplay.safeDecodeFromString
 import be.tapped.goplay.safeGet
@@ -22,6 +24,7 @@ public interface ProgramRepo {
     public suspend fun fetchPrograms(): Either<Failure, Success.Content.Program.Overview>
     public suspend fun fetchProgramByLink(link: Program.Link): Either<Failure, Success.Content.Program.Detail>
     public suspend fun fetchProgramById(id: Program.Id): Either<Failure, Success.Content.Program.Detail>
+    public suspend fun fetchPopularPrograms(brand: GoPlayBrand? = null): Either<Failure, Nel<Success.Content.Program.Detail>>
 }
 
 internal class HttpProgramRepo(
@@ -54,6 +57,25 @@ internal class HttpProgramRepo(
 
     override suspend fun fetchProgramById(id: Program.Id): Either<Failure, Success.Content.Program.Detail> =
         withContext(Dispatchers.IO) { either { Success.Content.Program.Detail(client.safeGet<Program.Detail>("$siteUrl/api/program/${id.id}").bind()) } }
+
+    override suspend fun fetchPopularPrograms(brand: GoPlayBrand?): Either<Failure, Nel<Success.Content.Program.Detail>> =
+        withContext(Dispatchers.IO) {
+            either {
+                client.safeGet<List<Program.Detail>>(
+                    "$siteUrl/api/programs/popular/" + brand?.let {
+                        when (brand) {
+                            GoPlayBrand.Play4 -> "vier"
+                            GoPlayBrand.Play5 -> "vijf"
+                            GoPlayBrand.Play6 -> "zes"
+                            GoPlayBrand.Play7 -> "zeven"
+                        }
+                    }
+                )
+                    .bind()
+                    .map(Success.Content.Program::Detail)
+                    .toNel { Failure.Content.NoPrograms }.bind()
+            }
+        }
 }
 
 internal class ProgramDetailHtmlJsonExtractor {
