@@ -92,10 +92,20 @@ public sealed interface Program {
              */
             val title: String,
             val description: String? = null,
+            val episodes: List<Episode>,
         ) {
             @JvmInline
             @Serializable
             public value class PlaylistId(public val id: String)
+
+            @Serializable
+            public data class Episode(
+                val videoUuid: VideoUuid
+            ) {
+                @JvmInline
+                @Serializable
+                public value class VideoUuid(public val videoUuid: String)
+            }
         }
     }
 }
