@@ -21,6 +21,7 @@ public sealed class ApiResponse {
 
     public sealed class Failure : ApiResponse() {
         public data class JsonParsingException(val throwable: Throwable) : Failure()
+        public data class Network(val throwable: Throwable) : Failure()
 
         public sealed class Authentication : Failure() {
             public data class AWS(val statusCode: Int, val statusText: String?) : Authentication()

@@ -7,8 +7,8 @@ import arrow.core.right
 import be.tapped.goplay.ApiResponse
 import be.tapped.goplay.GoPlayBrand
 import be.tapped.goplay.content.siteUrl
-import io.ktor.client.*
-import io.ktor.client.request.*
+import be.tapped.goplay.safeGet
+import io.ktor.client.HttpClient
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.datetime.LocalDate
@@ -39,7 +39,7 @@ internal fun httpEpgRepo(client: HttpClient): EpgRepo =
 
         withContext(Dispatchers.IO) {
             either {
-                val epg = client.get<List<EpgProgram>>(url)
+                val epg = client.safeGet<List<EpgProgram>>(url).bind()
                 if (epg.isEmpty()) {
                     ApiResponse.Failure.Epg.NoEpgDataFor(date).left()
                 } else {
