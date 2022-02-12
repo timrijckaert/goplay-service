@@ -2,11 +2,12 @@ package be.tapped.goplay.content
 
 import kotlinx.serialization.Serializable
 
+//<editor-fold desc="Overview">
 /**
  * @param label: Most of time this is an empty string. Sometimes it contains values such as "Volledig seizoen", "nieuw", "Volledige reeks"
  */
 @Serializable
-public data class Program(
+public data class ProgramOverview(
     val id: Id,
     val link: Link,
     val title: String,
@@ -40,3 +41,4 @@ public data class Program(
         }
     }
 }
+//</editor-fold>

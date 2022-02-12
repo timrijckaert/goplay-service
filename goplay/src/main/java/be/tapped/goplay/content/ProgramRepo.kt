@@ -20,7 +20,7 @@ import kotlinx.serialization.json.JsonObject
 
 public interface ProgramRepo {
     public suspend fun fetchPrograms(): Either<Failure, Success.Content.Programs>
-    public suspend fun fetchProgramByLink(link: Program.Link): Either<Failure, Any>
+    public suspend fun fetchProgramByLink(link: ProgramOverview.Link): Either<Failure, Any>
 }
 
 internal class HttpProgramRepo(
@@ -35,18 +35,18 @@ internal class HttpProgramRepo(
             either {
                 val html = client.safeGet<HttpResponse>("$siteUrl/programmas").bind().safeReadText().bind()
                 val jsonPrograms = allProgramsHtmlJsonExtractor.parse(html).bind()
-                val programs = jsonPrograms.map { jsonSerializer.safeDecodeFromString<Program>(it).bind() }.toNel { Failure.Content.NoPrograms }.bind()
+                val programs = jsonPrograms.map { jsonSerializer.safeDecodeFromString<ProgramOverview>(it).bind() }.toNel { Failure.Content.NoPrograms }.bind()
                 Success.Content.Programs(programs)
             }
         }
 
-    override suspend fun fetchProgramByLink(link: Program.Link): Either<Failure, Success.Content.ProgramDetail> =
+    override suspend fun fetchProgramByLink(link: ProgramOverview.Link): Either<Failure, Success.Content.ProgramDetail> =
         withContext(Dispatchers.IO) {
             either {
                 val html = client.safeGet<HttpResponse>("$siteUrl${link.link}").bind().safeReadText().bind()
                 val jsonProgram = programDetailHtmlJsonExtractor.parse(html).bind()
                 val dataObj = catch { jsonSerializer.safeDecodeFromString<JsonObject>(jsonProgram).bind().getValue("data") }.mapLeft(Failure::JsonParsingException).bind()
-                val program = jsonSerializer.safeDecodeFromJsonElement<Program>(dataObj).bind()
+                val program = jsonSerializer.safeDecodeFromJsonElement<ProgramOverview>(dataObj).bind()
                 Success.Content.ProgramDetail(program)
             }
         }
