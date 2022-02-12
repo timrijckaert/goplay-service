@@ -72,7 +72,7 @@ public sealed interface Program {
     ) : Program {
 
         @Serializable
-        public data class PageInfo(override val brand: Program.PageInfo.Brand, val publishDate: String) : Program.PageInfo
+        public data class PageInfo(override val brand: Program.PageInfo.Brand, val publishDate: String, val nodeId: String) : Program.PageInfo
 
         @Serializable
         public data class Images(
