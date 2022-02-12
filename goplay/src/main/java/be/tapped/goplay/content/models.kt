@@ -72,7 +72,10 @@ public sealed interface Program {
     ) : Program {
 
         @Serializable
-        public data class PageInfo(override val brand: Program.PageInfo.Brand, val publishDate: String, val nodeId: String) : Program.PageInfo
+        public data class PageInfo(
+            override val brand: Program.PageInfo.Brand,
+            val publishDate: String,
+        ) : Program.PageInfo
 
         @Serializable
         public data class Images(
@@ -100,11 +103,16 @@ public sealed interface Program {
 
             @Serializable
             public data class Episode(
-                val videoUuid: VideoUuid
+                val videoUuid: VideoUuid,
+                val pageInfo: PageInfo? = null,
+                val link: String,
             ) {
                 @JvmInline
                 @Serializable
                 public value class VideoUuid(public val videoUuid: String)
+
+                @Serializable
+                public data class PageInfo(val nodeId: String, val site: String? = null)
             }
         }
     }
