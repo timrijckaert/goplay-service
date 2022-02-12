@@ -4,9 +4,9 @@ import arrow.core.Either
 import arrow.core.computations.either
 import be.tapped.goplay.ApiResponse.Failure
 import be.tapped.goplay.ApiResponse.Success
+import be.tapped.goplay.safeGet
 import be.tapped.goplay.siteUrl
 import io.ktor.client.*
-import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -31,7 +31,7 @@ public fun interface ProgramRepo {
 internal fun httpProgramRepo(client: HttpClient, htmlJsonProgramExtractor: HtmlJsonProgramExtractor): ProgramRepo = ProgramRepo {
     withContext(Dispatchers.IO) {
         either {
-            val html = client.get<HttpResponse>("$siteUrl/programmas").readText()
+            val html = client.safeGet<HttpResponse>("$siteUrl/programmas").bind().readText()
             val programs = htmlJsonProgramExtractor.parse(html).bind()
             Success.Content.Programs(programs)
         }
