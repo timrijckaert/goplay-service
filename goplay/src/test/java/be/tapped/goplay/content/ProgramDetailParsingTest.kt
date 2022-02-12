@@ -9,7 +9,7 @@ import io.kotest.core.spec.style.ShouldSpec
 internal class ProgramDetailParsingTest : ShouldSpec({
     should("be able to parse a program detail") {
         val programDetailJson = readFromResources("culinaire-speurneuzen.json")
-        val programDetail = jsonSerializer.safeDecodeFromString<ProgramDetail>(programDetailJson)
+        val programDetail = jsonSerializer.safeDecodeFromString<Program.Detail>(programDetailJson)
         programDetail.shouldBeRight()
     }
 })

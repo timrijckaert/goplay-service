@@ -1,8 +1,7 @@
 package be.tapped.goplay
 
 import arrow.core.Nel
-import be.tapped.goplay.content.ProgramDetail
-import be.tapped.goplay.content.ProgramOverview
+import be.tapped.goplay.content.Program
 import be.tapped.goplay.epg.EpgProgram
 import be.tapped.goplay.profile.TokenWrapper
 import kotlinx.datetime.LocalDate
@@ -16,8 +15,8 @@ public sealed interface ApiResponse {
 
         public sealed interface Content : Success {
             public sealed interface Program : Content {
-                public data class Overview(val programs: Nel<ProgramOverview>) : Program
-                public data class Detail(val program: ProgramDetail) : Program
+                public data class Overview(val programs: Nel<be.tapped.goplay.content.Program.Overview>) : Program
+                public data class Detail(val program: be.tapped.goplay.content.Program.Detail) : Program
             }
         }
 
