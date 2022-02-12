@@ -36,3 +36,10 @@ public data class VideoNode(
     val title: String,
     val url: String,
 )
+
+public enum class GoPlayBrand {
+    Play4,
+    Play5,
+    Play6,
+    Play7;
+}

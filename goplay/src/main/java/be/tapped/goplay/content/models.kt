@@ -29,6 +29,9 @@ public data class Program(
     @JvmInline
     public value class Id(public val id: String)
 
+    /**
+     * @param link: Prefixed by '/'
+     */
     @Serializable
     @JvmInline
     public value class Link(public val link: String)

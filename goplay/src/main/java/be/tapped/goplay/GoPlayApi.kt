@@ -1,8 +1,9 @@
 package be.tapped.goplay
 
-import be.tapped.goplay.content.HtmlJsonProgramExtractor
+import be.tapped.goplay.content.AllProgramsHtmlJsonExtractor
+import be.tapped.goplay.content.HttpProgramRepo
+import be.tapped.goplay.content.ProgramDetailHtmlJsonExtractor
 import be.tapped.goplay.content.ProgramRepo
-import be.tapped.goplay.content.httpProgramRepo
 import be.tapped.goplay.epg.EpgRepo
 import be.tapped.goplay.epg.httpEpgRepo
 import io.ktor.client.*
@@ -29,5 +30,5 @@ internal val httpClient: HttpClient =
     }
 
 public object GoPlayApi :
-    ProgramRepo by httpProgramRepo(httpClient, HtmlJsonProgramExtractor(jsonSerializer)),
+    ProgramRepo by HttpProgramRepo(httpClient, jsonSerializer, AllProgramsHtmlJsonExtractor(), ProgramDetailHtmlJsonExtractor()),
     EpgRepo by httpEpgRepo(httpClient)
