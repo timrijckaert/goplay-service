@@ -106,6 +106,10 @@ public sealed interface Program {
                 val videoUuid: VideoUuid,
                 val pageInfo: PageInfo? = null,
                 val link: String,
+                /**
+                 * Example "Culinaire Speurneuzen - S2 - Aflevering 1"
+                 */
+                val title: String,
             ) {
                 @JvmInline
                 @Serializable
