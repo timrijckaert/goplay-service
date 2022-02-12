@@ -113,6 +113,7 @@ public sealed interface Program {
                 val description: String,
                 val image: String,
                 val duration: Long,
+                val seasonNumber: Int,
             ) {
                 @JvmInline
                 @Serializable
