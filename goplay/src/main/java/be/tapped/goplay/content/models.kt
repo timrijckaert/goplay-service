@@ -68,7 +68,11 @@ public sealed interface Program {
         val description: String,
         override val pageInfo: PageInfo,
         override val images: Images,
+        val playlists: List<Playlist>
     ) : Program {
+
+        @Serializable
+        public data class PageInfo(override val brand: Program.PageInfo.Brand, val publishDate: String) : Program.PageInfo
 
         @Serializable
         public data class Images(
@@ -80,7 +84,19 @@ public sealed interface Program {
         ) : Program.Images
 
         @Serializable
-        public data class PageInfo(override val brand: Program.PageInfo.Brand, val publishDate: String) : Program.PageInfo
+        public data class Playlist(
+            val id: PlaylistId,
+            val link: String,
+            /**
+             * For example: "Seizoen 1", "Seizoen 2", ...
+             */
+            val title: String,
+            val description: String? = null,
+        ) {
+            @JvmInline
+            @Serializable
+            public value class PlaylistId(public val id: String)
+        }
     }
 }
 
