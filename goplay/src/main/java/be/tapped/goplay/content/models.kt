@@ -7,13 +7,22 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 public data class Program(
-    val id: String,
-    val link: String,
+    val id: Id,
+    val link: Link,
     val title: String,
     val label: String,
     val pageInfo: PageInfo,
     val images: Images,
 ) {
+
+    @Serializable
+    @JvmInline
+    public value class Id(public val id: String)
+
+    @Serializable
+    @JvmInline
+    public value class Link(public val link: String)
+
     @Serializable
     public data class Images(val poster: String, val teaser: String)
 
