@@ -62,14 +62,14 @@ internal class HttpProgramRepo(
         withContext(Dispatchers.IO) {
             either {
                 client.safeGet<List<Program.Detail>>(
-                    "$siteUrl/api/programs/popular/" + brand?.let {
-                        when (brand) {
-                            GoPlayBrand.Play4 -> "vier"
-                            GoPlayBrand.Play5 -> "vijf"
-                            GoPlayBrand.Play6 -> "zes"
-                            GoPlayBrand.Play7 -> "zeven"
-                        }
-                    }
+                    "$siteUrl/api/programs/popular/" +
+                            when (brand) {
+                                GoPlayBrand.Play4 -> "vier"
+                                GoPlayBrand.Play5 -> "vijf"
+                                GoPlayBrand.Play6 -> "zes"
+                                GoPlayBrand.Play7 -> "zeven"
+                                null -> ""
+                            }
                 )
                     .bind()
                     .map(Success.Content.Program::Detail)

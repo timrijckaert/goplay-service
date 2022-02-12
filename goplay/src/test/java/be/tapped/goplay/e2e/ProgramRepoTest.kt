@@ -45,6 +45,10 @@ internal class ProgramRepoTest : FreeSpec({
         }
     }
 
+    "retrieves the most popular programs" {
+        sut.fetchPopularPrograms().shouldBeRight()
+    }
+
     GoPlayBrand.values().forEach { brand ->
         "when retrieving the most popular programs for $brand" - {
             val mostPopularPrograms = sut.fetchPopularPrograms(brand)
