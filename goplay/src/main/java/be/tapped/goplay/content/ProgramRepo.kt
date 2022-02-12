@@ -11,8 +11,8 @@ import be.tapped.goplay.safeGet
 import be.tapped.goplay.safeReadText
 import be.tapped.goplay.siteUrl
 import be.tapped.goplay.toNel
-import io.ktor.client.*
-import io.ktor.client.statement.*
+import io.ktor.client.HttpClient
+import io.ktor.client.statement.HttpResponse
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
@@ -21,6 +21,7 @@ import kotlinx.serialization.json.JsonObject
 public interface ProgramRepo {
     public suspend fun fetchPrograms(): Either<Failure, Success.Content.Program.Overview>
     public suspend fun fetchProgramByLink(link: Program.Link): Either<Failure, Success.Content.Program.Detail>
+    public suspend fun fetchProgramById(id: Program.Id): Either<Failure, Success.Content.Program.Detail>
 }
 
 internal class HttpProgramRepo(
@@ -50,6 +51,9 @@ internal class HttpProgramRepo(
                 Success.Content.Program.Detail(program)
             }
         }
+
+    override suspend fun fetchProgramById(id: Program.Id): Either<Failure, Success.Content.Program.Detail> =
+        withContext(Dispatchers.IO) { either { Success.Content.Program.Detail(client.safeGet<Program.Detail>("$siteUrl/api/program/${id.id}").bind()) } }
 }
 
 internal class ProgramDetailHtmlJsonExtractor {
