@@ -17,4 +17,6 @@ public sealed interface ResolvedStream {
         override val videoUuid: Program.Detail.Playlist.Episode.VideoUuid,
         val url: String
     ) : ResolvedStream
+
+    public data class NoStreamFound(override val videoUuid: Program.Detail.Playlist.Episode.VideoUuid) : ResolvedStream
 }
