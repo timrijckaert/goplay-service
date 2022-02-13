@@ -62,19 +62,6 @@ internal class GoPlayE2ETest : FreeSpec({
                 }
             }
         }
-
-        val (username, password) = Credentials.default
-        val tokenWrapper = GoPlayApi.fetchTokens(username, password).shouldBeRight().token
-
-        allPrograms.shouldBeRight().programs.parTraverse {
-            "adding ${it.title} to my favorite list" - {
-                val favoriteWasAdded = GoPlayApi.addFavoriteProgram(it.id, tokenWrapper.idToken)
-
-                "should be added" {
-                    favoriteWasAdded.shouldBeTrue()
-                }
-            }
-        }
     }
 
     "retrieves the most popular programs" {
