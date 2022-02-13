@@ -97,4 +97,4 @@ internal class AllProgramsHtmlJsonExtractor {
 // Shameless port of http://www.java2s.com/example/java-utility-method/html-decode/htmldecode-string-strsrc-415f0.html
 // TODO refactor or replace with a dedicated MPP lib?
 private fun String.htmlDecode(): String =
-    replace("&lt;", "<").replace("&gt;", ">").replace("&quot;", "\"").replace("&#039;", "'").replace("&amp;", "&")
+    replace("&lt;".toRegex(), "<").replace("&gt;".toRegex(), ">").replace("&quot;".toRegex(), "\"").replace("&#039;".toRegex(), "'").replace("&amp;".toRegex(), "&")
