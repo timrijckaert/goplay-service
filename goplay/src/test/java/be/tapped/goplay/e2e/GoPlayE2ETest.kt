@@ -90,4 +90,15 @@ internal class GoPlayE2ETest : FreeSpec({
             }
         }
     }
+
+    "retrieving my favorite list" - {
+        val (username, password) = Credentials.default
+        val tokenWrapper = GoPlayApi.fetchTokens(username, password).shouldBeRight().token
+
+        val favoritePrograms = GoPlayApi.fetchMyFavoritePrograms(tokenWrapper.idToken)
+
+        "should be successful" {
+            favoritePrograms.shouldBeRight()
+        }
+    }
 })
