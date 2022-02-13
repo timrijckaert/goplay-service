@@ -6,7 +6,6 @@ import be.tapped.goplay.epg.EpgProgram
 import be.tapped.goplay.profile.TokenWrapper
 import be.tapped.goplay.stream.ResolvedStream
 import kotlinx.datetime.LocalDate
-import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 
 public sealed interface ApiResponse {
@@ -45,10 +44,12 @@ public sealed interface ApiResponse {
         }
 
         public sealed interface Stream : Failure {
-            public data class MpegDash(val json: JsonObject, val throwable: Throwable) : Stream
-            public data class DrmAuth(val json: JsonObject, val throwable: Throwable) : Stream
-            public data class Hls(val json: JsonObject, val throwable: Throwable) : Stream
-            public data class UnknownStream(val json: JsonObject) : Stream
+            public val videoUuid: Program.Detail.Playlist.Episode.VideoUuid
+
+            public data class MpegDash(override val videoUuid: Program.Detail.Playlist.Episode.VideoUuid, val json: JsonObject, val throwable: Throwable) : Stream
+            public data class DrmAuth(override val videoUuid: Program.Detail.Playlist.Episode.VideoUuid, val json: JsonObject, val throwable: Throwable) : Stream
+            public data class Hls(override val videoUuid: Program.Detail.Playlist.Episode.VideoUuid, val json: JsonObject, val throwable: Throwable) : Stream
+            public data class UnknownStream(override val videoUuid: Program.Detail.Playlist.Episode.VideoUuid, val json: JsonObject) : Stream
         }
 
         public sealed interface Epg : Failure {
