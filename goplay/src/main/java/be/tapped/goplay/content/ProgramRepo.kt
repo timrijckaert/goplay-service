@@ -4,6 +4,7 @@ import arrow.core.Either
 import arrow.core.Either.Companion.catch
 import arrow.core.Nel
 import arrow.core.computations.either
+import arrow.fx.coroutines.parTraverse
 import be.tapped.goplay.ApiResponse.Failure
 import be.tapped.goplay.ApiResponse.Success
 import be.tapped.goplay.epg.GoPlayBrand
@@ -25,6 +26,7 @@ internal interface ProgramRepo {
     suspend fun fetchProgramByLink(link: Program.Link): Either<Failure, Success.Content.Program.Detail>
     suspend fun fetchProgramById(id: Program.Id): Either<Failure, Success.Content.Program.Detail>
     suspend fun fetchPopularPrograms(brand: GoPlayBrand? = null): Either<Failure, Nel<Success.Content.Program.Detail>>
+    suspend fun fetchProgramsByCategory(categoryId: Category.Id): Either<Failure, Nel<Success.Content.Program.Detail>>
 }
 
 internal class HttpProgramRepo(
@@ -32,6 +34,7 @@ internal class HttpProgramRepo(
     private val jsonSerializer: Json,
     private val allProgramsHtmlJsonExtractor: AllProgramsHtmlJsonExtractor,
     private val programDetailHtmlJsonExtractor: ProgramDetailHtmlJsonExtractor,
+    private val contentTreeRepo: ContentTreeRepo,
 ) : ProgramRepo {
 
     override suspend fun fetchPrograms(): Either<Failure, Success.Content.Program.Overview> =
@@ -75,6 +78,17 @@ internal class HttpProgramRepo(
                     .map(Success.Content.Program::Detail)
                     .toNel { Failure.Content.NoPrograms }.bind()
             }
+        }
+
+    override suspend fun fetchProgramsByCategory(categoryId: Category.Id): Either<Failure, Nel<Success.Content.Program.Detail>> =
+        either {
+            contentTreeRepo.fetchContentTree()
+                .map(ContentRoot::programs)
+                .mapLeft { Failure.Content.NoProgramsByCategory(categoryId) }
+                .bind()
+                .filter { it.category == categoryId }
+                .parTraverse { fetchProgramById(it.id).bind() }
+                .toNel { Failure.Content.NoProgramsByCategory(categoryId) }.bind()
         }
 }
 

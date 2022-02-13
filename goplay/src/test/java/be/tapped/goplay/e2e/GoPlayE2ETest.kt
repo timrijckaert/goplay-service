@@ -76,4 +76,18 @@ internal class GoPlayE2ETest : FreeSpec({
             }
         }
     }
+
+    "retrieving all categories" - {
+        val categories = GoPlayApi.fetchCategories().shouldBeRight().categories
+
+        categories.parTraverse {
+            "retrieving programs by category ${it.name}" - {
+                val programsByCategory = GoPlayApi.fetchProgramsByCategory(it.id)
+
+                "should be successful" {
+                    programsByCategory.shouldBeRight()
+                }
+            }
+        }
+    }
 })

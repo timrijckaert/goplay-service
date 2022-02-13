@@ -41,7 +41,13 @@ internal val httpClient: HttpClient =
     }
 
 public object GoPlayApi :
-    ProgramRepo by HttpProgramRepo(httpClient, jsonSerializer, AllProgramsHtmlJsonExtractor(), ProgramDetailHtmlJsonExtractor()),
+    ProgramRepo by HttpProgramRepo(
+        httpClient,
+        jsonSerializer,
+        AllProgramsHtmlJsonExtractor(),
+        ProgramDetailHtmlJsonExtractor(),
+        contentRootRepo(httpClient, contentTreeJsonParser())
+    ),
     EpgRepo by httpEpgRepo(httpClient),
     StreamRepo by httpStreamRepo(httpClient, mpegDashStreamResolver(httpClient), hlsStreamResolver()),
     ProfileRepo by HttpProfileRepo(ProfileUserAttributeParser()),

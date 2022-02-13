@@ -45,6 +45,7 @@ public sealed interface ApiResponse {
         public sealed interface Content : Failure {
             public object NoPrograms : Content
             public object NoCategories : Content
+            public data class NoProgramsByCategory(val categoryId: Category.Id) : Content
         }
 
         public sealed interface Stream : Failure {
