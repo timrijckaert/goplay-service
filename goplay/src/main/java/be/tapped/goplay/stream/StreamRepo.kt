@@ -48,6 +48,31 @@ internal fun interface MpegDashStreamResolver {
     ): Either<ApiResponse.Failure, ApiResponse.Success.Stream>
 }
 
+/**
+ * Example of MPEG dash response
+ *
+ * ```json
+ * {
+ *   "drmKey": {
+ *     "S": "very-secret-drm-key"
+ *   },
+ *   "videoDash": {
+ *     "S": "https://www.mpg-dash.be"
+ *   },
+ *   "video": {
+ *     "S": "https://www.hls-video.be"
+ *   }
+ * }
+ * ```
+ *
+ * Example of DRM response
+ *
+ * ```json
+ * {
+ *   "auth": "secret-authentication-token"
+ * }
+ * ```
+*/
 internal fun mpegDashStreamResolver(client: HttpClient): MpegDashStreamResolver =
     MpegDashStreamResolver { videoId, videoObj, idToken ->
         either {
@@ -75,6 +100,17 @@ internal fun interface HLSStreamResolver {
     ): Either<ApiResponse.Failure, ApiResponse.Success.Stream>
 }
 
+/**
+ * Example of HLS response
+ *
+ * ```json
+ * {
+ *   "video": {
+ *     "S": "https://www.hls-video.be"
+ *   }
+ * }
+ * ```
+ */
 internal fun hlsStreamResolver(): HLSStreamResolver =
     HLSStreamResolver { videoId, videoObj ->
         either {
