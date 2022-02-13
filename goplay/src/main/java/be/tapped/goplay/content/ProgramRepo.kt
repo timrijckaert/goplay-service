@@ -94,36 +94,7 @@ internal class AllProgramsHtmlJsonExtractor {
 }
 
 // A poor man's HTML decoder
-// Shameless port of http://www.java2s.com/example/java-utility-method/html-decode/htmldecode-string-s-eb5ed.html
+// Shameless port of http://www.java2s.com/example/java-utility-method/html-decode/htmldecode-string-strsrc-415f0.html
 // TODO refactor or replace with a dedicated MPP lib?
-private fun String.htmlDecode(): String {
-    var s = this
-    if (s.isEmpty()) {
-        return s
-    }
-    s = s.replace("&nbsp;", " ")
-    s = s.replace("&quot;", "\"")
-    s = s.replace("&apos;", "'")
-    s = s.replace("&#39;", "'")
-    s = s.replace("&lt;", "<")
-    s = s.replace("&gt;", ">")
-    s = s.replace("&amp;", "&")
-
-    // whitespace patterns
-    val zeroOrMoreWhitespaces = "\\s*?"
-    val oneOrMoreWhitespaces = "\\s+?"
-
-    // replace <br/> by \n
-    s = s.replace(
-        "<" + zeroOrMoreWhitespaces + "br" + zeroOrMoreWhitespaces + "/" + zeroOrMoreWhitespaces + ">".toRegex(),
-        "\n"
-    )
-    // replace HTML-tabs by \t
-    s = s.replace(
-        ("<" + zeroOrMoreWhitespaces + "span" + oneOrMoreWhitespaces + "style"
-                + zeroOrMoreWhitespaces + "=" + zeroOrMoreWhitespaces + "\"white-space:pre\""
-                + zeroOrMoreWhitespaces + ">&#9;<" + zeroOrMoreWhitespaces + "/" + zeroOrMoreWhitespaces + "span"
-                + zeroOrMoreWhitespaces + ">").toRegex(), "\t"
-    )
-    return s
-}
+private fun String.htmlDecode(): String =
+    replace("&lt;".toRegex(), "<").replace("&gt;".toRegex(), ">").replace("&quot;".toRegex(), "\"").replace("&#039;".toRegex(), "'").replace("&amp;".toRegex(), "&")
