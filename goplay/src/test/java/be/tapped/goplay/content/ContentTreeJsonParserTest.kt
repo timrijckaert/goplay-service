@@ -4,6 +4,7 @@ import be.tapped.goplay.content.Category.Id
 import be.tapped.goplay.jsonSerializer
 import be.tapped.goplay.readFromResources
 import io.kotest.assertions.arrow.core.shouldBeRight
+import io.kotest.assertions.arrow.core.shouldHaveSize
 import io.kotest.core.spec.style.ShouldSpec
 import io.kotest.matchers.collections.shouldContainExactly
 import kotlinx.serialization.decodeFromString
@@ -24,5 +25,6 @@ internal class ContentTreeJsonParserTest : ShouldSpec({
             Category(Id("5288"), "Lifestyle"),
             Category(Id("5289"), "Reality")
         )
+        contentRoot.shouldBeRight().programs.shouldHaveSize(227)
     }
 })
