@@ -70,7 +70,7 @@ internal class GoPlayE2ETest : FreeSpec({
             "adding ${it.title} to my favorite list" - {
                 val favoriteWasAdded = GoPlayApi.addFavoriteProgram(it.id, tokenWrapper.idToken)
 
-                "should be successful" {
+                "should be added" {
                     favoriteWasAdded.shouldBeTrue()
                 }
             }

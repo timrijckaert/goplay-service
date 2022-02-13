@@ -1,12 +1,23 @@
 package be.tapped.goplay.mylist
 
+import arrow.core.Either.Companion.catch
+import be.tapped.goplay.apiGoPlay
 import be.tapped.goplay.content.Program
+import be.tapped.goplay.profile.IdToken
+import io.ktor.client.HttpClient
+import io.ktor.client.request.delete
+import io.ktor.client.request.parameter
 
 internal fun interface RemoveFavoriteProgramRepo {
-    suspend fun removeFavoriteProgram(programId: Program.Id)
+    suspend fun removeFavoriteProgram(programId: Program.Id, idToken: IdToken): Boolean
 }
 
-internal fun removeFavoriteRepo(): RemoveFavoriteProgramRepo =
-    RemoveFavoriteProgramRepo {
-        TODO()
+internal fun removeFavoriteRepo(client: HttpClient): RemoveFavoriteProgramRepo =
+    RemoveFavoriteProgramRepo { programId, idToken ->
+        catch {
+            client.delete<Unit>("$apiGoPlay/my-list-item") {
+                defaultAuthorizationHeader(idToken)
+                parameter("programId", programId.id)
+            }
+        }.isRight()
     }
