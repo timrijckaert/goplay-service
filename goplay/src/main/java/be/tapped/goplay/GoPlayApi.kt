@@ -57,4 +57,4 @@ public object GoPlayApi :
     StreamRepo by httpStreamRepo(httpClient, mpegDashStreamResolver(httpClient), hlsStreamResolver()),
     ProfileRepo by HttpProfileRepo(ProfileUserAttributeParser()),
     CategoryRepo by categoryRepo(contentRootRepo(httpClient, contentTreeJsonParser())),
-    MyListRepo by HttpMyListRepo(myFavoriteProgramRepo(httpClient), addFavoriteProgramRepo(), removeFavoriteRepo())
+    MyListRepo by HttpMyListRepo(myFavoriteProgramRepo(httpClient), addFavoriteProgramRepo(httpClient), removeFavoriteRepo())

@@ -1,12 +1,25 @@
 package be.tapped.goplay.mylist
 
+import arrow.core.Either.Companion.catch
+import be.tapped.goplay.apiGoPlay
 import be.tapped.goplay.content.Program
+import be.tapped.goplay.profile.IdToken
+import io.ktor.client.HttpClient
+import io.ktor.client.request.post
+import io.ktor.http.ContentType
+import io.ktor.http.contentType
 
 internal fun interface AddFavoriteProgramRepo {
-    suspend fun addFavoriteProgram(programId: Program.Id)
+    suspend fun addFavoriteProgram(programId: Program.Id, idToken: IdToken): Boolean
 }
 
-internal fun addFavoriteProgramRepo(): AddFavoriteProgramRepo =
-    AddFavoriteProgramRepo {
-        TODO()
+internal fun addFavoriteProgramRepo(client: HttpClient): AddFavoriteProgramRepo =
+    AddFavoriteProgramRepo { programId, idToken ->
+        catch<Unit> {
+            client.post("$apiGoPlay/my-list") {
+                contentType(ContentType.Application.Json)
+                defaultAuthorizationHeader(idToken)
+                body = FavoriteItem(programId.id)
+            }
+        }.isRight()
     }
