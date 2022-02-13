@@ -20,11 +20,11 @@ import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 
-public interface ProgramRepo {
-    public suspend fun fetchPrograms(): Either<Failure, Success.Content.Program.Overview>
-    public suspend fun fetchProgramByLink(link: Program.Link): Either<Failure, Success.Content.Program.Detail>
-    public suspend fun fetchProgramById(id: Program.Id): Either<Failure, Success.Content.Program.Detail>
-    public suspend fun fetchPopularPrograms(brand: GoPlayBrand? = null): Either<Failure, Nel<Success.Content.Program.Detail>>
+internal interface ProgramRepo {
+    suspend fun fetchPrograms(): Either<Failure, Success.Content.Program.Overview>
+    suspend fun fetchProgramByLink(link: Program.Link): Either<Failure, Success.Content.Program.Detail>
+    suspend fun fetchProgramById(id: Program.Id): Either<Failure, Success.Content.Program.Detail>
+    suspend fun fetchPopularPrograms(brand: GoPlayBrand? = null): Either<Failure, Nel<Success.Content.Program.Detail>>
 }
 
 internal class HttpProgramRepo(
@@ -94,36 +94,7 @@ internal class AllProgramsHtmlJsonExtractor {
 }
 
 // A poor man's HTML decoder
-// Shameless port of http://www.java2s.com/example/java-utility-method/html-decode/htmldecode-string-s-eb5ed.html
+// Shameless port of http://www.java2s.com/example/java-utility-method/html-decode/htmldecode-string-strsrc-415f0.html
 // TODO refactor or replace with a dedicated MPP lib?
-private fun String.htmlDecode(): String {
-    var s = this
-    if (s.isEmpty()) {
-        return s
-    }
-    s = s.replace("&nbsp;", " ")
-    s = s.replace("&quot;", "\"")
-    s = s.replace("&apos;", "'")
-    s = s.replace("&#39;", "'")
-    s = s.replace("&lt;", "<")
-    s = s.replace("&gt;", ">")
-    s = s.replace("&amp;", "&")
-
-    // whitespace patterns
-    val zeroOrMoreWhitespaces = "\\s*?"
-    val oneOrMoreWhitespaces = "\\s+?"
-
-    // replace <br/> by \n
-    s = s.replace(
-        "<" + zeroOrMoreWhitespaces + "br" + zeroOrMoreWhitespaces + "/" + zeroOrMoreWhitespaces + ">".toRegex(),
-        "\n"
-    )
-    // replace HTML-tabs by \t
-    s = s.replace(
-        ("<" + zeroOrMoreWhitespaces + "span" + oneOrMoreWhitespaces + "style"
-                + zeroOrMoreWhitespaces + "=" + zeroOrMoreWhitespaces + "\"white-space:pre\""
-                + zeroOrMoreWhitespaces + ">&#9;<" + zeroOrMoreWhitespaces + "/" + zeroOrMoreWhitespaces + "span"
-                + zeroOrMoreWhitespaces + ">").toRegex(), "\t"
-    )
-    return s
-}
+private fun String.htmlDecode(): String =
+    replace("&lt;", "<").replace("&gt;", ">").replace("&quot;", "\"").replace("&#039;", "'").replace("&amp;", "&")
