@@ -10,11 +10,13 @@ import be.tapped.goplay.profile.HttpProfileRepo
 import be.tapped.goplay.profile.ProfileRepo
 import be.tapped.goplay.profile.ProfileUserAttributeParser
 import be.tapped.goplay.stream.StreamRepo
+import be.tapped.goplay.stream.hlsStreamResolver
 import be.tapped.goplay.stream.httpStreamRepo
-import io.ktor.client.*
-import io.ktor.client.engine.apache.*
-import io.ktor.client.features.json.*
-import io.ktor.client.features.json.serializer.*
+import be.tapped.goplay.stream.mpegDashStreamResolver
+import io.ktor.client.HttpClient
+import io.ktor.client.engine.apache.Apache
+import io.ktor.client.features.json.JsonFeature
+import io.ktor.client.features.json.serializer.KotlinxSerializer
 import kotlinx.serialization.json.Json
 
 internal const val siteUrl: String = "https://www.goplay.be"
@@ -37,5 +39,5 @@ internal val httpClient: HttpClient =
 public object GoPlayApi :
     ProgramRepo by HttpProgramRepo(httpClient, jsonSerializer, AllProgramsHtmlJsonExtractor(), ProgramDetailHtmlJsonExtractor()),
     EpgRepo by httpEpgRepo(httpClient),
-    StreamRepo by httpStreamRepo(httpClient),
+    StreamRepo by httpStreamRepo(httpClient, mpegDashStreamResolver(httpClient), hlsStreamResolver()),
     ProfileRepo by HttpProfileRepo(ProfileUserAttributeParser())

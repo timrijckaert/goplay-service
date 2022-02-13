@@ -22,44 +22,70 @@ internal fun interface StreamRepo {
     suspend fun streamByVideoUuid(videoId: Program.Detail.Playlist.Episode.VideoUuid, idToken: IdToken): Either<ApiResponse.Failure, ApiResponse.Success.Stream>
 }
 
-internal fun httpStreamRepo(client: HttpClient): StreamRepo =
+internal fun httpStreamRepo(client: HttpClient, mpegDashStreamResolver: MpegDashStreamResolver, hlsStreamResolver: HLSStreamResolver): StreamRepo =
     StreamRepo { videoId, idToken ->
         either {
-            val videoResponse =
-                client.safeGet<JsonElement>("$apiVierVijfZes/content/${videoId.videoUuid}") {
-                    headers { append(HttpHeaders.AUTHORIZATION, idToken.token) }
-                }.bind()
-
+            val videoResponse = client.safeGet<JsonElement>("$apiVierVijfZes/content/${videoId.videoUuid}") { headers { append(HttpHeaders.AUTHORIZATION, idToken.token) } }.bind()
             if (videoResponse is JsonObject) {
                 val videoObj = videoResponse.jsonObject
-                val resolvedStream =
-                    when {
-                        videoObj.containsKey("videoDash") ->
-                            catch {
-                                val drmKey = videoObj.getValue("drmKey").jsonObject.getValue("S").jsonPrimitive.content
-                                val drmResponseJson =
-                                    client.safeGet<JsonObject>("$apiGoPlay/video/xml/${drmKey}") {
-                                        headers { append(HttpHeaders.AUTHORIZATION, idToken.token) }
-                                    }.bind()
-                                val auth = catch(drmResponseJson.getValue("auth").jsonPrimitive::content).mapLeft { ApiResponse.Failure.Stream.DrmAuth(drmResponseJson, it) }.bind()
-                                ResolvedStream.MpegDash(
-                                    videoId,
-                                    videoObj.getValue("videoDash").jsonObject.getValue("S").jsonPrimitive.content,
-                                    auth
-                                )
-                            }.mapLeft { ApiResponse.Failure.Stream.MpegDash(videoObj, it) }
-                        videoObj.containsKey("video") ->
-                            catch {
-                                ResolvedStream.Hls(
-                                    videoId,
-                                    videoObj.getValue("video").jsonObject.getValue("S").jsonPrimitive.content
-                                )
-                            }.mapLeft { ApiResponse.Failure.Stream.Hls(videoObj, it) }
-                        else -> ApiResponse.Failure.Stream.UnknownStream(videoObj).left()
-                    }.bind()
-                ApiResponse.Success.Stream(resolvedStream)
+                when {
+                    videoObj.containsKey("videoDash") -> mpegDashStreamResolver.fetchMpegDashStream(videoId, videoObj, idToken)
+                    videoObj.containsKey("video") -> hlsStreamResolver.fetchHlsStream(videoId, videoObj)
+                    else -> ApiResponse.Failure.Stream.UnknownStream(videoId, videoObj).left()
+                }.bind()
             } else {
                 ApiResponse.Success.Stream(ResolvedStream.NoStreamFound(videoId))
             }
         }
     }
+
+//<editor-fold desc="MPEG-DASH">
+internal fun interface MpegDashStreamResolver {
+    suspend fun fetchMpegDashStream(
+        videoId: Program.Detail.Playlist.Episode.VideoUuid,
+        videoObj: JsonObject,
+        idToken: IdToken
+    ): Either<ApiResponse.Failure, ApiResponse.Success.Stream>
+}
+
+internal fun mpegDashStreamResolver(client: HttpClient): MpegDashStreamResolver =
+    MpegDashStreamResolver { videoId, videoObj, idToken ->
+        either {
+            val mpegDash =
+                catch {
+                    val drmKey = videoObj.getValue("drmKey").jsonObject.getValue("S").jsonPrimitive.content
+                    val drmResponseJson = client.safeGet<JsonObject>("$apiGoPlay/video/xml/${drmKey}") { headers { append(HttpHeaders.AUTHORIZATION, idToken.token) } }.bind()
+                    val auth = catch(drmResponseJson.getValue("auth").jsonPrimitive::content).mapLeft { ApiResponse.Failure.Stream.DrmAuth(videoId, drmResponseJson, it) }.bind()
+                    ResolvedStream.MpegDash(
+                        videoId,
+                        videoObj.getValue("videoDash").jsonObject.getValue("S").jsonPrimitive.content,
+                        auth
+                    )
+                }.mapLeft { ApiResponse.Failure.Stream.MpegDash(videoId, videoObj, it) }.bind()
+            ApiResponse.Success.Stream(mpegDash)
+        }
+    }
+//</editor-fold>
+
+//<editor-fold desc="HLS">
+internal fun interface HLSStreamResolver {
+    suspend fun fetchHlsStream(
+        videoId: Program.Detail.Playlist.Episode.VideoUuid,
+        videoObj: JsonObject,
+    ): Either<ApiResponse.Failure, ApiResponse.Success.Stream>
+}
+
+internal fun hlsStreamResolver(): HLSStreamResolver =
+    HLSStreamResolver { videoId, videoObj ->
+        either {
+            val hlsStream =
+                catch {
+                    ResolvedStream.Hls(
+                        videoId,
+                        videoObj.getValue("video").jsonObject.getValue("S").jsonPrimitive.content
+                    )
+                }.mapLeft { ApiResponse.Failure.Stream.Hls(videoId, videoObj, it) }.bind()
+            ApiResponse.Success.Stream(hlsStream)
+        }
+    }
+//</editor-fold>
