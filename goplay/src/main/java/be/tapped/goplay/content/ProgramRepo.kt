@@ -18,8 +18,8 @@ internal class HtmlProgramParser(private val jsonSerializer: Json) {
         Either.catch(regex.findAll(html).map { it.groupValues[1] }.map<String, Program>(jsonSerializer::decodeFromString)::toList).mapLeft(Failure::JsonParsingException)
 }
 
-public fun interface ProgramRepo {
-    public suspend fun fetchPrograms(): Either<Failure, Success.Content.Programs>
+internal fun interface ProgramRepo {
+    suspend fun fetchPrograms(): Either<Failure, Success.Content.Programs>
 }
 
 internal fun httpProgramRepo(client: HttpClient, htmlProgramParser: HtmlProgramParser): ProgramRepo = ProgramRepo {

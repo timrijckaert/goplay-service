@@ -13,8 +13,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.datetime.LocalDate
 
-public fun interface EpgRepo {
-    public suspend fun epg(brand: GoPlayBrand, date: LocalDate): Either<ApiResponse.Failure, ApiResponse.Success.ProgramGuide>
+internal fun interface EpgRepo {
+    suspend fun epg(brand: GoPlayBrand, date: LocalDate): Either<ApiResponse.Failure, ApiResponse.Success.ProgramGuide>
 }
 
 // curl -X GET "https://www.goplay.be/api/epg/vier/2020-12-13"
