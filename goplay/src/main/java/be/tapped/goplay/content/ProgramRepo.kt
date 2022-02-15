@@ -91,7 +91,9 @@ internal class ProgramDetailHtmlJsonExtractor {
 internal class AllProgramsHtmlJsonExtractor {
     private val regex by lazy("data-program=\"([^\"]+)\""::toRegex)
     internal fun parse(html: String): Either<Failure, List<String>> =
-        catch(regex.findAll(html).map { it.groupValues[1] }.map(String::htmlDecode)::toList).mapLeft(Failure::HTMLJsonExtractionException)
+        catch {
+            regex.findAll(html).map { it.groupValues[1] }.map(String::htmlDecode).toList()
+        }.mapLeft(Failure::HTMLJsonExtractionException)
 }
 
 // A poor man's HTML decoder
