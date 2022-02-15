@@ -58,24 +58,25 @@ internal class HttpProgramRepo(
     override suspend fun fetchProgramById(id: Program.Id): Either<Failure, Success.Content.Program.Detail> =
         withContext(Dispatchers.IO) { either { Success.Content.Program.Detail(client.safeGet<Program.Detail>("$siteUrl/api/program/${id.id}").bind()) } }
 
-    override suspend fun fetchPopularPrograms(brand: GoPlayBrand?): Either<Failure, Nel<Success.Content.Program.Detail>> =
-        withContext(Dispatchers.IO) {
+    override suspend fun fetchPopularPrograms(brand: GoPlayBrand?): Either<Failure, Nel<Success.Content.Program.Detail>> {
+        fun GoPlayBrand?.toPathSegment() =
+            when (this) {
+                GoPlayBrand.Play4 -> "vier"
+                GoPlayBrand.Play5 -> "vijf"
+                GoPlayBrand.Play6 -> "zes"
+                GoPlayBrand.Play7 -> "zeven"
+                null -> ""
+            }
+
+        return withContext(Dispatchers.IO) {
             either {
-                client.safeGet<List<Program.Detail>>(
-                    "$siteUrl/api/programs/popular/" +
-                            when (brand) {
-                                GoPlayBrand.Play4 -> "vier"
-                                GoPlayBrand.Play5 -> "vijf"
-                                GoPlayBrand.Play6 -> "zes"
-                                GoPlayBrand.Play7 -> "zeven"
-                                null -> ""
-                            }
-                )
+                client.safeGet<List<Program.Detail>>("$siteUrl/api/programs/popular/${brand.toPathSegment()}")
                     .bind()
                     .map(Success.Content.Program::Detail)
                     .toNel { Failure.Content.NoPrograms }.bind()
             }
         }
+    }
 }
 
 internal class ProgramDetailHtmlJsonExtractor {
@@ -90,9 +91,10 @@ internal class ProgramDetailHtmlJsonExtractor {
 internal class AllProgramsHtmlJsonExtractor {
     private val regex by lazy("data-program=\"([^\"]+)\""::toRegex)
     internal fun parse(html: String): Either<Failure, List<String>> =
-        catch(regex.findAll(html).map { it.groupValues[1] }.map(String::htmlDecode)::toList).mapLeft(Failure::HTMLJsonExtractionException)
+        catch {
+            regex.findAll(html).map { it.groupValues[1] }.map(String::htmlDecode).toList()
+        }.mapLeft(Failure::HTMLJsonExtractionException)
 }
-
 // A poor man's HTML decoder
 // Shameless port of http://www.java2s.com/example/java-utility-method/html-decode/htmldecode-string-strsrc-415f0.html
 // TODO refactor or replace with a dedicated MPP lib?
