@@ -79,6 +79,7 @@ internal class HttpProgramRepo(
                     .toNel { Failure.Content.NoPrograms }.bind()
             }
         }
+    }
 
     override suspend fun fetchProgramsByCategory(categoryId: Category.Id): Either<Failure, Nel<Success.Content.Program.Detail>> =
         either {
