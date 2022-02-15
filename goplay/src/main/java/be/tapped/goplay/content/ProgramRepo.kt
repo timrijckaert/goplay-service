@@ -95,6 +95,7 @@ internal class AllProgramsHtmlJsonExtractor {
             regex.findAll(html).map { it.groupValues[1] }.map(String::htmlDecode).toList()
         }.mapLeft(Failure::HTMLJsonExtractionException)
 }
+
 // A poor man's HTML decoder
 // Shameless port of http://www.java2s.com/example/java-utility-method/html-decode/htmldecode-string-strsrc-415f0.html
 // TODO refactor or replace with a dedicated MPP lib?
