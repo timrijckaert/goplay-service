@@ -17,7 +17,7 @@ import software.amazon.awssdk.services.cognitoidentityprovider.model.GetUserRequ
 import software.amazon.awssdk.services.cognitoidentityprovider.model.GetUserResponse
 
 internal class ProfileUserAttributeParser {
-    fun parse(userResponse: GetUserResponse): ApiResponse.Success.Authentication.Profile {
+    internal fun parse(userResponse: GetUserResponse): ApiResponse.Success.Authentication.Profile {
         val userAttributeMap =
             userResponse.userAttributes().groupBy(AttributeType::name, AttributeType::value).mapValues { (_, value) -> value.firstOrNull() }
 
