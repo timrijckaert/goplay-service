@@ -1,7 +1,6 @@
 package be.tapped.goplay.e2e
 
 import be.tapped.goplay.epg.GoPlayBrand
-import be.tapped.goplay.epg.GoPlayBrand
 import be.tapped.goplay.epg.httpEpgRepo
 import be.tapped.goplay.httpClient
 import io.kotest.assertions.arrow.core.shouldBeRight
