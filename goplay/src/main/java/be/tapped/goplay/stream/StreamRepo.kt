@@ -25,7 +25,7 @@ internal fun interface StreamRepo {
 internal fun httpStreamRepo(client: HttpClient, mpegDashStreamResolver: MpegDashStreamResolver, hlsStreamResolver: HLSStreamResolver): StreamRepo =
     StreamRepo { videoId, idToken ->
         either {
-            val videoResponse = client.safeGet<JsonElement>("$apiVierVijfZes/content/${videoId.videoUuid}") { headers { append(HttpHeaders.AUTHORIZATION, idToken.token) } }.bind()
+            val videoResponse = client.safeGet<JsonElement>(idToken, "$apiVierVijfZes/content/${videoId.videoUuid}").bind()
             if (videoResponse is JsonObject) {
                 val videoObj = videoResponse.jsonObject
                 when {
@@ -72,14 +72,14 @@ internal fun interface MpegDashStreamResolver {
  *   "auth": "secret-authentication-token"
  * }
  * ```
-*/
+ */
 internal fun mpegDashStreamResolver(client: HttpClient): MpegDashStreamResolver =
     MpegDashStreamResolver { videoId, videoObj, idToken ->
         either {
             val mpegDash =
                 catch {
                     val drmKey = videoObj.getValue("drmKey").jsonObject.getValue("S").jsonPrimitive.content
-                    val drmResponseJson = client.safeGet<JsonObject>("$apiGoPlay/video/xml/${drmKey}") { headers { append(HttpHeaders.AUTHORIZATION, idToken.token) } }.bind()
+                    val drmResponseJson = client.safeGet<JsonObject>(idToken, "$apiGoPlay/video/xml/${drmKey}").bind()
                     val auth = catch(drmResponseJson.getValue("auth").jsonPrimitive::content).mapLeft { ApiResponse.Failure.Stream.DrmAuth(videoId, drmResponseJson, it) }.bind()
                     ResolvedStream.MpegDash(
                         videoId,
@@ -125,3 +125,10 @@ internal fun hlsStreamResolver(): HLSStreamResolver =
         }
     }
 //</editor-fold>
+
+public suspend inline fun <reified T> HttpClient.safeGet(idToken: IdToken, urlString: String): Either<ApiResponse.Failure.Network, T> =
+    catch {
+        get<T>(urlString) {
+            headers { append(HttpHeaders.AUTHORIZATION, idToken.token) }
+        }
+    }.mapLeft(ApiResponse.Failure::Network)
