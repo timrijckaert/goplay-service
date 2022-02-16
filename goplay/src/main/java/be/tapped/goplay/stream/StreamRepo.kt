@@ -9,8 +9,8 @@ import be.tapped.goplay.apiGoPlay
 import be.tapped.goplay.apiVierVijfZes
 import be.tapped.goplay.content.Program
 import be.tapped.goplay.profile.IdToken
-import be.tapped.goplay.safeGet
 import io.ktor.client.HttpClient
+import io.ktor.client.request.get
 import io.ktor.client.request.headers
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
