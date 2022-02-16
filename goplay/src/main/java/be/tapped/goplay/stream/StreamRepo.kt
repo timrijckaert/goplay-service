@@ -13,6 +13,8 @@ import be.tapped.goplay.profile.IdToken
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
 import io.ktor.client.request.headers
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonObject
@@ -25,17 +27,19 @@ internal fun interface StreamRepo {
 
 internal fun httpStreamRepo(client: HttpClient, mpegDashStreamResolver: MpegDashStreamResolver, hlsStreamResolver: HLSStreamResolver): StreamRepo =
     StreamRepo { videoId, idToken ->
-        either {
-            val videoResponse = client.safeGet<JsonElement>(idToken, "$apiVierVijfZes/content/${videoId.videoUuid}").bind()
-            if (videoResponse is JsonObject) {
-                val videoObj = videoResponse.jsonObject
-                when {
-                    videoObj.containsKey("videoDash") -> mpegDashStreamResolver.fetchMpegDashStream(videoId, videoObj, idToken)
-                    videoObj.containsKey("video") -> hlsStreamResolver.fetchHlsStream(videoId, videoObj)
-                    else -> Failure.Stream.UnknownStream(videoId, videoObj).left()
-                }.bind()
-            } else {
-                Stream(ResolvedStream.NoStreamFound(videoId))
+        withContext(Dispatchers.IO) {
+            either {
+                val videoResponse = client.safeGet<JsonElement>(idToken, "$apiVierVijfZes/content/${videoId.videoUuid}").bind()
+                if (videoResponse is JsonObject) {
+                    val videoObj = videoResponse.jsonObject
+                    when {
+                        videoObj.containsKey("videoDash") -> mpegDashStreamResolver.fetchMpegDashStream(videoId, videoObj, idToken)
+                        videoObj.containsKey("video") -> hlsStreamResolver.fetchHlsStream(videoId, videoObj)
+                        else -> Failure.Stream.UnknownStream(videoId, videoObj).left()
+                    }.bind()
+                } else {
+                    Stream(ResolvedStream.NoStreamFound(videoId))
+                }
             }
         }
     }
@@ -76,19 +80,21 @@ internal fun interface MpegDashStreamResolver {
  */
 internal fun mpegDashStreamResolver(client: HttpClient): MpegDashStreamResolver =
     MpegDashStreamResolver { videoId, videoObj, idToken ->
-        either {
-            val mpegDash =
-                catch {
-                    val drmKey = videoObj.getValue("drmKey").jsonObject.getValue("S").jsonPrimitive.content
-                    val drmResponseJson = client.safeGet<JsonObject>(idToken, "$apiGoPlay/video/xml/${drmKey}").bind()
-                    val auth = catch(drmResponseJson.getValue("auth").jsonPrimitive::content).mapLeft { Failure.Stream.DrmAuth(videoId, drmResponseJson, it) }.bind()
-                    ResolvedStream.MpegDash(
-                        videoId,
-                        videoObj.getValue("videoDash").jsonObject.getValue("S").jsonPrimitive.content,
-                        auth
-                    )
-                }.mapLeft { Failure.Stream.MpegDash(videoId, videoObj, it) }.bind()
-            Stream(mpegDash)
+        withContext(Dispatchers.IO) {
+            either {
+                val mpegDash =
+                    catch {
+                        val drmKey = videoObj.getValue("drmKey").jsonObject.getValue("S").jsonPrimitive.content
+                        val drmResponseJson = client.safeGet<JsonObject>(idToken, "$apiGoPlay/video/xml/${drmKey}").bind()
+                        val auth = catch(drmResponseJson.getValue("auth").jsonPrimitive::content).mapLeft { Failure.Stream.DrmAuth(videoId, drmResponseJson, it) }.bind()
+                        ResolvedStream.MpegDash(
+                            videoId,
+                            videoObj.getValue("videoDash").jsonObject.getValue("S").jsonPrimitive.content,
+                            auth
+                        )
+                    }.mapLeft { Failure.Stream.MpegDash(videoId, videoObj, it) }.bind()
+                Stream(mpegDash)
+            }
         }
     }
 //</editor-fold>
@@ -114,15 +120,17 @@ internal fun interface HLSStreamResolver {
  */
 internal fun hlsStreamResolver(): HLSStreamResolver =
     HLSStreamResolver { videoId, videoObj ->
-        either {
-            val hlsStream =
-                catch {
-                    ResolvedStream.Hls(
-                        videoId,
-                        videoObj.getValue("video").jsonObject.getValue("S").jsonPrimitive.content
-                    )
-                }.mapLeft { Failure.Stream.Hls(videoId, videoObj, it) }.bind()
-            Stream(hlsStream)
+        withContext(Dispatchers.IO) {
+            either {
+                val hlsStream =
+                    catch {
+                        ResolvedStream.Hls(
+                            videoId,
+                            videoObj.getValue("video").jsonObject.getValue("S").jsonPrimitive.content
+                        )
+                    }.mapLeft { Failure.Stream.Hls(videoId, videoObj, it) }.bind()
+                Stream(hlsStream)
+            }
         }
     }
 //</editor-fold>

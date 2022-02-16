@@ -81,14 +81,16 @@ internal class HttpProgramRepo(
     }
 
     override suspend fun fetchProgramsByCategory(categoryId: Category.Id): Either<Failure, Nel<be.tapped.goplay.Program.Detail>> =
-        either {
-            contentTreeRepo.fetchContentTree()
-                .map(ContentRoot::programs)
-                .mapLeft { Failure.Content.NoProgramsByCategory(categoryId) }
-                .bind()
-                .filter { it.category == categoryId }
-                .parTraverse { fetchProgramById(it.id).bind() }
-                .toNel { Failure.Content.NoProgramsByCategory(categoryId) }.bind()
+        withContext(Dispatchers.IO) {
+            either {
+                contentTreeRepo.fetchContentTree()
+                    .map(ContentRoot::programs)
+                    .mapLeft { Failure.Content.NoProgramsByCategory(categoryId) }
+                    .bind()
+                    .filter { it.category == categoryId }
+                    .parTraverse { fetchProgramById(it.id).bind() }
+                    .toNel { Failure.Content.NoProgramsByCategory(categoryId) }.bind()
+            }
         }
 }
 

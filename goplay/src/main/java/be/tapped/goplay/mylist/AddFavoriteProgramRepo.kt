@@ -9,6 +9,8 @@ import io.ktor.client.HttpClient
 import io.ktor.client.request.post
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 internal fun interface AddFavoriteProgramRepo {
     suspend fun addFavoriteProgram(programId: Program.Id, idToken: IdToken): Either<Throwable, Unit>
@@ -17,10 +19,12 @@ internal fun interface AddFavoriteProgramRepo {
 internal fun addFavoriteProgramRepo(client: HttpClient): AddFavoriteProgramRepo =
     AddFavoriteProgramRepo { programId, idToken ->
         catch {
-            client.post("$apiGoPlay/my-list") {
-                contentType(ContentType.Application.Json)
-                defaultAuthorizationHeader(idToken)
-                body = FavoriteItem(programId.id)
+            withContext(Dispatchers.IO) {
+                client.post("$apiGoPlay/my-list") {
+                    contentType(ContentType.Application.Json)
+                    defaultAuthorizationHeader(idToken)
+                    body = FavoriteItem(programId.id)
+                }
             }
         }
     }

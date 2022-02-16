@@ -8,6 +8,8 @@ import be.tapped.goplay.siteUrl
 import be.tapped.goplay.toNel
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.int
 import kotlinx.serialization.json.jsonObject
@@ -24,10 +26,12 @@ internal fun interface ContentTreeRepo {
 internal fun contentRootRepo(httpClient: HttpClient, contentTreeJsonParser: ContentTreeJsonParser): ContentTreeRepo =
     ContentTreeRepo {
         either {
-            catch {
-                val contentTreeRootObj = httpClient.get<JsonObject>("$siteUrl/api/content_tree")
-                contentTreeJsonParser.parseJsonToContentRoot(contentTreeRootObj).bind()
-            }.bind()
+            withContext(Dispatchers.IO) {
+                catch {
+                    val contentTreeRootObj = httpClient.get<JsonObject>("$siteUrl/api/content_tree")
+                    contentTreeJsonParser.parseJsonToContentRoot(contentTreeRootObj).bind()
+                }.bind()
+            }
         }
     }
 

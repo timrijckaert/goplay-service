@@ -8,6 +8,8 @@ import be.tapped.goplay.content.Program
 import be.tapped.goplay.profile.IdToken
 import be.tapped.goplay.safeGet
 import io.ktor.client.HttpClient
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 internal fun interface MyFavoriteProgramRepo {
     suspend fun fetchMyFavoritePrograms(idToken: IdToken): Either<Failure, List<Program.Id>>
@@ -29,8 +31,10 @@ internal fun interface MyFavoriteProgramRepo {
 internal fun myFavoriteProgramRepo(client: HttpClient): MyFavoriteProgramRepo =
     MyFavoriteProgramRepo {
         either {
-            client.safeGet<List<FavoriteItem>>("$apiGoPlay/my-list") {
-                defaultAuthorizationHeader(it)
-            }.bind().map { Program.Id(it.programId) }
+            withContext(Dispatchers.IO) {
+                client.safeGet<List<FavoriteItem>>("$apiGoPlay/my-list") {
+                    defaultAuthorizationHeader(it)
+                }.bind().map { Program.Id(it.programId) }
+            }
         }
     }
