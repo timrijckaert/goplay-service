@@ -1,9 +1,13 @@
 package be.tapped.goplay
 
 import be.tapped.goplay.content.AllProgramsHtmlJsonExtractor
+import be.tapped.goplay.content.CategoryRepo
 import be.tapped.goplay.content.HttpProgramRepo
 import be.tapped.goplay.content.ProgramDetailHtmlJsonExtractor
 import be.tapped.goplay.content.ProgramRepo
+import be.tapped.goplay.content.categoryRepo
+import be.tapped.goplay.content.contentRootRepo
+import be.tapped.goplay.content.contentTreeJsonParser
 import be.tapped.goplay.epg.EpgRepo
 import be.tapped.goplay.epg.httpEpgRepo
 import be.tapped.goplay.profile.HttpProfileRepo
@@ -37,7 +41,14 @@ internal val httpClient: HttpClient =
     }
 
 public object GoPlayApi :
-    ProgramRepo by HttpProgramRepo(httpClient, jsonSerializer, AllProgramsHtmlJsonExtractor(), ProgramDetailHtmlJsonExtractor()),
+    ProgramRepo by HttpProgramRepo(
+        httpClient,
+        jsonSerializer,
+        AllProgramsHtmlJsonExtractor(),
+        ProgramDetailHtmlJsonExtractor(),
+        contentRootRepo(httpClient, contentTreeJsonParser())
+    ),
     EpgRepo by httpEpgRepo(httpClient),
     StreamRepo by httpStreamRepo(httpClient, mpegDashStreamResolver(httpClient), hlsStreamResolver()),
-    ProfileRepo by HttpProfileRepo(ProfileUserAttributeParser())
+    ProfileRepo by HttpProfileRepo(ProfileUserAttributeParser()),
+    CategoryRepo by categoryRepo(contentRootRepo(httpClient, contentTreeJsonParser()))

@@ -132,4 +132,7 @@ public sealed interface Program {
     }
 }
 
-
+public data class Category(val id: Id, val name: String) {
+    @JvmInline
+    public value class Id(public val id: String)
+}

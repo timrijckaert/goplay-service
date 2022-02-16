@@ -1,6 +1,7 @@
 package be.tapped.goplay
 
 import arrow.core.Nel
+import be.tapped.goplay.content.Category
 import be.tapped.goplay.content.Program
 import be.tapped.goplay.epg.EpgProgram
 import be.tapped.goplay.profile.TokenWrapper
@@ -20,6 +21,8 @@ public sealed interface ApiResponse {
                 public data class Overview(val programs: Nel<be.tapped.goplay.content.Program.Overview>) : Program
                 public data class Detail(val program: be.tapped.goplay.content.Program.Detail) : Program
             }
+
+            public data class Categories(val categories: Nel<Category>) : Content
         }
 
         public data class Stream(val stream: ResolvedStream) : Success
@@ -41,6 +44,8 @@ public sealed interface ApiResponse {
 
         public sealed interface Content : Failure {
             public object NoPrograms : Content
+            public object NoCategories : Content
+            public data class NoProgramsByCategory(val categoryId: Category.Id) : Content
         }
 
         public sealed interface Stream : Failure {
