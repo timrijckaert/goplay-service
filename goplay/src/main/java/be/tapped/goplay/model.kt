@@ -57,6 +57,15 @@ public sealed interface ApiResponse {
             public data class UnknownStream(override val videoUuid: Program.Detail.Playlist.Episode.VideoUuid, val json: JsonObject) : Stream
         }
 
+        public sealed interface Stream : Failure {
+            public val videoUuid: Program.Detail.Playlist.Episode.VideoUuid
+
+            public data class MpegDash(override val videoUuid: Program.Detail.Playlist.Episode.VideoUuid, val json: JsonObject, val throwable: Throwable) : Stream
+            public data class DrmAuth(override val videoUuid: Program.Detail.Playlist.Episode.VideoUuid, val json: JsonObject, val throwable: Throwable) : Stream
+            public data class Hls(override val videoUuid: Program.Detail.Playlist.Episode.VideoUuid, val json: JsonObject, val throwable: Throwable) : Stream
+            public data class UnknownStream(override val videoUuid: Program.Detail.Playlist.Episode.VideoUuid, val json: JsonObject) : Stream
+        }
+
         public sealed interface Epg : Failure {
             public data class NoEpgDataFor(val date: LocalDate) : Epg
         }
