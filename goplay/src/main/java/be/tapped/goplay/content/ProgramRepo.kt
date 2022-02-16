@@ -5,8 +5,7 @@ import arrow.core.Either.Companion.catch
 import arrow.core.Nel
 import arrow.core.computations.either
 import arrow.fx.coroutines.parTraverse
-import be.tapped.goplay.ApiResponse.Failure
-import be.tapped.goplay.ApiResponse.Success
+import be.tapped.goplay.Failure
 import be.tapped.goplay.epg.GoPlayBrand
 import be.tapped.goplay.safeDecodeFromJsonElement
 import be.tapped.goplay.safeDecodeFromString
@@ -22,11 +21,11 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 
 internal interface ProgramRepo {
-    suspend fun fetchPrograms(): Either<Failure, Success.Content.Program.Overview>
-    suspend fun fetchProgramByLink(link: Program.Link): Either<Failure, Success.Content.Program.Detail>
-    suspend fun fetchProgramById(id: Program.Id): Either<Failure, Success.Content.Program.Detail>
-    suspend fun fetchPopularPrograms(brand: GoPlayBrand? = null): Either<Failure, Nel<Success.Content.Program.Detail>>
-    suspend fun fetchProgramsByCategory(categoryId: Category.Id): Either<Failure, Nel<Success.Content.Program.Detail>>
+    suspend fun fetchPrograms(): Either<Failure, be.tapped.goplay.Program.Overview>
+    suspend fun fetchProgramByLink(link: Program.Link): Either<Failure, be.tapped.goplay.Program.Detail>
+    suspend fun fetchProgramById(id: Program.Id): Either<Failure, be.tapped.goplay.Program.Detail>
+    suspend fun fetchPopularPrograms(brand: GoPlayBrand? = null): Either<Failure, Nel<be.tapped.goplay.Program.Detail>>
+    suspend fun fetchProgramsByCategory(categoryId: Category.Id): Either<Failure, Nel<be.tapped.goplay.Program.Detail>>
 }
 
 internal class HttpProgramRepo(
@@ -37,31 +36,31 @@ internal class HttpProgramRepo(
     private val contentTreeRepo: ContentTreeRepo,
 ) : ProgramRepo {
 
-    override suspend fun fetchPrograms(): Either<Failure, Success.Content.Program.Overview> =
+    override suspend fun fetchPrograms(): Either<Failure, be.tapped.goplay.Program.Overview> =
         withContext(Dispatchers.IO) {
             either {
                 val html = client.safeGet<HttpResponse>("$siteUrl/programmas").bind().safeReadText().bind()
                 val jsonPrograms = allProgramsHtmlJsonExtractor.parse(html).bind()
                 val programs = jsonPrograms.map { jsonSerializer.safeDecodeFromString<Program.Overview>(it).bind() }.toNel { Failure.Content.NoPrograms }.bind()
-                Success.Content.Program.Overview(programs)
+                be.tapped.goplay.Program.Overview(programs)
             }
         }
 
-    override suspend fun fetchProgramByLink(link: Program.Link): Either<Failure, Success.Content.Program.Detail> =
+    override suspend fun fetchProgramByLink(link: Program.Link): Either<Failure, be.tapped.goplay.Program.Detail> =
         withContext(Dispatchers.IO) {
             either {
                 val html = client.safeGet<HttpResponse>("$siteUrl${link.link}").bind().safeReadText().bind()
                 val jsonProgram = programDetailHtmlJsonExtractor.parse(html).bind()
                 val dataObj = catch { jsonSerializer.safeDecodeFromString<JsonObject>(jsonProgram).bind().getValue("data") }.mapLeft(Failure::JsonParsingException).bind()
                 val program = jsonSerializer.safeDecodeFromJsonElement<Program.Detail>(dataObj).bind()
-                Success.Content.Program.Detail(program)
+                be.tapped.goplay.Program.Detail(program)
             }
         }
 
-    override suspend fun fetchProgramById(id: Program.Id): Either<Failure, Success.Content.Program.Detail> =
-        withContext(Dispatchers.IO) { either { Success.Content.Program.Detail(client.safeGet<Program.Detail>("$siteUrl/api/program/${id.id}").bind()) } }
+    override suspend fun fetchProgramById(id: Program.Id): Either<Failure, be.tapped.goplay.Program.Detail> =
+        withContext(Dispatchers.IO) { either { be.tapped.goplay.Program.Detail(client.safeGet<Program.Detail>("$siteUrl/api/program/${id.id}").bind()) } }
 
-    override suspend fun fetchPopularPrograms(brand: GoPlayBrand?): Either<Failure, Nel<Success.Content.Program.Detail>> {
+    override suspend fun fetchPopularPrograms(brand: GoPlayBrand?): Either<Failure, Nel<be.tapped.goplay.Program.Detail>> {
         fun GoPlayBrand?.toPathSegment() =
             when (this) {
                 GoPlayBrand.Play4 -> "vier"
@@ -75,13 +74,13 @@ internal class HttpProgramRepo(
             either {
                 client.safeGet<List<Program.Detail>>("$siteUrl/api/programs/popular/${brand.toPathSegment()}")
                     .bind()
-                    .map(Success.Content.Program::Detail)
+                    .map(be.tapped.goplay.Program::Detail)
                     .toNel { Failure.Content.NoPrograms }.bind()
             }
         }
     }
 
-    override suspend fun fetchProgramsByCategory(categoryId: Category.Id): Either<Failure, Nel<Success.Content.Program.Detail>> =
+    override suspend fun fetchProgramsByCategory(categoryId: Category.Id): Either<Failure, Nel<be.tapped.goplay.Program.Detail>> =
         either {
             contentTreeRepo.fetchContentTree()
                 .map(ContentRoot::programs)

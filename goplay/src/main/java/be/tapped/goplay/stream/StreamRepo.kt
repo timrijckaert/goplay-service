@@ -4,7 +4,8 @@ import arrow.core.Either
 import arrow.core.Either.Companion.catch
 import arrow.core.computations.either
 import arrow.core.left
-import be.tapped.goplay.ApiResponse
+import be.tapped.goplay.Failure
+import be.tapped.goplay.Stream
 import be.tapped.goplay.apiGoPlay
 import be.tapped.goplay.apiVierVijfZes
 import be.tapped.goplay.content.Program
@@ -19,7 +20,7 @@ import kotlinx.serialization.json.jsonPrimitive
 import org.apache.http.HttpHeaders
 
 internal fun interface StreamRepo {
-    suspend fun streamByVideoUuid(videoId: Program.Detail.Playlist.Episode.VideoUuid, idToken: IdToken): Either<ApiResponse.Failure, ApiResponse.Success.Stream>
+    suspend fun streamByVideoUuid(videoId: Program.Detail.Playlist.Episode.VideoUuid, idToken: IdToken): Either<Failure, Stream>
 }
 
 internal fun httpStreamRepo(client: HttpClient, mpegDashStreamResolver: MpegDashStreamResolver, hlsStreamResolver: HLSStreamResolver): StreamRepo =
@@ -31,10 +32,10 @@ internal fun httpStreamRepo(client: HttpClient, mpegDashStreamResolver: MpegDash
                 when {
                     videoObj.containsKey("videoDash") -> mpegDashStreamResolver.fetchMpegDashStream(videoId, videoObj, idToken)
                     videoObj.containsKey("video") -> hlsStreamResolver.fetchHlsStream(videoId, videoObj)
-                    else -> ApiResponse.Failure.Stream.UnknownStream(videoId, videoObj).left()
+                    else -> Failure.Stream.UnknownStream(videoId, videoObj).left()
                 }.bind()
             } else {
-                ApiResponse.Success.Stream(ResolvedStream.NoStreamFound(videoId))
+                Stream(ResolvedStream.NoStreamFound(videoId))
             }
         }
     }
@@ -45,7 +46,7 @@ internal fun interface MpegDashStreamResolver {
         videoId: Program.Detail.Playlist.Episode.VideoUuid,
         videoObj: JsonObject,
         idToken: IdToken
-    ): Either<ApiResponse.Failure, ApiResponse.Success.Stream>
+    ): Either<Failure, Stream>
 }
 
 /**
@@ -80,14 +81,14 @@ internal fun mpegDashStreamResolver(client: HttpClient): MpegDashStreamResolver 
                 catch {
                     val drmKey = videoObj.getValue("drmKey").jsonObject.getValue("S").jsonPrimitive.content
                     val drmResponseJson = client.safeGet<JsonObject>(idToken, "$apiGoPlay/video/xml/${drmKey}").bind()
-                    val auth = catch(drmResponseJson.getValue("auth").jsonPrimitive::content).mapLeft { ApiResponse.Failure.Stream.DrmAuth(videoId, drmResponseJson, it) }.bind()
+                    val auth = catch(drmResponseJson.getValue("auth").jsonPrimitive::content).mapLeft { Failure.Stream.DrmAuth(videoId, drmResponseJson, it) }.bind()
                     ResolvedStream.MpegDash(
                         videoId,
                         videoObj.getValue("videoDash").jsonObject.getValue("S").jsonPrimitive.content,
                         auth
                     )
-                }.mapLeft { ApiResponse.Failure.Stream.MpegDash(videoId, videoObj, it) }.bind()
-            ApiResponse.Success.Stream(mpegDash)
+                }.mapLeft { Failure.Stream.MpegDash(videoId, videoObj, it) }.bind()
+            Stream(mpegDash)
         }
     }
 //</editor-fold>
@@ -97,7 +98,7 @@ internal fun interface HLSStreamResolver {
     suspend fun fetchHlsStream(
         videoId: Program.Detail.Playlist.Episode.VideoUuid,
         videoObj: JsonObject,
-    ): Either<ApiResponse.Failure, ApiResponse.Success.Stream>
+    ): Either<Failure, Stream>
 }
 
 /**
@@ -120,15 +121,15 @@ internal fun hlsStreamResolver(): HLSStreamResolver =
                         videoId,
                         videoObj.getValue("video").jsonObject.getValue("S").jsonPrimitive.content
                     )
-                }.mapLeft { ApiResponse.Failure.Stream.Hls(videoId, videoObj, it) }.bind()
-            ApiResponse.Success.Stream(hlsStream)
+                }.mapLeft { Failure.Stream.Hls(videoId, videoObj, it) }.bind()
+            Stream(hlsStream)
         }
     }
 //</editor-fold>
 
-public suspend inline fun <reified T> HttpClient.safeGet(idToken: IdToken, urlString: String): Either<ApiResponse.Failure.Network, T> =
+public suspend inline fun <reified T> HttpClient.safeGet(idToken: IdToken, urlString: String): Either<Failure.Network, T> =
     catch {
         get<T>(urlString) {
             headers { append(HttpHeaders.AUTHORIZATION, idToken.token) }
         }
-    }.mapLeft(ApiResponse.Failure::Network)
+    }.mapLeft(Failure::Network)

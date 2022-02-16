@@ -4,7 +4,8 @@ import arrow.core.Either
 import arrow.core.computations.either
 import arrow.core.left
 import arrow.core.right
-import be.tapped.goplay.ApiResponse
+import be.tapped.goplay.Failure
+import be.tapped.goplay.ProgramGuide
 import be.tapped.goplay.siteUrl
 import be.tapped.goplay.safeGet
 import io.ktor.client.HttpClient
@@ -13,7 +14,7 @@ import kotlinx.coroutines.withContext
 import kotlinx.datetime.LocalDate
 
 internal fun interface EpgRepo {
-    suspend fun epg(brand: GoPlayBrand, date: LocalDate): Either<ApiResponse.Failure, ApiResponse.Success.ProgramGuide>
+    suspend fun epg(brand: GoPlayBrand, date: LocalDate): Either<Failure, ProgramGuide>
 }
 
 // curl -X GET "https://www.goplay.be/api/epg/vier/2020-12-13"
@@ -40,9 +41,9 @@ internal fun httpEpgRepo(client: HttpClient): EpgRepo =
             either {
                 val epg = client.safeGet<List<EpgProgram>>(url).bind()
                 if (epg.isEmpty()) {
-                    ApiResponse.Failure.Epg.NoEpgDataFor(date).left()
+                    Failure.Epg.NoEpgDataFor(date).left()
                 } else {
-                    ApiResponse.Success.ProgramGuide(epg).right()
+                    ProgramGuide(epg).right()
                 }.bind()
             }
         }

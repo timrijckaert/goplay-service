@@ -20,14 +20,14 @@ internal inline fun <A, T> List<T>.toNel(default: () -> A): Either<A, Nel<T>> = 
 public suspend inline fun <reified T> HttpClient.safeGet(
     urlString: String,
     block: HttpRequestBuilder.() -> Unit = {}
-): Either<ApiResponse.Failure.Network, T> =
-    Either.catch { get<T>(urlString, block) }.mapLeft(ApiResponse.Failure::Network)
+): Either<Failure.Network, T> =
+    Either.catch { get<T>(urlString, block) }.mapLeft(Failure::Network)
 
-public suspend fun HttpResponse.safeReadText(fallbackCharset: Charset? = null): Either<ApiResponse.Failure.Network, String> =
-    Either.catch { readText(fallbackCharset) }.mapLeft(ApiResponse.Failure::Network)
+public suspend fun HttpResponse.safeReadText(fallbackCharset: Charset? = null): Either<Failure.Network, String> =
+    Either.catch { readText(fallbackCharset) }.mapLeft(Failure::Network)
 
-public inline fun <reified T> Json.safeDecodeFromString(string: String): Either<ApiResponse.Failure.JsonParsingException, T> =
-    Either.catch { decodeFromString<T>(string) }.mapLeft(ApiResponse.Failure::JsonParsingException)
+public inline fun <reified T> Json.safeDecodeFromString(string: String): Either<Failure.JsonParsingException, T> =
+    Either.catch { decodeFromString<T>(string) }.mapLeft(Failure::JsonParsingException)
 
-public inline fun <reified T> Json.safeDecodeFromJsonElement(json: JsonElement): Either<ApiResponse.Failure.JsonParsingException, T> =
-    Either.catch { decodeFromJsonElement<T>(json) }.mapLeft(ApiResponse.Failure::JsonParsingException)
+public inline fun <reified T> Json.safeDecodeFromJsonElement(json: JsonElement): Either<Failure.JsonParsingException, T> =
+    Either.catch { decodeFromJsonElement<T>(json) }.mapLeft(Failure::JsonParsingException)
