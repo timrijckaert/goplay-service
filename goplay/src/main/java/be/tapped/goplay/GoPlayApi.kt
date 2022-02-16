@@ -9,6 +9,10 @@ import be.tapped.goplay.epg.httpEpgRepo
 import be.tapped.goplay.profile.HttpProfileRepo
 import be.tapped.goplay.profile.ProfileRepo
 import be.tapped.goplay.profile.ProfileUserAttributeParser
+import be.tapped.goplay.stream.StreamRepo
+import be.tapped.goplay.stream.hlsStreamResolver
+import be.tapped.goplay.stream.httpStreamRepo
+import be.tapped.goplay.stream.mpegDashStreamResolver
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.apache.Apache
 import io.ktor.client.features.json.JsonFeature
@@ -35,4 +39,5 @@ internal val httpClient: HttpClient =
 public object GoPlayApi :
     ProgramRepo by HttpProgramRepo(httpClient, jsonSerializer, AllProgramsHtmlJsonExtractor(), ProgramDetailHtmlJsonExtractor()),
     EpgRepo by httpEpgRepo(httpClient),
+    StreamRepo by httpStreamRepo(httpClient, mpegDashStreamResolver(httpClient), hlsStreamResolver()),
     ProfileRepo by HttpProfileRepo(ProfileUserAttributeParser())

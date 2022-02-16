@@ -4,7 +4,9 @@ import arrow.core.Nel
 import be.tapped.goplay.content.Program
 import be.tapped.goplay.epg.EpgProgram
 import be.tapped.goplay.profile.TokenWrapper
+import be.tapped.goplay.stream.ResolvedStream
 import kotlinx.datetime.LocalDate
+import kotlinx.serialization.json.JsonObject
 
 public sealed interface ApiResponse {
     public sealed interface Success : ApiResponse {
@@ -19,6 +21,8 @@ public sealed interface ApiResponse {
                 public data class Detail(val program: be.tapped.goplay.content.Program.Detail) : Program
             }
         }
+
+        public data class Stream(val stream: ResolvedStream) : Success
 
         public data class ProgramGuide(val epg: List<EpgProgram>) : Success
     }
@@ -37,6 +41,15 @@ public sealed interface ApiResponse {
 
         public sealed interface Content : Failure {
             public object NoPrograms : Content
+        }
+
+        public sealed interface Stream : Failure {
+            public val videoUuid: Program.Detail.Playlist.Episode.VideoUuid
+
+            public data class MpegDash(override val videoUuid: Program.Detail.Playlist.Episode.VideoUuid, val json: JsonObject, val throwable: Throwable) : Stream
+            public data class DrmAuth(override val videoUuid: Program.Detail.Playlist.Episode.VideoUuid, val json: JsonObject, val throwable: Throwable) : Stream
+            public data class Hls(override val videoUuid: Program.Detail.Playlist.Episode.VideoUuid, val json: JsonObject, val throwable: Throwable) : Stream
+            public data class UnknownStream(override val videoUuid: Program.Detail.Playlist.Episode.VideoUuid, val json: JsonObject) : Stream
         }
 
         public sealed interface Epg : Failure {
