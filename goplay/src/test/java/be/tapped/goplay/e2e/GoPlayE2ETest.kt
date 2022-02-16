@@ -7,6 +7,7 @@ import be.tapped.goplay.content.Program
 import be.tapped.goplay.epg.GoPlayBrand
 import io.kotest.assertions.arrow.core.shouldBeRight
 import io.kotest.core.spec.style.FreeSpec
+import io.kotest.matchers.booleans.shouldBeTrue
 
 /**
  * This test hits the real https://goplay.be/ site.
@@ -88,6 +89,17 @@ internal class GoPlayE2ETest : FreeSpec({
                     programsByCategory.shouldBeRight()
                 }
             }
+        }
+    }
+
+    "retrieving my favorite list" - {
+        val (username, password) = Credentials.default
+        val tokenWrapper = GoPlayApi.fetchTokens(username, password).shouldBeRight().token
+
+        val favoritePrograms = GoPlayApi.fetchMyFavoritePrograms(tokenWrapper.idToken)
+
+        "should be successful" {
+            favoritePrograms.shouldBeRight()
         }
     }
 })

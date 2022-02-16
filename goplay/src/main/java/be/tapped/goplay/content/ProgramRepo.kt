@@ -93,6 +93,14 @@ internal class HttpProgramRepo(
         }
 }
 
+internal class AllProgramsHtmlJsonExtractor {
+    private val regex by lazy("data-program=\"([^\"]+)\""::toRegex)
+    internal fun parse(html: String): Either<Failure, List<String>> =
+        catch {
+            regex.findAll(html).map { it.groupValues[1] }.map(String::htmlDecode).toList()
+        }.mapLeft(Failure::HTMLJsonExtractionException)
+}
+
 internal class ProgramDetailHtmlJsonExtractor {
     private val regex by lazy("data-hero=\"([^\"]+)"::toRegex)
     internal fun parse(html: String): Either<Failure.HTMLJsonExtractionException, String> =
@@ -102,16 +110,7 @@ internal class ProgramDetailHtmlJsonExtractor {
         }.mapLeft(Failure::HTMLJsonExtractionException)
 }
 
-internal class AllProgramsHtmlJsonExtractor {
-    private val regex by lazy("data-program=\"([^\"]+)\""::toRegex)
-    internal fun parse(html: String): Either<Failure, List<String>> =
-        catch {
-            regex.findAll(html).map { it.groupValues[1] }.map(String::htmlDecode).toList()
-        }.mapLeft(Failure::HTMLJsonExtractionException)
-}
-
 // A poor man's HTML decoder
 // Shameless port of http://www.java2s.com/example/java-utility-method/html-decode/htmldecode-string-strsrc-415f0.html
 // TODO refactor or replace with a dedicated MPP lib?
-private fun String.htmlDecode(): String =
-    replace("&lt;", "<").replace("&gt;", ">").replace("&quot;", "\"").replace("&#039;", "'").replace("&amp;", "&")
+private fun String.htmlDecode(): String = replace("&lt;", "<").replace("&gt;", ">").replace("&quot;", "\"").replace("&#039;", "'").replace("&amp;", "&")

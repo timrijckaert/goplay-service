@@ -10,6 +10,11 @@ import be.tapped.goplay.content.contentRootRepo
 import be.tapped.goplay.content.contentTreeJsonParser
 import be.tapped.goplay.epg.EpgRepo
 import be.tapped.goplay.epg.httpEpgRepo
+import be.tapped.goplay.mylist.HttpMyListRepo
+import be.tapped.goplay.mylist.MyListRepo
+import be.tapped.goplay.mylist.addFavoriteProgramRepo
+import be.tapped.goplay.mylist.myFavoriteProgramRepo
+import be.tapped.goplay.mylist.removeFavoriteRepo
 import be.tapped.goplay.profile.HttpProfileRepo
 import be.tapped.goplay.profile.ProfileRepo
 import be.tapped.goplay.profile.ProfileUserAttributeParser
@@ -51,4 +56,5 @@ public object GoPlayApi :
     EpgRepo by httpEpgRepo(httpClient),
     StreamRepo by httpStreamRepo(httpClient, mpegDashStreamResolver(httpClient), hlsStreamResolver()),
     ProfileRepo by HttpProfileRepo(ProfileUserAttributeParser()),
-    CategoryRepo by categoryRepo(contentRootRepo(httpClient, contentTreeJsonParser()))
+    CategoryRepo by categoryRepo(contentRootRepo(httpClient, contentTreeJsonParser())),
+    MyListRepo by HttpMyListRepo(myFavoriteProgramRepo(httpClient), addFavoriteProgramRepo(httpClient), removeFavoriteRepo(httpClient))
