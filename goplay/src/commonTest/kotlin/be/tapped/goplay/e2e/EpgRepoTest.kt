@@ -1,5 +1,6 @@
 package be.tapped.goplay.e2e
 
+import be.tapped.goplay.dispatchers
 import be.tapped.goplay.epg.GoPlayBrand
 import be.tapped.goplay.epg.httpEpgRepo
 import be.tapped.goplay.httpClient
@@ -13,7 +14,7 @@ import kotlinx.datetime.toLocalDateTime
 
 internal class EpgRepoTest : ShouldSpec({
     GoPlayBrand.values().forEach { brand ->
-        val sut = httpEpgRepo(httpClient)
+        val sut = httpEpgRepo(httpClient, dispatchers)
 
         should("be able to fetch the day before yesterday's EPG for $brand") {
             val dayBeforeYesterday = now() - DatePeriod(days = 2)
