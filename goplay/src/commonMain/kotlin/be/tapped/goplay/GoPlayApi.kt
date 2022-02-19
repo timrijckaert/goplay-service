@@ -15,9 +15,8 @@ import be.tapped.goplay.mylist.MyListRepo
 import be.tapped.goplay.mylist.addFavoriteProgramRepo
 import be.tapped.goplay.mylist.myFavoriteProgramRepo
 import be.tapped.goplay.mylist.removeFavoriteRepo
-import be.tapped.goplay.profile.HttpProfileRepo
 import be.tapped.goplay.profile.ProfileRepo
-import be.tapped.goplay.profile.ProfileUserAttributeParser
+import be.tapped.goplay.profile.httpProfileRepo
 import be.tapped.goplay.stream.StreamRepo
 import be.tapped.goplay.stream.hlsStreamResolver
 import be.tapped.goplay.stream.httpStreamRepo
@@ -55,6 +54,6 @@ public object GoPlayApi :
     ),
     EpgRepo by httpEpgRepo(httpClient, dispatchers),
     StreamRepo by httpStreamRepo(httpClient, dispatchers, mpegDashStreamResolver(httpClient, dispatchers), hlsStreamResolver(dispatchers)),
-    ProfileRepo by HttpProfileRepo(ProfileUserAttributeParser()),
+    ProfileRepo by httpProfileRepo,
     CategoryRepo by categoryRepo(contentRootRepo(httpClient, contentTreeJsonParser(), dispatchers), dispatchers),
     MyListRepo by HttpMyListRepo(myFavoriteProgramRepo(httpClient, dispatchers), addFavoriteProgramRepo(httpClient, dispatchers), removeFavoriteRepo(httpClient, dispatchers))

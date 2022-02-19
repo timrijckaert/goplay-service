@@ -7,7 +7,6 @@ import be.tapped.goplay.content.Program
 import be.tapped.goplay.epg.GoPlayBrand
 import io.kotest.assertions.arrow.core.shouldBeRight
 import io.kotest.core.spec.style.FreeSpec
-import io.kotest.matchers.booleans.shouldBeTrue
 
 /**
  * This test hits the real https://goplay.be/ site.

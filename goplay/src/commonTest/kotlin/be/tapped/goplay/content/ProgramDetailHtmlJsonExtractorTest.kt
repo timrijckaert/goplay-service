@@ -2,7 +2,6 @@ package be.tapped.goplay.content
 
 import io.kotest.assertions.arrow.core.shouldBeRight
 import io.kotest.core.spec.style.ShouldSpec
-import org.intellij.lang.annotations.Language
 
 internal class ProgramDetailHtmlJsonExtractorTest : ShouldSpec({
     should("extract the program JSON information from the HTML page") {
@@ -11,7 +10,6 @@ internal class ProgramDetailHtmlJsonExtractorTest : ShouldSpec({
     }
 })
 
-@Language("HTML")
 private const val DE_SLIMSTE_MENS_TER_WERELD =
     """<!DOCTYPE html>
 <html>

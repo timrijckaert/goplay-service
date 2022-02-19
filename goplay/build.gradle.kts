@@ -7,7 +7,7 @@ plugins {
 
 kotlin {
     targets {
-        ios()
+        // ios()
         jvm()
     }
 
@@ -17,9 +17,6 @@ kotlin {
                 implementation(libs.kotlinx.serialization.json)
                 implementation(libs.kotlin.stdlib)
                 implementation(libs.coroutines.core)
-
-                implementation(project.dependencies.platform(libs.aws.bom))
-                implementation(libs.aws.cognitoidentityprovider)
 
                 implementation(project.dependencies.platform(libs.arrow.bom))
                 implementation(libs.arrow.core)
@@ -41,14 +38,16 @@ kotlin {
         }
         val jvmMain by getting {
             dependencies {
+                implementation(project.dependencies.platform(libs.aws.bom))
+                implementation(libs.aws.cognitoidentityprovider)
                 implementation(libs.ktor.client.apache)
             }
         }
-        val iosMain by getting {
-            dependencies {
-                implementation(libs.ktor.client.ios)
-            }
-        }
+        // val iosMain by getting {
+        //     dependencies {
+        //         implementation(libs.ktor.client.ios)
+        //     }
+        // }
     }
 }
 

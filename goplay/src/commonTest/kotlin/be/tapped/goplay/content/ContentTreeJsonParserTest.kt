@@ -6,7 +6,6 @@ import io.kotest.assertions.arrow.core.shouldBeRight
 import io.kotest.core.spec.style.ShouldSpec
 import io.kotest.matchers.collections.shouldContainExactly
 import kotlinx.serialization.decodeFromString
-import org.intellij.lang.annotations.Language
 
 internal class ContentTreeJsonParserTest : ShouldSpec({
     should("parse the content tree") {
@@ -26,7 +25,6 @@ internal class ContentTreeJsonParserTest : ShouldSpec({
     }
 })
 
-@Language("JSON")
 private const val CONTENT_TREE: String =
     """
         {
