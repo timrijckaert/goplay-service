@@ -20,9 +20,9 @@ kotlin {
         summary = "CocoaPods test library"
         homepage = "https://github.com/JetBrains/kotlin"
 
-        pod("AFNetworking") {
-            version = "~> 4.0.1"
-        }
+        // pod("AFNetworking") {
+        //     version = "~> 4.0.1"
+        // }
     }
 
     sourceSets {
@@ -39,6 +39,12 @@ kotlin {
                 implementation(libs.ktor.client.logging)
                 implementation(libs.ktor.client.serialization)
                 implementation(libs.kotlinx.datetime)
+
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2-native-mt") {
+                    version {
+                        strictly("1.5.2-native-mt")
+                    }
+                }
             }
         }
         val commonTest by getting {
@@ -49,7 +55,7 @@ kotlin {
                 implementation("io.kotest:kotest-framework-datatest:5.1.0")
                 implementation("org.jetbrains.kotlin:kotlin-test-common:1.6.0")
                 implementation("org.jetbrains.kotlin:kotlin-test-annotations-common:1.6.0")
-                implementation(libs.kotest.assertions.arrow)
+                // implementation(libs.kotest.assertions.arrow)
 
                 // implementation(libs.kotest.assertions.core)
                 // implementation(libs.kotest.assertions.arrow)
