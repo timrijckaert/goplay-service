@@ -40,9 +40,9 @@ kotlin {
                 implementation(libs.ktor.client.serialization)
                 implementation(libs.kotlinx.datetime)
 
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2-native-mt") {
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0-native-mt") {
                     version {
-                        strictly("1.5.2-native-mt")
+                        strictly("1.6.0-native-mt")
                     }
                 }
             }
