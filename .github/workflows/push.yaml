@@ -30,7 +30,7 @@ jobs:
       - name: E2E ${{ matrix.brand }}
         uses: gradle/gradle-build-action@v2.1.1
         with:
-          arguments: :${{ matrix.brand }}:test -i
+          arguments: :${{ matrix.brand }}:jvmTest -i
 
       - uses: actions/upload-artifact@v2.3.1
         with:

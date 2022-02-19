@@ -1,28 +1,39 @@
 @Suppress("DSL_SCOPE_VIOLATION")
 plugins {
-    id(libs.plugins.kotlin.jvm.pluginId)
+    kotlin("multiplatform")
     alias(libs.plugins.kotlinx.serialization)
 }
 
-dependencies {
-    implementation(libs.kotlinx.serialization.json)
-    implementation(libs.kotlin.stdlib)
-    implementation(libs.coroutines.core)
+kotlin {
+    jvm()
 
-    implementation(platform(libs.aws.bom))
-    implementation(libs.aws.cognitoidentityprovider)
+    sourceSets {
+        val commonMain by getting {
+            dependencies {
+                implementation(libs.kotlinx.serialization.json)
+                implementation(libs.kotlin.stdlib)
+                implementation(libs.coroutines.core)
 
-    implementation(platform(libs.arrow.bom))
-    implementation(libs.arrow.core)
-    implementation(libs.arrow.fx.coroutines)
-    implementation(libs.ktor.client.core)
-    implementation(libs.ktor.client.apache)
-    implementation(libs.ktor.client.logging)
-    implementation(libs.ktor.client.serialization)
-    implementation(libs.kotlinx.datetime)
+                implementation(project.dependencies.platform(libs.aws.bom))
+                implementation(libs.aws.cognitoidentityprovider)
 
-    testImplementation(libs.kotest.runner)
-    testImplementation(libs.kotest.assertions.core)
-    testImplementation(libs.kotest.assertions.arrow)
-    testImplementation(libs.kotest.property)
+                implementation(project.dependencies.platform(libs.arrow.bom))
+                implementation(libs.arrow.core)
+                implementation(libs.arrow.fx.coroutines)
+                implementation(libs.ktor.client.core)
+                implementation(libs.ktor.client.apache)
+                implementation(libs.ktor.client.logging)
+                implementation(libs.ktor.client.serialization)
+                implementation(libs.kotlinx.datetime)
+            }
+        }
+        val commonTest by getting {
+            dependencies {
+                implementation(libs.kotest.runner)
+                implementation(libs.kotest.assertions.core)
+                implementation(libs.kotest.assertions.arrow)
+                implementation(libs.kotest.property)
+            }
+        }
+    }
 }
