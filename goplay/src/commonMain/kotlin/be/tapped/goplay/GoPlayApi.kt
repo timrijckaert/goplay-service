@@ -23,7 +23,6 @@ import be.tapped.goplay.stream.hlsStreamResolver
 import be.tapped.goplay.stream.httpStreamRepo
 import be.tapped.goplay.stream.mpegDashStreamResolver
 import io.ktor.client.HttpClient
-import io.ktor.client.engine.apache.Apache
 import io.ktor.client.features.json.JsonFeature
 import io.ktor.client.features.json.serializer.KotlinxSerializer
 import kotlinx.serialization.json.Json
@@ -39,7 +38,7 @@ internal val jsonSerializer =
     }
 
 internal val httpClient: HttpClient =
-    HttpClient(Apache) {
+    HttpClient {
         install(JsonFeature) {
             serializer = KotlinxSerializer(jsonSerializer)
         }
@@ -48,13 +47,14 @@ internal val httpClient: HttpClient =
 public object GoPlayApi :
     ProgramRepo by HttpProgramRepo(
         httpClient,
+        dispatchers,
         jsonSerializer,
         AllProgramsHtmlJsonExtractor(),
         ProgramDetailHtmlJsonExtractor(),
-        contentRootRepo(httpClient, contentTreeJsonParser())
+        contentRootRepo(httpClient, contentTreeJsonParser(), dispatchers)
     ),
-    EpgRepo by httpEpgRepo(httpClient),
-    StreamRepo by httpStreamRepo(httpClient, mpegDashStreamResolver(httpClient), hlsStreamResolver()),
+    EpgRepo by httpEpgRepo(httpClient, dispatchers),
+    StreamRepo by httpStreamRepo(httpClient, dispatchers, mpegDashStreamResolver(httpClient, dispatchers), hlsStreamResolver(dispatchers)),
     ProfileRepo by HttpProfileRepo(ProfileUserAttributeParser()),
-    CategoryRepo by categoryRepo(contentRootRepo(httpClient, contentTreeJsonParser())),
-    MyListRepo by HttpMyListRepo(myFavoriteProgramRepo(httpClient), addFavoriteProgramRepo(httpClient), removeFavoriteRepo(httpClient))
+    CategoryRepo by categoryRepo(contentRootRepo(httpClient, contentTreeJsonParser(), dispatchers), dispatchers),
+    MyListRepo by HttpMyListRepo(myFavoriteProgramRepo(httpClient, dispatchers), addFavoriteProgramRepo(httpClient, dispatchers), removeFavoriteRepo(httpClient, dispatchers))

@@ -5,7 +5,10 @@ plugins {
 }
 
 kotlin {
-    jvm()
+    targets {
+        ios()
+        jvm()
+    }
 
     sourceSets {
         val commonMain by getting {
@@ -21,7 +24,6 @@ kotlin {
                 implementation(libs.arrow.core)
                 implementation(libs.arrow.fx.coroutines)
                 implementation(libs.ktor.client.core)
-                implementation(libs.ktor.client.apache)
                 implementation(libs.ktor.client.logging)
                 implementation(libs.ktor.client.serialization)
                 implementation(libs.kotlinx.datetime)
@@ -35,5 +37,21 @@ kotlin {
                 implementation(libs.kotest.property)
             }
         }
+        val jvmMain by getting {
+            dependencies {
+                implementation(libs.ktor.client.apache)
+            }
+        }
+        val iosMain by getting {
+            dependencies {
+                implementation(libs.ktor.client.ios)
+            }
+        }
+    }
+}
+
+tasks {
+    withType<Test> {
+        useJUnitPlatform()
     }
 }

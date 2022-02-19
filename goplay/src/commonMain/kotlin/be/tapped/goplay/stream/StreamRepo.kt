@@ -4,6 +4,7 @@ import arrow.core.Either
 import arrow.core.Either.Companion.catch
 import arrow.core.computations.either
 import arrow.core.left
+import be.tapped.goplay.CoroutineDispatchers
 import be.tapped.goplay.Failure
 import be.tapped.goplay.Stream
 import be.tapped.goplay.apiGoPlay
@@ -13,21 +14,25 @@ import be.tapped.goplay.profile.IdToken
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
 import io.ktor.client.request.headers
-import kotlinx.coroutines.Dispatchers
+import io.ktor.http.HttpHeaders
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
-import org.apache.http.HttpHeaders
 
 internal fun interface StreamRepo {
     suspend fun streamByVideoUuid(videoId: Program.Detail.Playlist.Episode.VideoUuid, idToken: IdToken): Either<Failure, Stream>
 }
 
-internal fun httpStreamRepo(client: HttpClient, mpegDashStreamResolver: MpegDashStreamResolver, hlsStreamResolver: HLSStreamResolver): StreamRepo =
+internal fun httpStreamRepo(
+    client: HttpClient,
+    dispatchers: CoroutineDispatchers,
+    mpegDashStreamResolver: MpegDashStreamResolver,
+    hlsStreamResolver: HLSStreamResolver
+): StreamRepo =
     StreamRepo { videoId, idToken ->
-        withContext(Dispatchers.IO) {
+        withContext(dispatchers.io) {
             either {
                 val videoResponse = client.safeGet<JsonElement>(idToken, "$apiVierVijfZes/content/${videoId.videoUuid}").bind()
                 if (videoResponse is JsonObject) {
@@ -78,9 +83,9 @@ internal fun interface MpegDashStreamResolver {
  * }
  * ```
  */
-internal fun mpegDashStreamResolver(client: HttpClient): MpegDashStreamResolver =
+internal fun mpegDashStreamResolver(client: HttpClient, dispatchers: CoroutineDispatchers): MpegDashStreamResolver =
     MpegDashStreamResolver { videoId, videoObj, idToken ->
-        withContext(Dispatchers.IO) {
+        withContext(dispatchers.io) {
             either {
                 val mpegDash =
                     catch {
@@ -118,9 +123,9 @@ internal fun interface HLSStreamResolver {
  * }
  * ```
  */
-internal fun hlsStreamResolver(): HLSStreamResolver =
+internal fun hlsStreamResolver(dispatchers: CoroutineDispatchers): HLSStreamResolver =
     HLSStreamResolver { videoId, videoObj ->
-        withContext(Dispatchers.IO) {
+        withContext(dispatchers.io) {
             either {
                 val hlsStream =
                     catch {
@@ -138,6 +143,6 @@ internal fun hlsStreamResolver(): HLSStreamResolver =
 public suspend inline fun <reified T> HttpClient.safeGet(idToken: IdToken, urlString: String): Either<Failure.Network, T> =
     catch {
         get<T>(urlString) {
-            headers { append(HttpHeaders.AUTHORIZATION, idToken.token) }
+            headers { append(HttpHeaders.Authorization, idToken.token) }
         }
     }.mapLeft(Failure::Network)

@@ -12,6 +12,7 @@ allprojects {
     }
 
     tasks {
+        // TODO Check why the explicit mode only seems to be applied to `jvmMain`
         withType<KotlinCompile>().configureEach {
             kotlinOptions {
                 jvmTarget = JavaVersion.VERSION_11.toString()

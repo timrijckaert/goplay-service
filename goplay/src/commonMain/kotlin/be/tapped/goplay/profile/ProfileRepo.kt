@@ -9,6 +9,8 @@ import be.tapped.goplay.Failure
 import be.tapped.goplay.Failure.Authentication.Login
 import be.tapped.goplay.Failure.Authentication.Profile
 import be.tapped.goplay.Failure.Authentication.Refresh
+import kotlinx.datetime.Clock
+// TODO AWS lib is JVM lib 😭
 import software.amazon.awssdk.auth.credentials.AnonymousCredentialsProvider
 import software.amazon.awssdk.core.SdkResponse
 import software.amazon.awssdk.regions.Region
@@ -67,7 +69,7 @@ internal class HttpProfileRepo(private val profileUserAttributeParser: ProfileUs
                 Authentication.Token(
                     TokenWrapper(
                         accessToken = AccessToken(authChallengeResponse.accessToken()),
-                        expiry = Expiry(System.currentTimeMillis() + (authChallengeResponse.expiresIn() * 1000)),
+                        expiry = Expiry(Clock.System.currentTimeMillis() + (authChallengeResponse.expiresIn() * 1000)),
                         tokenType = authChallengeResponse.tokenType(),
                         refreshToken = RefreshToken(authChallengeResponse.refreshToken()),
                         idToken = IdToken(authChallengeResponse.idToken())
@@ -83,7 +85,7 @@ internal class HttpProfileRepo(private val profileUserAttributeParser: ProfileUs
                 Authentication.Token(
                     TokenWrapper(
                         accessToken = AccessToken(initiateAuthResult.accessToken()),
-                        expiry = Expiry(System.currentTimeMillis() + (initiateAuthResult.expiresIn() * 1000)),
+                        expiry = Expiry(Clock.System.currentTimeMillis() + (initiateAuthResult.expiresIn() * 1000)),
                         tokenType = initiateAuthResult.tokenType(),
                         refreshToken = initiateAuthResult.refreshToken()?.let(::RefreshToken) ?: refreshToken,
                         idToken = IdToken(initiateAuthResult.idToken())

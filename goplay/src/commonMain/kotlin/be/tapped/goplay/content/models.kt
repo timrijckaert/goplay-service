@@ -1,6 +1,6 @@
 package be.tapped.goplay.content
-
 import kotlinx.serialization.Serializable
+import kotlin.jvm.JvmInline
 
 public sealed interface Program {
     public val id: Id

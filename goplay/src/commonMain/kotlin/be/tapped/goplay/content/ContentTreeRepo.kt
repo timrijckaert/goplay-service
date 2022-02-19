@@ -4,6 +4,8 @@ import arrow.core.Either
 import arrow.core.Either.Companion.catch
 import arrow.core.Nel
 import arrow.core.computations.either
+import be.tapped.goplay.CoroutineDispatchers
+import be.tapped.goplay.dispatchers
 import be.tapped.goplay.siteUrl
 import be.tapped.goplay.toNel
 import io.ktor.client.HttpClient
@@ -23,10 +25,10 @@ internal fun interface ContentTreeRepo {
     suspend fun fetchContentTree(): Either<Throwable, ContentRoot>
 }
 
-internal fun contentRootRepo(httpClient: HttpClient, contentTreeJsonParser: ContentTreeJsonParser): ContentTreeRepo =
+internal fun contentRootRepo(httpClient: HttpClient, contentTreeJsonParser: ContentTreeJsonParser, dispatchers: CoroutineDispatchers): ContentTreeRepo =
     ContentTreeRepo {
         either {
-            withContext(Dispatchers.IO) {
+            withContext(dispatchers.io) {
                 catch {
                     val contentTreeRootObj = httpClient.get<JsonObject>("$siteUrl/api/content_tree")
                     contentTreeJsonParser.parseJsonToContentRoot(contentTreeRootObj).bind()

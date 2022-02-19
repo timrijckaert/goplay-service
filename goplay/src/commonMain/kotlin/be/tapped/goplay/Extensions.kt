@@ -9,11 +9,11 @@ import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.get
 import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.readText
+import io.ktor.utils.io.charsets.Charset
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.decodeFromJsonElement
-import java.nio.charset.Charset
 
 internal inline fun <A, T> List<T>.toNel(default: () -> A): Either<A, Nel<T>> = NonEmptyList.fromList(this).orNull().rightIfNotNull(default)
 

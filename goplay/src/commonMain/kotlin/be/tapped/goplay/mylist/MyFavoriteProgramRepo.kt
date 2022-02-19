@@ -2,6 +2,7 @@ package be.tapped.goplay.mylist
 
 import arrow.core.Either
 import arrow.core.computations.either
+import be.tapped.goplay.CoroutineDispatchers
 import be.tapped.goplay.Failure
 import be.tapped.goplay.apiGoPlay
 import be.tapped.goplay.content.Program
@@ -28,10 +29,10 @@ internal fun interface MyFavoriteProgramRepo {
  * ]
  * ```
  */
-internal fun myFavoriteProgramRepo(client: HttpClient): MyFavoriteProgramRepo =
+internal fun myFavoriteProgramRepo(client: HttpClient, dispatchers: CoroutineDispatchers): MyFavoriteProgramRepo =
     MyFavoriteProgramRepo {
         either {
-            withContext(Dispatchers.IO) {
+            withContext(dispatchers.io) {
                 client.safeGet<List<FavoriteItem>>("$apiGoPlay/my-list") {
                     defaultAuthorizationHeader(it)
                 }.bind().map { Program.Id(it.programId) }

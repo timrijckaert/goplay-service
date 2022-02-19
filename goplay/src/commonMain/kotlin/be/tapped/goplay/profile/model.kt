@@ -1,5 +1,7 @@
 package be.tapped.goplay.profile
 
+import kotlin.jvm.JvmInline
+
 @JvmInline
 public value class AccessToken(public val token: String)
 
