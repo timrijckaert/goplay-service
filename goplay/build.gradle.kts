@@ -2,6 +2,7 @@
 plugins {
     kotlin("multiplatform")
     alias(libs.plugins.kotlinx.serialization)
+    id("io.kotest.multiplatform") version "5.0.2"
 }
 
 kotlin {
@@ -35,6 +36,7 @@ kotlin {
                 implementation(libs.kotest.assertions.core)
                 implementation(libs.kotest.assertions.arrow)
                 implementation(libs.kotest.property)
+                implementation(libs.kotest.framework.engine)
             }
         }
         val jvmMain by getting {

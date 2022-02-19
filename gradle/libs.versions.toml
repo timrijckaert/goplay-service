@@ -30,6 +30,7 @@ ktor-client-serialization = { module = "io.ktor:ktor-client-serialization", vers
 coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
 
 kotest-runner = { module = "io.kotest:kotest-runner-junit5", version.ref = "kotest" }
+kotest-framework-engine = { module = "io.kotest:kotest-framework-engine", version.ref = "kotest" }
 kotest-assertions-core = { module = "io.kotest:kotest-assertions-core", version.ref = "kotest" }
 kotest-assertions-arrow = "io.kotest.extensions:kotest-assertions-arrow:1.2.2"
 kotest-property = { module = "io.kotest:kotest-property", version.ref = "kotest" }
