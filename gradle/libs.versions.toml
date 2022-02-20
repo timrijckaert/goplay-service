@@ -1,7 +1,7 @@
 [versions]
 kotlin = "1.6.10"
 arrow = "1.0.1"
-coroutines = "1.6.0"
+coroutines = "1.6.0-native-mt"
 kotest = "5.1.0"
 ktor = "1.6.7"
 
