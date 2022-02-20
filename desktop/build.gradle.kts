@@ -25,6 +25,10 @@ dependencies {
     implementation(libs.kotlin.stdlib)
     implementation(libs.coroutines.core)
     implementation(libs.kamel)
+
+    implementation(libs.chromecast)
+    implementation(libs.jackson.annotations)
+    implementation(libs.jackson.databind)
 }
 
 compose.desktop {
