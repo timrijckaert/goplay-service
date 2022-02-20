@@ -3,12 +3,10 @@ package be.tapped.goplay.desktop
 import androidx.compose.foundation.VerticalScrollbar
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
@@ -29,24 +27,18 @@ import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
 import arrow.core.Either
 import be.tapped.goplay.GoPlayApi
-import io.kamel.core.config.DefaultCacheSize
 import io.kamel.core.config.KamelConfig
 import io.kamel.core.config.fileFetcher
 import io.kamel.core.config.httpFetcher
 import io.kamel.core.config.stringMapper
-import io.kamel.core.config.takeFrom
 import io.kamel.core.config.uriMapper
 import io.kamel.core.config.urlMapper
-import io.kamel.image.KamelImage
-import io.kamel.image.config.Default
 import io.kamel.image.config.LocalKamelConfig
 import io.kamel.image.config.imageBitmapDecoder
-import io.kamel.image.config.resourcesFetcher
-import io.kamel.image.lazyPainterResource
 import kotlinx.coroutines.flow.asFlow
 
 @OptIn(ExperimentalMaterialApi::class)
-public suspend fun main(): Unit {
+public suspend fun main() {
     application {
         val programs by suspend { GoPlayApi.fetchPrograms() }.asFlow().collectAsState(null)
         val desktopConfig =
@@ -68,27 +60,14 @@ public suspend fun main(): Unit {
                 state = rememberWindowState(width = 600.dp, height = 500.dp)
             ) {
                 Box(Modifier.fillMaxSize()) {
-                    val lazyListState: LazyListState = rememberLazyListState()
+                    val lazyListState = rememberLazyListState()
                     when (val p = programs) {
                         null -> CircularProgressIndicator(Modifier.align(Alignment.Center))
                         is Either.Left -> Text(p.value.toString())
                         is Either.Right -> {
-                            LazyColumn(Modifier.fillMaxSize(), state = lazyListState) {
+                            LazyColumn(Modifier.fillMaxSize(), lazyListState) {
                                 items(p.value.programs) {
                                     Row(Modifier.fillMaxWidth().clickable {}) {
-                                        // val imageUrl = it.images.poster
-                                        // KamelImage(
-                                        //     modifier = Modifier.width(40.dp),
-                                        //     crossfade = true,
-                                        //     onLoading = {
-                                        //         Box(modifier = Modifier.fillMaxSize()) {
-                                        //             CircularProgressIndicator()
-                                        //         }
-                                        //     },
-                                        //     resource = lazyPainterResource(imageUrl),
-                                        //     contentDescription = it.title
-                                        // )
-
                                         ListItem(
                                             icon = {
                                                 // val width = 40.dp
@@ -114,7 +93,7 @@ public suspend fun main(): Unit {
                             }
                             VerticalScrollbar(
                                 modifier = Modifier.align(Alignment.CenterEnd).fillMaxHeight(),
-                                adapter = rememberScrollbarAdapter(scrollState = lazyListState)
+                                adapter = rememberScrollbarAdapter(lazyListState)
                             )
                         }
                     }
