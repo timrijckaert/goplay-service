@@ -18,6 +18,9 @@ dependencies {
     // With compose.desktop.common you will also lose @Preview functionality
     implementation(compose.desktop.currentOs)
     implementation(projects.goplay)
+    implementation(platform(libs.arrow.bom))
+    implementation(libs.arrow.core)
+    implementation(libs.arrow.fx.coroutines)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.kotlin.stdlib)
     implementation(libs.coroutines.core)
