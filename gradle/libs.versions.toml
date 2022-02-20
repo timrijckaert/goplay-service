@@ -33,6 +33,8 @@ kotest-assertions-core = { module = "io.kotest:kotest-assertions-core", version.
 kotest-assertions-arrow = "io.kotest.extensions:kotest-assertions-arrow:1.2.2"
 kotest-property = { module = "io.kotest:kotest-property", version.ref = "kotest" }
 
+kamel = "com.alialbaali.kamel:kamel-image:0.3.0"
+
 mockk = "io.mockk:mockk:v1.10.2"
 
 kotlin-gradle = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
