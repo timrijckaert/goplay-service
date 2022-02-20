@@ -33,32 +33,32 @@ internal const val apiVierVijfZes: String = "https://api.viervijfzes.be"
 internal const val apiGoPlay: String = "https://api.goplay.be"
 
 internal val jsonSerializer =
-  Json {
-    isLenient = true
-    ignoreUnknownKeys = true
-  }
+    Json {
+        isLenient = true
+        ignoreUnknownKeys = true
+    }
 
 internal val httpClient: HttpClient =
-  HttpClient(Apache) {
-    install(JsonFeature) {
-      serializer = KotlinxSerializer(jsonSerializer)
+    HttpClient(Apache) {
+        install(JsonFeature) {
+            serializer = KotlinxSerializer(jsonSerializer)
+        }
     }
-  }
 
 public object GoPlayApi :
-  ProgramRepo by HttpProgramRepo(
-    httpClient,
-    jsonSerializer,
-    AllProgramsHtmlJsonExtractor(),
-    ProgramDetailHtmlJsonExtractor(),
-    contentRootRepo(httpClient, contentTreeJsonParser())
-  ).withResilience(ResilientConfig().toResilience()),
-  EpgRepo by httpEpgRepo(httpClient),
-  StreamRepo by httpStreamRepo(httpClient, mpegDashStreamResolver(httpClient), hlsStreamResolver()),
-  ProfileRepo by HttpProfileRepo(ProfileUserAttributeParser()),
-  CategoryRepo by categoryRepo(contentRootRepo(httpClient, contentTreeJsonParser())),
-  MyListRepo by HttpMyListRepo(
-    myFavoriteProgramRepo(httpClient),
-    addFavoriteProgramRepo(httpClient),
-    removeFavoriteRepo(httpClient)
-  )
+    ProgramRepo by HttpProgramRepo(
+        httpClient,
+        jsonSerializer,
+        AllProgramsHtmlJsonExtractor(),
+        ProgramDetailHtmlJsonExtractor(),
+        contentRootRepo(httpClient, contentTreeJsonParser())
+    ).withResilience(ResilientConfig().toResilience()),
+    EpgRepo by httpEpgRepo(httpClient),
+    StreamRepo by httpStreamRepo(httpClient, mpegDashStreamResolver(httpClient), hlsStreamResolver()),
+    ProfileRepo by HttpProfileRepo(ProfileUserAttributeParser()),
+    CategoryRepo by categoryRepo(contentRootRepo(httpClient, contentTreeJsonParser())),
+    MyListRepo by HttpMyListRepo(
+        myFavoriteProgramRepo(httpClient),
+        addFavoriteProgramRepo(httpClient),
+        removeFavoriteRepo(httpClient)
+    )
