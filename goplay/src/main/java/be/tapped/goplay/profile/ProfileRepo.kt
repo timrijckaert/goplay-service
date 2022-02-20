@@ -4,11 +4,10 @@ import arrow.core.Either
 import arrow.core.computations.either
 import arrow.core.left
 import arrow.core.right
-import be.tapped.goplay.Authentication
 import be.tapped.goplay.Failure
 import be.tapped.goplay.Failure.Authentication.Login
-import be.tapped.goplay.Failure.Authentication.Profile
 import be.tapped.goplay.Failure.Authentication.Refresh
+import be.tapped.goplay.Token
 import software.amazon.awssdk.auth.credentials.AnonymousCredentialsProvider
 import software.amazon.awssdk.core.SdkResponse
 import software.amazon.awssdk.regions.Region
@@ -18,33 +17,31 @@ import software.amazon.awssdk.services.cognitoidentityprovider.model.GetUserRequ
 import software.amazon.awssdk.services.cognitoidentityprovider.model.GetUserResponse
 
 internal class ProfileUserAttributeParser {
-    fun parse(userResponse: GetUserResponse): Authentication.Profile {
+    fun parse(userResponse: GetUserResponse): Profile {
         val userAttributeMap =
             userResponse.userAttributes().groupBy(AttributeType::name, AttributeType::value).mapValues { (_, value) -> value.firstOrNull() }
 
-        return Authentication.Profile(
-            Profile(
-                username = userResponse.username(),
-                sub = userAttributeMap["sub"],
-                birthDate = userAttributeMap["birthdate"],
-                gender = userAttributeMap["gender"],
-                postalCode = userAttributeMap["custom:postal_code"],
-                selligentId = userAttributeMap["custom:selligentId"],
-                name = userAttributeMap["name"],
-                familyName = userAttributeMap["family_name"],
-                email = userAttributeMap["email"]
-            )
+        return Profile(
+            username = userResponse.username(),
+            sub = userAttributeMap["sub"],
+            birthDate = userAttributeMap["birthdate"],
+            gender = userAttributeMap["gender"],
+            postalCode = userAttributeMap["custom:postal_code"],
+            selligentId = userAttributeMap["custom:selligentId"],
+            name = userAttributeMap["name"],
+            familyName = userAttributeMap["family_name"],
+            email = userAttributeMap["email"]
         )
     }
 }
 
 internal interface ProfileRepo {
 
-    suspend fun fetchTokens(username: String, password: String): Either<Failure, Authentication.Token>
+    suspend fun fetchTokens(username: String, password: String): Either<Failure, Token>
 
-    suspend fun refreshTokens(refreshToken: RefreshToken): Either<Failure, Authentication.Token>
+    suspend fun refreshTokens(refreshToken: RefreshToken): Either<Failure, Token>
 
-    suspend fun getUserAttributes(accessToken: AccessToken): Either<Failure, Authentication.Profile>
+    suspend fun getUserAttributes(accessToken: AccessToken): Either<Failure, Profile>
 
 }
 
@@ -52,7 +49,7 @@ internal class HttpProfileRepo(private val profileUserAttributeParser: ProfileUs
 
     private val cognitoIdentityProvider by lazy(CognitoIdentityProviderClient.builder().credentialsProvider(AnonymousCredentialsProvider.create()).region(Region.EU_WEST_1)::build)
 
-    override suspend fun fetchTokens(username: String, password: String): Either<Failure, Authentication.Token> =
+    override suspend fun fetchTokens(username: String, password: String): Either<Failure, Token> =
         either {
             Either.catch {
                 val initiateUserSrpAuthRequest =
@@ -64,7 +61,7 @@ internal class HttpProfileRepo(private val profileUserAttributeParser: ProfileUs
                         .bind()
                         .authenticationResult()
 
-                Authentication.Token(
+                Token(
                     TokenWrapper(
                         accessToken = AccessToken(authChallengeResponse.accessToken()),
                         expiry = Expiry(System.currentTimeMillis() + (authChallengeResponse.expiresIn() * 1000)),
@@ -76,11 +73,11 @@ internal class HttpProfileRepo(private val profileUserAttributeParser: ProfileUs
             }.mapLeft { Login }.bind()
         }
 
-    override suspend fun refreshTokens(refreshToken: RefreshToken): Either<Failure, Authentication.Token> =
+    override suspend fun refreshTokens(refreshToken: RefreshToken): Either<Failure, Token> =
         either {
             Either.catch {
                 val initiateAuthResult = cognitoIdentityProvider.initiateAuth(AuthenticationHelper.refreshToken(refreshToken.token)).checkResult.bind().authenticationResult()
-                Authentication.Token(
+                Token(
                     TokenWrapper(
                         accessToken = AccessToken(initiateAuthResult.accessToken()),
                         expiry = Expiry(System.currentTimeMillis() + (initiateAuthResult.expiresIn() * 1000)),
@@ -92,12 +89,12 @@ internal class HttpProfileRepo(private val profileUserAttributeParser: ProfileUs
             }.mapLeft { Refresh }.bind()
         }
 
-    override suspend fun getUserAttributes(accessToken: AccessToken): Either<Failure, Authentication.Profile> =
+    override suspend fun getUserAttributes(accessToken: AccessToken): Either<Failure, Profile> =
         either {
             Either.catch {
                 val user = cognitoIdentityProvider.getUser(GetUserRequest.builder().accessToken(accessToken.token).build()).checkResult.bind()
                 profileUserAttributeParser.parse(user)
-            }.mapLeft { Profile }.bind()
+            }.mapLeft { Failure.Authentication.Profile }.bind()
         }
 }
 
