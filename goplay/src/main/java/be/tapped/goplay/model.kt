@@ -6,6 +6,7 @@ import be.tapped.goplay.epg.EpgProgram
 import be.tapped.goplay.profile.TokenWrapper
 import be.tapped.goplay.stream.ResolvedStream
 import kotlinx.datetime.LocalDate
+import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonObject
 
 public sealed interface Failure {

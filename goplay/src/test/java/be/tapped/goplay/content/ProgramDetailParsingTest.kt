@@ -1,7 +1,6 @@
 package be.tapped.goplay.content
 
 import be.tapped.goplay.jsonSerializer
-import be.tapped.goplay.readFromResources
 import be.tapped.goplay.safeDecodeFromString
 import io.kotest.assertions.arrow.core.shouldBeRight
 import io.kotest.core.spec.style.ShouldSpec

@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="goplay-jvm-1.0">
+    <output-path>$PROJECT_DIR$/goplay/build/libs</output-path>
+    <root id="archive" name="goplay-jvm-1.0.jar">
+      <element id="module-output" name="flemish-tv-aggregator.goplay.jvmMain" />
+    </root>
+  </artifact>
+</component>
