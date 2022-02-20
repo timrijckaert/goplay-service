@@ -52,9 +52,13 @@ public object GoPlayApi :
         AllProgramsHtmlJsonExtractor(),
         ProgramDetailHtmlJsonExtractor(),
         contentRootRepo(httpClient, contentTreeJsonParser())
-    ),
+    ).withResilience(ResilientConfig().toResilience()),
     EpgRepo by httpEpgRepo(httpClient),
     StreamRepo by httpStreamRepo(httpClient, mpegDashStreamResolver(httpClient), hlsStreamResolver()),
     ProfileRepo by HttpProfileRepo(ProfileUserAttributeParser()),
     CategoryRepo by categoryRepo(contentRootRepo(httpClient, contentTreeJsonParser())),
-    MyListRepo by HttpMyListRepo(myFavoriteProgramRepo(httpClient), addFavoriteProgramRepo(httpClient), removeFavoriteRepo(httpClient))
+    MyListRepo by HttpMyListRepo(
+        myFavoriteProgramRepo(httpClient),
+        addFavoriteProgramRepo(httpClient),
+        removeFavoriteRepo(httpClient)
+    )

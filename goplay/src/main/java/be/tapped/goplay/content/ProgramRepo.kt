@@ -4,10 +4,12 @@ import arrow.core.Either
 import arrow.core.Either.Companion.catch
 import arrow.core.Nel
 import arrow.core.computations.either
+import arrow.core.flatten
 import arrow.fx.coroutines.parTraverse
 import be.tapped.goplay.Failure
 import be.tapped.goplay.AllPrograms
 import be.tapped.goplay.Detail
+import be.tapped.goplay.Resilience
 import be.tapped.goplay.epg.GoPlayBrand
 import be.tapped.goplay.safeDecodeFromJsonElement
 import be.tapped.goplay.safeDecodeFromString
@@ -43,7 +45,8 @@ internal class HttpProgramRepo(
             either {
                 val html = client.safeGet<HttpResponse>("$siteUrl/programmas").bind().safeReadText().bind()
                 val jsonPrograms = allProgramsHtmlJsonExtractor.parse(html).bind()
-                val programs = jsonPrograms.map { jsonSerializer.safeDecodeFromString<Program.Overview>(it).bind() }.toNel { Failure.Content.NoPrograms }.bind()
+                val programs = jsonPrograms.map { jsonSerializer.safeDecodeFromString<Program.Overview>(it).bind() }
+                    .toNel { Failure.Content.NoPrograms }.bind()
                 AllPrograms(programs)
             }
         }
@@ -53,14 +56,22 @@ internal class HttpProgramRepo(
             either {
                 val html = client.safeGet<HttpResponse>("$siteUrl${link.link}").bind().safeReadText().bind()
                 val jsonProgram = programDetailHtmlJsonExtractor.parse(html).bind()
-                val dataObj = catch { jsonSerializer.safeDecodeFromString<JsonObject>(jsonProgram).bind().getValue("data") }.mapLeft(Failure::JsonParsingException).bind()
+                val dataObj = catch {
+                    jsonSerializer.safeDecodeFromString<JsonObject>(jsonProgram).bind().getValue("data")
+                }.mapLeft(Failure::JsonParsingException).bind()
                 val program = jsonSerializer.safeDecodeFromJsonElement<Program.Detail>(dataObj).bind()
                 Detail(program)
             }
         }
 
     override suspend fun fetchProgramById(id: Program.Id): Either<Failure, Detail> =
-        withContext(Dispatchers.IO) { either { Detail(client.safeGet<Program.Detail>("$siteUrl/api/program/${id.id}").bind()) } }
+        withContext(Dispatchers.IO) {
+            either {
+                Detail(
+                    client.safeGet<Program.Detail>("$siteUrl/api/program/${id.id}").bind()
+                )
+            }
+        }
 
     override suspend fun fetchPopularPrograms(brand: GoPlayBrand?): Either<Failure, Nel<Detail>> {
         fun GoPlayBrand?.toPathSegment() =
@@ -116,4 +127,5 @@ internal class ProgramDetailHtmlJsonExtractor {
 // A poor man's HTML decoder
 // Shameless port of http://www.java2s.com/example/java-utility-method/html-decode/htmldecode-string-strsrc-415f0.html
 // TODO refactor or replace with a dedicated MPP lib?
-private fun String.htmlDecode(): String = replace("&lt;", "<").replace("&gt;", ">").replace("&quot;", "\"").replace("&#039;", "'").replace("&amp;", "&")
+private fun String.htmlDecode(): String =
+    replace("&lt;", "<").replace("&gt;", ">").replace("&quot;", "\"").replace("&#039;", "'").replace("&amp;", "&")

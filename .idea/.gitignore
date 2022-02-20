@@ -7,3 +7,4 @@ gradle.xml
 jarRepositories.xml
 misc.xml
 vcs.xml
+artifacts/
