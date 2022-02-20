@@ -2,6 +2,7 @@ package be.tapped.goplay
 
 import arrow.core.Nel
 import be.tapped.goplay.content.Category
+import be.tapped.goplay.content.Program
 import be.tapped.goplay.epg.EpgProgram
 import be.tapped.goplay.profile.TokenWrapper
 import be.tapped.goplay.stream.ResolvedStream
@@ -27,16 +28,16 @@ public sealed interface Failure {
     }
 
     public sealed interface Stream : Failure {
-        public val videoUuid: be.tapped.goplay.content.Program.Detail.Playlist.Episode.VideoUuid
+        public val videoUuid: Program.Detail.Playlist.Episode.VideoUuid
 
-        public data class MpegDash(override val videoUuid: be.tapped.goplay.content.Program.Detail.Playlist.Episode.VideoUuid, val json: JsonObject, val throwable: Throwable) :
+        public data class MpegDash(override val videoUuid: Program.Detail.Playlist.Episode.VideoUuid, val json: JsonObject, val throwable: Throwable) :
             Stream
 
-        public data class DrmAuth(override val videoUuid: be.tapped.goplay.content.Program.Detail.Playlist.Episode.VideoUuid, val json: JsonObject, val throwable: Throwable) :
+        public data class DrmAuth(override val videoUuid: Program.Detail.Playlist.Episode.VideoUuid, val json: JsonObject, val throwable: Throwable) :
             Stream
 
-        public data class Hls(override val videoUuid: be.tapped.goplay.content.Program.Detail.Playlist.Episode.VideoUuid, val json: JsonObject, val throwable: Throwable) : Stream
-        public data class UnknownStream(override val videoUuid: be.tapped.goplay.content.Program.Detail.Playlist.Episode.VideoUuid, val json: JsonObject) : Stream
+        public data class Hls(override val videoUuid: Program.Detail.Playlist.Episode.VideoUuid, val json: JsonObject, val throwable: Throwable) : Stream
+        public data class UnknownStream(override val videoUuid: Program.Detail.Playlist.Episode.VideoUuid, val json: JsonObject) : Stream
     }
 
     public sealed interface Epg : Failure {
@@ -46,16 +47,12 @@ public sealed interface Failure {
 
 public data class Stream(val stream: ResolvedStream)
 
-public sealed interface Authentication {
-    public data class Token(val token: TokenWrapper) : Authentication
-    public data class Profile(val profile: be.tapped.goplay.profile.Profile) : Authentication
-}
+public data class Token(val token: TokenWrapper)
+public data class Profile(val profile: be.tapped.goplay.profile.Profile) : Failure.Authentication
 
 public data class Categories(val categories: Nel<Category>)
 
-public sealed interface Program {
-    public data class Overview(val programs: Nel<be.tapped.goplay.content.Program.Overview>) : Program
-    public data class Detail(val program: be.tapped.goplay.content.Program.Detail) : Program
-}
+public data class Detail(val program: Program.Detail)
+public data class AllPrograms(val programs: Nel<Program.Overview>)
 
 public data class ProgramGuide(val epg: List<EpgProgram>)
