@@ -24,6 +24,7 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.kotlin.stdlib)
     implementation(libs.coroutines.core)
+    implementation(libs.kamel)
 }
 
 compose.desktop {
